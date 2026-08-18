@@ -796,9 +796,17 @@ window.Generator = (function() {
         return 'general';
     }
 
-    function lessonLevel(lessonId) {
+    function lessonLevel(lessonId, metadata) {
         const match = String(lessonId).match(/^[A-Z]+-L(\d+)/);
-        return match ? Math.max(1, Math.min(8, Number(match[1]))) : 1;
+        let level = match ? Number(match[1]) : 1;
+        const adaptive = Number(metadata && metadata.adaptiveDifficulty);
+        if (Number.isFinite(adaptive)) level = adaptive;
+        const age = Number(metadata && metadata.childAge);
+        if (Number.isFinite(age)) {
+            if (age <= 5) level -= 1;
+            if (age >= 7) level += 1;
+        }
+        return Math.max(1, Math.min(8, level));
     }
 
     function plan(factories, metadata) {
@@ -809,7 +817,7 @@ window.Generator = (function() {
             ...round,
             lessonId: metadata && metadata.id,
             skillType: metadata && metadata.type,
-            difficulty: metadata && metadata.difficulty || lessonLevel(metadata && metadata.id)
+            difficulty: metadata && metadata.difficulty || lessonLevel(metadata && metadata.id, metadata)
         }));
     }
 
@@ -847,7 +855,7 @@ window.Generator = (function() {
     function lessonPlan(lessonId, metadata) {
         const domain = inferDomain(lessonId, metadata);
         const type = metadata && metadata.type || '';
-        const level = lessonLevel(lessonId);
+        const level = lessonLevel(lessonId, metadata);
         const countMax = level <= 2 ? 5 : level <= 4 ? 10 : 20;
         const pairCount = Math.min(5, 2 + Math.floor(level / 2));
 

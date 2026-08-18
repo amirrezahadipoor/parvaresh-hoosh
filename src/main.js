@@ -561,7 +561,9 @@
     // ===== LESSON RUNNER (FULLSCREEN ZERO-SCROLL) =====
     function startLesson(lesson) {
         if (!lesson || !lesson.id) return;
-        const rounds = Generator.generate(lesson.id, { ...lesson, domain: state.domainId }) || [];
+        const childAge = window.Engagement ? window.Engagement.getProfile().age : null;
+        const adaptiveDifficulty = window.Adaptive ? window.Adaptive.getDifficulty(state.domainId || 'general') : null;
+        const rounds = Generator.generate(lesson.id, { ...lesson, domain: state.domainId, childAge, adaptiveDifficulty }) || [];
         const body = $('#lesson-body');
         if (!body) return;
         const fill = $('#lesson-progress-fill');
