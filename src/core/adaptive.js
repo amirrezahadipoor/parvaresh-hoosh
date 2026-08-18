@@ -1,18 +1,20 @@
-// Adaptive difficulty engine
-// Tracks performance per domain and adjusts difficulty level
+// Adaptive Difficulty & Skill Mastery Engine for "پرورش هوش کودک"
+// 100% Local & Adaptive Assessment without stressful tests
 const Adaptive = (function() {
-    const KEY = 'khanak_adaptive';
+    const KEY = 'parvaresh_hoosh_adaptive_v2';
     let state = { domains: {} };
 
     function load() {
-        const saved = window.localStorage.getItem(KEY);
-        if (saved) {
-            try { state = JSON.parse(saved); } catch (e) {}
-        }
+        try {
+            const saved = window.localStorage.getItem(KEY);
+            if (saved) state = JSON.parse(saved);
+        } catch (e) {}
     }
 
     function persist() {
-        try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+        try {
+            window.localStorage.setItem(KEY, JSON.stringify(state));
+        } catch (e) {}
     }
 
     function getDomain(domainId) {
@@ -28,21 +30,24 @@ const Adaptive = (function() {
         return state.domains[domainId];
     }
 
-    // Record a result (correct: boolean) and return updated difficulty
     function record(domainId, correct) {
         const d = getDomain(domainId);
         d.total++;
-        d.streak = correct ? d.streak + 1 : 0;
-        if (correct) d.correct++;
-
-        // adjust difficulty
-        if (d.streak >= App.adaptive.upStreak && d.difficulty < App.adaptive.max) {
-            d.difficulty++;
-            d.streak = 0;
-        } else if (!correct && d.difficulty > App.adaptive.min) {
-            d.difficulty--;
+        if (correct) {
+            d.correct++;
+            d.streak++;
+        } else {
             d.streak = 0;
         }
+
+        // Adaptive level step up/down
+        if (d.streak >= App.adaptive.upStreak && d.difficulty < App.adaptive.maxLevel) {
+            d.difficulty++;
+            d.streak = 0;
+        } else if (!correct && d.streak === 0 && d.difficulty > App.adaptive.minLevel) {
+            d.difficulty = Math.max(App.adaptive.minLevel, d.difficulty - 1);
+        }
+
         d.history.push({ t: Date.now(), correct });
         if (d.history.length > 100) d.history.shift();
         persist();
@@ -55,22 +60,51 @@ const Adaptive = (function() {
 
     function setDifficulty(domainId, level) {
         const d = getDomain(domainId);
-        d.difficulty = Math.min(App.adaptive.max, Math.max(App.adaptive.min, level));
+        d.difficulty = Math.min(App.adaptive.maxLevel, Math.max(App.adaptive.minLevel, level));
         persist();
     }
 
-    // Stats for parent dashboard
     function stats(domainId) {
         const d = getDomain(domainId);
+        const accuracy = d.total ? Math.round((100 * d.correct) / d.total) : 0;
+        
+        let statusLabel = 'آغاز یادگیری';
+        let statusClass = 'neutral';
+        let tip = 'با تمرین روزانه ۵ دقیقه، مهارت‌ها به سرعت تثبیت می‌شوند.';
+
+        if (d.total >= 3) {
+            if (accuracy >= 80) {
+                statusLabel = 'تسلط عالی';
+                statusClass = 'excellent';
+                tip = 'عملکرد کودک در این زمینه درخشان است؛ آماده برای مراحل پیشرفته‌تر!';
+            } else if (accuracy >= 60) {
+                statusLabel = 'در حال پیشرفت';
+                statusClass = 'good';
+                tip = 'پیشرفت خوبی دارد و با چند مرحله تمرین بیشتر به تسلط کامل می‌رسد.';
+            } else {
+                statusLabel = 'نیازمند تمرین بیشتر';
+                statusClass = 'needs-practice';
+                tip = 'توصیه می‌شود فعالیت‌های این بخش با همراهی و راهنمایی والد مرور شود.';
+            }
+        }
+
         return {
             difficulty: d.difficulty,
             total: d.total,
             correct: d.correct,
-            accuracy: d.total ? Math.round(100 * d.correct / d.total) : 0,
+            accuracy,
+            statusLabel,
+            statusClass,
+            tip,
             history: d.history.slice(-20)
         };
     }
 
+    function reset() {
+        state = { domains: {} };
+        persist();
+    }
+
     load();
-    return { record, getDifficulty, setDifficulty, stats };
+    return { record, getDifficulty, setDifficulty, stats, reset };
 })();

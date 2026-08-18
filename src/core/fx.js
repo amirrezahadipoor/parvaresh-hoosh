@@ -1,5 +1,5 @@
-// Reward effects: confetti, stars - lightweight DOM-based
-const Fx = (function() {
+// Reward effects: confetti, stars, shake, pop for "پرورش هوش کودک"
+window.Fx = (function() {
     function confetti(container, count) {
         container = container || document.body;
         count = count || 40;
@@ -23,11 +23,13 @@ const Fx = (function() {
             frag.appendChild(p);
             const dur = 1800 + Math.random() * 1500;
             const delay = Math.random() * 600;
-            p.animate([
-                { transform: `translate(0, 0) rotate(0)`, opacity: 1 },
-                { transform: `translate(${(Math.random() - 0.5) * 300}px, ${window.innerHeight * (0.7 + Math.random() * 0.4)}px) rotate(${Math.random() * 720 - 360}deg)`, opacity: 0.8 },
-                { transform: `translate(${(Math.random() - 0.5) * 200}px, ${window.innerHeight * 1.1}px) rotate(${Math.random() * 720 - 360}deg)`, opacity: 0 }
-            ], { duration: dur, delay, easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)', fill: 'forwards' });
+            if (p.animate) {
+                p.animate([
+                    { transform: `translate(0, 0) rotate(0)`, opacity: 1 },
+                    { transform: `translate(${(Math.random() - 0.5) * 300}px, ${window.innerHeight * (0.7 + Math.random() * 0.4)}px) rotate(${Math.random() * 720 - 360}deg)`, opacity: 0.8 },
+                    { transform: `translate(${(Math.random() - 0.5) * 200}px, ${window.innerHeight * 1.1}px) rotate(${Math.random() * 720 - 360}deg)`, opacity: 0 }
+                ], { duration: dur, delay, easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)', fill: 'forwards' });
+            }
             setTimeout(() => p.remove(), dur + delay + 100);
         }
         container.appendChild(frag);
@@ -35,7 +37,7 @@ const Fx = (function() {
 
     function stars(container, count) {
         container = container || document.body;
-        count = count || 3;
+        count = count || 4;
         const frag = document.createDocumentFragment();
         for (let i = 0; i < count; i++) {
             const s = document.createElement('div');
@@ -54,19 +56,21 @@ const Fx = (function() {
             frag.appendChild(s);
             const dur = 900 + Math.random() * 500;
             const delay = i * 150;
-            s.animate([
-                { transform: 'scale(0.2) rotate(-30deg)', opacity: 0 },
-                { transform: 'scale(1.3) rotate(10deg)', opacity: 1 },
-                { transform: 'scale(0.9) rotate(0deg)', opacity: 1 },
-                { transform: `translateY(-80px) scale(1.1)`, opacity: 0 }
-            ], { duration: dur, delay, easing: 'ease-out', fill: 'forwards' });
+            if (s.animate) {
+                s.animate([
+                    { transform: 'scale(0.2) rotate(-30deg)', opacity: 0 },
+                    { transform: 'scale(1.3) rotate(10deg)', opacity: 1 },
+                    { transform: 'scale(0.9) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(-80px) scale(1.1)`, opacity: 0 }
+                ], { duration: dur, delay, easing: 'ease-out', fill: 'forwards' });
+            }
             setTimeout(() => s.remove(), dur + delay + 100);
         }
         container.appendChild(frag);
     }
 
     function shake(element) {
-        if (!element) return;
+        if (!element || !element.animate) return;
         element.animate([
             { transform: 'translateX(0)' },
             { transform: 'translateX(-8px)' },
@@ -78,7 +82,7 @@ const Fx = (function() {
     }
 
     function pop(element) {
-        if (!element) return;
+        if (!element || !element.animate) return;
         element.animate([
             { transform: 'scale(1)' },
             { transform: 'scale(1.15)' },

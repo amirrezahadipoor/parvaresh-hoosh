@@ -1,149 +1,104 @@
-# Khanak Academy — خنک آکادمی
+# پرورش هوش کودک (Child Intelligence Development) 🌟
+### اپلیکیشن آموزشی و بازی تعاملی کاملاً آفلاین و فارسی برای کودکان ۵ تا ۸ سال
 
-A comprehensive, fully offline Persian educational application for children aged 5 to 8, built with the depth and quality of Khan Academy Kids and localized for Persian language, alphabet, and culture.
+---
 
-The application is a hundred percent offline — no server, no online API, no internet connection is needed at runtime. All assets (audio synthesis, fonts, illustrations, curriculum) are bundled into the Android package.
+## 📖 معرفی پروژه (About the Project)
 
-## Tech stack
+**پرورش هوش کودک** یک اپلیکیشن پیشرفته، جامع، کاملاً بومی‌سازی‌شده به زبان فارسی و دارای چیدمان استاندارد راست‌به‌چپ (RTL) است که بر اساس متدهای علمی آموزش کودک و با الهام از استانداردهای آموزشی بین‌المللی (نظیر Khan Academy Kids) طراحی شده است. 
 
-| Layer | Technology |
-|-------|-----------|
-| UI | HTML5, CSS, JavaScript (vanilla) |
-| Game engine | Phaser.js (bundled) |
-| Animation | GSAP (bundled) |
-| Storage | IndexedDB (with localStorage fallback) |
-| Audio | WebAudio API (synthesized SFX) + system SpeechSynthesis (Persian TTS) |
-| Mobile shell | Capacitor |
-| Build | Gradle + Android SDK 33+ |
-| Min Android | 6.0 (API 23) |
-| Target Android | 15 (API 35) |
+این برنامه **۱۰۰٪ آفلاین** است و برای اجرا به هیچ سرور، اینترنت یا API خارجی وابسته نیست. تمام فونت‌ها، تصاویر وکتور SVG، افکت‌های صوتی WebAudio و موتورهای بازی به صورت محلی در بسته برنامه قرار دارند.
 
-## Curriculum
+---
 
-Six domain areas, 36 difficulty levels, 142 lessons:
+## 🎯 ۶ حوزه شناختی و مهارتی (Curriculum Domains)
 
-| Domain | Levels | Lessons |
-|--------|-------:|--------:|
-| Reading and writing Persian | 7 | 37 |
-| Mathematics | 8 | 39 |
-| Logic and problem solving | 6 | 19 |
-| Basic science | 6 | 20 |
-| Social-emotional skills | 5 | 15 |
-| Art and creativity | 4 | 12 |
-| **Total** | **36** | **142** |
+برنامه شامل **۱۴۲ درس و فعالیت تعاملی** در ۶ حوزه بنیادین رشد هوش کودک است:
 
-Levels span from very easy (level 1) to challenging (level 8), arranged in a documented `content/curriculum.json`.
+1. **خواندن، الفبا و زبان‌فارسی (Reading & Literacy)** 📚
+   - شناخت ۳۲ حرف الفبای فارسی، صدای حروف، صداکشی و اتصال حروف
+   - واژگان پرکاربرد، کلمه‌سازی، بخش کردن (هجاها)، کلمات هم‌قافیه و متضادها
+   - جمله‌سازی تعاملی و داستان‌خوانی مقدماتی
 
-## Activity engines
+2. **ریاضیات، شمارش و هوش عددی (Mathematics & Numeracy)** 🔢
+   - شمارش اشیاء و انگشتان، شناخت اعداد فارسی از ۰ تا ۲۰ و بالاتر
+   - مقایسه اندازه، کمیت و ارقام (بزرگ‌تر / کوچک‌تر)
+   - جمع و تفریق‌های لمسی و تصویری تا ۱۰ و ۲۰
+   - شناخت اشکال هندسی (دایره، مربع، مثلث، مستطیل، بیضی، لوزی، ستاره، قلب)
 
-Seven activity types cover all required learning interactions:
+3. **منطق، استدلال و حل مسئله (Logic & Problem Solving)** 🧩
+   - بازی‌های حافظه سه‌بعدی و جفت‌یابی (Memory Match 3D)
+   - تشخیص تفاوت‌ها و پیدا کردن عضو ناهمگون (Odd One Out)
+   - دسته‌بندی مفهومی (حیوانات، میوه‌ها، وسایل نقلیه و ...)
+   - دنباله‌های منطقی، مراحل رشد گیاه و ترتیب وقایع داستان
 
-1. Quiz — multi-choice with image and audio narration.
-2. Memory match — flip cards in pairs.
-3. Drag and drop — drag items into matching targets.
-4. Tracing — finger writing on canvas over a ghost letter or number.
-5. Ordering — tap-tap swap to order by size, sequence, or story.
-6. Pattern completion — find the next item in a color, shape, or number pattern.
-7. Free painting — canvas with color palette.
+4. **علوم پایه، طبیعت و جهان پیرامون (Science & Nature)** 🌱
+   - آشنایی با حیوانات اهلی و وحشی، صدای حیوانات و زیستگاه آن‌ها
+   - اعضای بدن انسان و حواس پنج‌گانه (بینایی، شنوایی، چشایی، بویایی، لامسه)
+   - چهار فصل سال، تغییرات آب‌وهوایی و لباس‌های متناسب هر فصل
+   - چرخه رشد دانه و گیاهان
 
-Each activity provides instant audio and visual feedback (sound effects, particles, mascot reactions).
+5. **هوش هیجانی و مهارت‌های اجتماعی (Socio-Emotional Learning)** ❤️
+   - شناخت احساسات پایه (خوشحالی، غم، تعجب، آرامش، شجاعت)
+   - آداب معاشرت، گفتن لطفا و متشکرم، احترام به بزرگترها
+   - بهداشت فردی (مسواک زدن، شستن دست‌ها، نظم و خواب به موقع)
+   - آشنایی با اعضای خانواده و نقش‌ها
 
-## Adaptive assessment
+6. **هنر، نقاشی و خلاقیت (Art & Creativity)** 🎨
+   - کارگاه نقاشی آزاد با پالت ۱۲ رنگ شاد و براش جادویی رنگین‌کمانی
+   - برچسب‌ها و استیکرهای جذاب (ستاره، قلب، گل و ...)
+   - طرح‌های رنگ‌آمیزی آماده (حیوانات، ماشین، خانه، گل)
+   - بازی مفرح ترکاندن بادکنک‌های آموزشی (Balloon Pop)
 
-Per-domain performance is tracked. After two correct answers in a row the difficulty is increased; after two wrong answers it is lowered. The system is local only — no data leaves the device.
+---
 
-The parent dashboard is PIN protected and shows per-domain accuracy, current difficulty, badges (Strong / Growing / Needs practice), and a summary screen with total stars collected.
+## 🦊 کاراکتر مسکات: «دانا» (Dana the Mascot)
 
-## Visual identity
+کاراکتر دانا یک روباه کارتونی بسیار مهربان، باهوش و عینکی است که با حالت‌های مختلف چهره (خوشحال، متفکر، شگفت‌زده، جشن و پیروزی، تشویق‌کننده) کودک را در تمام مراحل همراهی و هدایت می‌کند. تمام کاراکترها و عناصر بصری به شکل **وکتورهای استاندارد SVG** کدنویسی شده‌اند و بدون هیچ‌گونه تصویر دارای کپی‌رایت رندر می‌شوند.
 
-- Six domain colors (warm red, teal, soft purple, golden yellow, coral, pink).
-- Mascot: Khanak the fox — a friendly orange fox wearing round purple glasses, rendered as inline SVG with multiple moods (happy, thinking, surprised, proud, sad).
-- Persian font: Vazirmatn (OFL licensed, bundled).
-- All illustrations are drawn programmatically with SVG and the Canvas API — no copyrighted or third-party art.
+---
 
-## Project structure
+## 🎮 موتورهای بازی تعاملی (Interactive Game Engines)
 
-```
-.
-├── index.html              App shell, RTL layout, splash, screens
-├── src/
-│   ├── styles/main.css     Stylesheet
-│   ├── core/
-│   │   ├── config.js       Domain and theme config
-│   │   ├── audio.js        WebAudio synthesized SFX
-│   │   ├── storage.js      IndexedDB and localStorage
-│   │   ├── adaptive.js     Adaptive difficulty engine
-│   │   ├── mascot.js       Fox mascot SVG component
-│   │   ├── svg-art.js      Programmatic illustration library
-│   │   ├── fx.js           Confetti and particle effects
-│   │   └── nav.js          Screen router
-│   ├── activities/
-│   │   ├── generator.js    Per-lesson round generation
-│   │   ├── quiz.js
-│   │   ├── memory.js
-│   │   ├── dragdrop.js
-│   │   ├── tracing.js
-│   │   ├── ordering.js
-│   │   └── painting.js
-│   ├── data/
-│   │   ├── alphabet.js     Persian alphabet, word lists
-│   │   ├── words.js        Frequent words, opposites, rhyming
-│   │   ├── math-data.js    Numbers, shapes, patterns
-│   │   └── world-data.js   Animals, body, seasons, emotions
-│   └── main.js             Main controller
-├── content/
-│   ├── curriculum.json     Curriculum map (6 domains, 36 levels)
-│   └── content_manifest.json
-├── assets/fonts/           Bundled Vazirmatn woff2 weights
-├── vendor/                 Bundled phaser.min.js, gsap.min.js
-├── www/                    Build dir consumed by Capacitor
-├── android/                Generated Capacitor Android project
-│   └── app/src/main/res/   App icon, theme, strings
-└── style-guide.md          Brand and visual style documentation
+- **کوییز تعاملی (Interactive Quiz)** با دکمه گوینده صوتی برای کودکان نوآموز
+- **ردگیری و نوشتن حروف و اعداد (Letter & Number Tracing)** با راهنمای انگشتی روی بوم
+- **کشیدن و رها کردن (Drag & Drop)** با فیزیک جهشی و دسته‌بندی اشیاء
+- **کارت‌های حافظه سه‌بعدی (Memory Match 3D)** با انیمیشن چرخش نرم
+- **مرتب‌سازی و دنباله (Ordering & Sequence)** با جابجایی ترتیبی کارت‌ها
+- **کارگاه نقاشی و رنگ‌آمیزی (Art & Coloring Canvas)**
+- **بازی ترکاندن بادکنک‌ها (Balloon Pop)**
+
+---
+
+## 📊 داشبورد والدین و ارزیابی انطباقی (Parent Dashboard & Adaptive Engine)
+
+- **قفل هوشمند کودک (Parental Gate)**: ورود با حل معادله ریاضی ساده یا رمز ۴ رقمی
+- **نمودار پیشرفت ۶ گانه**: نمایش درصد تسلط، دقت پاسخ‌دهی و سطح انطباقی
+- **نکات آموزشی کاربردی برای والدین** بر اساس نقاط قوت و نیاز به تمرین کودک
+- **ذخیره‌سازی کاملاً محلی**: حفظ ۱۰۰٪ حریم خصوصی در پایگاه داده محلی (IndexedDB / LocalStorage)
+
+---
+
+## 🛠️ پشته فناوری (Technology Stack)
+
+- **UI & Layout**: HTML5 + CSS3 (Flexbox/Grid, RTL Native, CSS Variables, 3D Transforms)
+- **فونت بومی**: وزیزمتن (Vazirmatn WOFF2) به صورت آفلاین
+- **گرافیک و انیمیشن**: SVG + GSAP + CSS Keyframe Animations
+- **سیستم صوتی**: Web Audio API (تولید زنده نغمه‌ها و افکت‌های صوتی بدون نیاز به فایل صوتی) + Web Speech API (Persian TTS)
+- **بسته‌بندی اندروید**: Capacitor Android Native Bridge (`ir.parvareshhoosh.app`)
+
+---
+
+## 🚀 نحوه اجرا و تست محلی
+
+برای اجرای وب‌سرور توسعه:
+```bash
+npm start
+# یا:
+python3 -m http.server 8080 --bind 0.0.0.0
 ```
 
-## Offline guarantee
-
-Every network request during runtime is local. The application uses:
-
-- `fetch('content/curriculum.json')` — served from bundled assets via Capacitor's https scheme.
-- WebAudio — synthesized in-browser, no audio files.
-- SpeechSynthesis — uses device's installed Persian voice (no network call).
-
-The Playwright offline test confirmed zero external requests during a complete user flow.
-
-## Build
-
-Requirements: Node 18+, Java 17 or 21, Android SDK 33+, build-tools 33+.
-
-```sh
-git clone <repo>
-cd parvaresh-hoosh
-npm install
-npx cap sync android
-cd android
-JAVA_HOME=/path/to/java17 ./gradlew assembleDebug
+برای اجرای تست‌های جامع تمام ۱۴۲ درس و اعتبارسنجی خودکار:
+```bash
+npm test
 ```
-
-Output: `android/app/build/outputs/apk/debug/app-debug.apk` (about 18 MB).
-
-Install on a connected device: `adb install app-debug.apk`.
-
-## App identity
-
-- Package: `ir.parvareshhoosh.khanak`
-- Launcher name: خنک آکادمی
-- Launcher icon: fox mascot with round purple glasses on warm red background
-
-## License
-
-Original work licensed under MIT.
-
-Third-party packages used at build time:
-
-- Vazirmatn font — SIL Open Font License 1.1
-- Phaser.js — MIT
-- GSAP — Standard "no charge" license (free for all uses)
-- Capacitor — MIT
-
-All in-game art, audio synthesis code, and curriculum text authored for this project.

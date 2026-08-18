@@ -1,98 +1,136 @@
-// Ordering activity renderer (size order, story steps, word order)
-const OrderingActivity = (function() {
+// Ordering & Sequence Puzzle Engine for "پرورش هوش کودک"
+window.OrderingActivity = (function() {
 
     function render(container, round, cb) {
         container.innerHTML = '';
-        const title = document.createElement('div');
-        title.className = 'activity-title';
-        title.textContent = 'مرتب کن';
-        container.appendChild(title);
 
-        const instr = document.createElement('div');
-        instr.className = 'activity-instr';
-        instr.textContent = round.prompt || 'به ترتیب درست بچین';
-        container.appendChild(instr);
+        const card = document.createElement('div');
+        card.className = 'ordering-activity-card';
 
-        AudioEngine.speak(round.speech || 'به ترتیب درست بچین');
+        // Header
+        const headerRow = document.createElement('div');
+        headerRow.className = 'activity-header-row';
 
+        const promptTitle = document.createElement('h2');
+        promptTitle.className = 'quiz-prompt';
+        promptTitle.textContent = round.prompt || 'مراحل را به ترتیب درست بچین';
+
+        const speakerBtn = document.createElement('button');
+        speakerBtn.className = 'speaker-btn';
+        speakerBtn.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>بشنو</span>
+        `;
+        speakerBtn.addEventListener('click', () => {
+            AudioEngine.play('click');
+            AudioEngine.speak(round.speech || round.prompt);
+        });
+
+        headerRow.appendChild(promptTitle);
+        headerRow.appendChild(speakerBtn);
+        card.appendChild(headerRow);
+
+        setTimeout(() => {
+            AudioEngine.speak(round.speech || round.prompt);
+        }, 150);
+
+        // Interactive Sequence List
         const list = document.createElement('div');
-        list.className = 'order-list';
+        list.className = 'order-items-list';
 
-        let currentOrder = round.items.slice();
-        let lock = false;
+        let currentOrder = (round.items || []).slice();
+        let selectedIndex = null;
 
-        function isCorrect() {
+        function checkCorrect() {
             if (round.answer === 'idx') {
-                return currentOrder.every((it, i) => it.idx === i);
+                return currentOrder.every((item, i) => item.idx === i);
             }
-            // size ordering ascending
-            const sizes = currentOrder.map(it => it.size);
-            const sorted = sizes.slice().sort((a, b) => a - b);
-            return sizes.every((s, i) => s === sorted[i]);
+            if (round.answer === 'size') {
+                const sizes = currentOrder.map(it => it.size);
+                const sorted = sizes.slice().sort((a, b) => a - b);
+                return sizes.every((s, i) => s === sorted[i]);
+            }
+            return true;
         }
 
-        function draw() {
+        function renderList() {
             list.innerHTML = '';
             currentOrder.forEach((item, idx) => {
-                const el = document.createElement('div');
-                el.className = 'order-item';
-                el.dataset.pos = idx;
-                if (item.img) {
-                    // Inject size class for visibility differentiation
-                    let img = item.img;
-                    if (item.size) img = img.replace('<svg ', '<svg class="size-' + item.size + '" ');
-                    el.innerHTML = img;
-                }
-                const label = document.createElement('span');
-                label.style.flex = '1';
-                label.textContent = item.label || '';
-                el.appendChild(label);
-                const num = document.createElement('span');
-                num.className = 'order-num';
-                num.textContent = String(idx + 1);
-                el.appendChild(num);
-                list.appendChild(el);
-            });
+                const itemEl = document.createElement('div');
+                itemEl.className = `order-item-card ${selectedIndex === idx ? 'selected' : ''}`;
 
-            // Tap-tap swap
-            let selected = null;
-            list.querySelectorAll('.order-item').forEach(el => {
-                el.addEventListener('click', () => {
-                    if (lock) return;
-                    if (!selected) {
-                        selected = el;
-                        el.style.borderColor = 'var(--btn)';
-                        AudioEngine.play('click');
-                        return;
-                    }
-                    if (selected === el) {
-                        selected.style.borderColor = '';
-                        selected = null;
-                        return;
-                    }
-                    // swap
-                    const a = parseInt(selected.dataset.pos, 10);
-                    const b = parseInt(el.dataset.pos, 10);
-                    [currentOrder[a], currentOrder[b]] = [currentOrder[b], currentOrder[a]];
-                    selected.style.borderColor = '';
-                    selected = null;
-                    AudioEngine.play('drop');
-                    draw();
-                    if (isCorrect() && !lock) {
-                        lock = true;
-                        AudioEngine.play('correct');
-                        list.querySelectorAll('.order-item').forEach((itemEl, i) => {
-                            itemEl.classList.add('placed-correct');
-                            itemEl.style.transitionDelay = (i * 0.12) + 's';
-                        });
-                        setTimeout(() => cb.onCorrect(round), 700);
+                // Step Number Badge (Persian Numerals)
+                const badge = document.createElement('span');
+                badge.className = 'step-badge';
+                const faDigits = ['۱', '۲', '۳', '۴', '۵'];
+                badge.textContent = faDigits[idx] || (idx + 1);
+                itemEl.appendChild(badge);
+
+                if (item.img) {
+                    const imgWrap = document.createElement('div');
+                    imgWrap.className = 'order-item-img';
+                    imgWrap.innerHTML = item.img;
+                    itemEl.appendChild(imgWrap);
+                }
+
+                if (item.label) {
+                    const label = document.createElement('span');
+                    label.className = 'order-item-label';
+                    label.textContent = item.label;
+                    itemEl.appendChild(label);
+                }
+
+                // Tap to Swap / Reorder
+                itemEl.addEventListener('click', () => {
+                    AudioEngine.play('click');
+                    if (selectedIndex === null) {
+                        selectedIndex = idx;
+                        renderList();
+                    } else if (selectedIndex === idx) {
+                        selectedIndex = null;
+                        renderList();
+                    } else {
+                        // Swap
+                        const temp = currentOrder[selectedIndex];
+                        currentOrder[selectedIndex] = currentOrder[idx];
+                        currentOrder[idx] = temp;
+                        selectedIndex = null;
+                        AudioEngine.play('bubble');
+                        renderList();
                     }
                 });
+
+                list.appendChild(itemEl);
             });
         }
 
-        draw();
-        container.appendChild(list);
+        renderList();
+        card.appendChild(list);
+
+        // Verification Button
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'big-action-btn';
+        submitBtn.innerHTML = `<span>بررسی ترتیب</span>`;
+        submitBtn.addEventListener('click', () => {
+            AudioEngine.play('click');
+            if (checkCorrect()) {
+                AudioEngine.play('correct');
+                list.querySelectorAll('.order-item-card').forEach(el => el.classList.add('correct-state'));
+                setTimeout(() => {
+                    if (cb && cb.onCorrect) cb.onCorrect(round);
+                }, 800);
+            } else {
+                AudioEngine.play('wrong');
+                if (window.Fx) Fx.shake(list);
+            }
+        });
+
+        card.appendChild(submitBtn);
+        container.appendChild(card);
     }
 
     return { render };

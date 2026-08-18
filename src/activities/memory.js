@@ -1,82 +1,128 @@
-// Memory match activity renderer
-const MemoryActivity = (function() {
+// 3D Memory Match Card Game for "پرورش هوش کودک"
+window.MemoryActivity = (function() {
 
     function render(container, round, cb) {
         container.innerHTML = '';
-        const title = document.createElement('div');
-        title.className = 'activity-title';
-        title.textContent = 'جفت‌های مثل هم';
-        container.appendChild(title);
 
-        const instr = document.createElement('div');
-        instr.className = 'activity-instr';
-        instr.textContent = 'کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن';
-        container.appendChild(instr);
+        const card = document.createElement('div');
+        card.className = 'memory-activity-card';
 
-        AudioEngine.speak('جفت‌های مثل هم را پیدا کن');
+        // Header
+        const headerRow = document.createElement('div');
+        headerRow.className = 'activity-header-row';
 
-        const cards = round.cards;
-        const cols = cards.length <= 6 ? 3 : (cards.length <= 8 ? 4 : 4);
+        const promptTitle = document.createElement('h2');
+        promptTitle.className = 'quiz-prompt';
+        promptTitle.textContent = 'جفت‌های مثل هم را پیدا کن';
+
+        const speakerBtn = document.createElement('button');
+        speakerBtn.className = 'speaker-btn';
+        speakerBtn.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>بشنو</span>
+        `;
+        speakerBtn.addEventListener('click', () => {
+            AudioEngine.play('click');
+            AudioEngine.speak(round.speech || 'جفت‌های مثل هم را پیدا کن');
+        });
+
+        headerRow.appendChild(promptTitle);
+        headerRow.appendChild(speakerBtn);
+        card.appendChild(headerRow);
+
+        setTimeout(() => {
+            AudioEngine.speak(round.speech || 'جفت‌های مثل هم را پیدا کن');
+        }, 150);
+
+        // Cards Grid
+        const cardsList = round.cards || [];
         const grid = document.createElement('div');
-        grid.className = 'memory-grid c' + cols;
+        const count = cardsList.length;
+        grid.className = `memory-cards-grid ${count <= 6 ? 'cols3' : 'cols4'}`;
 
-        const flipped = [];
+        let flipped = [];
         let lock = false;
-        let matchedCount = 0;
-        let attempts = 0;
+        let matchedPairs = 0;
+        const totalPairs = count / 2;
 
-        const faceEls = [];
-        cards.forEach((c, i) => {
-            const card = document.createElement('div');
-            card.className = 'memory-card';
-            card.dataset.pair = c.pair;
-            card.innerHTML = '<span>؟</span>';
-            const face = document.createElement('div');
-            face.className = 'mem-icon';
-            face.style.display = 'none';
-            face.innerHTML = c.img;
-            card.appendChild(face);
-            grid.appendChild(card);
+        cardsList.forEach((c) => {
+            const cardItem = document.createElement('div');
+            cardItem.className = 'memory-card-3d';
+            cardItem.dataset.pairId = c.pair;
 
-            card.addEventListener('click', () => {
-                if (lock || card.classList.contains('flipped') || card.classList.contains('matched')) return;
-                AudioEngine.play('pop');
-                card.classList.add('flipped');
-                card.innerHTML = '';
-                card.appendChild(face);
-                face.style.display = 'flex';
-                flipped.push(card);
+            cardItem.innerHTML = `
+                <div class="card-flipper">
+                    <div class="card-front">
+                        <div class="mystery-pattern">★</div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-visual">${c.img}</div>
+                        ${c.label ? `<span class="card-text">${c.label}</span>` : ''}
+                    </div>
+                </div>
+            `;
+
+            cardItem.addEventListener('click', () => {
+                if (lock || cardItem.classList.contains('flipped') || cardItem.classList.contains('matched')) return;
+
+                AudioEngine.play('click');
+                cardItem.classList.add('flipped');
+                flipped.push(cardItem);
+
                 if (flipped.length === 2) {
                     lock = true;
-                    attempts++;
-                    const [a, b] = flipped;
-                    setTimeout(() => {
-                        if (a.dataset.pair === b.dataset.pair) {
-                            a.classList.add('matched');
-                            b.classList.add('matched');
-                            matchedCount++;
-                            AudioEngine.play('correct');
-                            if (matchedCount === cards.length / 2) {
-                                setTimeout(() => cb.onCorrect(round, attempts), 600);
-                            } else {
-                                setTimeout(() => { lock = false; }, 400);
+                    const [c1, c2] = flipped;
+
+                    if (c1.dataset.pairId === c2.dataset.pairId) {
+                        // Matched!
+                        setTimeout(() => {
+                            AudioEngine.play('bubble');
+                            AudioEngine.play('star');
+                            c1.classList.add('matched');
+                            c2.classList.add('matched');
+                            if (window.Fx) {
+                                Fx.pop(c1);
+                                Fx.pop(c2);
                             }
-                        } else {
+                            flipped = [];
+                            lock = false;
+                            matchedPairs++;
+
+                            if (matchedPairs >= totalPairs) {
+                                setTimeout(() => {
+                                    AudioEngine.play('correct');
+                                    if (cb && cb.onCorrect) cb.onCorrect(round);
+                                }, 600);
+                            }
+                        }, 400);
+                    } else {
+                        // Mismatch
+                        setTimeout(() => {
                             AudioEngine.play('wrong');
+                            if (window.Fx) {
+                                Fx.shake(c1);
+                                Fx.shake(c2);
+                            }
                             setTimeout(() => {
-                                a.classList.remove('flipped');
-                                b.classList.remove('flipped');
-                                a.innerHTML = '<span>؟</span>';
-                                b.innerHTML = '<span>؟</span>';
+                                c1.classList.remove('flipped');
+                                c2.classList.remove('flipped');
+                                flipped = [];
                                 lock = false;
-                            }, 700);
-                        }
-                        flipped.length = 0;
-                    }, 450);
+                            }, 500);
+                        }, 700);
+                    }
                 }
             });
+
+            grid.appendChild(cardItem);
         });
-        container.appendChild(grid);
+
+        card.appendChild(grid);
+        container.appendChild(card);
     }
 
     return { render };

@@ -4,35 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#FF6B6B">
-    <meta name="description" content="خنک آکادمی - اپلیکیشن آموزشی آفلاین فارسی برای کودکان ۵ تا ۸ سال">
-    <title>خنک آکادمی</title>
+    <meta name="description" content="پرورش هوش کودک - اپلیکیشن آموزشی و بازی تعاملی کاملاً آفلاین برای کودکان ۵ تا ۸ سال">
+    <title>پرورش هوش کودک</title>
 
-    <!-- Bundled font (offline) -->
+    <!-- Bundled Offline Fonts (Vazirmatn) -->
     <style>
         @font-face {
             font-family: 'Vazirmatn';
             src: url('assets/fonts/Vazirmatn-Regular.woff2') format('woff2');
-            font-weight: 400; font-display: swap;
+            font-weight: 400;
+            font-display: swap;
         }
         @font-face {
             font-family: 'Vazirmatn';
             src: url('assets/fonts/Vazirmatn-Medium.woff2') format('woff2');
-            font-weight: 500; font-display: swap;
+            font-weight: 500;
+            font-display: swap;
         }
         @font-face {
             font-family: 'Vazirmatn';
             src: url('assets/fonts/Vazirmatn-Bold.woff2') format('woff2');
-            font-weight: 700; font-display: swap;
+            font-weight: 700;
+            font-display: swap;
         }
         @font-face {
             font-family: 'Vazirmatn';
             src: url('assets/fonts/Vazirmatn-ExtraBold.woff2') format('woff2');
-            font-weight: 800; font-display: swap;
+            font-weight: 800;
+            font-display: swap;
         }
         @font-face {
             font-family: 'Vazirmatn';
             src: url('assets/fonts/Vazirmatn-Black.woff2') format('woff2');
-            font-weight: 900; font-display: swap;
+            font-weight: 900;
+            font-display: swap;
         }
     </style>
 
@@ -40,115 +45,135 @@
 </head>
 <body>
     <div id="app">
-        <!-- Splash -->
+        <!-- 1. Splash Screen -->
         <div id="screen-splash" class="screen active">
             <div class="splash-content">
                 <div class="splash-logo" id="splash-logo"></div>
-                <h1 class="app-title">خنک آکادمی</h1>
-                <p class="app-subtitle">يادگيري با عشق و بازي</p>
-                <div class="loading-bar"><div class="loading-progress"></div></div>
+                <h1 class="app-title">پرورش هوش کودک</h1>
+                <p class="app-subtitle">یادگیری شیرین با بازی و شادی</p>
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Home -->
+        <!-- 2. Home Screen -->
         <div id="screen-home" class="screen">
             <header class="main-header">
-                <button class="icon-btn" id="btn-parent" aria-label="بخش والدين">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <button class="icon-btn" id="btn-parent" aria-label="بخش والدین" title="داشبورد والدین">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
                 </button>
-                <span class="header-title">خنک آکادمي</span>
-                <div style="display:flex;gap:8px">
-                <button class="icon-btn" id="btn-stars" aria-label="ستاره‌ها">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#E1B12C"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                </button>
-                <button class="icon-btn" id="btn-voice" aria-label="صدا">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>
-                </button>
+                <span class="header-title">پرورش هوش کودک</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="star-badge-btn" id="btn-stars" aria-label="ستاره‌های من">
+                        <span>★</span>
+                        <span id="header-star-count">۰</span>
+                    </button>
+                    <button class="icon-btn" id="btn-voice" aria-label="تنظیمات صدا" title="صدا">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                        </svg>
+                    </button>
                 </div>
             </header>
             <main class="main-content" id="home-content">
-                <div class="mascot-row">
+                <div class="mascot-hero-card">
                     <div class="mascot-avatar" id="home-mascot"></div>
-                    <div class="speech-bubble" id="home-speech">سلام! امروز چي ياد مي‌گيريم؟</div>
+                    <div class="speech-bubble" id="home-speech">سلام دوست باهوش من! امروز چی بازی کنیم؟</div>
                 </div>
                 <div class="domains-grid" id="domains-grid"></div>
             </main>
         </div>
 
-        <!-- Domain / Levels -->
+        <!-- 3. Domain Screen (Levels list) -->
         <div id="screen-domain" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-domain" aria-label="بازگشت">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                 </button>
-                <span class="header-title" id="domain-title">حوزه</span>
-                <span class="header-title header-title-muted" id="domain-progress-text"></span>
+                <span class="header-title" id="domain-title">سطح‌های آموزشی</span>
+                <span class="header-title-muted" id="domain-progress-text">۰ از ۱۰</span>
             </header>
             <main class="main-content" id="domain-content"></main>
         </div>
 
-        <!-- Level lessons -->
+        <!-- 4. Level Lessons Screen -->
         <div id="screen-level" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-level" aria-label="بازگشت">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                 </button>
-                <span class="header-title" id="level-title">سطح</span>
+                <span class="header-title" id="level-title">درس‌ها</span>
             </header>
             <main class="main-content" id="level-content"></main>
         </div>
 
-        <!-- Lesson / Activity player -->
+        <!-- 5. Lesson Runner / Activity Player -->
         <div id="screen-lesson" class="screen">
             <header class="sub-header lesson-header">
-                <button class="icon-btn" id="btn-exit-lesson" aria-label="خروج">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                <button class="icon-btn" id="btn-exit-lesson" aria-label="خروج از مرحله">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
                 <div class="lesson-progress-wrap">
-                    <div class="lesson-progress-bar"><div class="lesson-progress-fill" id="lesson-progress-fill"></div></div>
-                    <span class="lesson-progress-text" id="lesson-progress-text">1 / 5</span>
+                    <div class="lesson-progress-bar">
+                        <div class="lesson-progress-fill" id="lesson-progress-fill"></div>
+                    </div>
+                    <span class="lesson-progress-text" id="lesson-progress-text">۱ از ۵</span>
                 </div>
-                <div class="star-counter" id="star-counter">★ 0</div>
+                <div class="star-counter" id="star-counter">★ ۰</div>
             </header>
-            <main class="lesson-body" id="lesson-body">
-                <!-- Activity content rendered here -->
-            </main>
+            <main class="lesson-body" id="lesson-body"></main>
         </div>
 
-        <!-- Rewards / Achievements -->
+        <!-- 6. Rewards & Badges Screen -->
         <div id="screen-rewards" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-rewards" aria-label="بازگشت">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                 </button>
-                <span class="header-title">ستاره‌هاي من</span>
+                <span class="header-title">ستاره‌ها و افتخارات من</span>
             </header>
             <main class="main-content" id="rewards-content"></main>
         </div>
 
-        <!-- Parent dashboard -->
+        <!-- 7. Parent Dashboard Screen -->
         <div id="screen-parents" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-parents" aria-label="بازگشت">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                 </button>
-                <span class="header-title">بخش والدين</span>
+                <span class="header-title">داشبورد رشد و آمار والدین</span>
             </header>
             <main class="main-content" id="parents-content"></main>
         </div>
     </div>
 
-    <!-- Vendors (bundled offline) -->
+    <!-- Vendor Libraries (Bundled 100% Offline) -->
     <script src="vendor/phaser.min.js"></script>
     <script src="vendor/gsap.min.js"></script>
 
-    <!-- Data -->
+    <!-- Data Collections -->
     <script src="src/data/alphabet.js"></script>
     <script src="src/data/words.js"></script>
     <script src="src/data/math-data.js"></script>
     <script src="src/data/world-data.js"></script>
 
-    <!-- Core -->
+    <!-- Core Engines -->
     <script src="src/core/config.js"></script>
     <script src="src/core/audio.js"></script>
     <script src="src/core/storage.js"></script>
@@ -158,7 +183,7 @@
     <script src="src/core/fx.js"></script>
     <script src="src/core/nav.js"></script>
 
-    <!-- Activities -->
+    <!-- Interactive Activities -->
     <script src="src/activities/generator.js"></script>
     <script src="src/activities/quiz.js"></script>
     <script src="src/activities/memory.js"></script>
@@ -166,8 +191,9 @@
     <script src="src/activities/tracing.js"></script>
     <script src="src/activities/ordering.js"></script>
     <script src="src/activities/painting.js"></script>
+    <script src="src/activities/balloon-pop.js"></script>
 
-    <!-- App -->
+    <!-- Main Controller -->
     <script src="src/main.js"></script>
 </body>
 </html>

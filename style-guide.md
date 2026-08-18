@@ -1,84 +1,50 @@
-# Khanak Academy — Visual Style Guide
+# راهنمای سبک بصری و طراحی — پرورش هوش کودک
 
-## 1. Brand Colors
+## ۱. هویت بصری و پالت رنگی (Brand Colors)
 
-| Role | Hex | Name |
-|------|-----|------|
-| Primary | `#FF6B6B` | Reading (warm red) |
-| Primary | `#4ECDC4` | Math (teal) |
-| Primary | `#A29BFE` | Logic (soft purple) |
-| Primary | `#F9CA24` | Science (golden yellow) |
-| Primary | `#FF8A5C` | Social-Emotional (coral) |
-| Primary | `#F368E0` | Art (pink) |
+| حوزه آموزشی | رنگ هگز | نام رنگ | مفهوم |
+|-------------|---------|---------|-------|
+| خواندن و الفبا | `#FF6B6B` | مرجانی گرم | زبان‌آموزی، مهارت کلامی |
+| ریاضیات و هوش عددی | `#4ECDC4` | فیروزه‌ای شاد | دقت، شمارش، هندسه |
+| منطق و حل مسئله | `#A29BFE` | یاسی/بنفش ملایم | تفکر، پازل، استدلال |
+| علوم پایه و طبیعت | `#F9CA24` | زرد طلایی | کنجکاوی، کشف جهان |
+| هوش هیجانی و مهارت اجتماعی | `#FF8A5C` | هلویی گرم | احساسات، دوستی، خانواده |
+| هنر، نقاشی و خلاقیت | `#F368E0` | صورتی ارغوانی | تجسم، رنگ‌آمیزی، ابداع |
 
-| Role | Hex | Usage |
-|------|-----|-------|
-| Background | `#FFF8F0` | Main app background (warm cream) |
-| Text | `#2D3436` | Primary text |
-| Text Light | `#636E72` | Secondary text |
-| Success | `#00B894` | Correct answer / reward |
-| Error | `#D63031` | Wrong answer (used minimally) |
-| Button | `#6C5CE7` | Interactive elements |
+| نقش رنگ | مقدار هگز | کاربرد |
+|---------|-----------|--------|
+| پس‌زمینه اصلی | `#FFF8F0` | پس‌زمینه گرم و بدون خستگی چشم کودک |
+| متن اصلی | `#2D3436` | کنتراست بالا برای خوانایی آسان |
+| متن فرعی | `#636E72` | توضیحات تکمیلی و متون کمکی |
+| تایید و موفقیت | `#00B894` | پاسخ درست، ستاره و جوایز |
+| بازخورد ملایم | `#FF7675` | راهنمایی و تلاش مجدد (بدون حس شکست) |
+| دکمه‌های کنشی | `#6C5CE7` | عناصر تعاملی اصلی |
 
-## 2. Typography
+## ۲. تایپوگرافی و فونت فارسی (Typography)
 
-- **Font**: Vazirmatn (FD) — open-source, RTL-optimized Persian font
-- **Fallback**: 'B Nazanin', 'Tahoma', sans-serif
-- **Sizes**:
-  - Headers: 28px, 24px, 20px
-  - Body: 16px for readable text, 18px for children's reading
-  - Button/Label: 14px-16px
-  - Extra large (game UI): 32px-48px
-- **Line height**: 1.8 for readability
-- **Text direction**: RTL (direction: rtl; unicode-bidi: embed)
+- **فونت اصلی**: وزیزمتن (Vazirmatn) — بارگذاری‌شده به صورت محلی و کاملاً آفلاین
+- **جهت متن**: کاملاً راست‌به‌چپ (RTL: Right-to-Left) با اعداد فارسی
+- **اندازه‌های استاندارد**:
+  - تیترهای اصلی: ۲۸ تا ۳۶ پیکسل (Black / ExtraBold)
+  - عناوین بخش‌ها: ۲۰ تا ۲۴ پیکسل (Bold)
+  - متن سوالات و گزینه‌ها: ۱۸ تا ۲۲ پیکسل (Medium / Bold)
+  - متن راهنما و پاداش: ۱۶ تا ۱۸ پیکسل
+- **حداقل سایز لمس**: ۵۶×۵۶ پیکسل برای انگشتان دست کودک
 
-## 3. Mascot: "Khanak" the Wise Fox
+## ۳. شخصیت مسکات: «دانا» (Dana the Clever Mascot)
 
-- A cute, friendly fox character with big eyes and round features
-- Color: warm orange (#E17055) with white chest and tail tip
-- Wears a tiny round glasses (teacher look)
-- Expressions: happy, thinking, surprised, proud, encouraging
-- Will be drawn as SVG (vector) for crisp rendering at any size
-- Used as guide/narrator throughout the app
+- کاراکتر کارتونی دوست‌داشتنی و مهربان با گوش‌های گرد، چشمان درشت و لپ‌های گل‌انداخته
+- حالت‌های چهره (Facial Expressions):
+  - **شاد (Happy)**: لبخند گشاده، برق چشمک‌زن
+  - **متفکر (Thinking)**: نگاه به بالا با دست زیر چانه و حباب تفکر
+  - **جشن و هیجان (Celebrating)**: دست‌ها بالا همراه با ستاره و باران کاغذرنگی
+  - **تشویق و امیدبخش (Encouraging)**: چشمک دوستانه و لبخند ملایم
+  - **کنجکاو (Curious)**: ابروهای بالا و نگاه جستجوگر
 
-## 4. Design Principles
+## ۴. اصول تجربه کاربری و بازی‌وارسازی (Gamification & UX)
 
-- **Big touch targets**: Buttons at least 48x48dp, preferably 56x56dp
-- **Generous spacing**: 16dp minimum, 24dp preferred between interactive elements
-- **Rounded corners**: 12-16px radius on cards and buttons
-- **Soft shadows**: Subtle box-shadow for depth (0 2px 8px rgba(0,0,0,0.1))
-- **No small text**: Minimum 14px for any text
-- **Icon + Text**: All buttons have both icon and text label
-- **Colorful but not chaotic**: Max 3 colors per screen
-
-## 5. Icon Style
-
-- Simple, filled, rounded icons (material-like but custom)
-- All icons in SVG format
-- Line weight: 2-3px
-- Corner radius: 2px
-- Consistent 24x24px viewport
-
-## 6. Animation Principles
-
-- Duration: 300-500ms for UI transitions
-- Easing: ease-out for entrances, ease-in-out for state changes
-- Spring animations for rewards (bouncy, fun)
-- Particle effects for celebrations (confetti, stars)
-- Mascot idle animation: gentle bounce every 4 seconds
-
-## 7. Audio Style
-
-- Voice: Child-friendly, warm, encouraging female Persian narrator
-- Sound effects: Gentle, musical, not jarring
-- Reward sound: Rising chime (C-E-G arpeggio)
-- Error: Soft descending tone, not punishing
-- Button clicks: Subtle pop
-
-## 8. Layout Grid
-
-- Fluid 4-column grid on phone, 8-column on tablet
-- Content max-width: 800px
-- Horizontal padding: 16px (phone), 32px (tablet)
-- Bottom navigation bar: 64px height
-- Top header: 56px height
+- **کاملاً آفلاین**: صفر فراخوانی خارجی، بارگذاری سریع در چند میلی‌ثانیه
+- **دکمه گوینده صوتی**: در تمام سوالات برای کودکانی که هنوز توانایی خواندن روان ندارند
+- **فیدبک فوری چندحسی**: ترکیب همزمان تصویر، پویانمایی ذره‌ای و افکت‌های صوتی ملایم
+- **بدون باخت تنبیهی**: فرصت تلاش مجدد بدون کسر امتیاز آزاردهنده
+- **داشبورد والدین با قفل کودک**: گزارش دقیق روند رشد ۶ گانه هوش کودک به دور از فضای بازی کودک

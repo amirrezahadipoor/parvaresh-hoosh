@@ -1,6 +1,6 @@
-// Activity Generator: produces rounds (questions/activities) for a lesson
-// Each round: { type, prompt, img (svg), options:[{label,img}], answer:index|value, ... }
-const Generator = (function() {
+// Comprehensive Multi-Round Activity Generator for "پرورش هوش کودک"
+// Dynamically generates 5 balanced, progressive, interactive rounds for any lesson ID
+window.Generator = (function() {
 
     function shuffle(arr) {
         const a = arr.slice();
@@ -10,810 +10,802 @@ const Generator = (function() {
         }
         return a;
     }
-    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-    function rint(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-    function toFa(n) {
-        const fa = NUMBERS[n];
-        return fa ? fa.fa : String(n);
+
+    function pick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    // Build multiple-choice round with 3-4 options
+    function rint(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function toFaDigit(n) {
+        const faMap = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return String(n).split('').map(ch => faMap[ch] !== undefined ? faMap[ch] : ch).join('');
+    }
+
+    function toFaWord(n) {
+        const obj = (window.NUMBERS || []).find(x => x.n === n);
+        return obj ? obj.fa : String(n);
+    }
+
     function mc(prompt, img, options, correctIdx, speechText) {
-        return { type: 'quiz', prompt, img, options, answer: correctIdx, speech: speechText || prompt };
+        return {
+            type: 'quiz',
+            prompt,
+            img,
+            options,
+            answer: correctIdx,
+            speech: speechText || prompt
+        };
     }
 
-    function optionsFrom(items, correctItem, extraCount, labelFn) {
-        // items: array of candidate values; correctItem is one of them
-        const others = shuffle(items.filter(x => JSON.stringify(x) !== JSON.stringify(correctItem)));
-        const opts = [correctItem].concat(others.slice(0, extraCount));
-        const order = shuffle(opts.map((v, i) => i));
-        const shuffled = order.map(i => opts[i]);
-        return { options: shuffled.map(labelFn || (v => v)), answerIdx: shuffled.indexOf(correctItem) };
-    }
-
-    // ============ READING ============
+    // ==========================================
+    // 1. READING & LITERACY ROUNDS
+    // ==========================================
     function letterSoundRound(letterObj) {
-        // Say: "صدای (letter name) چیه؟" pick the letter among options
         const correct = letterObj.letter;
         const others = shuffle(ALPHABET.filter(l => l.letter !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others.map(l => l.letter)));
-        return mc('کدوم حرف صدای «' + letterObj.name + '» است؟', null,
+        const opts = shuffle([correct, ...others.map(l => l.letter)]);
+        return mc(
+            `کدام حرف صدای «${letterObj.name}» است؟`,
+            null,
             opts.map(l => ({ label: l, big: true })),
             opts.indexOf(correct),
-            'صدای حرف ' + letterObj.name);
+            `صدای حرف ${letterObj.name}`
+        );
     }
 
     function letterExampleRound(letterObj) {
-        // Show letter, pick the picture whose word starts with it
         const words = (FIRST_SOUND_WORDS[letterObj.letter] || [letterObj.example]);
         const correctWord = words[0];
         const correctImg = imgForWord(correctWord);
         const others = pickOtherWords(letterObj.letter, 3);
-        const opts = shuffle([{ label: correctWord, img: correctImg }].concat(
-            others.map(w => ({ label: w, img: imgForWord(w) }))));
-        return mc('کدام تصویر با حرف «' + letterObj.letter + '» شروع می‌شود؟', null, opts, opts.indexOf(opts.find(o => o.label === correctWord)),
-            'کدام کلمه با حرف ' + letterObj.letter + ' شروع می‌شود؟ ' + correctWord);
+        const opts = shuffle([
+            { label: correctWord, img: correctImg },
+            ...others.map(w => ({ label: w, img: imgForWord(w) }))
+        ]);
+        return mc(
+            `کدام تصویر با حرف «${letterObj.letter}» شروع می‌شود؟`,
+            null,
+            opts,
+            opts.findIndex(o => o.label === correctWord),
+            `کدام کلمه با حرف ${letterObj.letter} شروع می‌شود؟`
+        );
     }
 
     function firstSoundRound() {
-        // Pick a letter that has words, show 3 word-images, find which starts with the sound
         const keys = Object.keys(FIRST_SOUND_WORDS);
         const k = pick(keys);
         const correctWord = pick(FIRST_SOUND_WORDS[k]);
-        const others = shuffle(FIRST_SOUND_WORDS[pick(keys.filter(x => x !== k))]).slice(0, 2);
-        const opts = shuffle([correctWord].concat(others));
-        return mc('کدام کلمه با صدای «' + k + '» شروع می‌شود؟', null,
+        const otherKey = pick(keys.filter(x => x !== k));
+        const others = shuffle(FIRST_SOUND_WORDS[otherKey]).slice(0, 2);
+        const opts = shuffle([correctWord, ...others]);
+        return mc(
+            `کدام کلمه با صدای «${k}» شروع می‌شود؟`,
+            null,
             opts.map(w => ({ label: w, img: imgForWord(w) })),
             opts.indexOf(correctWord),
-            'کدام کلمه با صدای ' + k + ' شروع می‌شود؟');
+            `کدام کلمه با صدای ${k} شروع می‌شود؟`
+        );
     }
 
     function rhymeRound() {
         const pair = pick(RHYMES);
         const correct = pair[1];
         const otherWords = shuffle(FREQUENT_WORDS.filter(w => w !== pair[0] && w !== correct)).slice(0, 2);
-        const opts = shuffle([correct].concat(otherWords));
-        return mc('کدام کلمه با «' + pair[0] + '» هم‌قافیه است؟', null,
+        const opts = shuffle([correct, ...otherWords]);
+        return mc(
+            `کدام کلمه با «${pair[0]}» هم‌قافیه و هم‌آهنگ است؟`,
+            null,
             opts.map(w => ({ label: w, img: imgForWord(w) })),
             opts.indexOf(correct),
-            'کدام کلمه با ' + pair[0] + ' هم‌قافیه است؟');
+            `کدام کلمه با ${pair[0]} هم‌قافیه است؟`
+        );
     }
 
     function syllableRound() {
         const w = pick(BLEND_WORDS_2.concat(BLEND_WORDS_3));
         const sylCount = w.syllables.length;
-        const options = [
-            { label: '۲ بخش' }, { label: '۱ بخش' }, { label: '۳ بخش' }, { label: '۴ بخش' }
-        ];
-        const correctLabel = sylCount + ' بخش';
+        const correctLabel = `${toFaDigit(sylCount)} بخش`;
+        const options = ['۱ بخش', '۲ بخش', '۳ بخش', '۴ بخش'].map(l => ({ label: l }));
         const opts = shuffle(options);
-        return mc('«' + w.word + '» چند بخش (هجا) دارد؟', imgForWord(w.word),
-            opts, opts.indexOf(opts.find(o => o.label === correctLabel)),
-            w.word + ' چند بخش دارد؟');
+        return mc(
+            `کلمه «${w.word}» چند بخش (هجا) دارد؟`,
+            imgForWord(w.word),
+            opts,
+            opts.findIndex(o => o.label === correctLabel),
+            `${w.word} چند بخش دارد؟`
+        );
     }
 
     function blendRound() {
-        const w = pick(BLEND_WORDS_2.concat(BLEND_WORDS_3, BLEND_WORDS_4));
-        const letters = shuffle(w.parts.map((p, i) => i));
-        // Show the parts, ask to pick the image that matches the built word
-        const correctImg = imgForWord(w.word);
-        const others = shuffle([w.word].concat(pickOtherWords(null, 3, [w.word])));
-        const opts = shuffle(others.map(ww => ({ label: ww, img: imgForWord(ww) })));
-        return mc('حروف را کنار هم بگذار: «' + w.parts.join(' ') + '» کدام کلمه می‌شود؟', null,
-            opts, opts.indexOf(opts.find(o => o.label === w.word)),
-            w.parts.join(' ') + ' چه کلمه‌ای می‌شود؟ ' + w.word);
+        const w = pick(BLEND_WORDS_2.concat(BLEND_WORDS_3));
+        const others = shuffle(pickOtherWords(null, 3, [w.word]));
+        const opts = shuffle([w.word, ...others]).map(ww => ({ label: ww, img: imgForWord(ww) }));
+        return mc(
+            `حروف «${w.parts.join(' - ')}» کدام کلمه را می‌سازند؟`,
+            null,
+            opts,
+            opts.findIndex(o => o.label === w.word),
+            `این بخش‌ها چه کلمه‌ای می‌سازند؟`
+        );
     }
 
     function sightWordRound() {
         const w = pick(FREQUENT_WORDS);
         const others = shuffle(FREQUENT_WORDS.filter(x => x !== w)).slice(0, 3);
-        const opts = shuffle([w].concat(others));
-        return mc('کدام کلمه را می‌بینی؟', imgForWord(w),
+        const opts = shuffle([w, ...others]);
+        return mc(
+            `این تصویر مربوط به کدام کلمه است؟`,
+            imgForWord(w),
             opts.map(x => ({ label: x })),
             opts.indexOf(w),
-            'این تصویر چیست؟ ' + w);
+            `تصویر ${w} را پیدا کن`
+        );
     }
 
     function oppositeRound() {
         const pair = pick(OPPOSITES);
         const correct = pair.b;
         const others = shuffle(OPPOSITES.map(p => p.b).filter(x => x !== correct)).slice(0, 2);
-        const opts = shuffle([correct].concat(others));
-        return mc('متضاد «' + pair.a + '» کدام است؟', null,
+        const opts = shuffle([correct, ...others]);
+        return mc(
+            `متضاد و مخالف کلمه «${pair.a}» چیست؟`,
+            null,
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
-            'متضاد کلمه ' + pair.a + ' چیست؟ ' + correct);
+            `متضاد کلمه ${pair.a} کدام است؟`
+        );
     }
 
     function wordMeaningRound() {
         const item = pick(WORD_MEANINGS);
         const correct = item.word;
         const others = shuffle(WORD_MEANINGS.map(m => m.word).filter(x => x !== correct)).slice(0, 2);
-        const opts = shuffle([correct].concat(others));
-        return mc(item.meaning + ' — این یعنی کدام کلمه؟', imgForWord(item.word),
+        const opts = shuffle([correct, ...others]);
+        return mc(
+            `«${item.meaning}» — این نشانه کدام است؟`,
+            imgForWord(item.word),
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
-            item.meaning);
+            item.meaning
+        );
     }
 
     function sentenceRound() {
-        const s = pick(SENTENCE_POOL.filter(x => x.words.length >= 3));
+        const s = pick(SENTENCE_POOL);
         const items = s.words.map((w, i) => ({ label: w, img: imgForWord(w), idx: i }));
         const shuffled = shuffle(items);
         return {
             type: 'order-steps',
-            prompt: 'کلمات را مرتب کن تا جمله درست شود:',
+            prompt: 'کلمات را مرتب کن تا جمله کامل ساخته شود:',
             items: shuffled,
             answer: 'idx',
-            speech: 'کلمات را مرتب کن'
+            speech: 'کلمات را به ترتیب درست بچین تا جمله ساخته شود'
         };
     }
 
-    // ============ MATH ============
+    // ==========================================
+    // 2. MATHEMATICS ROUNDS
+    // ==========================================
     function countRound(max) {
         const n = rint(1, max);
         const img = countImage(n);
-        const faN = toFa(n);
-        const others = shuffle([1,2,3,4,5,6,7,8,9,10].filter(x => x !== n && x <= max + 2)).slice(0, 3);
-        const opts = shuffle([n].concat(others));
-        return mc('چند تا می‌بینی؟', img,
-            opts.map(x => ({ label: toFa(x) })),
+        const faDigit = toFaDigit(n);
+        const others = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15].filter(x => x !== n && x <= max + 2)).slice(0, 3);
+        const opts = shuffle([n, ...others]);
+        return mc(
+            'چند تا شکل در تصویر می‌بینی؟',
+            img,
+            opts.map(x => ({ label: toFaDigit(x), big: true })),
             opts.indexOf(n),
-            'چند تا می‌بینی؟ ' + faN);
+            `چند تا شکل می‌بینی؟ ${toFaWord(n)} تا`
+        );
     }
 
     function numberNameRound(max) {
         const n = rint(1, max);
-        const others = shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].filter(x => x !== n)).slice(0, 3);
-        const opts = shuffle([n].concat(others));
-        return mc('عدد «' + toFa(n) + '» با کدام رقم نوشته می‌شود؟', SvgArt.numberCard(n, '#FF6B6B'),
-            opts.map(x => ({ label: String(x) })),
+        const others = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(x => x !== n)).slice(0, 3);
+        const opts = shuffle([n, ...others]);
+        return mc(
+            `عدد «${toFaWord(n)}» کدام است؟`,
+            SvgArt.numberCard(n, '#4ECDC4'),
+            opts.map(x => ({ label: toFaDigit(x), big: true })),
             opts.indexOf(n),
-            'عدد ' + toFa(n));
+            `عدد ${toFaWord(n)} را انتخاب کن`
+        );
     }
 
     function numberOrderRound(max) {
         const a = rint(1, max - 1);
-        const seq = [a, a + 1];
-        const missing = seq[1];
-        const others = shuffle([1,2,3,4,5,6,7,8,9,10].filter(x => x !== missing)).slice(0, 3);
-        const opts = shuffle([missing].concat(others));
-        return mc('عدد بعدی کدام است؟  ' + toFa(a) + '  ←  ؟', null,
-            opts.map(x => ({ label: toFa(x) })),
+        const missing = a + 1;
+        const others = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].filter(x => x !== missing)).slice(0, 3);
+        const opts = shuffle([missing, ...others]);
+        return mc(
+            `عدد بعدی کدام است؟   ${toFaDigit(a)}  ←  ؟`,
+            null,
+            opts.map(x => ({ label: toFaDigit(x), big: true })),
             opts.indexOf(missing),
-            'عدد بعد از ' + toFa(a) + ' کدام است؟');
+            `عدد بعد از ${toFaWord(a)} کدام است؟`
+        );
     }
 
     function compareRound(max) {
-        const a = rint(1, max - 1);
-        const b = a + rint(1, 3);
-        const question = Math.random() < 0.5 ? 'bigger' : 'smaller';
-        const correct = question === 'bigger' ? b : a;
+        const a = rint(1, max - 2);
+        const b = a + rint(1, 4);
+        const isBigger = Math.random() < 0.5;
+        const correct = isBigger ? b : a;
         const opts = shuffle([a, b]);
-        const qText = question === 'bigger' ? 'کدام عدد بزرگ‌تر است؟' : 'کدام عدد کوچک‌تر است؟';
-        return mc(qText, null,
-            opts.map(x => ({ label: String(x) })),
+        const qText = isBigger ? 'کدام عدد بزرگ‌تر است؟' : 'کدام عدد کوچک‌تر است؟';
+        return mc(
+            qText,
+            null,
+            opts.map(x => ({ label: toFaDigit(x), big: true })),
             opts.indexOf(correct),
-            qText);
+            qText
+        );
     }
 
     function arithRound(op, max) {
         let a, b, answer;
         if (op === '+') {
-            a = rint(1, max); b = rint(1, max - a);
+            a = rint(1, Math.max(1, max - 1));
+            b = rint(1, Math.max(1, max - a));
             answer = a + b;
         } else if (op === '-') {
-            a = rint(2, max); b = rint(1, a - 1);
+            a = rint(2, max);
+            b = rint(1, a - 1);
             answer = a - b;
         } else {
-            if (Math.random() < 0.5) { a = rint(1, max); b = rint(1, max - a); answer = a + b; }
-            else { a = rint(2, max); b = rint(1, a - 1); answer = a - b; }
+            if (Math.random() < 0.5) {
+                a = rint(1, Math.max(1, max - 1));
+                b = rint(1, Math.max(1, max - a));
+                answer = a + b;
+                op = '+';
+            } else {
+                a = rint(2, max);
+                b = rint(1, a - 1);
+                answer = a - b;
+                op = '-';
+            }
         }
-        const sign = op === '+' ? '+' : '-';
-        const expr = toFa(a) + ' ' + sign + ' ' + toFa(b) + ' = ؟';
-        const img = arithImage(op === '+' ? '+' : '-', a, b);
-        const others = shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].filter(x => x !== answer)).slice(0, 3);
-        const opts = shuffle([answer].concat(others));
-        return mc(expr, img,
-            opts.map(x => ({ label: String(x) })),
+
+        const sign = op === '+' ? '+' : '−';
+        const expr = `${toFaDigit(a)} ${sign} ${toFaDigit(b)} = ؟`;
+        const img = arithImage(sign, a, b);
+        const others = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(x => x !== answer)).slice(0, 3);
+        const opts = shuffle([answer, ...others]);
+        return mc(
+            expr,
+            img,
+            opts.map(x => ({ label: toFaDigit(x), big: true })),
             opts.indexOf(answer),
-            toFa(a) + ' ' + (op === '+' ? 'به اضافه' : 'منهای') + ' ' + toFa(b) + ' چند می‌شود؟');
+            `${toFaWord(a)} ${op === '+' ? 'به اضافه' : 'منهای'} ${toFaWord(b)} چند می‌شود؟`
+        );
     }
 
     function shapeNameRound() {
-        const shape = pick(SHAPES);
-        const correct = shape.fa;
-        const others = shuffle(SHAPES.map(s => s.fa).filter(x => x !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others));
-        return mc('این چه شکلی است؟', SvgArt.shape(shape.id, shape.color),
+        const s = pick(SHAPES);
+        const correct = s.fa;
+        const others = shuffle(SHAPES.map(x => x.fa).filter(x => x !== correct)).slice(0, 3);
+        const opts = shuffle([correct, ...others]);
+        return mc(
+            'این چه شکلی است؟',
+            SvgArt.shape(s.id, s.color, 110),
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
-            'این شکل چیست؟ ' + correct);
+            `این شکل چیست؟ ${correct}`
+        );
     }
 
     function shapeMatchRound() {
-        // Given shape name, pick the right shape among options
-        const shape = pick(SHAPES);
-        const others = shuffle(SHAPES.filter(s => s.id !== shape.id)).slice(0, 3);
-        const opts = shuffle([shape].concat(others));
-        return mc('کدام شکل «' + shape.fa + '» است؟', null,
-            opts.map(s => ({ img: SvgArt.shape(s.id, s.color), label: '' })),
-            opts.indexOf(shape),
-            'شکل ' + shape.fa + ' را پیدا کن');
+        const s = pick(SHAPES);
+        const others = shuffle(SHAPES.filter(x => x.id !== s.id)).slice(0, 3);
+        const opts = shuffle([s, ...others]);
+        return mc(
+            `شکل «${s.fa}» را پیدا کن:`,
+            null,
+            opts.map(x => ({ img: SvgArt.shape(x.id, x.color, 75), label: '' })),
+            opts.indexOf(s),
+            `شکل ${s.fa} را انتخاب کن`
+        );
     }
 
     function patternRound() {
         const p = pick(PATTERNS);
-        // build display sequence with one empty slot (null in seq)
-        const seq = p.seq;
-        const missingIdx = seq.indexOf(null);
-        const missingVal = p.answer;
-        // options: correct + 2 distractors
-        let options;
         if (p.type === 'color') {
-            const correctColor = PATTERN_COLORS[missingVal];
+            const correctColor = PATTERN_COLORS[p.answer];
             const others = shuffle(PATTERN_COLORS.filter(c => c !== correctColor)).slice(0, 2);
-            options = shuffle([correctColor].concat(others));
-            const cells = seq.map(v => v === null ? '?' : v).map(v => ({
-                color: v === '?' ? '#EEE' : PATTERN_COLORS[v], text: v === '?' ? '؟' : ''
-            }));
-            return mc('کدام رنگ جای علامت سوال است؟', null,
-                options.map(c => ({ img: SvgArt.shape('circle', c), label: '' })),
+            const options = shuffle([correctColor, ...others]);
+            return mc(
+                'کدام رنگ جای علامت سوال در الگو قرار می‌گیرد؟',
+                null,
+                options.map(c => ({ img: SvgArt.shape('circle', c, 65), label: '' })),
                 options.indexOf(correctColor),
-                'رنگ بعدی در الگو کدام است؟');
-        } else if (p.type === 'shape') {
+                'رنگ بعدی در الگو کدام است؟'
+            );
+        } else {
             const correctShape = p.answer;
             const others = shuffle(SHAPES.map(s => s.id).filter(x => x !== correctShape)).slice(0, 2);
-            options = shuffle([correctShape].concat(others));
-            return mc('کدام شکل جای علامت سوال است؟', null,
-                options.map(sid => ({ img: SvgArt.shape(sid, '#6C5CE7'), label: '' })),
+            const options = shuffle([correctShape, ...others]);
+            return mc(
+                'کدام شکل جای علامت سوال در الگو قرار می‌گیرد؟',
+                null,
+                options.map(sid => ({ img: SvgArt.shape(sid, '#6C5CE7', 65), label: '' })),
                 options.indexOf(correctShape),
-                'شکل بعدی در الگو کدام است؟');
+                'شکل بعدی در الگو کدام است؟'
+            );
         }
-        return countRound(5);
     }
 
-    // ============ LOGIC ============
+    // ==========================================
+    // 3. LOGIC & PUZZLE ROUNDS
+    // ==========================================
     function oddOneOutRound(kind) {
-        // kind: 'animals' | 'fruits' | 'shapes' | 'colors'
-        let group, odd, isOdd = null;
         if (kind === 'animals') {
-            group = ['cat','dog','bird','fish','turtle','lion','elephant','monkey','rabbit','fox','chicken','bear'];
-            const pets = ['cat','dog'];
-            const wilds = ['lion','elephant','monkey','bear','fox','rabbit'];
-            const waters = ['fish','turtle'];
-            const chose = Math.random() < 0.5 ? pets : wilds;
-            group = chose;
-            const water = pick(waters);
-            const trio = shuffle(group.concat([water]));
-            const names = { cat:'گربه', dog:'سگ', bird:'پرنده', fish:'ماهي', turtle:'لاک‌پشت', lion:'شير',
-                elephant:'فيل', monkey:'ميمون', rabbit:'خرگوش', fox:'روباه', chicken:'جوجه', bear:'خرس' };
-            const opts = shuffle(trio.map(a => ({ img: SvgArt.animal(a), label: names[a] || a })));
-            const isWater = (id) => id === 'fish' || id === 'turtle';
-            const oddIdx = opts.findIndex(o => isWater(o.label === 'ماهي' || o.label === 'لاک‌پشت' ? (o.img.includes('fish') ? 'fish' : 'turtle') : ''));
-            // simpler: find odd by checking img content
-            let correctIdx = -1;
-            opts.forEach((o, i) => {
-                const isWaterItem = o.img.includes('fish') || o.img.includes('turtle');
-                const isLandItem = !isWaterItem;
-                if ((isWaterItem && group.length === 3 && !group.includes('fish') && !group.includes('turtle')) ||
-                    (isLandItem && group.includes('fish'))) { /* nop */ }
-            });
-            // Determine: 3 land + 1 water -> odd is water
-            const landOpts = opts.filter(o => !o.img.includes('fish') && !o.img.includes('turtle'));
-            const waterOpts = opts.filter(o => o.img.includes('fish') || o.img.includes('turtle'));
-            const oddList = landOpts.length === 3 ? waterOpts : landOpts;
-            correctIdx = opts.indexOf(oddList[0]);
-            return mc('کدام یکی با بقیه فرق دارد؟', null, opts, correctIdx, 'کدام با بقیه فرق دارد؟');
-        }
-        if (kind === 'shapes') {
-            const shapeIds = ['circle','triangle','square','rectangle','oval','diamond'];
+            const land = ['cat', 'dog', 'rabbit', 'lion', 'bear'];
+            const water = ['fish', 'turtle', 'duck'];
+            const isWaterOdd = Math.random() < 0.5;
+
+            let threeGroup = isWaterOdd ? shuffle(land).slice(0, 3) : shuffle(water).slice(0, 3);
+            let singleOdd = isWaterOdd ? pick(water) : pick(land);
+
+            const all = shuffle([...threeGroup, singleOdd]);
+            const names = { cat: 'گربه', dog: 'سگ', rabbit: 'خرگوش', lion: 'شیر', bear: 'خرس', fish: 'ماهی', turtle: 'لاک‌پشت', duck: 'اردک' };
+            const opts = all.map(a => ({ img: SvgArt.animal(a, 75), label: names[a] || a, id: a }));
+
+            return mc(
+                'کدام گزینه با بقیه متفاوت است؟',
+                null,
+                opts,
+                opts.findIndex(o => o.id === singleOdd),
+                'کدام تصویر با بقیه فرق دارد؟'
+            );
+        } else {
+            const shapeIds = ['circle', 'triangle', 'square', 'oval', 'diamond'];
             const base = pick(shapeIds);
-            const trio = shuffle([base, base, base].concat([pick(shapeIds.filter(s => s !== base))]));
-            const opts = shuffle(trio.map(id => ({ img: SvgArt.shape(id, '#6C5CE7'), label: '' })));
-            const correct = opts.find(o => o.img.includes(trio.filter(x => x !== base)[0]) && true);
-            // find odd: count each; the one appearing once
-            const counts = {};
-            trio.forEach(t => counts[t] = (counts[t] || 0) + 1);
-            const oddVal = Object.keys(counts).find(k => counts[k] === 1);
-            const correctIdx = opts.findIndex(o => o.img.includes(oddVal));
-            return mc('کدام شکل با بقیه فرق دارد؟', null, opts, correctIdx, 'کدام شکل فرق دارد؟');
+            const oddShape = pick(shapeIds.filter(s => s !== base));
+            const all = shuffle([base, base, base, oddShape]);
+            const opts = all.map(sid => ({ img: SvgArt.shape(sid, '#A29BFE', 75), label: '', id: sid }));
+
+            return mc(
+                'کدام شکل با بقیه فرق دارد؟',
+                null,
+                opts,
+                opts.findIndex(o => o.id === oddShape),
+                'شکل متفاوت را پیدا کن'
+            );
         }
-        return countRound(5);
     }
 
     function orderSizeRound() {
-        // three objects of different sizes - order small -> big
-        const obj = pick(['apple','ball','car','flower','tree']);
-        const sizes = [46, 64, 82];
+        const obj = pick(['apple', 'ball', 'car', 'flower', 'tree', 'balloon']);
+        const sizes = [45, 65, 88];
         const shuffled = shuffle(sizes.map(s => ({ size: s, img: SvgArt.object(obj, s) })));
         return {
-            type: 'order-size',
+            type: 'order-steps',
             prompt: 'از کوچک‌ترین به بزرگ‌ترین مرتب کن:',
-            items: shuffled.map(s => ({ img: s.img, size: s.size })),
+            items: shuffled.map(s => ({ img: s.img, size: s.size, label: '' })),
             answer: 'size',
-            speech: 'از کوچک به بزرگ مرتب کن'
+            speech: 'تصاویر را از کوچک به بزرگ بچین'
         };
     }
 
     function plantGrowthRound() {
         const stages = [
-            { label: 'بذر', img: '<svg width="60" height="60" viewBox="0 0 100 100"><ellipse cx="50" cy="62" rx="16" ry="11" fill="#A974BC"/><path d="M50 62 Q50 44 62 38" stroke="#00B894" stroke-width="5" fill="none"/></svg>' },
-            { label: 'جوانه', img: '<svg width="60" height="60" viewBox="0 0 100 100"><ellipse cx="50" cy="70" rx="18" ry="8" fill="#8B6B4A"/><path d="M50 70 L50 40 M50 40 Q36 36 32 48 Q48 46 50 40 M50 40 Q64 36 68 48 Q52 46 50 40" fill="#00B894"/></svg>' },
-            { label: 'گل', img: SvgArt.flower('flower') },
-            { label: 'درخت', img: SvgArt.object('tree') }
+            { label: '۱. کاشت دانه', img: SvgArt.object('apple', 65), idx: 0 },
+            { label: '۲. رشد جوانه', img: SvgArt.object('tree', 65), idx: 1 },
+            { label: '۳. رویش گل و برگ', img: SvgArt.object('flower', 65), idx: 2 }
         ];
-        const shuffled = shuffle(stages.map((s, i) => ({ label: s.label, img: s.img, idx: i })));
         return {
             type: 'order-steps',
-            prompt: 'مراحل رشد گیاه را مرتب کن (از اول تا آخر):',
-            items: shuffled.map(s => ({ label: s.label, img: s.img, idx: s.idx })),
+            prompt: 'مراحل رشد گیاه را به ترتیب بچین:',
+            items: shuffle(stages),
             answer: 'idx',
             speech: 'مراحل رشد گیاه را مرتب کن'
         };
     }
 
     function storyOrderRound() {
-        const story = {
-            prompt: 'داستان را مرتب کن:',
-            steps: [
-                { label: 'صبح از خواب بیدار شدم', img: '<svg width="54" height="54" viewBox="0 0 100 100"><circle cx="50" cy="50" r="24" fill="#F9CA24"/><path d="M50 12 L50 22 M50 78 L50 88 M12 50 L22 50 M78 50 L88 50 M25 25 L32 32 M68 68 L75 75 M75 25 L68 32 M32 68 L25 75" stroke="#F9CA24" stroke-width="5" stroke-linecap="round"/></svg>' },
-                { label: 'صبحانه خوردم', img: '<svg width="54" height="54" viewBox="0 0 100 100"><path d="M20 60 Q50 42 80 60 L74 80 Q50 88 26 80 Z" fill="#FFF"/><rect x="24" y="56" width="52" height="6" rx="3" fill="#E1B12C"/></svg>' },
-                { label: 'به مدرسه رفتم', img: SvgArt.object('car', 60) },
-                { label: 'بازی کردم', img: SvgArt.object('ball', 60) }
-            ]
-        };
-        const shuffled = shuffle(story.steps.map((s, i) => ({ label: s.label, img: s.img, idx: i })));
+        const steps = [
+            { label: '۱. بیدار شدن از خواب', img: SvgArt.object('sun', 65), idx: 0 },
+            { label: '۲. شستن دست و صورت', img: SvgArt.object('tooth', 65), idx: 1 },
+            { label: '۳. خوردن صبحانه مقوی', img: SvgArt.object('apple', 65), idx: 2 },
+            { label: '۴. رفتن به مدرسه و بازی', img: SvgArt.object('car', 65), idx: 3 }
+        ];
         return {
             type: 'order-steps',
-            prompt: story.prompt,
-            items: shuffled.map(s => ({ label: s.label, img: s.img, idx: s.idx })),
+            prompt: 'داستان روز شاد را به ترتیب مرتب کن:',
+            items: shuffle(steps),
             answer: 'idx',
-            speech: 'داستان را به ترتیب بچین'
+            speech: 'داستان را از اول تا آخر مرتب کن'
         };
     }
 
     function classifyRound() {
-        // drag animals/fruits into two categories
-        const animals = ['cat','dog','fish'];
-        const fruits = ['apple','banana','orange'];
         const items = shuffle([
-            { label: 'گربه', img: SvgArt.animal('cat'), cat: 'animals' },
-            { label: 'ماهي', img: SvgArt.animal('fish'), cat: 'animals' },
-            { label: 'سيب', img: SvgArt.object('apple'), cat: 'fruits' },
-            { label: 'موز', img: SvgArt.object('banana'), cat: 'fruits' }
+            { id: 'گربه', label: 'گربه', img: SvgArt.animal('cat', 70), target: 'animals' },
+            { id: 'خرگوش', label: 'خرگوش', img: SvgArt.animal('rabbit', 70), target: 'animals' },
+            { id: 'سیب', label: 'سیب', img: SvgArt.object('apple', 70), target: 'fruits' },
+            { id: 'موز', label: 'موز', img: SvgArt.object('banana', 70), target: 'fruits' }
         ]);
+
         return {
             type: 'drag-match',
-            prompt: 'هر چیز را در جای درستش بگذار:',
+            prompt: 'حیوانات و میوه‌ها را در جای درست بگذار:',
             targets: [
-                { id: 'animals', label: 'حيوانات', img: '' },
-                { id: 'fruits', label: 'ميوه‌ها', img: '' }
+                { id: 'animals', label: '🐾 حیوانات' },
+                { id: 'fruits', label: '🍎 میوه‌ها' }
             ],
-            items: items.map(it => ({ id: it.label, label: it.label, img: it.img, target: it.cat })),
+            items,
             speech: 'حیوانات و میوه‌ها را جدا کن'
         };
     }
 
-    // ============ SCIENCE ============
-    function animalFactRound() {
+    // ==========================================
+    // 4. SCIENCE & NATURE ROUNDS
+    // ==========================================
+    function animalSoundRound() {
         const a = pick(ANIMALS);
-        const correct = a.fa;
-        const others = shuffle(ANIMALS.map(x => x.fa).filter(x => x !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others));
-        return mc('این صدای کیست؟  «' + a.sound + '»', SvgArt.animal(animalKey(a.fa)),
+        const others = shuffle(ANIMALS.map(x => x.fa).filter(x => x !== a.fa)).slice(0, 3);
+        const opts = shuffle([a.fa, ...others]);
+        return mc(
+            `صدای «${a.sound}» صدای کدام حیوان است؟`,
+            SvgArt.animal(a.key, 100),
             opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            'این صدای کیست؟ ' + a.sound);
+            opts.indexOf(a.fa),
+            `صدای ${a.sound} صدای کیست؟ ${a.fa}`
+        );
     }
 
     function animalHabitatRound() {
         const a = pick(ANIMALS.filter(x => x.habitat));
         const correct = a.habitat;
-        const others = shuffle(['خانه','مزرعه','دريا','جنگل','قطب','صحرا','باتلاق','ساوانا','طبيعت'].filter(x => x !== correct)).slice(0, 2);
-        const opts = shuffle([correct].concat(others));
-        return mc('«' + a.fa + '» کجا زندگی می‌کند؟', SvgArt.animal(animalKey(a.fa)),
+        const others = shuffle(['خانه', 'مزرعه', 'دریا و رودخانه', 'جنگل', 'قطب برفی'].filter(x => x !== correct)).slice(0, 2);
+        const opts = shuffle([correct, ...others]);
+        return mc(
+            `«${a.fa}» بیشتر در کجا زندگی می‌کند؟`,
+            SvgArt.animal(a.key, 100),
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
-            a.fa + ' کجا زندگی می‌کند؟');
+            `${a.fa} در کجا زندگی می‌کند؟`
+        );
     }
 
     function bodyPartRound() {
         const b = pick(BODY_PARTS);
-        const correct = b.fa;
-        const others = shuffle(BODY_PARTS.map(x => x.fa).filter(x => x !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others));
-        return mc(b.use + ' — با کدام عضو؟', null,
+        const others = shuffle(BODY_PARTS.map(x => x.fa).filter(x => x !== b.fa)).slice(0, 3);
+        const opts = shuffle([b.fa, ...others]);
+        return mc(
+            `برای «${b.use}» از کدام عضو استفاده می‌کنیم؟`,
+            SvgArt.object(b.icon || 'eye', 95),
             opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            b.use);
+            opts.indexOf(b.fa),
+            b.use
+        );
     }
 
     function senseRound() {
         const s = pick(SENSES);
-        const correct = s.sense;
-        const others = shuffle(SENSES.map(x => x.sense).filter(x => x !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others));
-        return mc(s.example + ' — با کدام حس؟', null,
+        const others = shuffle(SENSES.map(x => x.organ).filter(x => x !== s.organ)).slice(0, 3);
+        const opts = shuffle([s.organ, ...others]);
+        return mc(
+            `برای «${s.example}» کدام حس و عضو فعال است؟`,
+            null,
             opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            s.example);
+            opts.indexOf(s.organ),
+            s.example
+        );
     }
 
     function seasonRound() {
         const s = pick(SEASONS);
-        const correct = s.fa;
-        const others = shuffle(SEASONS.map(x => x.fa).filter(x => x !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others));
-        return mc(s.weather + ' — کدام فصل؟', null,
+        const others = shuffle(SEASONS.map(x => x.fa).filter(x => x !== s.fa)).slice(0, 3);
+        const opts = shuffle([s.fa, ...others]);
+        return mc(
+            `«${s.weather}» نشانه کدام فصل زیباست؟`,
+            SvgArt.object(s.fa === 'زمستان' ? 'rain' : s.fa === 'بهار' ? 'flower' : s.fa === 'تابستان' ? 'sun' : 'tree', 95),
             opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            s.weather + ' کدام فصل است؟');
+            opts.indexOf(s.fa),
+            s.weather
+        );
     }
 
-    function seasonClothesRound() {
-        const s = pick(SEASONS);
-        const correct = s.clothes;
-        const clothesPool = ['لباس سبک','لباس خنک','لباس گرم‌تر','پالتو و شال'];
-        const others = shuffle(clothesPool.filter(x => x !== correct)).slice(0, 2);
-        const opts = shuffle([correct].concat(others));
-        return mc('در فصل «' + s.fa + '» چه می‌پوشیم؟', null,
-            opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            'در فصل ' + s.fa + ' چه می‌پوشیم؟');
-    }
-
-    // ============ SOCIO ============
+    // ==========================================
+    // 5. SOCIO-EMOTIONAL ROUNDS
+    // ==========================================
     function emotionRound() {
         const e = pick(EMOTIONS);
-        const correct = e.fa;
-        const others = shuffle(EMOTIONS.map(x => x.fa).filter(x => x !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others));
-        return mc(e.situation + ' — چه حسی داریم؟', null,
+        const others = shuffle(EMOTIONS.map(x => x.fa).filter(x => x !== e.fa)).slice(0, 3);
+        const opts = shuffle([e.fa, ...others]);
+        return mc(
+            `«${e.situation}» چه حسی داریم؟`,
+            Mascot.svg(95, e.icon || 'happy'),
             opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            e.situation + ' چه حسی داریم؟');
+            opts.indexOf(e.fa),
+            e.situation
+        );
     }
 
     function habitRound() {
         const good = pick(GOOD_HABITS);
-        const correct = good.fa;
-        const badPool = ['داد زدن','جیغ کشیدن','به حرف دیگران گوش ندادن','اسباب‌بازی‌ها را پرت کردن'];
+        const badPool = ['داد زدن در خانه', 'نخوردن صبحانه', 'به وسایل خطرناک دست زدن', 'ریختن زباله روی زمین'];
         const others = shuffle(badPool).slice(0, 2);
-        const opts = shuffle([correct].concat(others));
-        return mc('کدام کار خوب است؟', null,
+        const opts = shuffle([good.fa, ...others]);
+        return mc(
+            'کدام رفتار پسندیده و مفید است؟',
+            null,
             opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            'کدام کار خوب است؟');
+            opts.indexOf(good.fa),
+            'کدام رفتار خوب و درست است؟'
+        );
     }
 
     function familyRound() {
         const f = pick(FAMILY);
-        const correct = f.fa;
-        const others = shuffle(FAMILY.map(x => x.fa).filter(x => x !== correct)).slice(0, 3);
-        const opts = shuffle([correct].concat(others));
-        return mc(f.role + ' — او کیست؟', null,
+        const others = shuffle(FAMILY.map(x => x.fa).filter(x => x !== f.fa)).slice(0, 3);
+        const opts = shuffle([f.fa, ...others]);
+        return mc(
+            `«${f.role}» — او در خانواده کیست؟`,
+            SvgArt.object('house', 95),
             opts.map(x => ({ label: x })),
-            opts.indexOf(correct),
-            f.role);
+            opts.indexOf(f.fa),
+            f.role
+        );
     }
 
-    // ============ Memory (pairs) ============
+    // ==========================================
+    // 6. MEMORY, TRACING, BALLOON & ART
+    // ==========================================
     function memoryRound(pairCount) {
-        // pick distinct items (image pairs)
         const pool = [
-            { img: SvgArt.animal('cat'), label: 'گربه' },
-            { img: SvgArt.animal('dog'), label: 'سگ' },
-            { img: SvgArt.animal('fish'), label: 'ماهي' },
-            { img: SvgArt.object('apple'), label: 'سيب' },
-            { img: SvgArt.object('banana'), label: 'موز' },
-            { img: SvgArt.object('ball'), label: 'توپ' },
-            { img: SvgArt.object('flower'), label: 'گل' },
-            { img: SvgArt.object('tree'), label: 'درخت' },
-            { img: SvgArt.object('sun'), label: 'خورشيد' },
-            { img: SvgArt.object('moon'), label: 'ماه' },
-            { img: SvgArt.object('book'), label: 'کتاب' },
-            { img: SvgArt.object('home'), label: 'خانه' }
+            { img: SvgArt.animal('cat', 65), label: 'گربه' },
+            { img: SvgArt.animal('rabbit', 65), label: 'خرگوش' },
+            { img: SvgArt.animal('lion', 65), label: 'شیر' },
+            { img: SvgArt.animal('fish', 65), label: 'ماهی' },
+            { img: SvgArt.object('apple', 65), label: 'سیب' },
+            { img: SvgArt.object('banana', 65), label: 'موز' },
+            { img: SvgArt.object('sun', 65), label: 'خورشید' },
+            { img: SvgArt.object('star', 65), label: 'ستاره' },
+            { img: SvgArt.object('flower', 65), label: 'گل' },
+            { img: SvgArt.object('car', 65), label: 'ماشین' }
         ];
-        const chosen = shuffle(pool).slice(0, pairCount);
+
+        const chosen = shuffle(pool).slice(0, pairCount || 3);
         const cards = [];
         chosen.forEach((c, i) => {
             cards.push({ pair: i, img: c.img, label: c.label });
             cards.push({ pair: i, img: c.img, label: c.label });
         });
+
         return {
             type: 'memory',
             cards: shuffle(cards),
-            speech: 'جفت‌های مثل هم را پیدا کن'
+            speech: 'کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن'
         };
     }
 
-    // ============ Tracing ============
-    function tracingRound(letterOrNumber) {
-        if (typeof letterOrNumber === 'string') {
-            return { type: 'tracing', char: letterOrNumber, kind: 'letter', speech: 'حرف ' + letterOrNumber + ' را بنویس' };
-        }
-        return { type: 'tracing', char: String(letterOrNumber), kind: 'number', speech: 'عدد ' + toFa(letterOrNumber) + ' را بنویس' };
+    function tracingRound(char, kind) {
+        return {
+            type: 'tracing',
+            char: String(char),
+            kind: kind || 'letter',
+            speech: `با انگشت روی ${kind === 'number' ? 'عدد' : 'حرف'} ${char} بکش`
+        };
     }
 
-    // ============ Painting ============
+    function balloonRound() {
+        const pool = [
+            { text: 'الف', sound: 'صدای آ' },
+            { text: 'ب', sound: 'صدای ب' },
+            { text: 'پ', sound: 'صدای پ' },
+            { text: 'ت', sound: 'صدای ت' },
+            { text: '۱', sound: 'عدد یک' },
+            { text: '۲', sound: 'عدد دو' },
+            { text: '۳', sound: 'عدد سه' }
+        ];
+        return {
+            type: 'balloon-pop',
+            prompt: 'بادکنک‌ها را بترکان و صداهایشان را بشنو!',
+            items: shuffle(pool).slice(0, 5),
+            speech: 'بادکنک‌ها را لمس کن تا بترکند!'
+        };
+    }
+
     function paintingRound() {
-        return { type: 'painting', speech: 'هر چه دوست داری بکش!' };
-    }
-
-    // ============ Helpers ============
-    function imgForWord(word) {
-        const map = {
-            'اسب':'horse','انار':'flower','ابر':'rain','بابا':'home','بچه':'rabbit','باران':'rain',
-            'پنير':'bread','پروانه':'butterfly','تاب':'sun','توت':'apple','توپ':'ball','تخم مرغ':'chicken',
-            'جوجه':'chicken','جنگل':'tree','چاي':'milk','چتر':'rain','چشم':'eye','چراغ':'sun',
-            'خروس':'chicken','خورشيد':'sun','خانه':'home','دست':'hand','دريا':'fish','دوست':'cat',
-            'روباه':'fox','رنگ':'flower','روز':'sun','سيب':'apple','سبز':'flower','ستاره':'star','سگ':'dog',
-            'شير':'lion','شب':'moon','شتر':'camel','عروسک':'ball','عسل':'bee','عينک':'eye','فيل':'elephant',
-            'فنجان':'milk','فرش':'rectangle','قلب':'apple','قلم':'rectangle','کتاب':'book','کفش':'hand',
-            'کوه':'tree','کلاغ':'bird','گل':'flower','گربه':'cat','گوش':'ear','گردو':'apple','لاک‌پشت':'turtle',
-            'لب':'nose','ليمو':'apple','لانه':'bird','مادر':'home','ماه':'moon','ميز':'rectangle','موز':'banana',
-            'نان':'bread','نخود':'apple','هوا':'rain','هويج':'carrot','هندوانه':'watermelon','هفته':'book',
-            'يخ':'snow','ماشين':'car','دوچرخه':'car','مدرسه':'home','موش':'rabbit','پنير':'bread'
+        return {
+            type: 'painting',
+            prompt: 'کارگاه نقاشی آزاد و رنگ‌آمیزی خلاقانه',
+            speech: 'هر چی دوست داری با رنگ‌های شاد نقاشی کن!'
         };
-        const key = map[word];
-        if (!key) return SvgArt.object('book');
-        if (['horse','camel','carrot'].includes(key)) return SvgArt.object('apple');
-        if (['cat','dog','bird','fish','turtle','lion','elephant','monkey','rabbit','fox','chicken','bear','bee','butterfly','frog','duck','sheep','cow'].includes(key)) {
-            return SvgArt.animal(key);
-        }
-        return SvgArt.object(key);
     }
 
-    function pickOtherWords(letter, count, exclude) {
-        exclude = exclude || [];
+    // ==========================================
+    // HELPERS
+    // ==========================================
+    function imgForWord(word) {
+        const animalMap = {
+            'اسب': 'horse', 'گربه': 'cat', 'سگ': 'dog', 'خرگوش': 'rabbit',
+            'فیل': 'elephant', 'شیر': 'lion', 'خرس': 'bear', 'میمون': 'monkey',
+            'ماهی': 'fish', 'لاک‌پشت': 'turtle', 'پروانه': 'butterfly', 'زنبور': 'bee',
+            'جوجه': 'chick', 'مرغ': 'chicken', 'خروس': 'rooster', 'اردک': 'duck',
+            'قورباغه': 'frog', 'گوسفند': 'sheep', 'گاو': 'cow'
+        };
+        const objectMap = {
+            'سیب': 'apple', 'موز': 'banana', 'پرتقال': 'orange', 'هندوانه': 'watermelon',
+            'توپ': 'ball', 'بادکنک': 'balloon', 'خورشید': 'sun', 'ماه': 'moon',
+            'ستاره': 'star', 'گل': 'flower', 'درخت': 'tree', 'باران': 'rain',
+            'ابر': 'rain', 'ماشین': 'car', 'کتاب': 'book', 'خانه': 'house',
+            'چشم': 'eye', 'گوش': 'ear', 'بینی': 'nose', 'دست': 'hand',
+            'دندان': 'tooth', 'ساعت': 'clock', 'هدیه': 'gift', 'کیک': 'cake'
+        };
+
+        if (animalMap[word]) return SvgArt.animal(animalMap[word], 85);
+        if (objectMap[word]) return SvgArt.object(objectMap[word], 85);
+        return SvgArt.object('book', 85);
+    }
+
+    function pickOtherWords(excludeLetter, count, excludeList) {
+        excludeList = excludeList || [];
         const pool = [];
         Object.keys(FIRST_SOUND_WORDS).forEach(k => {
-            if (k !== letter) pool.push(...FIRST_SOUND_WORDS[k]);
+            if (k !== excludeLetter) pool.push(...FIRST_SOUND_WORDS[k]);
         });
-        return shuffle(pool.filter(w => !exclude.includes(w))).slice(0, count);
-    }
-
-    function animalKey(fa) {
-        const map = {
-            'گربه':'cat','سگ':'dog','مرغ':'chicken','خروس':'chicken','ماهي':'fish','لاک‌پشت':'turtle',
-            'روباه':'fox','شير':'lion','فيل':'elephant','خرس':'bear','ميمون':'monkey','زرافه':'giraffe',
-            'پنگوئن':'duck','خرگوش':'rabbit','جوجه':'chicken','زنبور':'bee','پروانه':'butterfly','قورباغه':'frog'
-        };
-        const k = map[fa];
-        if (k && !['giraffe'].includes(k)) return k;
-        return 'fox';
+        return shuffle(pool.filter(w => !excludeList.includes(w))).slice(0, count);
     }
 
     function countImage(n) {
-        // row of n objects
-        const obj = pick(['ball','apple','flower','star','fish']);
-        const size = 54;
+        const obj = pick(['apple', 'ball', 'star', 'flower', 'balloon']);
         let svgs = '';
-        for (let i = 0; i < n; i++) svgs += SvgArt.object(obj, size);
-        return `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:340px;margin:0 auto">${svgs}</div>`;
+        for (let i = 0; i < n; i++) {
+            svgs += SvgArt.object(obj, 52);
+        }
+        return `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:320px;margin:0 auto">${svgs}</div>`;
     }
 
-    function arithImage(op, a, b) {
-        const obj = pick(['ball','apple','star']);
-        const size = 40;
+    function arithImage(sign, a, b) {
+        const obj = pick(['apple', 'ball', 'star']);
         let left = '', right = '';
-        for (let i = 0; i < a; i++) left += SvgArt.object(obj, size);
-        for (let i = 0; i < b; i++) right += SvgArt.object(obj, size);
-        return `<div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap">
-            <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:180px;justify-content:center">${left}</div>
-            <span style="font-size:34px;font-weight:900">${op === '+' ? '+' : '−'}</span>
-            <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:180px;justify-content:center">${right}</div>
-        </div>`;
+        for (let i = 0; i < a; i++) left += SvgArt.object(obj, 42);
+        for (let i = 0; i < b; i++) right += SvgArt.object(obj, 42);
+
+        return `
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+                <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:140px;justify-content:center;">${left}</div>
+                <span style="font-size:36px;font-weight:900;color:#6C5CE7;">${sign}</span>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:140px;justify-content:center;">${right}</div>
+            </div>
+        `;
     }
 
-    // ============ Lesson plan mapping ============
-    // Each lesson id -> array of round generators (functions) to build ~5 rounds
-    const plans = {
-        'R-L1-L01': () => [
-            letterSoundRound(letter('ا')), letterSoundRound(letter('ب')),
-            letterExampleRound(letter('ب')), letterSoundRound(letter('پ')),
-            letterExampleRound(letter('ت'))
-        ],
-        'R-L1-L02': () => [
-            letterSoundRound(letter('ث')), letterSoundRound(letter('ج')),
-            letterExampleRound(letter('ج')), letterSoundRound(letter('چ')),
-            letterExampleRound(letter('ح'))
-        ],
-        'R-L1-L03': () => [
-            letterSoundRound(letter('خ')), letterExampleRound(letter('خ')),
-            letterSoundRound(letter('د')), letterExampleRound(letter('د')),
-            letterSoundRound(letter('ر'))
-        ],
-        'R-L1-L04': () => [
-            letterSoundRound(letter('ز')), letterSoundRound(letter('س')),
-            letterExampleRound(letter('س')), letterSoundRound(letter('ش')),
-            letterExampleRound(letter('ش'))
-        ],
-        'R-L1-L05': () => [
-            letterSoundRound(letter('ص')), letterSoundRound(letter('ط')),
-            letterSoundRound(letter('ع')), letterExampleRound(letter('ف')),
-            letterSoundRound(letter('ق'))
-        ],
-        'R-L1-L06': () => [
-            letterSoundRound(letter('غ')), letterSoundRound(letter('ف')),
-            letterExampleRound(letter('ف')), letterSoundRound(letter('ق')),
-            letterExampleRound(letter('ق'))
-        ],
-        'R-L1-L07': () => [
-            letterSoundRound(letter('ک')), letterExampleRound(letter('ک')),
-            letterSoundRound(letter('گ')), letterExampleRound(letter('گ')),
-            letterSoundRound(letter('م'))
-        ],
-        'R-L1-L08': () => [
-            letterSoundRound(letter('ن')), letterExampleRound(letter('ن')),
-            letterSoundRound(letter('و')), letterSoundRound(letter('ه')),
-            letterExampleRound(letter('ي'))
-        ],
-        'R-L2-L01': () => [firstSoundRound(), firstSoundRound(), firstSoundRound(), firstSoundRound(), firstSoundRound()],
-        'R-L2-L02': () => [rhymeRound(), rhymeRound(), rhymeRound(), rhymeRound(), rhymeRound()],
-        'R-L2-L03': () => [syllableRound(), syllableRound(), syllableRound(), syllableRound(), syllableRound()],
-        'R-L2-L04': () => [rhymeRound(), rhymeRound(), rhymeRound(), rhymeRound(), rhymeRound()],
-        'R-L2-L05': () => [syllableRound(), syllableRound(), syllableRound(), syllableRound(), syllableRound()],
-        'R-L3-L01': () => [blendRound(), blendRound(), blendRound(), blendRound(), blendRound()],
-        'R-L3-L02': () => [blendRound(), blendRound(), blendRound(), blendRound(), blendRound()],
-        'R-L3-L03': () => [memoryRound(3), memoryRound(3), memoryRound(4), memoryRound(4), memoryRound(4)],
-        'R-L3-L04': () => [blendRound(), blendRound(), blendRound(), blendRound(), blendRound()],
-        'R-L3-L05': () => [sightWordRound(), sightWordRound(), sightWordRound(), sightWordRound(), sightWordRound()],
-        'R-L4-L01': () => [sightWordRound(), sightWordRound(), sightWordRound(), sightWordRound(), sightWordRound()],
-        'R-L4-L02': () => [sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound()],
-        'R-L4-L03': () => [sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound()],
-        'R-L4-L04': () => [wordMeaningRound(), wordMeaningRound(), wordMeaningRound(), wordMeaningRound(), wordMeaningRound()],
-        'R-L4-L05': () => [oppositeRound(), oppositeRound(), oppositeRound(), oppositeRound(), oppositeRound()],
-        'R-L5-L01': () => [tracingRound(pick(['ا','ب','ت','م','س','د','ک','گ'])),
-                          tracingRound(pick(['ا','ب','ت','م','س','د','ک','گ'])),
-                          tracingRound(pick(['ا','ب','ت','م','س','د','ک','گ'])),
-                          tracingRound(pick(['ا','ب','ت','م','س','د','ک','گ'])),
-                          tracingRound(pick(['ا','ب','ت','م','س','د','ک','گ']))],
-        'R-L5-L02': () => [tracingRound(pick(['اب','بابا','مادر','نان','سيب','گل'])),
-                          tracingRound(pick(['اب','بابا','مادر','نان','سيب','گل'])) ,
-                          tracingRound(pick(['اب','بابا','مادر','نان','سيب','گل'])) ,
-                          tracingRound(pick(['اب','بابا','مادر','نان','سيب','گل'])) ,
-                          tracingRound(pick(['اب','بابا','مادر','نان','سيب','گل']))],
-        'R-L5-L03': () => [sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound()],
-        'R-L5-L04': () => [wordMeaningRound(), wordMeaningRound(), wordMeaningRound(), wordMeaningRound(), wordMeaningRound()],
-        'R-L5-L05': () => [sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound(), sentenceRound()],
-        'R-L6-L01': () => [storyOrderRound(), wordMeaningRound(), storyOrderRound(), wordMeaningRound(), oppositeRound()],
-        'R-L6-L02': () => [storyOrderRound(), storyOrderRound(), wordMeaningRound(), storyOrderRound(), oppositeRound()],
-        'R-L6-L03': () => [wordMeaningRound(), wordMeaningRound(), wordMeaningRound(), wordMeaningRound(), wordMeaningRound()],
-        'R-L6-L04': () => [storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound()],
-        'R-L6-L05': () => [wordMeaningRound(), wordMeaningRound(), oppositeRound(), wordMeaningRound(), oppositeRound()],
-        'R-L7-L01': () => [sentenceRound(), sentenceRound(), wordMeaningRound(), sentenceRound(), sentenceRound()],
-        'R-L7-L02': () => [paintingRound()],
-        'R-L7-L03': () => [storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound()],
-        'R-L7-L04': () => [paintingRound()],
+    // ==========================================
+    // DYNAMIC LESSON RESOLVER
+    // ==========================================
+    function generate(lessonId) {
+        // READING
+        if (lessonId.startsWith('R-L1')) {
+            const l1 = pick(ALPHABET);
+            const l2 = pick(ALPHABET.filter(x => x.letter !== l1.letter));
+            return [
+                letterSoundRound(l1),
+                letterExampleRound(l1),
+                tracingRound(l1.letter, 'letter'),
+                letterSoundRound(l2),
+                letterExampleRound(l2)
+            ];
+        }
+
+        if (lessonId.startsWith('R-L2')) {
+            return [firstSoundRound(), rhymeRound(), syllableRound(), firstSoundRound(), rhymeRound()];
+        }
+
+        if (lessonId.startsWith('R-L3')) {
+            return [blendRound(), blendRound(), memoryRound(3), sightWordRound(), blendRound()];
+        }
+
+        if (lessonId.startsWith('R-L4')) {
+            return [sightWordRound(), oppositeRound(), wordMeaningRound(), sentenceRound(), sightWordRound()];
+        }
+
+        if (lessonId.startsWith('R-L5')) {
+            const sampleLetters = ['ب', 'ت', 'س', 'م', 'د', 'ر', 'ک', 'گ', 'ن', 'ل'];
+            return [
+                tracingRound(pick(sampleLetters), 'letter'),
+                tracingRound(pick(sampleLetters), 'letter'),
+                sentenceRound(),
+                wordMeaningRound(),
+                oppositeRound()
+            ];
+        }
+
+        if (lessonId.startsWith('R-L6') || lessonId.startsWith('R-L7')) {
+            return [sentenceRound(), storyOrderRound(), wordMeaningRound(), oppositeRound(), balloonRound()];
+        }
 
         // MATH
-        'M-L1-L01': () => [countRound(3), countRound(3), countRound(3), countRound(3), countRound(3)],
-        'M-L1-L02': () => [countRound(5), countRound(5), countRound(5), countRound(5), countRound(5)],
-        'M-L1-L03': () => [countRound(10), countRound(10), countRound(10), countRound(10), countRound(10)],
-        'M-L1-L04': () => [numberNameRound(5), numberNameRound(5), numberNameRound(5), numberNameRound(5), numberNameRound(5)],
-        'M-L1-L05': () => [numberNameRound(10), numberNameRound(10), numberNameRound(10), numberNameRound(10), numberNameRound(10)],
-        'M-L1-L06': () => [countRound(10), countRound(10), numberNameRound(10), countRound(10), numberNameRound(10)],
-        'M-L2-L01': () => [countRound(20), countRound(20), countRound(20), countRound(20), countRound(20)],
-        'M-L2-L02': () => [numberOrderRound(10), numberOrderRound(10), numberOrderRound(10), numberOrderRound(10), numberOrderRound(10)],
-        'M-L2-L03': () => [compareRound(10), compareRound(10), compareRound(10), compareRound(10), compareRound(10)],
-        'M-L2-L04': () => [countRound(20), countRound(20), countRound(20), countRound(20), countRound(20)],
-        'M-L2-L05': () => [numberOrderRound(10), numberOrderRound(10), numberOrderRound(10), numberOrderRound(10), numberOrderRound(10)],
-        'M-L3-L01': () => [shapeNameRound(), shapeNameRound(), shapeMatchRound(), shapeNameRound(), shapeMatchRound()],
-        'M-L3-L02': () => [shapeNameRound(), shapeNameRound(), shapeMatchRound(), shapeNameRound(), shapeMatchRound()],
-        'M-L3-L03': () => [shapeNameRound(), shapeNameRound(), shapeMatchRound(), shapeNameRound(), shapeMatchRound()],
-        'M-L3-L04': () => [shapeMatchRound(), shapeMatchRound(), shapeNameRound(), shapeMatchRound(), shapeMatchRound()],
-        'M-L3-L05': () => [oddOneOutRound('shapes'), oddOneOutRound('shapes'), oddOneOutRound('shapes'), oddOneOutRound('shapes'), oddOneOutRound('shapes')],
-        'M-L4-L01': () => [arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5)],
-        'M-L4-L02': () => [arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5)],
-        'M-L4-L03': () => [arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5)],
-        'M-L4-L04': () => [arithRound('+', 10), arithRound('+', 10), arithRound('+', 10), arithRound('+', 10), arithRound('+', 10)],
-        'M-L4-L05': () => [arithRound('+', 10), arithRound('+', 10), arithRound('+', 10), arithRound('+', 10), arithRound('+', 10)],
-        'M-L5-L01': () => [arithRound('-', 5), arithRound('-', 5), arithRound('-', 5), arithRound('-', 5), arithRound('-', 5)],
-        'M-L5-L02': () => [arithRound('-', 5), arithRound('-', 5), arithRound('-', 5), arithRound('-', 5), arithRound('-', 5)],
-        'M-L5-L03': () => [arithRound('-', 10), arithRound('-', 10), arithRound('-', 10), arithRound('-', 10), arithRound('-', 10)],
-        'M-L5-L04': () => [arithRound('both', 10), arithRound('both', 10), arithRound('both', 10), arithRound('both', 10), arithRound('both', 10)],
-        'M-L5-L05': () => [arithRound('-', 10), arithRound('-', 10), arithRound('-', 10), arithRound('-', 10), arithRound('-', 10)],
-        'M-L6-L01': () => [patternRound(), patternRound(), patternRound(), patternRound(), patternRound()],
-        'M-L6-L02': () => [patternRound(), patternRound(), patternRound(), patternRound(), patternRound()],
-        'M-L6-L03': () => [patternRound(), patternRound(), patternRound(), patternRound(), patternRound()],
-        'M-L6-L04': () => [patternRound(), patternRound(), patternRound(), patternRound(), patternRound()],
-        'M-L6-L05': () => [patternRound(), patternRound(), patternRound(), patternRound(), patternRound()],
-        'M-L7-L01': () => [arithRound('+', 20), arithRound('+', 20), arithRound('+', 20), arithRound('+', 20), arithRound('+', 20)],
-        'M-L7-L02': () => [arithRound('-', 20), arithRound('-', 20), arithRound('-', 20), arithRound('-', 20), arithRound('-', 20)],
-        'M-L7-L03': () => [countRound(20), numberNameRound(20), countRound(20), numberNameRound(20), countRound(20)],
-        'M-L7-L04': () => [arithRound('both', 20), arithRound('both', 20), arithRound('both', 20), arithRound('both', 20), arithRound('both', 20)],
-        'M-L8-L01': () => [orderSizeRound(), orderSizeRound(), compareRound(10), orderSizeRound(), compareRound(10)],
-        'M-L8-L02': () => [orderSizeRound(), orderSizeRound(), orderSizeRound(), orderSizeRound(), orderSizeRound()],
-        'M-L8-L03': () => [countRound(10), orderSizeRound(), countRound(10), orderSizeRound(), countRound(10)],
-        'M-L8-L04': () => [storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound()],
+        if (lessonId.startsWith('M-L1')) {
+            return [countRound(5), numberNameRound(5), tracingRound(toFaDigit(rint(1, 5)), 'number'), countRound(5), numberOrderRound(5)];
+        }
+
+        if (lessonId.startsWith('M-L2')) {
+            return [countRound(10), numberNameRound(10), compareRound(10), numberOrderRound(10), countRound(10)];
+        }
+
+        if (lessonId.startsWith('M-L3')) {
+            return [shapeNameRound(), shapeMatchRound(), patternRound(), shapeNameRound(), shapeMatchRound()];
+        }
+
+        if (lessonId.startsWith('M-L4')) {
+            return [arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5)];
+        }
+
+        if (lessonId.startsWith('M-L5')) {
+            return [arithRound('-', 5), arithRound('-', 5), arithRound('-', 10), arithRound('-', 10), arithRound('-', 10)];
+        }
+
+        if (lessonId.startsWith('M-L6')) {
+            return [patternRound(), patternRound(), patternRound(), patternRound(), patternRound()];
+        }
+
+        if (lessonId.startsWith('M-L7') || lessonId.startsWith('M-L8')) {
+            return [arithRound('both', 10), compareRound(20), orderSizeRound(), arithRound('+', 10), countRound(20)];
+        }
 
         // LOGIC
-        'L-L1-L01': () => [memoryRound(3), memoryRound(3), memoryRound(4), memoryRound(3), memoryRound(4)],
-        'L-L1-L02': () => [memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4)],
-        'L-L1-L03': () => [classifyRound(), classifyRound(), classifyRound(), classifyRound(), classifyRound()],
-        'L-L1-L04': () => [memoryRound(3), memoryRound(3), memoryRound(4), memoryRound(3), memoryRound(4)],
-        'L-L2-L01': () => [oddOneOutRound('animals'), oddOneOutRound('animals'), oddOneOutRound('animals'), oddOneOutRound('animals'), oddOneOutRound('animals')],
-        'L-L2-L02': () => [oddOneOutRound('animals'), oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals'), oddOneOutRound('shapes')],
-        'L-L2-L03': () => [memoryRound(3), oddOneOutRound('shapes'), memoryRound(4), oddOneOutRound('animals'), memoryRound(4)],
-        'L-L3-L01': () => [memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4)],
-        'L-L3-L02': () => [memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4)],
-        'L-L3-L03': () => [memoryRound(4), memoryRound(4), memoryRound(6), memoryRound(4), memoryRound(6)],
-        'L-L4-L01': () => [orderSizeRound(), orderSizeRound(), orderSizeRound(), orderSizeRound(), orderSizeRound()],
-        'L-L4-L02': () => [storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound(), storyOrderRound()],
-        'L-L4-L03': () => [plantGrowthRound(), plantGrowthRound(), plantGrowthRound(), plantGrowthRound(), plantGrowthRound()],
-        'L-L5-L01': () => [classifyRound(), classifyRound(), classifyRound(), classifyRound(), classifyRound()],
-        'L-L5-L02': () => [classifyRound(), classifyRound(), classifyRound(), classifyRound(), classifyRound()],
-        'L-L5-L03': () => [classifyRound(), classifyRound(), classifyRound(), classifyRound(), classifyRound()],
-        'L-L6-L01': () => [oddOneOutRound('shapes'), oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals'), oddOneOutRound('shapes')],
-        'L-L6-L02': () => [plantGrowthRound(), storyOrderRound(), plantGrowthRound(), storyOrderRound(), plantGrowthRound()],
-        'L-L6-L03': () => [oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals')],
+        if (lessonId.startsWith('L-L1')) {
+            return [memoryRound(3), classifyRound(), memoryRound(3), classifyRound(), memoryRound(4)];
+        }
+
+        if (lessonId.startsWith('L-L2')) {
+            return [oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals')];
+        }
+
+        if (lessonId.startsWith('L-L3')) {
+            return [memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4)];
+        }
+
+        if (lessonId.startsWith('L-L4') || lessonId.startsWith('L-L5') || lessonId.startsWith('L-L6')) {
+            return [orderSizeRound(), plantGrowthRound(), storyOrderRound(), classifyRound(), oddOneOutRound('animals')];
+        }
 
         // SCIENCE
-        'S-L1-L01': () => [animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound()],
-        'S-L1-L02': () => [animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound()],
-        'S-L1-L03': () => [animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound()],
-        'S-L1-L04': () => [animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound(), animalFactRound()],
-        'S-L2-L01': () => [bodyPartRound(), bodyPartRound(), bodyPartRound(), bodyPartRound(), bodyPartRound()],
-        'S-L2-L02': () => [senseRound(), senseRound(), senseRound(), senseRound(), senseRound()],
-        'S-L2-L03': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'S-L3-L01': () => [plantGrowthRound(), plantGrowthRound(), plantGrowthRound(), plantGrowthRound(), plantGrowthRound()],
-        'S-L3-L02': () => [plantGrowthRound(), plantGrowthRound(), plantGrowthRound(), plantGrowthRound(), plantGrowthRound()],
-        'S-L3-L03': () => [classifyRound(), classifyRound(), classifyRound(), classifyRound(), classifyRound()],
-        'S-L4-L01': () => [seasonRound(), seasonRound(), seasonRound(), seasonRound(), seasonRound()],
-        'S-L4-L02': () => [seasonRound(), seasonRound(), seasonRound(), seasonRound(), seasonRound()],
-        'S-L4-L03': () => [seasonClothesRound(), seasonClothesRound(), seasonClothesRound(), seasonClothesRound(), seasonClothesRound()],
-        'S-L5-L01': () => [animalHabitatRound(), animalHabitatRound(), animalHabitatRound(), animalHabitatRound(), animalHabitatRound()],
-        'S-L5-L02': () => [animalHabitatRound(), animalHabitatRound(), animalHabitatRound(), animalHabitatRound(), animalHabitatRound()],
-        'S-L5-L03': () => [animalHabitatRound(), animalHabitatRound(), animalHabitatRound(), animalHabitatRound(), animalHabitatRound()],
-        'S-L5-L04': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'S-L6-L01': () => [seasonRound(), seasonRound(), seasonRound(), seasonRound(), seasonRound()],
-        'S-L6-L02': () => [classifyRound(), habitRound(), classifyRound(), habitRound(), classifyRound()],
-        'S-L6-L03': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
+        if (lessonId.startsWith('S-L1')) {
+            return [animalSoundRound(), animalSoundRound(), animalHabitatRound(), animalSoundRound(), animalHabitatRound()];
+        }
 
-        // SOCIO
-        'SE-L1-L01': () => [emotionRound(), emotionRound(), emotionRound(), emotionRound(), emotionRound()],
-        'SE-L1-L02': () => [emotionRound(), emotionRound(), emotionRound(), emotionRound(), emotionRound()],
-        'SE-L1-L03': () => [emotionRound(), emotionRound(), emotionRound(), emotionRound(), emotionRound()],
-        'SE-L2-L01': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'SE-L2-L02': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'SE-L2-L03': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'SE-L3-L01': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'SE-L3-L02': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'SE-L3-L03': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'SE-L4-L01': () => [familyRound(), familyRound(), familyRound(), familyRound(), familyRound()],
-        'SE-L4-L02': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
-        'SE-L4-L03': () => [familyRound(), familyRound(), familyRound(), familyRound(), familyRound()],
-        'SE-L5-L01': () => [habitRound(), emotionRound(), habitRound(), emotionRound(), habitRound()],
-        'SE-L5-L02': () => [classifyRound(), habitRound(), classifyRound(), habitRound(), classifyRound()],
-        'SE-L5-L03': () => [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()],
+        if (lessonId.startsWith('S-L2')) {
+            return [bodyPartRound(), senseRound(), bodyPartRound(), senseRound(), bodyPartRound()];
+        }
+
+        if (lessonId.startsWith('S-L3') || lessonId.startsWith('S-L4')) {
+            return [plantGrowthRound(), seasonRound(), seasonRound(), seasonRound(), plantGrowthRound()];
+        }
+
+        if (lessonId.startsWith('S-L5') || lessonId.startsWith('S-L6')) {
+            return [animalHabitatRound(), habitRound(), seasonRound(), animalSoundRound(), habitRound()];
+        }
+
+        // SOCIO-EMOTIONAL
+        if (lessonId.startsWith('SE-L1')) {
+            return [emotionRound(), emotionRound(), emotionRound(), emotionRound(), emotionRound()];
+        }
+
+        if (lessonId.startsWith('SE-L2') || lessonId.startsWith('SE-L3')) {
+            return [habitRound(), habitRound(), habitRound(), habitRound(), habitRound()];
+        }
+
+        if (lessonId.startsWith('SE-L4') || lessonId.startsWith('SE-L5')) {
+            return [familyRound(), emotionRound(), habitRound(), familyRound(), habitRound()];
+        }
 
         // ART
-        'A-L1-L01': () => [memoryRound(3), memoryRound(3), memoryRound(4), memoryRound(3), memoryRound(4)],
-        'A-L1-L02': () => [paintingRound()],
-        'A-L1-L03': () => [paintingRound()],
-        'A-L2-L01': () => [paintingRound()],
-        'A-L2-L02': () => [paintingRound()],
-        'A-L2-L03': () => [paintingRound()],
-        'A-L3-L01': () => [paintingRound()],
-        'A-L3-L02': () => [paintingRound()],
-        'A-L3-L03': () => [paintingRound()],
-        'A-L4-L01': () => [paintingRound()],
-        'A-L4-L02': () => [paintingRound()],
-        'A-L4-L03': () => [paintingRound()]
-    };
+        if (lessonId.startsWith('A-L')) {
+            return [balloonRound(), paintingRound(), memoryRound(3), paintingRound(), balloonRound()];
+        }
 
-    function letter(ch) {
-        return ALPHABET.find(l => l.letter === ch) || ALPHABET[0];
-    }
-
-    // Generate rounds for a lesson id
-    function generate(lessonId) {
-        const fn = plans[lessonId];
-        if (fn) return fn();
-        // Fallback: generic rounds
-        return [countRound(10), countRound(10), countRound(10), countRound(10), countRound(10)];
+        // General Fallback
+        return [countRound(5), shapeNameRound(), memoryRound(3), sightWordRound(), balloonRound()];
     }
 
     return { generate };

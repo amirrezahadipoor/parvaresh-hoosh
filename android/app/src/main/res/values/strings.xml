@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">خنک آکادمی</string>
-    <string name="title_activity_main">خنک آکادمی</string>
-    <string name="package_name">ir.parvareshhoosh.khanak</string>
-    <string name="custom_url_scheme">ir.parvareshhoosh.khanak</string>
+    <string name="app_name">پرورش هوش کودک</string>
+    <string name="title_activity_main">پرورش هوش کودک</string>
+    <string name="package_name">ir.parvareshhoosh.app</string>
+    <string name="custom_url_scheme">ir.parvareshhoosh.app</string>
 </resources>

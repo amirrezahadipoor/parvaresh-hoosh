@@ -1,5 +1,5 @@
 {
-  "title": "Khanak Academy - Full Curriculum",
+  "title": "پرورش هوش کودک - برنامه جامع آموزش و رشد مهارت‌ها",
   "targetAge": "5 to 8 years",
   "language": "fa-IR",
   "lastUpdated": "2026-08-18",
@@ -7,10 +7,10 @@
   "domains": [
     {
       "id": "reading",
-      "title": "خواندن و نوشتن فارسي",
+      "title": "خواندن و نوشتن فارسی",
       "icon": "book",
       "color": "#FF6B6B",
-      "description": "آموزش الفبا، صداكشي، هجي كردن، كلمه سازي و جمله سازي ساده",
+      "description": "آموزش الفبا، صداکشی، هجی کردن، کلمه سازی و جمله سازی ساده",
       "levels": [
         {
           "id": "read-L1",
@@ -20,49 +20,49 @@
           "lessons": [
             {
               "id": "R-L1-L01",
-              "title": "صداي الفبا: اَ - ب - پ - ت",
+              "title": "صدای الفبا: اَ - ب - پ - ت",
               "type": "recognition",
               "status": "planned"
             },
             {
               "id": "R-L1-L02",
-              "title": "صداي الفبا: ث - ج - چ - ح",
+              "title": "صدای الفبا: ث - ج - چ - ح",
               "type": "recognition",
               "status": "planned"
             },
             {
               "id": "R-L1-L03",
-              "title": "صداي الفبا: خ - د - ذ - ر",
+              "title": "صدای الفبا: خ - د - ذ - ر",
               "type": "recognition",
               "status": "planned"
             },
             {
               "id": "R-L1-L04",
-              "title": "صداي الفبا: ز - ژ - س - ش",
+              "title": "صدای الفبا: ز - ژ - س - ش",
               "type": "recognition",
               "status": "planned"
             },
             {
               "id": "R-L1-L05",
-              "title": "صداي الفبا: ص - ض - ط - ظ",
+              "title": "صدای الفبا: ص - ض - ط - ظ",
               "type": "recognition",
               "status": "planned"
             },
             {
               "id": "R-L1-L06",
-              "title": "صداي الفبا: ع - غ - ف - ق",
+              "title": "صدای الفبا: ع - غ - ف - ق",
               "type": "recognition",
               "status": "planned"
             },
             {
               "id": "R-L1-L07",
-              "title": "صداي الفبا: ك - گ - ل - م",
+              "title": "صدای الفبا: ک - گ - ل - م",
               "type": "recognition",
               "status": "planned"
             },
             {
               "id": "R-L1-L08",
-              "title": "صداي الفبا: ن - و - ه - ي",
+              "title": "صدای الفبا: ن - و - ه - ی",
               "type": "recognition",
               "status": "planned"
             }
@@ -70,37 +70,37 @@
         },
         {
           "id": "read-L2",
-          "title": "تشخيص صدا در كلمه",
+          "title": "تشخیص صدا در کلمه",
           "difficulty": 2,
           "label": "آسان 2",
           "lessons": [
             {
               "id": "R-L2-L01",
-              "title": "صداي اول كلمه را پيدا كن",
+              "title": "صدای اول کلمه را پیدا کن",
               "type": "phonemic-awareness",
               "status": "planned"
             },
             {
               "id": "R-L2-L02",
-              "title": "صداي آخر كلمه را پيدا كن",
+              "title": "صدای آخر کلمه را پیدا کن",
               "type": "phonemic-awareness",
               "status": "planned"
             },
             {
               "id": "R-L2-L03",
-              "title": "كلمه هايي با صداي مشترك",
+              "title": "کلمه هایی با صدای مشترک",
               "type": "phonemic-awareness",
               "status": "planned"
             },
             {
               "id": "R-L2-L04",
-              "title": "بازي قافيه",
+              "title": "بازی قافیه",
               "type": "rhyming",
               "status": "planned"
             },
             {
               "id": "R-L2-L05",
-              "title": "بخش بندي كلمات (هجاها)",
+              "title": "بخش بندی کلمات (هجاها)",
               "type": "syllables",
               "status": "planned"
             }
@@ -108,19 +108,19 @@
         },
         {
           "id": "read-L3",
-          "title": "تركيب حروف و كلمه سازي ساده",
+          "title": "ترکیب حروف و کلمه سازی ساده",
           "difficulty": 3,
           "label": "متوسط 1",
           "lessons": [
             {
               "id": "R-L3-L01",
-              "title": "كلمه هاي دوحرفي: آب - باب - مامان",
+              "title": "کلمه های دوحرفی: آب - باب - مامان",
               "type": "blending",
               "status": "planned"
             },
             {
               "id": "R-L3-L02",
-              "title": "كلمه هاي سه حرفي: كتاب - مدرسه",
+              "title": "کلمه های سه حرفی: کتاب - مدرسه",
               "type": "blending",
               "status": "planned"
             },
@@ -132,13 +132,13 @@
             },
             {
               "id": "R-L3-L04",
-              "title": "بازي كلمه سازي با حروف",
+              "title": "بازی کلمه سازی با حروف",
               "type": "word-building",
               "status": "planned"
             },
             {
               "id": "R-L3-L05",
-              "title": "تصوير و كلمه: وصل كن",
+              "title": "تصویر و کلمه: وصل کن",
               "type": "matching",
               "status": "planned"
             }
@@ -146,37 +146,37 @@
         },
         {
           "id": "read-L4",
-          "title": "كلمه هاي پركاربرد و روان خواني",
+          "title": "کلمه های پرکاربرد و روان خوانی",
           "difficulty": 4,
           "label": "متوسط 2",
           "lessons": [
             {
               "id": "R-L4-L01",
-              "title": "كلمه هاي پركاربرد روزمره",
+              "title": "کلمه های پرکاربرد روزمره",
               "type": "sight-words",
               "status": "planned"
             },
             {
               "id": "R-L4-L02",
-              "title": "جمله هاي دو كلمه اي",
+              "title": "جمله های دو کلمه ای",
               "type": "reading",
               "status": "planned"
             },
             {
               "id": "R-L4-L03",
-              "title": "جمله هاي سه كلمه اي",
+              "title": "جمله های سه کلمه ای",
               "type": "reading",
               "status": "planned"
             },
             {
               "id": "R-L4-L04",
-              "title": "داستانك خواندني",
+              "title": "داستانک خواندنی",
               "type": "story",
               "status": "planned"
             },
             {
               "id": "R-L4-L05",
-              "title": "كلمه مخالف: متضادها",
+              "title": "کلمه مخالف: متضادها",
               "type": "vocabulary",
               "status": "planned"
             }
@@ -184,7 +184,7 @@
         },
         {
           "id": "read-L5",
-          "title": "نوشتن و جمله سازي",
+          "title": "نوشتن و جمله سازی",
           "difficulty": 5,
           "label": "متوسط 3",
           "lessons": [
@@ -196,25 +196,25 @@
             },
             {
               "id": "R-L5-L02",
-              "title": "نوشتن كلمات ساده",
+              "title": "نوشتن کلمات ساده",
               "type": "tracing",
               "status": "planned"
             },
             {
               "id": "R-L5-L03",
-              "title": "جمله سازي: كي؟ چه كرد؟ كجا؟",
+              "title": "جمله سازی: کی؟ چه کرد؟ کجا؟",
               "type": "sentence-building",
               "status": "planned"
             },
             {
               "id": "R-L5-L04",
-              "title": "كامل كردن جمله",
+              "title": "کامل کردن جمله",
               "type": "fill-blank",
               "status": "planned"
             },
             {
               "id": "R-L5-L05",
-              "title": "مرتب كردن كلمات براي ساختن جمله",
+              "title": "مرتب کردن کلمات برای ساختن جمله",
               "type": "word-order",
               "status": "planned"
             }
@@ -222,37 +222,37 @@
         },
         {
           "id": "read-L6",
-          "title": "خواندن داستان و درك مطلب",
+          "title": "خواندن داستان و درک مطلب",
           "difficulty": 6,
-          "label": "پيشرفته 1",
+          "label": "پیشرفته 1",
           "lessons": [
             {
               "id": "R-L6-L01",
-              "title": "داستان كوتاه: يك روز باراني",
+              "title": "داستان کوتاه: یک روز بارانی",
               "type": "comprehension",
               "status": "planned"
             },
             {
               "id": "R-L6-L02",
-              "title": "داستان كوتاه: دوست مهربان",
+              "title": "داستان کوتاه: دوست مهربان",
               "type": "comprehension",
               "status": "planned"
             },
             {
               "id": "R-L6-L03",
-              "title": "سوال از داستان: چه كسي؟ چه چيزي؟",
+              "title": "سوال از داستان: چه کسی؟ چه چیزی؟",
               "type": "comprehension",
               "status": "planned"
             },
             {
               "id": "R-L6-L04",
-              "title": "ترتيب وقايع داستان",
+              "title": "ترتیب وقایع داستان",
               "type": "sequencing",
               "status": "planned"
             },
             {
               "id": "R-L6-L05",
-              "title": "توصيف شخصيت داستان",
+              "title": "توصیف شخصیت داستان",
               "type": "character-analysis",
               "status": "planned"
             }
@@ -262,7 +262,7 @@
           "id": "read-L7",
           "title": "نوشتن خلاق",
           "difficulty": 7,
-          "label": "پيشرفته 2",
+          "label": "پیشرفته 2",
           "lessons": [
             {
               "id": "R-L7-L01",
@@ -272,19 +272,19 @@
             },
             {
               "id": "R-L7-L02",
-              "title": "نوشتن كارت تبريك",
+              "title": "نوشتن کارت تبریک",
               "type": "creative-writing",
               "status": "planned"
             },
             {
               "id": "R-L7-L03",
-              "title": "داستان تصويري بساز",
+              "title": "داستان تصویری بساز",
               "type": "story-creation",
               "status": "planned"
             },
             {
               "id": "R-L7-L04",
-              "title": "خاطره نويسي",
+              "title": "خاطره نویسی",
               "type": "journaling",
               "status": "planned"
             }
@@ -294,10 +294,10 @@
     },
     {
       "id": "math",
-      "title": "رياضيات",
+      "title": "ریاضیات",
       "icon": "calculator",
       "color": "#4ECDC4",
-      "description": "شمارش، اعداد، جمع و تفريق، الگوها، اشكال هندسي، اندازه گيري",
+      "description": "شمارش، اعداد، جمع و تفریق، الگوها، اشکال هندسی، اندازه گیری",
       "levels": [
         {
           "id": "math-L1",
@@ -325,19 +325,19 @@
             },
             {
               "id": "M-L1-L04",
-              "title": "تشخيص عددها 1 تا 5",
+              "title": "تشخیص عددها 1 تا 5",
               "type": "number-recognition",
               "status": "planned"
             },
             {
               "id": "M-L1-L05",
-              "title": "تشخيص عددها 1 تا 10",
+              "title": "تشخیص عددها 1 تا 10",
               "type": "number-recognition",
               "status": "planned"
             },
             {
               "id": "M-L1-L06",
-              "title": "بازي: چند تا مي بيني؟",
+              "title": "بازی: چند تا می بینی؟",
               "type": "counting-game",
               "status": "planned"
             }
@@ -345,7 +345,7 @@
         },
         {
           "id": "math-L2",
-          "title": "اعداد 11 تا 20 و مقايسه",
+          "title": "اعداد 11 تا 20 و مقایسه",
           "difficulty": 2,
           "label": "آسان 2",
           "lessons": [
@@ -357,25 +357,25 @@
             },
             {
               "id": "M-L2-L02",
-              "title": "ترتيب اعداد",
+              "title": "ترتیب اعداد",
               "type": "number-order",
               "status": "planned"
             },
             {
               "id": "M-L2-L03",
-              "title": "بزرگتر و كوچكتر",
+              "title": "بزرگتر و کوچکتر",
               "type": "comparison",
               "status": "planned"
             },
             {
               "id": "M-L2-L04",
-              "title": "جمع آوري و شمارش",
+              "title": "جمع آوری و شمارش",
               "type": "counting",
               "status": "planned"
             },
             {
               "id": "M-L2-L05",
-              "title": "عدد گمشده را پيدا كن",
+              "title": "عدد گمشده را پیدا کن",
               "type": "number-pattern",
               "status": "planned"
             }
@@ -383,37 +383,37 @@
         },
         {
           "id": "math-L3",
-          "title": "اشكال هندسي",
+          "title": "اشکال هندسی",
           "difficulty": 3,
           "label": "متوسط 1",
           "lessons": [
             {
               "id": "M-L3-L01",
-              "title": "دايره و مثلث",
+              "title": "دایره و مثلث",
               "type": "shapes",
               "status": "planned"
             },
             {
               "id": "M-L3-L02",
-              "title": "مربع و مستطيل",
+              "title": "مربع و مستطیل",
               "type": "shapes",
               "status": "planned"
             },
             {
               "id": "M-L3-L03",
-              "title": "بيضي و لوزي",
+              "title": "بیضی و لوزی",
               "type": "shapes",
               "status": "planned"
             },
             {
               "id": "M-L3-L04",
-              "title": "بازي: شكل مناسب كجاست؟",
+              "title": "بازی: شکل مناسب کجاست؟",
               "type": "shape-matching",
               "status": "planned"
             },
             {
               "id": "M-L3-L05",
-              "title": "شكل سازي با اشكال ساده",
+              "title": "شکل سازی با اشکال ساده",
               "type": "shape-construction",
               "status": "planned"
             }
@@ -451,7 +451,7 @@
             },
             {
               "id": "M-L4-L05",
-              "title": "بازي ماشين جمع",
+              "title": "بازی ماشین جمع",
               "type": "addition-game",
               "status": "planned"
             }
@@ -459,37 +459,37 @@
         },
         {
           "id": "math-L5",
-          "title": "تفريق ساده تا 10",
+          "title": "تفریق ساده تا 10",
           "difficulty": 5,
           "label": "متوسط 3",
           "lessons": [
             {
               "id": "M-L5-L01",
-              "title": "مفهوم تفريق: چند تا موند؟",
+              "title": "مفهوم تفریق: چند تا موند؟",
               "type": "subtraction-concept",
               "status": "planned"
             },
             {
               "id": "M-L5-L02",
-              "title": "تفريق تا 5",
+              "title": "تفریق تا 5",
               "type": "subtraction",
               "status": "planned"
             },
             {
               "id": "M-L5-L03",
-              "title": "تفريق تا 10",
+              "title": "تفریق تا 10",
               "type": "subtraction",
               "status": "planned"
             },
             {
               "id": "M-L5-L04",
-              "title": "جمع و تفريق: چالش تركيبي",
+              "title": "جمع و تفریق: چالش ترکیبی",
               "type": "mixed-operations",
               "status": "planned"
             },
             {
               "id": "M-L5-L05",
-              "title": "بازي موش و پنير (تفريق)",
+              "title": "بازی موش و پنیر (تفریق)",
               "type": "subtraction-game",
               "status": "planned"
             }
@@ -499,17 +499,17 @@
           "id": "math-L6",
           "title": "الگو و دنباله",
           "difficulty": 6,
-          "label": "پيشرفته 1",
+          "label": "پیشرفته 1",
           "lessons": [
             {
               "id": "M-L6-L01",
-              "title": "الگوي رنگي ساده",
+              "title": "الگوی رنگی ساده",
               "type": "patterns",
               "status": "planned"
             },
             {
               "id": "M-L6-L02",
-              "title": "الگوي شكلي",
+              "title": "الگوی شکلی",
               "type": "patterns",
               "status": "planned"
             },
@@ -521,7 +521,7 @@
             },
             {
               "id": "M-L6-L04",
-              "title": "الگوي عددي ساده",
+              "title": "الگوی عددی ساده",
               "type": "number-pattern",
               "status": "planned"
             },
@@ -535,9 +535,9 @@
         },
         {
           "id": "math-L7",
-          "title": "جمع و تفريق تا 20",
+          "title": "جمع و تفریق تا 20",
           "difficulty": 7,
-          "label": "پيشرفته 2",
+          "label": "پیشرفته 2",
           "lessons": [
             {
               "id": "M-L7-L01",
@@ -547,19 +547,19 @@
             },
             {
               "id": "M-L7-L02",
-              "title": "تفريق تا 20 بدون انتقال",
+              "title": "تفریق تا 20 بدون انتقال",
               "type": "subtraction",
               "status": "planned"
             },
             {
               "id": "M-L7-L03",
-              "title": "ده تا و يكي",
+              "title": "ده تا و یکی",
               "type": "place-value",
               "status": "planned"
             },
             {
               "id": "M-L7-L04",
-              "title": "چالش هاي جمع و تفريق",
+              "title": "چالش های جمع و تفریق",
               "type": "mixed-operations",
               "status": "planned"
             }
@@ -567,25 +567,25 @@
         },
         {
           "id": "math-L8",
-          "title": "اندازه گيري و مقايسه",
+          "title": "اندازه گیری و مقایسه",
           "difficulty": 8,
-          "label": "پيشرفته 3",
+          "label": "پیشرفته 3",
           "lessons": [
             {
               "id": "M-L8-L01",
-              "title": "بزرگتر و كوچكتر (طول)",
+              "title": "بزرگتر و کوچکتر (طول)",
               "type": "measurement",
               "status": "planned"
             },
             {
               "id": "M-L8-L02",
-              "title": "سبك و سنگين",
+              "title": "سبک و سنگین",
               "type": "measurement",
               "status": "planned"
             },
             {
               "id": "M-L8-L03",
-              "title": "پر و خالي",
+              "title": "پر و خالی",
               "type": "volume",
               "status": "planned"
             },
@@ -604,35 +604,35 @@
       "title": "منطق و حل مسئله",
       "icon": "puzzle",
       "color": "#A29BFE",
-      "description": "پازل، دنباله، تشخيص تفاوت، دسته بندي",
+      "description": "پازل، دنباله، تشخیص تفاوت، دسته بندی",
       "levels": [
         {
           "id": "logic-L1",
-          "title": "تطبيق و دسته بندي ساده",
+          "title": "تطبیق و دسته بندی ساده",
           "difficulty": 1,
           "label": "آسان 1",
           "lessons": [
             {
               "id": "L-L1-L01",
-              "title": "رنگ هاي مشابه را پيدا كن",
+              "title": "رنگ های مشابه را پیدا کن",
               "type": "matching",
               "status": "planned"
             },
             {
               "id": "L-L1-L02",
-              "title": "شكل هاي مشابه",
+              "title": "شکل های مشابه",
               "type": "matching",
               "status": "planned"
             },
             {
               "id": "L-L1-L03",
-              "title": "دسته بندي: حيوانات و ميوه ها",
+              "title": "دسته بندی: حیوانات و میوه ها",
               "type": "categorization",
               "status": "planned"
             },
             {
               "id": "L-L1-L04",
-              "title": "دو تا يكي",
+              "title": "دو تا یکی",
               "type": "pairing",
               "status": "planned"
             }
@@ -640,25 +640,25 @@
         },
         {
           "id": "logic-L2",
-          "title": "پيدا كردن تفاوت",
+          "title": "پیدا کردن تفاوت",
           "difficulty": 2,
           "label": "آسان 2",
           "lessons": [
             {
               "id": "L-L2-L01",
-              "title": "چهار تفاوت را پيدا كن (ساده)",
+              "title": "چهار تفاوت را پیدا کن (ساده)",
               "type": "spot-difference",
               "status": "planned"
             },
             {
               "id": "L-L2-L02",
-              "title": "كدوم يكي فرق داره؟",
+              "title": "کدوم یکی فرق داره؟",
               "type": "odd-one-out",
               "status": "planned"
             },
             {
               "id": "L-L2-L03",
-              "title": "سايه ها را مطابقت بده",
+              "title": "سایه ها را مطابقت بده",
               "type": "shadow-matching",
               "status": "planned"
             }
@@ -666,25 +666,25 @@
         },
         {
           "id": "logic-L3",
-          "title": "پازل هاي تصويري",
+          "title": "پازل های تصویری",
           "difficulty": 3,
           "label": "متوسط 1",
           "lessons": [
             {
               "id": "L-L3-L01",
-              "title": "پازل 4 تكه",
+              "title": "پازل 4 تکه",
               "type": "jigsaw",
               "status": "planned"
             },
             {
               "id": "L-L3-L02",
-              "title": "پازل 6 تكه",
+              "title": "پازل 6 تکه",
               "type": "jigsaw",
               "status": "planned"
             },
             {
               "id": "L-L3-L03",
-              "title": "تصوير درست را از روي تكه ها پيدا كن",
+              "title": "تصویر درست را از روی تکه ها پیدا کن",
               "type": "puzzle",
               "status": "planned"
             }
@@ -692,25 +692,25 @@
         },
         {
           "id": "logic-L4",
-          "title": "دنباله و ترتيب",
+          "title": "دنباله و ترتیب",
           "difficulty": 4,
           "label": "متوسط 2",
           "lessons": [
             {
               "id": "L-L4-L01",
-              "title": "كوچك به بزرگ",
+              "title": "کوچک به بزرگ",
               "type": "ordering",
               "status": "planned"
             },
             {
               "id": "L-L4-L02",
-              "title": "اول بعد آخر (ترتيب داستان)",
+              "title": "اول بعد آخر (ترتیب داستان)",
               "type": "sequencing",
               "status": "planned"
             },
             {
               "id": "L-L4-L03",
-              "title": "مراحل رشد يك گياه",
+              "title": "مراحل رشد یک گیاه",
               "type": "sequencing",
               "status": "planned"
             }
@@ -718,25 +718,25 @@
         },
         {
           "id": "logic-L5",
-          "title": "دسته بندي چندوجهي",
+          "title": "دسته بندی چندوجهی",
           "difficulty": 5,
           "label": "متوسط 3",
           "lessons": [
             {
               "id": "L-L5-L01",
-              "title": "دسته بندي با جدول",
+              "title": "دسته بندی با جدول",
               "type": "classification",
               "status": "planned"
             },
             {
               "id": "L-L5-L02",
-              "title": "دياگرام ون ساده",
+              "title": "دیاگرام ون ساده",
               "type": "venn-diagram",
               "status": "planned"
             },
             {
               "id": "L-L5-L03",
-              "title": "چي به چي مي خوره؟",
+              "title": "چی به چی می خوره؟",
               "type": "association",
               "status": "planned"
             }
@@ -746,23 +746,23 @@
           "id": "logic-L6",
           "title": "حل مسئله و استدلال",
           "difficulty": 6,
-          "label": "پيشرفته",
+          "label": "پیشرفته",
           "lessons": [
             {
               "id": "L-L6-L01",
-              "title": "معماي تصويري",
+              "title": "معمای تصویری",
               "type": "riddle",
               "status": "planned"
             },
             {
               "id": "L-L6-L02",
-              "title": "مسير درست را پيدا كن",
+              "title": "مسیر درست را پیدا کن",
               "type": "maze",
               "status": "planned"
             },
             {
               "id": "L-L6-L03",
-              "title": "بازي حدس بزن چي فكر مي كنم",
+              "title": "بازی حدس بزن چی فکر می کنم",
               "type": "deduction",
               "status": "planned"
             }
@@ -772,14 +772,14 @@
     },
     {
       "id": "science",
-      "title": "علوم پايه",
+      "title": "علوم پایه",
       "icon": "flask",
       "color": "#F9CA24",
-      "description": "طبيعت، حيوانات، بدن انسان، فصل ها، محيط زيست",
+      "description": "طبیعت، حیوانات، بدن انسان، فصل ها، محیط زیست",
       "levels": [
         {
           "id": "sci-L1",
-          "title": "حيوانات خانگي و آشنا",
+          "title": "حیوانات خانگی و آشنا",
           "difficulty": 1,
           "label": "آسان 1",
           "lessons": [
@@ -797,13 +797,13 @@
             },
             {
               "id": "S-L1-L03",
-              "title": "ماهي و لاك پشت",
+              "title": "ماهی و لاک پشت",
               "type": "animal",
               "status": "planned"
             },
             {
               "id": "S-L1-L04",
-              "title": "صداي حيوانات",
+              "title": "صدای حیوانات",
               "type": "animal-sounds",
               "status": "planned"
             }
@@ -817,7 +817,7 @@
           "lessons": [
             {
               "id": "S-L2-L01",
-              "title": "اعضاي بدن",
+              "title": "اعضای بدن",
               "type": "body-parts",
               "status": "planned"
             },
@@ -829,7 +829,7 @@
             },
             {
               "id": "S-L2-L03",
-              "title": "دندان هاي سالم",
+              "title": "دندان های سالم",
               "type": "health",
               "status": "planned"
             }
@@ -837,25 +837,25 @@
         },
         {
           "id": "sci-L3",
-          "title": "گياهان و رشد",
+          "title": "گیاهان و رشد",
           "difficulty": 3,
           "label": "متوسط 1",
           "lessons": [
             {
               "id": "S-L3-L01",
-              "title": "بخش هاي يك گياه",
+              "title": "بخش های یک گیاه",
               "type": "plant-parts",
               "status": "planned"
             },
             {
               "id": "S-L3-L02",
-              "title": "روند رشد گياه از دانه",
+              "title": "روند رشد گیاه از دانه",
               "type": "plant-growth",
               "status": "planned"
             },
             {
               "id": "S-L3-L03",
-              "title": "گل هاي رنگارنگ",
+              "title": "گل های رنگارنگ",
               "type": "flowers",
               "status": "planned"
             }
@@ -863,7 +863,7 @@
         },
         {
           "id": "sci-L4",
-          "title": "فصل هاي سال",
+          "title": "فصل های سال",
           "difficulty": 4,
           "label": "متوسط 2",
           "lessons": [
@@ -875,7 +875,7 @@
             },
             {
               "id": "S-L4-L02",
-              "title": "پاييز و زمستان",
+              "title": "پاییز و زمستان",
               "type": "seasons",
               "status": "planned"
             },
@@ -889,31 +889,31 @@
         },
         {
           "id": "sci-L5",
-          "title": "حيوانات وحشي و زيستگاه",
+          "title": "حیوانات وحشی و زیستگاه",
           "difficulty": 5,
           "label": "متوسط 3",
           "lessons": [
             {
               "id": "S-L5-L01",
-              "title": "حيوانات جنگل",
+              "title": "حیوانات جنگل",
               "type": "animals",
               "status": "planned"
             },
             {
               "id": "S-L5-L02",
-              "title": "حيوانات قطبي و گرمسيري",
+              "title": "حیوانات قطبی و گرمسیری",
               "type": "animals",
               "status": "planned"
             },
             {
               "id": "S-L5-L03",
-              "title": "حيوانات دريايي",
+              "title": "حیوانات دریایی",
               "type": "animals",
               "status": "planned"
             },
             {
               "id": "S-L5-L04",
-              "title": "محافظت از حيوانات",
+              "title": "محافظت از حیوانات",
               "type": "conservation",
               "status": "planned"
             }
@@ -921,25 +921,25 @@
         },
         {
           "id": "sci-L6",
-          "title": "آب و هوا و محيط زيست",
+          "title": "آب و هوا و محیط زیست",
           "difficulty": 6,
-          "label": "پيشرفته",
+          "label": "پیشرفته",
           "lessons": [
             {
               "id": "S-L6-L01",
-              "title": "چرخه آب در طبيعت",
+              "title": "چرخه آب در طبیعت",
               "type": "water-cycle",
               "status": "planned"
             },
             {
               "id": "S-L6-L02",
-              "title": "بازيافت و زباله",
+              "title": "بازیافت و زباله",
               "type": "recycling",
               "status": "planned"
             },
             {
               "id": "S-L6-L03",
-              "title": "انرژي خورشيد و باد",
+              "title": "انرژی خورشید و باد",
               "type": "energy",
               "status": "planned"
             }
@@ -949,20 +949,20 @@
     },
     {
       "id": "socio-emotional",
-      "title": "مهارت اجتماعي-عاطفي",
+      "title": "مهارت اجتماعی-عاطفی",
       "icon": "heart",
       "color": "#FF8A5C",
-      "description": "شناخت احساسات، آداب معاشرت ساده، دوستي",
+      "description": "شناخت احساسات، آداب معاشرت ساده، دوستی",
       "levels": [
         {
           "id": "soc-L1",
-          "title": "شناخت احساسات پايه",
+          "title": "شناخت احساسات پایه",
           "difficulty": 1,
           "label": "آسان 1",
           "lessons": [
             {
               "id": "SE-L1-L01",
-              "title": "شادي و غم",
+              "title": "شادی و غم",
               "type": "emotions",
               "status": "planned"
             },
@@ -974,7 +974,7 @@
             },
             {
               "id": "SE-L1-L03",
-              "title": "بازي: چه حسي دارم؟",
+              "title": "بازی: چه حسی دارم؟",
               "type": "emotion-game",
               "status": "planned"
             }
@@ -982,25 +982,25 @@
         },
         {
           "id": "soc-L2",
-          "title": "مهرباني و دوستي",
+          "title": "مهربانی و دوستی",
           "difficulty": 2,
           "label": "آسان 2",
           "lessons": [
             {
               "id": "SE-L2-L01",
-              "title": "با دوستان چطور رفتار كنيم",
+              "title": "با دوستان چطور رفتار کنیم",
               "type": "friendship",
               "status": "planned"
             },
             {
               "id": "SE-L2-L02",
-              "title": "بخشيدن و سهيم شدن",
+              "title": "بخشیدن و سهیم شدن",
               "type": "sharing",
               "status": "planned"
             },
             {
               "id": "SE-L2-L03",
-              "title": "عذرخواهي كردن",
+              "title": "عذرخواهی کردن",
               "type": "apologizing",
               "status": "planned"
             }
@@ -1014,19 +1014,19 @@
           "lessons": [
             {
               "id": "SE-L3-L01",
-              "title": "سلام و خداحافظي",
+              "title": "سلام و خداحافظی",
               "type": "etiquette",
               "status": "planned"
             },
             {
               "id": "SE-L3-L02",
-              "title": "لطفا و متشكرم",
+              "title": "لطفا و متشکرم",
               "type": "etiquette",
               "status": "planned"
             },
             {
               "id": "SE-L3-L03",
-              "title": "نوبت گرفتن و صبر كردن",
+              "title": "نوبت گرفتن و صبر کردن",
               "type": "patience",
               "status": "planned"
             }
@@ -1040,19 +1040,19 @@
           "lessons": [
             {
               "id": "SE-L4-L01",
-              "title": "اعضاي خانواده",
+              "title": "اعضای خانواده",
               "type": "family",
               "status": "planned"
             },
             {
               "id": "SE-L4-L02",
-              "title": "كارهاي خانه",
+              "title": "کارهای خانه",
               "type": "responsibility",
               "status": "planned"
             },
             {
               "id": "SE-L4-L03",
-              "title": "من يكي از اعضاي خانواده هستم",
+              "title": "من یکی از اعضای خانواده هستم",
               "type": "self-identity",
               "status": "planned"
             }
@@ -1060,19 +1060,19 @@
         },
         {
           "id": "soc-L5",
-          "title": "حل اختلاف و همكاري",
+          "title": "حل اختلاف و همکاری",
           "difficulty": 5,
-          "label": "پيشرفته",
+          "label": "پیشرفته",
           "lessons": [
             {
               "id": "SE-L5-L01",
-              "title": "حل مشكل با كلمات",
+              "title": "حل مشکل با کلمات",
               "type": "conflict-resolution",
               "status": "planned"
             },
             {
               "id": "SE-L5-L02",
-              "title": "كار گروهي",
+              "title": "کار گروهی",
               "type": "teamwork",
               "status": "planned"
             },
@@ -1088,32 +1088,32 @@
     },
     {
       "id": "art",
-      "title": "هنر و خلاقيت",
+      "title": "هنر و خلاقیت",
       "icon": "palette",
       "color": "#F368E0",
-      "description": "رنگ آميزي، طراحي آزاد، كار دستي، موسيقي",
+      "description": "رنگ آمیزی، طراحی آزاد، کار دستی، موسیقی",
       "levels": [
         {
           "id": "art-L1",
-          "title": "رنگ ها و شكل ها",
+          "title": "رنگ ها و شکل ها",
           "difficulty": 1,
           "label": "آسان 1",
           "lessons": [
             {
               "id": "A-L1-L01",
-              "title": "رنگ هاي اصلي",
+              "title": "رنگ های اصلی",
               "type": "colors",
               "status": "planned"
             },
             {
               "id": "A-L1-L02",
-              "title": "رنگ آميزي آزاد",
+              "title": "رنگ آمیزی آزاد",
               "type": "coloring",
               "status": "planned"
             },
             {
               "id": "A-L1-L03",
-              "title": "خطوط و اشكال ساده",
+              "title": "خطوط و اشکال ساده",
               "type": "drawing",
               "status": "planned"
             }
@@ -1121,25 +1121,25 @@
         },
         {
           "id": "art-L2",
-          "title": "طراحي ساده",
+          "title": "طراحی ساده",
           "difficulty": 2,
           "label": "آسان 2",
           "lessons": [
             {
               "id": "A-L2-L01",
-              "title": "طراحي يك گل",
+              "title": "طراحی یک گل",
               "type": "drawing",
               "status": "planned"
             },
             {
               "id": "A-L2-L02",
-              "title": "طراحي يك حيوان ساده",
+              "title": "طراحی یک حیوان ساده",
               "type": "drawing",
               "status": "planned"
             },
             {
               "id": "A-L2-L03",
-              "title": "نقاشي با انگشت",
+              "title": "نقاشی با انگشت",
               "type": "finger-painting",
               "status": "planned"
             }
@@ -1153,19 +1153,19 @@
           "lessons": [
             {
               "id": "A-L3-L01",
-              "title": "تصويرسازي براي داستان",
+              "title": "تصویرسازی برای داستان",
               "type": "illustration",
               "status": "planned"
             },
             {
               "id": "A-L3-L02",
-              "title": "ساختن كارتهاي زيبا",
+              "title": "ساختن کارتهای زیبا",
               "type": "craft",
               "status": "planned"
             },
             {
               "id": "A-L3-L03",
-              "title": "مجسمه سازي با خمير",
+              "title": "مجسمه سازی با خمیر",
               "type": "sculpture",
               "status": "planned"
             }
@@ -1173,13 +1173,13 @@
         },
         {
           "id": "art-L4",
-          "title": "خلاقيت بيانتها",
+          "title": "خلاقیت بیانتها",
           "difficulty": 4,
-          "label": "پيشرفته",
+          "label": "پیشرفته",
           "lessons": [
             {
               "id": "A-L4-L01",
-              "title": "طراحي آزاد با تم ويژه",
+              "title": "طراحی آزاد با تم ویژه",
               "type": "free-drawing",
               "status": "planned"
             },
@@ -1191,7 +1191,7 @@
             },
             {
               "id": "A-L4-L03",
-              "title": "آهنگ و ريتم ساده",
+              "title": "آهنگ و ریتم ساده",
               "type": "music",
               "status": "planned"
             }

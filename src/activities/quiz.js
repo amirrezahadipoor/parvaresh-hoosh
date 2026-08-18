@@ -1,74 +1,102 @@
-// Quiz activity renderer (multiple choice)
-const QuizActivity = (function() {
+// Interactive Multiple-Choice Quiz Engine for "پرورش هوش کودک"
+window.QuizActivity = (function() {
 
     function render(container, round, cb) {
         container.innerHTML = '';
-        
-        // Title + instruction
-        const title = document.createElement('div');
-        title.className = 'activity-title';
-        title.textContent = 'سوال';
-        container.appendChild(title);
 
-        // Prompt card
         const card = document.createElement('div');
-        card.className = 'prompt-card';
+        card.className = 'quiz-card';
+
+        // Header with Voice Narration Button
+        const headerRow = document.createElement('div');
+        headerRow.className = 'activity-header-row';
+
+        const speakerBtn = document.createElement('button');
+        speakerBtn.className = 'speaker-btn';
+        speakerBtn.setAttribute('aria-label', 'پخش مجدد صدا');
+        speakerBtn.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>بشنو</span>
+        `;
+        speakerBtn.addEventListener('click', () => {
+            AudioEngine.play('click');
+            AudioEngine.speak(round.speech || round.prompt);
+        });
+
+        const promptText = document.createElement('h2');
+        promptText.className = 'quiz-prompt';
+        promptText.textContent = round.prompt;
+
+        headerRow.appendChild(promptText);
+        headerRow.appendChild(speakerBtn);
+        card.appendChild(headerRow);
+
+        // Visual Illustration if present
         if (round.img) {
-            const imgDiv = document.createElement('div');
-            imgDiv.className = 'prompt-img';
-            imgDiv.innerHTML = round.img;
-            card.appendChild(imgDiv);
+            const visualWrap = document.createElement('div');
+            visualWrap.className = 'quiz-visual';
+            visualWrap.innerHTML = round.img;
+            card.appendChild(visualWrap);
         }
-        const p = document.createElement('div');
-        p.className = 'prompt-big';
-        p.textContent = round.prompt;
-        card.appendChild(p);
-        container.appendChild(card);
 
-        // Speak instruction
-        AudioEngine.speak(round.speech || round.prompt);
+        // Auto-play voice narration
+        setTimeout(() => {
+            AudioEngine.speak(round.speech || round.prompt);
+        }, 150);
 
-        // Options
+        // Options Grid
         const grid = document.createElement('div');
-        grid.className = 'options-grid cols' + (round.options.length <= 3 ? round.options.length : 2);
-        
+        const count = (round.options || []).length;
+        grid.className = `options-grid ${count <= 2 ? 'cols2' : count === 3 ? 'cols3' : 'cols2'}`;
+
         let answered = false;
+
         round.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            if (opt.big) { btn.style.fontSize = '42px'; }
+            btn.className = 'quiz-option-btn';
+
             if (opt.img) {
-                const wrap = document.createElement('span');
-                wrap.innerHTML = opt.img;
-                btn.appendChild(wrap);
+                const imgSpan = document.createElement('span');
+                imgSpan.className = 'opt-img';
+                imgSpan.innerHTML = opt.img;
+                btn.appendChild(imgSpan);
             }
+
             if (opt.label) {
-                const span = document.createElement('span');
-                span.textContent = opt.label;
-                btn.appendChild(span);
+                const labelSpan = document.createElement('span');
+                labelSpan.className = `opt-label ${opt.big ? 'big-font' : ''}`;
+                labelSpan.textContent = opt.label;
+                btn.appendChild(labelSpan);
             }
+
             btn.addEventListener('click', () => {
                 if (answered) return;
-                answered = true;
-                const correct = idx === round.answer;
-                if (correct) {
+                AudioEngine.play('click');
+
+                if (idx === round.answer) {
+                    answered = true;
                     btn.classList.add('correct');
-                    AudioEngine.play('correct');
-                    Fx.pop(btn);
-                    setTimeout(() => cb.onCorrect(round), 700);
+                    if (window.Fx) Fx.pop(btn);
+                    if (cb && cb.onCorrect) cb.onCorrect(round, { selectedIdx: idx });
                 } else {
                     btn.classList.add('wrong');
-                    AudioEngine.play('wrong');
-                    Fx.shake(btn);
-                    // reveal correct
-                    const correctBtn = grid.children[round.answer];
-                    if (correctBtn) correctBtn.classList.add('correct');
-                    setTimeout(() => cb.onWrong(round), 1200);
+                    if (window.Fx) Fx.shake(btn);
+                    if (cb && cb.onWrong) cb.onWrong(round, { selectedIdx: idx });
+                    setTimeout(() => {
+                        btn.classList.remove('wrong');
+                    }, 800);
                 }
             });
+
             grid.appendChild(btn);
         });
-        container.appendChild(grid);
+
+        card.appendChild(grid);
+        container.appendChild(card);
     }
 
     return { render };

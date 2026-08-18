@@ -1,5 +1,5 @@
-// Screen navigation manager
-const Nav = (function() {
+// Screen navigation manager for "پرورش هوش کودک"
+window.Nav = (function() {
     const stack = [];
     let current = null;
 
@@ -9,10 +9,8 @@ const Nav = (function() {
         const el = document.getElementById('screen-' + name);
         if (el) el.classList.add('active');
         current = name;
-        // Scroll top
         const body = el ? el.querySelector('.main-content, .lesson-body') : null;
         if (body) body.scrollTop = 0;
-        AudioEngine.play('sweep');
         return el;
     }
 

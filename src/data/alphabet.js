@@ -1,97 +1,73 @@
-// Persian alphabet data
-// Each letter: isolated form, name, audio text, example word, word audio
+// Persian Alphabet & Phonics Data for "پرورش هوش کودک"
+// 32 Letters with isolated forms, Persian names, examples, phonetic hints, and syllables
 window.ALPHABET = [
-    { letter: 'ا', name: 'الف', example: 'اسب', exampleTrans: 'asb', sound: 'a' },
-    { letter: 'ب', name: 'به', example: 'بابا', exampleTrans: 'baba', sound: 'b' },
-    { letter: 'پ', name: 'په', example: 'پنير', exampleTrans: 'panir', sound: 'p' },
-    { letter: 'ت', name: 'ته', example: 'تاب', exampleTrans: 'tab', sound: 't' },
-    { letter: 'ث', name: 'ثه', example: 'ثور', exampleTrans: 'sor', sound: 's' },
-    { letter: 'ج', name: 'جيم', example: 'جوجه', exampleTrans: 'jooje', sound: 'j' },
-    { letter: 'چ', name: 'چه', example: 'چاي', exampleTrans: 'chay', sound: 'ch' },
-    { letter: 'ح', name: 'حه', example: 'حلزون', exampleTrans: 'halazoon', sound: 'h' },
-    { letter: 'خ', name: 'خه', example: 'خروس', exampleTrans: 'khoroos', sound: 'kh' },
-    { letter: 'د', name: 'دال', example: 'دست', exampleTrans: 'dast', sound: 'd' },
-    { letter: 'ذ', name: 'ذال', example: 'ذره', exampleTrans: 'zarre', sound: 'z' },
-    { letter: 'ر', name: 'ره', example: 'روباه', exampleTrans: 'roobah', sound: 'r' },
-    { letter: 'ز', name: 'زه', example: 'زنبور', exampleTrans: 'zamboor', sound: 'z' },
-    { letter: 'ژ', name: 'ژه', example: 'ژاله', exampleTrans: 'zhale', sound: 'zh' },
-    { letter: 'س', name: 'سين', example: 'سيب', exampleTrans: 'sib', sound: 's' },
-    { letter: 'ش', name: 'شين', example: 'شير', exampleTrans: 'shir', sound: 'sh' },
-    { letter: 'ص', name: 'صاد', example: 'صندلي', exampleTrans: 'sandali', sound: 's' },
-    { letter: 'ض', name: 'ضاد', example: 'ضربه', exampleTrans: 'zarbe', sound: 'z' },
-    { letter: 'ط', name: 'طا', example: 'طوطي', exampleTrans: 'tooti', sound: 't' },
-    { letter: 'ظ', name: 'ظا', example: 'ظرف', exampleTrans: 'zarf', sound: 'z' },
-    { letter: 'ع', name: 'عين', example: 'عروسک', exampleTrans: 'aroosak', sound: '' },
-    { letter: 'غ', name: 'غين', example: 'قورباغه', exampleTrans: 'ghoorgbaghe', sound: 'gh' },
-    { letter: 'ف', name: 'فه', example: 'فيل', exampleTrans: 'fil', sound: 'f' },
-    { letter: 'ق', name: 'قاف', example: 'قورباغه', exampleTrans: 'ghoorgbaghe', sound: 'gh' },
-    { letter: 'ک', name: 'کاف', example: 'کتاب', exampleTrans: 'ketab', sound: 'k' },
-    { letter: 'گ', name: 'گاف', example: 'گل', exampleTrans: 'gol', sound: 'g' },
-    { letter: 'ل', name: 'لام', example: 'لاک پشت', exampleTrans: 'laakposht', sound: 'l' },
-    { letter: 'م', name: 'ميم', example: 'مادر', exampleTrans: 'madar', sound: 'm' },
-    { letter: 'ن', name: 'نون', example: 'نان', exampleTrans: 'naan', sound: 'n' },
-    { letter: 'و', name: 'واو', example: 'وال', exampleTrans: 'vaal', sound: 'v' },
-    { letter: 'ه', name: 'هه', example: 'هوا', exampleTrans: 'hava', sound: 'h' },
-    { letter: 'ی', name: 'ي', example: 'يخ', exampleTrans: 'yakh', sound: 'y' }
+    { letter: 'ا', name: 'الف', sound: 'آ', example: 'اسب', category: 'حروف', words: ['اسب', 'ابر', 'انار', 'انگور', 'اردک', 'آب'] },
+    { letter: 'ب', name: 'بِ', sound: 'بـ', example: 'بابا', category: 'حروف', words: ['بابا', 'بادکنک', 'باران', 'بستنی', 'ببر'] },
+    { letter: 'پ', name: 'پِ', sound: 'پـ', example: 'پروانه', category: 'حروف', words: ['پروانه', 'پرنده', 'پنیر', 'پیراهن', 'پا'] },
+    { letter: 'ت', name: 'تِ', sound: 'تـ', example: 'توپ', category: 'حروف', words: ['توپ', 'تاب', 'توت', 'تخم‌مرغ', 'تاج'] },
+    { letter: 'ث', name: 'ثِ', sound: 'ثـ', example: 'ثعلب', category: 'حروف', words: ['ثعلب', 'مثلث', 'ثریا', 'ثابت'] },
+    { letter: 'ج', name: 'جیم', sound: 'جـ', example: 'جوجه', category: 'حروف', words: ['جوجه', 'جنگل', 'جوراب', 'جعبه', 'جام'] },
+    { letter: 'چ', name: 'چِه', sound: 'چـ', example: 'چتر', category: 'حروف', words: ['چتر', 'چای', 'چشم', 'چوب', 'چراغ'] },
+    { letter: 'ح', name: 'حِ', sound: 'حـ', example: 'حلزون', category: 'حروف', words: ['حلزون', 'حوله', 'حوض', 'حیاط', 'حباب'] },
+    { letter: 'خ', name: 'خِ', sound: 'خـ', example: 'خرگوش', category: 'حروف', words: ['خرگوش', 'خروس', 'خانه', 'خورشید', 'خرس'] },
+    { letter: 'د', name: 'دال', sound: 'د', example: 'درخت', category: 'حروف', words: ['درخت', 'دست', 'دلفین', 'دریا', 'دندان'] },
+    { letter: 'ذ', name: 'ذال', sound: 'ذ', example: 'ذرت', category: 'حروف', words: ['ذرت', 'ذره‌بین', 'ذره', 'لذیذ'] },
+    { letter: 'ر', name: 'رِ', sound: 'ر', example: 'روباه', category: 'حروف', words: ['روباه', 'رنگین‌کمان', 'رودخانه', 'راکت', 'رادیو'] },
+    { letter: 'ز', name: 'زِ', sound: 'ز', example: 'زنبور', category: 'حروف', words: ['زنبور', 'زرافه', 'زمین', 'زنگ', 'زرد'] },
+    { letter: 'ژ', name: 'ژِ', sound: 'ژ', example: 'ژاله', category: 'حروف', words: ['ژاله', 'ژاکت', 'ژله', 'مژگان'] },
+    { letter: 'س', name: 'سین', sound: 'سـ', example: 'سیب', category: 'حروف', words: ['سیب', 'ستاره', 'سگ', 'ساعت', 'سنجاب'] },
+    { letter: 'ش', name: 'شین', sound: 'شـ', example: 'شیر', category: 'حروف', words: ['شیر', 'شانه', 'شمع', 'شکلات', 'شتر'] },
+    { letter: 'ص', name: 'صاد', sound: 'صـ', example: 'صورت', category: 'حروف', words: ['صورت', 'صندلی', 'صابون', 'صندوق', 'صدف'] },
+    { letter: 'ض', name: 'ضاد', sound: 'ضـ', example: 'ضربه', category: 'حروف', words: ['ضربه', 'رضا', 'حاضر', 'فضا'] },
+    { letter: 'ط', name: 'طا', sound: 'طـ', example: 'طوطی', category: 'حروف', words: ['طوطی', 'طاووس', 'طناب', 'طبل', 'طلا'] },
+    { letter: 'ظ', name: 'ظا', sound: 'ظـ', example: 'ظرف', category: 'حروف', words: ['ظرف', 'ظاهر', 'نظم', 'ظهر'] },
+    { letter: 'ع', name: 'عین', sound: 'عـ', example: 'عینک', category: 'حروف', words: ['عینک', 'عسل', 'عروسک', 'عصا', 'عکس'] },
+    { letter: 'غ', name: 'غین', sound: 'غـ', example: 'غار', category: 'حروف', words: ['غار', 'غذا', 'غنچه', 'قورباغه', 'غزال'] },
+    { letter: 'ف', name: 'فِ', sound: 'فـ', example: 'فیل', category: 'حروف', words: ['فیل', 'فنجان', 'فرفره', 'فندق', 'فصل'] },
+    { letter: 'ق', name: 'قاف', sound: 'قـ', example: 'قایق', category: 'حروف', words: ['قایق', 'قوری', 'قطار', 'قفل', 'قو'] },
+    { letter: 'ک', name: 'کاف', sound: 'کـ', example: 'کتاب', category: 'حروف', words: ['کتاب', 'کلاه', 'کفش', 'کیک', 'کبوتر'] },
+    { letter: 'گ', name: 'گاف', sound: 'گـ', example: 'گل', category: 'حروف', words: ['گل', 'گربه', 'گیلاس', 'گاو', 'گوسفند'] },
+    { letter: 'ل', name: 'لام', sound: 'لـ', example: 'لاک‌پشت', category: 'حروف', words: ['لاک‌پشت', 'لیمو', 'لباس', 'لامپ', 'لانه'] },
+    { letter: 'م', name: 'میم', sound: 'مـ', example: 'موز', category: 'حروف', words: ['موز', 'مادر', 'ماشین', 'ماهی', 'میمون'] },
+    { letter: 'ن', name: 'نون', sound: 'نـ', example: 'نان', category: 'حروف', words: ['نان', 'نارنجی', 'نگین', 'نخود', 'نهنگ'] },
+    { letter: 'و', name: 'واو', sound: 'و', example: 'ورزش', category: 'حروف', words: ['ورزش', 'وال', 'وزنه', 'ویولن'] },
+    { letter: 'ه', name: 'هِ', sound: 'هـ', example: 'هویج', category: 'حروف', words: ['هویج', 'هواپیما', 'هندوانه', 'هدیه', 'هدهد'] },
+    { letter: 'ی', name: 'یِ', sound: 'یـ', example: 'یخ', category: 'حروف', words: ['یخ', 'یاس', 'یکتا', 'یوزپلنگ'] }
 ];
 
-// First-sound questions: pick a letter, present 3 images/words, find which starts with that sound
-// word lists grouped by starting sound (first letter)
-window.FIRST_SOUND_WORDS = {
-    'ا': ['اسب', 'انار', 'الک', 'ابر'],
-    'ب': ['بابا', 'بچه', 'بستنی', 'باران'],
-    'پ': ['پنير', 'پدر', 'پروانه', 'پنجره'],
-    'ت': ['تاب', 'توت', 'تخم مرغ', 'توپ'],
-    'ج': ['جوجه', 'جنگل', 'جوراب', 'جعبه'],
-    'چ': ['چاي', 'چتر', 'چشم', 'چراغ'],
-    'خ': ['خروس', 'خورشيد', 'خواب', 'خانه'],
-    'د': ['دست', 'دندان', 'دريا', 'دوست'],
-    'ر': ['روباه', 'رنگ', 'روز', 'ريش'],
-    'ز': ['زنبور', 'زمستان', 'زنگ', 'زرد'],
-    'س': ['سيب', 'سبز', 'ستاره', 'سگ'],
-    'ش': ['شير', 'شب', 'شمع', 'شتر'],
-    'ع': ['عروسک', 'عسل', 'عکس', 'عينک'],
-    'ف': ['فيل', 'فنجان', 'فرش', 'فردا'],
-    'ق': ['قورباغه', 'قند', 'قلب', 'قلم'],
-    'ک': ['کتاب', 'کفش', 'کوه', 'کلاغ'],
-    'گ': ['گل', 'گربه', 'گوش', 'گردو'],
-    'ل': ['لاک پشت', 'لب', 'ليمو', 'لانه'],
-    'م': ['مادر', 'ماه', 'ميز', 'موز'],
-    'ن': ['نان', 'نخود', 'ني', 'نخ'],
-    'ه': ['هوا', 'هويج', 'هندوانه', 'هفته'],
-    'ي': ['يخ', 'يک', 'يزد', 'يال']
-};
+// First-sound map
+window.FIRST_SOUND_WORDS = {};
+window.ALPHABET.forEach(item => {
+    window.FIRST_SOUND_WORDS[item.letter] = item.words;
+});
 
-// Rhyming word pairs (قافیه)
+// Rhyming word pairs for phonemic awareness
 window.RHYMES = [
-    ['ماه', 'راه'], ['تاب', 'آب'], ['گل', 'مل'], ['شير', 'پير'],
-    ['بابا', 'نوبابا'], ['مادر', 'بابا'], ['سيب', 'لبيب'], ['نان', 'جان'],
-    ['توپ', 'شلوپ'], ['کتاب', 'خواب'], ['موز', 'سوز'], ['دست', 'شست']
+    ['آب', 'تاب'], ['نان', 'جان'], ['ماه', 'شاه'], ['ساز', 'راز'],
+    ['شیر', 'سیر'], ['توپ', 'سوپ'], ['گل', 'بلبل'], ['دست', 'مست'],
+    ['باد', 'شاد'], ['نور', 'شور'], ['پا', 'جا'], ['روز', 'سوز']
 ];
 
-// Simple 2 and 3 letter words for blending practice
+// Syllable data (تقطیع بخش‌ها)
 window.BLEND_WORDS_2 = [
-    { word: 'اب', parts: ['ا', 'ب'], syllables: ['آ', 'ب'] },
-    { word: 'او', parts: ['ا', 'و'], syllables: ['آ', 'و'] },
-    { word: 'مو', parts: ['م', 'و'], syllables: ['مُ', 'و'] },
-    { word: 'بو', parts: ['ب', 'و'], syllables: ['بُ', 'و'] },
-    { word: 'پا', parts: ['پ', 'ا'], syllables: ['پ', 'ا'] },
-    { word: 'ما', parts: ['م', 'ا'], syllables: ['م', 'ا'] }
+    { word: 'بابا', parts: ['با', 'با'], syllables: ['با', 'با'] },
+    { word: 'مادر', parts: ['ما', 'در'], syllables: ['ما', 'در'] },
+    { word: 'ساعت', parts: ['سا', 'عت'], syllables: ['سا', 'عت'] },
+    { word: 'ماشین', parts: ['ما', 'شین'], syllables: ['ما', 'شین'] },
+    { word: 'گربه', parts: ['گر', 'به'], syllables: ['گر', 'به'] },
+    { word: 'ماهی', parts: ['ما', 'هی'], syllables: ['ما', 'هی'] },
+    { word: 'سیب', parts: ['سیب'], syllables: ['سیب'] },
+    { word: 'کتاب', parts: ['کـ', 'تاب'], syllables: ['کـِ', 'تاب'] },
+    { word: 'چتر', parts: ['چتر'], syllables: ['چتر'] },
+    { word: 'درخت', parts: ['دِ', 'رخت'], syllables: ['دِ', 'رخت'] }
 ];
 
 window.BLEND_WORDS_3 = [
-    { word: 'باب', parts: ['ب', 'ا', 'ب'], syllables: ['با', 'ب'] },
-    { word: 'مام', parts: ['م', 'ا', 'م'], syllables: ['ما', 'م'] },
-    { word: 'نان', parts: ['ن', 'ا', 'ن'], syllables: ['نا', 'ن'] },
-    { word: 'تاب', parts: ['ت', 'ا', 'ب'], syllables: ['تا', 'ب'] },
-    { word: 'کبک', parts: ['ک', 'ب', 'ک'], syllables: ['کب', 'ک'] },
-    { word: 'داد', parts: ['د', 'ا', 'د'], syllables: ['دا', 'د'] }
+    { word: 'بادکنک', parts: ['باد', 'کـ', 'نک'], syllables: ['باد', 'کـُ', 'نک'] },
+    { word: 'پروانه', parts: ['پر', 'وا', 'نه'], syllables: ['پَر', 'وا', 'نه'] },
+    { word: 'هندوانه', parts: ['هن', 'دوا', 'نه'], syllables: ['هِن', 'دِ', 'وا', 'نه'] },
+    { word: 'ستاره', parts: ['سـ', 'تا', 'ره'], syllables: ['سِ', 'تا', 'ره'] },
+    { word: 'رنگین‌کمان', parts: ['رنـ', 'گین', 'کـ', 'مان'], syllables: ['رَنـ', 'گین', 'کـَ', 'مان'] }
 ];
 
-window.BLEND_WORDS_4 = [
-    { word: 'کتاب', parts: ['ک', 'ت', 'ا', 'ب'], syllables: ['کت', 'اب'] },
-    { word: 'مادر', parts: ['م', 'ا', 'د', 'ر'], syllables: ['ما', 'در'] },
-    { word: 'پدر', parts: ['پ', 'د', 'ر'], syllables: ['پ', 'در'] },
-    { word: 'برگ', parts: ['ب', 'ر', 'گ'], syllables: ['بر', 'گ'] },
-    { word: 'بست', parts: ['ب', 'س', 'ت'], syllables: ['بست'] }
-];
+window.BLEND_WORDS_4 = window.BLEND_WORDS_3;

@@ -1,119 +1,246 @@
-// Free drawing / coloring activity
-const PaintingActivity = (function() {
+// Creative Canvas, Coloring & Stamp Workshop for "پرورش هوش کودک"
+window.PaintingActivity = (function() {
 
-    const COLORS = ['#FF6B6B', '#F9CA24', '#4ECDC4', '#A29BFE', '#00B894', '#2D3436', '#F368E0', '#FF8A5C', '#74B9FF', '#FFF'];
+    const PALETTE = [
+        '#FF4757', '#FFA502', '#2ED573', '#1E90FF', '#9B59B6',
+        '#FF6B81', '#F1C40F', '#00D2D3', '#3742FA', '#2C3A47',
+        '#795548', '#FFFFFF'
+    ];
+
+    function getTemplates() {
+        const art = window.SvgArt || { animal: () => '', object: () => '' };
+        return [
+            { id: 'free', name: 'نقاشی آزاد' },
+            { id: 'cat', name: 'رنگ‌آمیزی گربه', svg: art.animal('cat', 180) },
+            { id: 'butterfly', name: 'رنگ‌آمیزی پروانه', svg: art.animal('butterfly', 180) },
+            { id: 'fish', name: 'رنگ‌آمیزی ماهی', svg: art.animal('fish', 180) },
+            { id: 'car', name: 'رنگ‌آمیزی ماشین', svg: art.object('car', 180) },
+            { id: 'flower', name: 'رنگ‌آمیزی گل', svg: art.object('flower', 180) }
+        ];
+    }
 
     function render(container, round, cb) {
         container.innerHTML = '';
-        const title = document.createElement('div');
-        title.className = 'activity-title';
-        title.textContent = 'نقاشي آزاد';
-        container.appendChild(title);
 
-        const instr = document.createElement('div');
-        instr.className = 'activity-instr';
-        instr.textContent = 'هر چه دوست داري بکش!';
-        container.appendChild(instr);
+        const card = document.createElement('div');
+        card.className = 'painting-activity-card';
 
-        AudioEngine.speak('هر چه دوست داري بکش');
+        // Header
+        const headerRow = document.createElement('div');
+        headerRow.className = 'activity-header-row';
 
-        // Toolbar
-        const toolbar = document.createElement('div');
-        toolbar.className = 'paint-toolbar';
-        let activeColor = '#FF6B6B';
-        COLORS.forEach(c => {
-            const b = document.createElement('button');
-            b.className = 'paint-color' + (c === activeColor ? ' active' : '');
-            b.style.background = c;
-            b.style.borderColor = c === '#FFF' ? '#CCC' : '#FFF';
-            b.addEventListener('click', () => {
-                activeColor = c;
-                toolbar.querySelectorAll('.paint-color').forEach(x => x.classList.remove('active'));
-                b.classList.add('active');
-                AudioEngine.play('click');
-            });
-            toolbar.appendChild(b);
-        });
-        container.appendChild(toolbar);
+        const promptTitle = document.createElement('h2');
+        promptTitle.className = 'quiz-prompt';
+        promptTitle.textContent = 'کارگاه نقاشی و رنگ‌آمیزی خلاق';
 
-        // Eraser / clear
-        const clearBtn = document.createElement('button');
-        clearBtn.className = 'big-btn';
-        clearBtn.style.background = '#95A5A6';
-        clearBtn.style.padding = '10px';
-        clearBtn.textContent = 'پاک کن';
-        clearBtn.addEventListener('click', () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const speakerBtn = document.createElement('button');
+        speakerBtn.className = 'speaker-btn';
+        speakerBtn.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>بشنو</span>
+        `;
+        speakerBtn.addEventListener('click', () => {
             AudioEngine.play('click');
+            AudioEngine.speak('هر چی دوست داری با رنگ‌های شاد بکش و رنگ کن!');
         });
-        toolbar.appendChild(clearBtn);
 
-        // Canvas
-        const wrap = document.createElement('div');
-        wrap.className = 'paint-canvas-wrap';
+        headerRow.appendChild(promptTitle);
+        headerRow.appendChild(speakerBtn);
+        card.appendChild(headerRow);
+
+        setTimeout(() => {
+            AudioEngine.speak('هر چی دوست داری با رنگ‌های شاد بکش و رنگ کن!');
+        }, 150);
+
+        // Color Palette Toolbar
+        let currentColor = PALETTE[0];
+        let currentBrushSize = 10;
+        let isEraser = false;
+        let isRainbow = false;
+        let currentStamp = null;
+
+        const paletteBar = document.createElement('div');
+        paletteBar.className = 'paint-palette-bar';
+
+        PALETTE.forEach(color => {
+            const swatch = document.createElement('button');
+            swatch.className = `palette-swatch ${color === currentColor ? 'active' : ''}`;
+            swatch.style.backgroundColor = color;
+            swatch.addEventListener('click', () => {
+                AudioEngine.play('click');
+                currentColor = color;
+                isEraser = false;
+                isRainbow = false;
+                currentStamp = null;
+                paletteBar.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+            });
+            paletteBar.appendChild(swatch);
+        });
+
+        // Tools Bar
+        const toolsBar = document.createElement('div');
+        toolsBar.className = 'paint-tools-bar';
+
+        const rainbowBtn = document.createElement('button');
+        rainbowBtn.className = 'tool-btn';
+        rainbowBtn.innerHTML = '🌈 قلم جادویی';
+        rainbowBtn.addEventListener('click', () => {
+            AudioEngine.play('bubble');
+            isRainbow = true;
+            isEraser = false;
+            currentStamp = null;
+            paletteBar.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('active'));
+        });
+
+        const stampStar = document.createElement('button');
+        stampStar.className = 'tool-btn';
+        stampStar.innerHTML = '⭐ ستاره';
+        stampStar.addEventListener('click', () => {
+            AudioEngine.play('pop');
+            currentStamp = '★';
+            isEraser = false;
+            isRainbow = false;
+        });
+
+        const stampHeart = document.createElement('button');
+        stampHeart.className = 'tool-btn';
+        stampHeart.innerHTML = '❤️ قلب';
+        stampHeart.addEventListener('click', () => {
+            AudioEngine.play('pop');
+            currentStamp = '❤️';
+            isEraser = false;
+            isRainbow = false;
+        });
+
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'tool-btn danger';
+        clearBtn.innerHTML = '🗑️ پاک کردن';
+        clearBtn.addEventListener('click', () => {
+            AudioEngine.play('click');
+            initCanvas();
+        });
+
+        toolsBar.appendChild(rainbowBtn);
+        toolsBar.appendChild(stampStar);
+        toolsBar.appendChild(stampHeart);
+        toolsBar.appendChild(clearBtn);
+
+        card.appendChild(paletteBar);
+        card.appendChild(toolsBar);
+
+        // Canvas Area
+        const canvasWrap = document.createElement('div');
+        canvasWrap.className = 'paint-canvas-wrap';
+
         const canvas = document.createElement('canvas');
         canvas.className = 'paint-canvas';
-        const size = Math.min(window.innerWidth - 80, 360);
-        canvas.width = size;
-        canvas.height = size * 0.85;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#FFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        wrap.appendChild(canvas);
-        container.appendChild(wrap);
+        const width = Math.min(window.innerWidth - 48, 380);
+        const height = Math.min(window.innerHeight * 0.44, 300);
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
 
-        let drawing = false;
-        let lastX = 0, lastY = 0;
-        function pos(e) {
-            const r = canvas.getBoundingClientRect();
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        function initCanvas() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        initCanvas();
+
+        let isDrawing = false;
+        let strokeHue = 0;
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             return {
-                x: (e.clientX - r.left) * (canvas.width / r.width),
-                y: (e.clientY - r.top) * (canvas.height / r.height)
+                x: clientX - rect.left,
+                y: clientY - rect.top
             };
         }
-        canvas.addEventListener('pointerdown', (e) => {
+
+        function startPaint(e) {
             e.preventDefault();
-            drawing = true;
-            const p = pos(e);
-            lastX = p.x; lastY = p.y;
-            ctx.lineWidth = 10;
+            const pos = getPos(e);
+
+            if (currentStamp) {
+                ctx.font = '36px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(currentStamp, pos.x, pos.y);
+                AudioEngine.play('pop');
+                return;
+            }
+
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            ctx.lineWidth = isEraser ? 24 : currentBrushSize;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.strokeStyle = activeColor;
-        });
-        canvas.addEventListener('pointermove', (e) => {
-            if (!drawing) return;
-            const p = pos(e);
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(p.x, p.y);
-            ctx.stroke();
-            lastX = p.x; lastY = p.y;
-        });
-        canvas.addEventListener('pointerup', () => { drawing = false; });
-        canvas.addEventListener('pointerleave', () => { drawing = false; });
+            ctx.strokeStyle = isEraser ? '#FFFFFF' : isRainbow ? `hsl(${strokeHue}, 90%, 60%)` : currentColor;
+            AudioEngine.play('paint');
+        }
 
-        // Done button
-        const doneBtn = document.createElement('button');
-        doneBtn.className = 'big-btn green';
-        doneBtn.textContent = 'تمام شد';
-        doneBtn.addEventListener('click', () => {
-            // any drawn pixels?
-            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            let drawn = 0;
-            for (let i = 0; i < data.length; i += 4) {
-                if (data[i] < 250 || data[i+1] < 250 || data[i+2] < 250) drawn++;
-            }
-            if (drawn > 600) {
-                AudioEngine.play('win');
-                cb.onCorrect(round);
+        function paint(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+
+            if (isRainbow) {
+                strokeHue = (strokeHue + 7) % 360;
+                ctx.strokeStyle = `hsl(${strokeHue}, 90%, 60%)`;
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
             } else {
-                AudioEngine.play('wrong');
-                AudioEngine.speak('يک کم بيشتر نقاشي کن');
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
             }
+        }
+
+        function stopPaint() {
+            isDrawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startPaint);
+        canvas.addEventListener('mousemove', paint);
+        window.addEventListener('mouseup', stopPaint);
+
+        canvas.addEventListener('touchstart', startPaint, { passive: false });
+        canvas.addEventListener('touchmove', paint, { passive: false });
+        window.addEventListener('touchend', stopPaint);
+
+        canvasWrap.appendChild(canvas);
+        card.appendChild(canvasWrap);
+
+        // Completion / Next Button
+        const finishBtn = document.createElement('button');
+        finishBtn.className = 'big-action-btn primary';
+        finishBtn.innerHTML = `<span>✨ نقاشی من تمام شد!</span>`;
+        finishBtn.addEventListener('click', () => {
+            AudioEngine.play('win');
+            if (window.Fx) Fx.confetti();
+            setTimeout(() => {
+                if (cb && cb.onCorrect) cb.onCorrect(round);
+            }, 800);
         });
-        container.appendChild(doneBtn);
+
+        card.appendChild(finishBtn);
+        container.appendChild(card);
     }
 
-    return { render };
+    return { render, getTemplates };
 })();
