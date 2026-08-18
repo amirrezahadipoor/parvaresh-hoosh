@@ -1178,6 +1178,49 @@ window.Generator = (function() {
         school:    { label: '۷ تا ۸ سال', optionCount: 4, hintDelay: 5000, maxNumber: 20, language: 'استدلالی و دقیق' }
     };
 
+    // Topic narration: the first round of a lesson in these skill areas plays a
+    // short spoken explanation, so maths/science/emotions are taught aloud too
+    // (previously only the alphabet had any narration at all).
+    const TOPIC_AUDIO = {
+        'counting': 'topic-counting', 'counting-game': 'topic-counting',
+        'number-recognition': 'topic-counting', 'number-order': 'topic-counting',
+        'addition': 'topic-addition', 'addition-concept': 'topic-addition',
+        'addition-game': 'topic-addition',
+        'subtraction': 'topic-subtraction', 'subtraction-concept': 'topic-subtraction',
+        'subtraction-game': 'topic-subtraction',
+        'shapes': 'topic-shapes', 'shape-matching': 'topic-shapes',
+        'shape-construction': 'topic-shapes',
+        'animal': 'topic-animals', 'animals': 'topic-animals',
+        'animal-sounds': 'topic-animals',
+        'seasons': 'topic-seasons', 'seasons-activity': 'topic-seasons',
+        'senses': 'topic-senses', 'body-parts': 'topic-senses',
+        'emotions': 'topic-emotions', 'emotion-game': 'topic-emotions',
+        'social-emotional': 'topic-emotions',
+        // Broader coverage so most lessons open with a spoken explanation.
+        'arithmetic': 'topic-addition', 'mixed-operations': 'topic-addition',
+        'problem-solving': 'topic-addition', 'place-value': 'topic-counting',
+        'comparison': 'topic-counting', 'number-pattern': 'topic-counting',
+        'patterns': 'topic-shapes', 'create-patterns': 'topic-shapes',
+        'measurement': 'topic-shapes', 'volume': 'topic-shapes', 'time': 'topic-counting',
+        'plant-parts': 'topic-seasons', 'plant-growth': 'topic-seasons',
+        'flowers': 'topic-seasons', 'earth-science': 'topic-seasons',
+        'water-cycle': 'topic-seasons', 'conservation': 'topic-animals',
+        'recycling': 'topic-animals', 'energy': 'topic-seasons',
+        'science': 'topic-senses', 'scientific-reasoning': 'topic-senses',
+        'health': 'topic-senses',
+        'friendship': 'topic-emotions', 'sharing': 'topic-emotions',
+        'apologizing': 'topic-emotions', 'etiquette': 'topic-emotions',
+        'patience': 'topic-emotions', 'family': 'topic-emotions',
+        'responsibility': 'topic-emotions', 'self-identity': 'topic-emotions',
+        'conflict-resolution': 'topic-emotions', 'teamwork': 'topic-emotions',
+        'diversity': 'topic-emotions'
+    };
+
+    function topicClipFor(metadata) {
+        const t = metadata && metadata.type;
+        return (t && TOPIC_AUDIO[t]) || null;
+    }
+
     function lessonPlan(lessonId, metadata) {
         const pkg = window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId];
         if (pkg) return authoredLessonPlan(lessonId, metadata, pkg);
@@ -1729,7 +1772,15 @@ window.Generator = (function() {
 
     function generate(lessonId, metadata) {
         const rounds = buildRounds(lessonId, metadata);
-        return (Array.isArray(rounds) ? rounds : []).map(enrichRound);
+        const list = (Array.isArray(rounds) ? rounds : []).map(enrichRound);
+        // Give the opening round a spoken topic intro when one exists and the
+        // round does not already carry its own (letter) narration.
+        const topic = topicClipFor(metadata);
+        if (topic && list.length && !list[0].audioClip) {
+            list[0].audioClip = topic;
+            list[0].audioAutoPlay = true;
+        }
+        return list;
     }
 
     return { generate };

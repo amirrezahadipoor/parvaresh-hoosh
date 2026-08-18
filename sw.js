@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v10-letters30';
+const CACHE_NAME = 'parvaresh-hoosh-v11-full-audio';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -23,6 +23,7 @@ const PRECACHE = [
   './assets/audio/letter-ghaf.mp3',
   './assets/audio/letter-gheyn.mp3',
   './assets/audio/letter-he.mp3',
+  './assets/audio/letter-heh.mp3',
   './assets/audio/letter-jim.mp3',
   './assets/audio/letter-kaf.mp3',
   './assets/audio/letter-khe.mp3',
@@ -38,11 +39,20 @@ const PRECACHE = [
   './assets/audio/letter-ta.mp3',
   './assets/audio/letter-te.mp3',
   './assets/audio/letter-vav.mp3',
+  './assets/audio/letter-ye.mp3',
   './assets/audio/letter-za.mp3',
   './assets/audio/letter-zad.mp3',
   './assets/audio/letter-zal.mp3',
   './assets/audio/letter-ze.mp3',
-  './assets/audio/letter-zhe.mp3'
+  './assets/audio/letter-zhe.mp3',
+  './assets/audio/topic-addition.mp3',
+  './assets/audio/topic-animals.mp3',
+  './assets/audio/topic-counting.mp3',
+  './assets/audio/topic-emotions.mp3',
+  './assets/audio/topic-seasons.mp3',
+  './assets/audio/topic-senses.mp3',
+  './assets/audio/topic-shapes.mp3',
+  './assets/audio/topic-subtraction.mp3'
 ];
 
 self.addEventListener('install', event => {

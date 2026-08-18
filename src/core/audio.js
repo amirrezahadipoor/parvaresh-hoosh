@@ -270,7 +270,10 @@ window.AudioEngine = (function() {
         'letter-che', 'letter-he', 'letter-khe', 'letter-dal', 'letter-zal', 'letter-re',
         'letter-ze', 'letter-zhe', 'letter-sin', 'letter-shin', 'letter-sad', 'letter-zad',
         'letter-ta', 'letter-za', 'letter-eyn', 'letter-gheyn', 'letter-fe', 'letter-ghaf',
-        'letter-kaf', 'letter-gaf', 'letter-lam', 'letter-mim', 'letter-nun', 'letter-vav'
+        'letter-kaf', 'letter-gaf', 'letter-lam', 'letter-mim', 'letter-nun', 'letter-vav',
+        'letter-heh', 'letter-ye',
+        'topic-counting', 'topic-addition', 'topic-subtraction', 'topic-shapes',
+        'topic-animals', 'topic-seasons', 'topic-senses', 'topic-emotions'
     ]);
 
     function hasClip(name) {
