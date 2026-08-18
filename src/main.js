@@ -266,7 +266,7 @@
                 item.innerHTML = `<span class="daily-plan-index">${toFa(index + 1)}</span><span class="daily-plan-copy"><b></b><small></small></span><span class="daily-plan-arrow">‹</span>`;
                 const guide = lessonGuide(lesson.type);
                 item.querySelector('.daily-plan-copy b').textContent = lesson.title;
-                item.querySelector('.daily-plan-copy small').textContent = `${guide.label} · ${toFa(guide.minutes)} دقیقه`;
+                item.querySelector('.daily-plan-copy small').textContent = `${lesson.isReview ? 'مرور پیشنهادی · ' : ''}${guide.label} · ${toFa(guide.minutes)} دقیقه`;
                 item.addEventListener('click', () => {
                     AudioEngine.play('click');
                     state.domainId = lesson.domainId;
@@ -399,19 +399,33 @@
 
     function buildDailyPlan(allLessons, today) {
         const completedToday = new Set((window.Engagement && window.Engagement.getToday && window.Engagement.getToday().lessonIds) || []);
-        const candidates = allLessons.filter(lesson => !completedToday.has(lesson.id) && !(state.lessonsDone[lesson.id] && state.lessonsDone[lesson.id].done));
+        const queue = window.Engagement && window.Engagement.getReviewQueue ? window.Engagement.getReviewQueue() : [];
+        const lessonById = new Map(allLessons.map(lesson => [lesson.id, lesson]));
         const selected = [];
         const domains = new Set();
+        const limit = Math.min(3, today.goal || 3);
+
+        queue.forEach(item => {
+            const lesson = lessonById.get(item.lessonId);
+            if (!lesson || completedToday.has(lesson.id) || selected.length >= limit) return;
+            selected.push({ ...lesson, isReview: true, reviewCount: item.count || 1 });
+            domains.add(lesson.domainId);
+        });
+
+        const candidates = allLessons.filter(lesson =>
+            !completedToday.has(lesson.id) && !(state.lessonsDone[lesson.id] && state.lessonsDone[lesson.id].done) &&
+            !selected.some(item => item.id === lesson.id)
+        );
         for (const lesson of candidates) {
-            if (selected.length >= Math.min(3, today.goal || 3)) break;
+            if (selected.length >= limit) break;
             if (!domains.has(lesson.domainId)) {
                 selected.push(lesson);
                 domains.add(lesson.domainId);
             }
         }
         for (const lesson of candidates) {
-            if (selected.length >= Math.min(3, today.goal || 3)) break;
-            if (!selected.includes(lesson)) selected.push(lesson);
+            if (selected.length >= limit) break;
+            if (!selected.some(item => item.id === lesson.id)) selected.push(lesson);
         }
         return selected;
     }
@@ -685,6 +699,7 @@
                     showMascotMood('celebrating', pickMsg(window.MESSAGES.correct));
                     Adaptive.record(state.domainId || 'reading', true);
                     IQAssessment.recordTrial(state.domainId || round.type, true);
+                    if (window.Engagement) window.Engagement.recordSuccess(lesson.id);
                     roundIdx++;
                     setTimeout(() => nextRound(), 800);
                 },
@@ -694,6 +709,7 @@
                     showMascotMood('thinking', pickMsg(window.MESSAGES.wrong));
                     Adaptive.record(state.domainId || 'reading', false);
                     IQAssessment.recordTrial(state.domainId || round.type, false);
+                    if (window.Engagement) window.Engagement.recordMistake(lesson.id, round.skillType || round.type);
                 }
             });
         }
@@ -1189,6 +1205,7 @@
         const todayEngagement = window.Engagement ? window.Engagement.getToday() : { completed: 0, goal: 3, percent: 0 };
         const streakEngagement = window.Engagement ? window.Engagement.getStreak() : { current: 0, best: 0 };
         const childProfile = window.Engagement ? window.Engagement.getProfile() : { name: '', age: null };
+        const reviewQueue = window.Engagement ? window.Engagement.getReviewQueue() : [];
         const history = window.Engagement ? window.Engagement.getHistory() : [];
         const historyByDate = new Map(history.map(item => [item.date, item.completed]));
         const dayBars = Array.from({ length: 7 }, (_, index) => {
@@ -1206,7 +1223,7 @@
                 <strong>${toFa(streakEngagement.current)} روز</strong>
             </div>
             <div class="engagement-parent-progress"><i style="width:${todayEngagement.percent}%;"></i></div>
-            <div class="engagement-parent-meta"><span>امروز: ${toFa(todayEngagement.completed)} از ${toFa(todayEngagement.goal)}</span><span>بهترین زنجیره: ${toFa(streakEngagement.best)} روز</span></div>
+            <div class="engagement-parent-meta"><span>امروز: ${toFa(todayEngagement.completed)} از ${toFa(todayEngagement.goal)}</span><span>مرور پیشنهادی: ${toFa(reviewQueue.length)}</span><span>بهترین زنجیره: ${toFa(streakEngagement.best)} روز</span></div>
             <div class="engagement-week-label">فعالیت هفت روز اخیر</div>
             <div class="engagement-week-bars">${dayBars}</div>
         `;

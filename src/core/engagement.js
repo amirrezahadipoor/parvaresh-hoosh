@@ -11,6 +11,7 @@ window.Engagement = (function() {
         currentStreak: 0,
         bestStreak: 0,
         today: { date: null, completed: 0, lessonIds: [] },
+        reviewQueue: [],
         history: []
     };
 
@@ -45,6 +46,7 @@ window.Engagement = (function() {
         state.today.completed = Number.isFinite(Number(state.today.completed)) ? Math.max(0, Number(state.today.completed)) : 0;
         state.today.lessonIds = Array.isArray(state.today.lessonIds) ? [...new Set(state.today.lessonIds.filter(Boolean))] : [];
         state.today.completed = state.today.lessonIds.length;
+        state.reviewQueue = Array.isArray(state.reviewQueue) ? state.reviewQueue.filter(item => item && item.lessonId).slice(-30) : [];
         state.history = Array.isArray(state.history) ? state.history.slice(-30) : [];
     }
 
@@ -147,6 +149,36 @@ window.Engagement = (function() {
         return getToday();
     }
 
+    async function recordMistake(lessonId, skillType) {
+        if (!lessonId) return getReviewQueue();
+        normalize();
+        const existing = state.reviewQueue.find(item => item.lessonId === lessonId);
+        if (existing) {
+            existing.count = Math.min(9, (existing.count || 0) + 1);
+            existing.lastAt = Date.now();
+            existing.skillType = skillType || existing.skillType || '';
+        } else {
+            state.reviewQueue.push({ lessonId, skillType: skillType || '', count: 1, lastAt: Date.now() });
+        }
+        state.reviewQueue.sort((a, b) => (b.count - a.count) || (b.lastAt - a.lastAt));
+        state.reviewQueue = state.reviewQueue.slice(0, 30);
+        await persist();
+        return getReviewQueue();
+    }
+
+    async function recordSuccess(lessonId) {
+        if (!lessonId) return getReviewQueue();
+        normalize();
+        state.reviewQueue = state.reviewQueue.filter(item => item.lessonId !== lessonId);
+        await persist();
+        return getReviewQueue();
+    }
+
+    function getReviewQueue() {
+        normalize();
+        return state.reviewQueue.map(item => ({ ...item }));
+    }
+
     function getHistory() {
         normalize();
         return state.history.map(item => ({ ...item }));
@@ -161,6 +193,7 @@ window.Engagement = (function() {
             currentStreak: 0,
             bestStreak: 0,
             today: { date: localDateKey(), completed: 0, lessonIds: [] },
+            reviewQueue: [],
             history: []
         };
         if (window.Storage && typeof window.Storage.save === 'function') {
@@ -177,6 +210,9 @@ window.Engagement = (function() {
         getToday,
         getStreak,
         recordLesson,
+        recordMistake,
+        recordSuccess,
+        getReviewQueue,
         getHistory,
         reset
     };
