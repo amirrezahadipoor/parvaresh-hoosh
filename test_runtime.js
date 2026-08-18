@@ -143,6 +143,69 @@ async function main() {
     options[round.answer].click();
     assert.equal(correct, 1, 'quiz correct option should call onCorrect exactly once');
 
+    // Real interaction smoke tests for the upgraded game engines.
+    const memoryHost = document.createElement('div');
+    let memoryDone = 0;
+    window.MemoryActivity.render(memoryHost, {
+        cards: [
+            { pair: 0, img: window.SvgArt.object('apple', 40), label: 'سیب' },
+            { pair: 0, img: window.SvgArt.object('apple', 40), label: 'سیب' },
+            { pair: 1, img: window.SvgArt.object('ball', 40), label: 'توپ' },
+            { pair: 1, img: window.SvgArt.object('ball', 40), label: 'توپ' }
+        ]
+    }, { onCorrect() { memoryDone++; } });
+    const memoryCards = memoryHost.querySelectorAll('.memory-card-3d-box');
+    memoryCards[0].click(); memoryCards[1].click();
+    await wait(400);
+    memoryCards[2].click(); memoryCards[3].click();
+    await wait(1200);
+    assert.equal(memoryDone, 1, 'memory game should finish exactly once');
+
+    const orderHost = document.createElement('div');
+    let orderDone = 0;
+    window.OrderingActivity.render(orderHost, {
+        items: [{ idx: 1, label: 'دوم' }, { idx: 0, label: 'اول' }],
+        answer: 'idx', prompt: 'ترتیب را پیدا کن'
+    }, { onCorrect() { orderDone++; } });
+    const orderCards = orderHost.querySelectorAll('.order-step-card');
+    orderCards[0].click(); orderHost.querySelectorAll('.order-step-card')[1].click();
+    await wait(500);
+    assert.equal(orderDone, 1, 'ordering game should finish after a correct swap');
+
+    const dragHost = document.createElement('div');
+    let dragDone = 0;
+    window.DragDropActivity.render(dragHost, {
+        targets: [{ id: 'animals', label: 'حیوانات' }, { id: 'fruits', label: 'میوه‌ها' }],
+        items: [
+            { id: 'cat', target: 'animals', label: 'گربه', img: window.SvgArt.animal('cat', 30) },
+            { id: 'apple', target: 'fruits', label: 'سیب', img: window.SvgArt.object('apple', 30) }
+        ],
+        prompt: 'جای درست را پیدا کن'
+    }, { onCorrect() { dragDone++; } });
+    const dragItems = dragHost.querySelectorAll('[role="button"]');
+    const dragTargets = dragHost.querySelectorAll('[data-target-id]');
+    dragItems[0].click(); dragTargets[0].click();
+    dragItems[1].click(); dragTargets[1].click();
+    await wait(600);
+    assert.equal(dragDone, 1, 'tap-to-place drag/drop fallback should finish');
+
+    const balloonHost = document.createElement('div');
+    let balloonDone = 0;
+    window.BalloonPopActivity.render(balloonHost, {
+        targetText: 'الف',
+        items: [{ text: 'ب', sound: 'ب' }, { text: 'الف', sound: 'آ' }],
+        prompt: 'هدف را پیدا کن'
+    }, { onCorrect() { balloonDone++; } });
+    const balloons = balloonHost.querySelectorAll('.floating-balloon');
+    balloons[0].click();
+    balloons[1].click();
+    await wait(900);
+    assert.equal(balloonDone, 1, 'target balloon game should reject distractor and finish on target');
+
+    const paintingHost = document.createElement('div');
+    window.PaintingActivity.render(paintingHost, {}, { onCorrect() {} });
+    assert.equal(paintingHost.querySelectorAll('.paint-template-btn').length, 6, 'painting should expose six templates');
+
     // A math-gate sum can be 13; ensure that answer key is present.
     document.querySelector('#btn-parent').click();
     await wait(20);
