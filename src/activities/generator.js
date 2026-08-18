@@ -978,6 +978,23 @@ window.Generator = (function() {
         return Math.max(1, Math.min(8, level));
     }
 
+    // Identity of a round for de-duplication purposes: same question AND same
+    // answer set means the child is being asked literally the same thing twice.
+    function roundSignature(round) {
+        if (!round) return '';
+        const prompt = String(round.prompt || round.question || '');
+        const opts = Array.isArray(round.options)
+            ? round.options.map(o => String(o && o.label !== undefined ? o.label : o)).join('|')
+            : '';
+        const items = Array.isArray(round.items)
+            ? round.items.map(i => String(i && i.label !== undefined ? i.label : i)).sort().join('|')
+            : '';
+        const cards = Array.isArray(round.cards)
+            ? round.cards.map(c => String(c && c.label)).sort().join('|')
+            : '';
+        return [round.type, prompt, opts, items, cards, round.char || ''].join('#');
+    }
+
     function plan(factories, metadata, exactLength) {
         const list = Array.isArray(factories) ? factories.filter(Boolean) : [];
         if (!list.length) return [];
@@ -985,7 +1002,30 @@ window.Generator = (function() {
         // factory it built (alphabet lessons must cover all four of their letters,
         // which needs 9 rounds — truncating to 5 silently dropped two letters).
         const count = exactLength ? list.length : 5;
-        const rounds = Array.from({ length: count }, (_, index) => list[index % list.length]());
+
+        // Most round factories are randomised, so calling the same factory twice
+        // usually yields a different question — but not always. Previously ~44% of
+        // lessons repeated an identical prompt within the same five rounds, which is
+        // exactly the "repetitive loop" the child feels. Retry a few times per slot
+        // and, if a factory is genuinely exhausted, borrow another factory instead.
+        const seen = new Set();
+        const rounds = [];
+        for (let index = 0; index < count; index++) {
+            let round = null;
+            for (let attempt = 0; attempt < 8 && !round; attempt++) {
+                // After a few failures, rotate to a different factory in the list.
+                const factory = list[(index + (attempt >= 4 ? attempt : 0)) % list.length];
+                let candidate;
+                try { candidate = factory(); } catch (e) { continue; }
+                if (!candidate) continue;
+                const sig = roundSignature(candidate);
+                if (!seen.has(sig)) { seen.add(sig); round = candidate; }
+            }
+            // Last resort: accept a duplicate rather than dropping a round.
+            if (!round) { try { round = list[index % list.length](); } catch (e) { continue; } }
+            if (round) rounds.push(round);
+        }
+
         return rounds.map(round => ({
             ...round,
             lessonId: metadata && metadata.id,
@@ -1023,6 +1063,216 @@ window.Generator = (function() {
             options.indexOf(hour),
             `ساعت ${toFaWord(hour)} را پیدا کن`
         );
+    }
+
+    // ==========================================
+    // 12. EXPANDED CONTENT ROUNDS (variety pass)
+    // These deliberately use non-quiz activity types so that reading, science,
+    // socio-emotional and art stop being 60% multiple-choice.
+    // ==========================================
+
+    // --- science: what is it made of? (drag-match) ---
+    function materialRound() {
+        const bank = (window.MATERIALS || []).slice();
+        if (bank.length < 3) return classifyRound();
+        const chosen = shuffle(bank).slice(0, 3);
+        const mats = [...new Set(chosen.map(x => x.material))];
+        return {
+            type: 'drag-match',
+            prompt: 'هر چیز را به جنسی که از آن ساخته شده وصل کن:',
+            items: shuffle(chosen.map(x => ({ id: x.fa, label: x.fa, target: x.material }))),
+            targets: shuffle(mats.map(m => ({ id: m, label: m }))),
+            speech: 'هر وسیله را به جنس خودش وصل کن'
+        };
+    }
+
+    // --- science: does it float or sink? (drag-match, two buckets) ---
+    function floatSinkRound() {
+        const bank = (window.FLOAT_SINK || []).slice();
+        if (bank.length < 4) return classifyRound();
+        const floaters = shuffle(bank.filter(x => x.floats)).slice(0, 2);
+        const sinkers = shuffle(bank.filter(x => !x.floats)).slice(0, 2);
+        const items = shuffle([...floaters, ...sinkers]);
+        return {
+            type: 'drag-match',
+            prompt: 'کدام روی آب می‌ماند و کدام ته می‌رود؟',
+            items: items.map(x => ({ id: x.fa, label: x.fa, target: x.floats ? 'شناور' : 'غرق' })),
+            targets: shuffle([{ id: 'شناور', label: 'روی آب می‌ماند' }, { id: 'غرق', label: 'ته می‌رود' }]),
+            speech: 'هر چیز را در جای درست بگذار'
+        };
+    }
+
+    // --- science: which month belongs to which season? (drag-match) ---
+    function monthSeasonRound() {
+        const bank = (window.FA_MONTHS || []).slice();
+        if (bank.length < 4) return seasonRound();
+        const chosen = shuffle(bank).slice(0, 4);
+        const seasons = [...new Set(chosen.map(m => m.season))];
+        return {
+            type: 'drag-match',
+            prompt: 'هر ماه را به فصل خودش وصل کن:',
+            items: shuffle(chosen.map(m => ({ id: m.fa, label: m.fa, target: m.season }))),
+            targets: shuffle(seasons.map(x => ({ id: x, label: x }))),
+            speech: 'هر ماه مال کدام فصل است؟'
+        };
+    }
+
+    // --- reading: opposites as a matching game instead of a quiz ---
+    function oppositeMatchRound() {
+        const bank = (window.OPPOSITES || []).slice();
+        if (bank.length < 3) return oppositeRound();
+        const chosen = shuffle(bank).slice(0, 3);
+        return {
+            type: 'drag-match',
+            prompt: 'هر کلمه را به متضادش وصل کن:',
+            items: shuffle(chosen.map(x => ({ id: x.a, label: x.a, target: x.b }))),
+            targets: shuffle(chosen.map(x => ({ id: x.b, label: x.b }))),
+            speech: 'کلمه‌ها را به متضادشان وصل کن'
+        };
+    }
+
+    // --- socio-emotional: order the steps of a kind action (order-steps) ---
+    const SOCIAL_STORIES = [
+        { prompt: 'مراحل عذرخواهی را به ترتیب بچین:', steps: ['۱. متوجه می‌شوم اشتباه کردم', '۲. به چشم دوستم نگاه می‌کنم', '۳. می‌گویم معذرت می‌خواهم', '۴. جبران می‌کنم'] },
+        { prompt: 'مراحل دوست شدن با بچهٔ تازه‌وارد:', steps: ['۱. لبخند می‌زنم', '۲. سلام می‌کنم و نامم را می‌گویم', '۳. او را به بازی دعوت می‌کنم', '۴. با هم بازی می‌کنیم'] },
+        { prompt: 'وقتی عصبانی می‌شوم چه می‌کنم؟', steps: ['۱. می‌ایستم و نفس عمیق می‌کشم', '۲. تا پنج می‌شمارم', '۳. می‌گویم چه چیزی ناراحتم کرد', '۴. با آرامش راه‌حل پیدا می‌کنم'] },
+        { prompt: 'مراحل رعایت نوبت در بازی:', steps: ['۱. صبر می‌کنم', '۲. نوبت دوستم را نگه می‌دارم', '۳. وقتی نوبتم شد بازی می‌کنم', '۴. بعد نوبت را به بعدی می‌دهم'] },
+        { prompt: 'وقتی دوستم ناراحت است:', steps: ['۱. کنارش می‌نشینم', '۲. می‌پرسم چه شده', '۳. با دقت گوش می‌دهم', '۴. دلداری‌اش می‌دهم'] },
+        { prompt: 'مراحل کمک به کارهای خانه:', steps: ['۱. می‌پرسم چه کمکی از من برمی‌آید', '۲. وسایل را جمع می‌کنم', '۳. میز را می‌چینم', '۴. دست‌هایم را می‌شویم'] }
+    ];
+    function socialStoryRound() {
+        const story = pick(SOCIAL_STORIES);
+        const items = story.steps.map((label, idx) => ({ label, idx }));
+        return {
+            type: 'order-steps',
+            prompt: story.prompt,
+            items: shuffle(items),
+            answer: 'idx',
+            speech: story.prompt
+        };
+    }
+
+    // --- socio-emotional: sort behaviours into kind / unkind (drag-match) ---
+    function behaviourSortRound() {
+        const good = shuffle((window.GOOD_HABITS || []).map(h => h.fa)).slice(0, 2);
+        const bad = shuffle([
+            'داد زدن سر دوستان', 'گرفتن اسباب‌بازی بدون اجازه', 'مسخره کردن دیگران',
+            'ریختن زباله روی زمین', 'پریدن وسط حرف بزرگترها', 'قهر کردن سر بازی'
+        ]).slice(0, 2);
+        if (good.length < 2) return habitRound();
+        return {
+            type: 'drag-match',
+            prompt: 'رفتارها را در جای درست بگذار:',
+            items: shuffle([
+                ...good.map(g => ({ id: g, label: g, target: 'مهربان' })),
+                ...bad.map(bd => ({ id: bd, label: bd, target: 'نامهربان' }))
+            ]),
+            targets: shuffle([{ id: 'مهربان', label: 'رفتار مهربان' }, { id: 'نامهربان', label: 'رفتار نامهربان' }]),
+            speech: 'رفتار خوب را از رفتار بد جدا کن'
+        };
+    }
+
+    // --- socio-emotional: match a feeling to its situation (drag-match) ---
+    function emotionMatchRound() {
+        const bank = (window.EMOTIONS || []).slice();
+        if (bank.length < 3) return emotionRound();
+        const chosen = shuffle(bank).slice(0, 3);
+        return {
+            type: 'drag-match',
+            prompt: 'هر حس را به موقعیتش وصل کن:',
+            items: shuffle(chosen.map(e => ({ id: e.fa, label: e.fa, target: e.situation }))),
+            targets: shuffle(chosen.map(e => ({ id: e.situation, label: e.situation }))),
+            speech: 'هر احساس مال کدام موقعیت است؟'
+        };
+    }
+
+    // --- reading: build a sentence (order-steps over words) ---
+    function sentenceOrderRound() {
+        const bank = (window.SENTENCE_POOL || []).slice();
+        if (!bank.length) return sentenceRound();
+        const s2 = pick(bank);
+        const items = s2.words.map((w, idx) => ({ label: w, idx }));
+        return {
+            type: 'order-steps',
+            prompt: 'کلمه‌ها را مرتب کن تا جمله درست شود:',
+            items: shuffle(items),
+            answer: 'idx',
+            speech: 'کلمه‌ها را مرتب کن'
+        };
+    }
+
+    // --- art: colour-mixing knowledge (quiz but genuinely new content) ---
+    const COLOR_MIXES = [
+        { a: 'قرمز', b: 'زرد', result: 'نارنجی' },
+        { a: 'آبی', b: 'زرد', result: 'سبز' },
+        { a: 'قرمز', b: 'آبی', result: 'بنفش' },
+        { a: 'سفید', b: 'قرمز', result: 'صورتی' },
+        { a: 'سیاه', b: 'سفید', result: 'خاکستری' },
+        { a: 'قرمز', b: 'سبز', result: 'قهوه‌ای' }
+    ];
+    function colorMixRound() {
+        const m = pick(COLOR_MIXES);
+        const others = shuffle(COLOR_MIXES.map(x => x.result).filter(r => r !== m.result)).slice(0, 3);
+        const opts = shuffle([m.result, ...others]);
+        return mc(
+            `اگر «${m.a}» و «${m.b}» را با هم قاطی کنیم چه رنگی می‌شود؟`,
+            null,
+            opts.map(x => ({ label: x })),
+            opts.indexOf(m.result),
+            `${m.a} و ${m.b} با هم چه رنگی می‌سازند؟`
+        );
+    }
+
+    // --- art / logic: continue the colour pattern as an ordering task ---
+    function patternOrderRound() {
+        const colors = [
+            { name: 'قرمز', value: '#FF4757' }, { name: 'آبی', value: '#1E90FF' },
+            { name: 'زرد', value: '#F9CA24' }, { name: 'سبز', value: '#2ED573' }
+        ];
+        const picked = shuffle(colors).slice(0, 3);
+        const items = picked.map((c, idx) => ({ label: c.name, img: SvgArt.shape('circle', c.value, 60), idx }));
+        return {
+            type: 'order-steps',
+            prompt: 'رنگ‌ها را به همان ترتیبی که گفته شد بچین: ' + picked.map(c => c.name).join(' ← '),
+            items: shuffle(items),
+            answer: 'idx',
+            speech: 'رنگ‌ها را به ترتیب بچین'
+        };
+    }
+
+    // --- science: body part -> what we use it for (drag-match) ---
+    function bodyUseRound() {
+        const bank = (window.BODY_PARTS || []).slice();
+        if (bank.length < 3) return bodyPartRound();
+        const chosen = shuffle(bank).slice(0, 3);
+        return {
+            type: 'drag-match',
+            prompt: 'هر عضو بدن را به کارش وصل کن:',
+            items: shuffle(chosen.map(b => ({ id: b.fa, label: b.fa, target: b.use }))),
+            targets: shuffle(chosen.map(b => ({ id: b.use, label: b.use }))),
+            speech: 'هر عضو بدن برای چه کاری است؟'
+        };
+    }
+
+    // --- science: animal -> habitat (drag-match) ---
+    function habitatMatchRound() {
+        const bank = (window.ANIMALS || []).slice();
+        if (bank.length < 3) return animalHabitatRound();
+        const chosen = [];
+        const usedHab = new Set();
+        for (const a of shuffle(bank)) {
+            if (usedHab.has(a.habitat)) continue;
+            usedHab.add(a.habitat); chosen.push(a);
+            if (chosen.length === 3) break;
+        }
+        if (chosen.length < 3) return animalHabitatRound();
+        return {
+            type: 'drag-match',
+            prompt: 'هر حیوان را به خانه‌اش وصل کن:',
+            items: shuffle(chosen.map(a => ({ id: a.fa, label: a.fa, target: a.habitat }))),
+            targets: shuffle(chosen.map(a => ({ id: a.habitat, label: a.habitat }))),
+            speech: 'هر حیوان کجا زندگی می‌کند؟'
+        };
     }
 
     function resolveAgeTrack(metadata, pkg) {
@@ -1104,8 +1354,61 @@ window.Generator = (function() {
         return roles[role] || roles.quiz;
     }
 
+    // Which activity types suit each age track. Previously every age saw exactly
+    // the same mix of round types and only the option count changed, so a 4-year-old
+    // and an 8-year-old effectively played an identical game.
+    const TRACK_RULES = {
+        // Youngest: no abstract matrix reasoning, no multi-step ordering, no dragging.
+        toddler: {
+            avoid: ['raven-matrix', 'balance-scale', 'drag-match', 'order-steps', 'simon-memory', 'disappeared-item'],
+            prefer: ['quiz', 'painting', 'balloon-pop', 'tracing', 'memory']
+        },
+        preschool: {
+            avoid: ['raven-matrix', 'balance-scale'],
+            prefer: ['quiz', 'memory', 'painting', 'balloon-pop', 'tracing', 'order-steps']
+        },
+        early: { avoid: [], prefer: [] },
+        // Oldest / gifted: drop the babyish fillers, favour reasoning.
+        school: {
+            avoid: ['painting', 'tracing', 'balloon-pop'],
+            prefer: ['raven-matrix', 'balance-scale', 'drag-match', 'order-steps', 'simon-memory', 'quiz']
+        }
+    };
+
+    // Simpler stand-ins used when a round is too advanced for the youngest track.
+    // Deliberately weighted toward hands-on, non-quiz activities so the youngest
+    // track does not collapse into wall-to-wall multiple choice.
+    function simpleSubstitute() {
+        return pick([
+            paintingRound, paintingRound,
+            () => memoryRound(2), () => memoryRound(2),
+            balloonRound, balloonRound,
+            () => tracingRound(pick(ALPHABET).letter, 'letter'),
+            () => tracingRound(toFaDigit(rint(1, 5)), 'number'),
+            colorRound, shapeNameRound, animalSoundRound, emotionRound
+        ])();
+    }
+    // Harder stand-ins used when a round is too babyish for the oldest track.
+    function advancedSubstitute() {
+        return pick([ravenRound, shadowRound, oppositeMatchRound, materialRound, socialStoryRound])();
+    }
+
+    function retypeRoundForTrack(round, trackKey) {
+        const rules = TRACK_RULES[trackKey];
+        if (!rules || !round || !round.type) return round;
+        if (rules.avoid.indexOf(round.type) === -1) return round;
+        try {
+            const replacement = (trackKey === 'school') ? advancedSubstitute() : simpleSubstitute();
+            if (replacement && replacement.type && rules.avoid.indexOf(replacement.type) === -1) {
+                return { ...replacement, lessonId: round.lessonId, skillType: round.skillType, difficulty: round.difficulty };
+            }
+        } catch (e) { /* fall through and keep the original round */ }
+        return round;
+    }
+
     function adaptRoundForAge(round, metadata, pkg) {
         const trackKey = resolveAgeTrack(metadata, pkg);
+        round = retypeRoundForTrack(round, trackKey);
         let track = (pkg.ageTracks && pkg.ageTracks[trackKey])
             || (trackKey === 'toddler' && pkg.ageTracks && pkg.ageTracks.preschool)
             || { optionCount: 4, hintDelay: 4500, maxNumber: 20, language: 'ساده' };
@@ -1296,7 +1599,9 @@ window.Generator = (function() {
                 case 'story':
                 case 'story-creation':
                 case 'journaling':
-                    return plan([sentenceRound, storyOrderRound, wordMeaningRound], metadata);
+                    return plan([sentenceOrderRound, storyOrderRound, sentenceRound, wordMeaningRound], metadata);
+                case 'opposites':
+                    return plan([oppositeMatchRound, oppositeRound, oppositeMatchRound], metadata);
                 case 'vocabulary':
                 case 'sight-words':
                 case 'comprehension':
@@ -1305,7 +1610,7 @@ window.Generator = (function() {
                 case 'matching':
                 case 'reading':
                 default:
-                    return plan([sightWordRound, wordMeaningRound, oppositeRound, sentenceRound], metadata);
+                    return plan([sightWordRound, wordMeaningRound, oppositeMatchRound, sentenceOrderRound, oppositeRound, sentenceRound], metadata);
             }
         }
 
@@ -1381,27 +1686,30 @@ window.Generator = (function() {
                 case 'animal':
                 case 'animals':
                 case 'animal-sounds':
-                    return plan([animalSoundRound, animalHabitatRound, animalSoundRound], metadata);
+                    return plan([animalSoundRound, habitatMatchRound, animalHabitatRound, animalSoundRound], metadata);
                 case 'body-parts':
-                    return plan([bodyPartRound, bodyPartRound, senseRound], metadata);
+                    return plan([bodyPartRound, bodyUseRound, senseRound], metadata);
                 case 'senses':
-                    return plan([senseRound, bodyPartRound, senseRound], metadata);
+                    return plan([senseRound, bodyUseRound, senseRound, bodyPartRound], metadata);
                 case 'seasons':
                 case 'seasons-activity':
-                    return plan([seasonRound, seasonRound, plantGrowthRound], metadata);
+                    return plan([seasonRound, monthSeasonRound, plantGrowthRound], metadata);
                 case 'plant-growth':
-                    return plan([plantGrowthRound, plantGrowthRound, seasonRound], metadata);
+                    return plan([plantGrowthRound, monthSeasonRound, seasonRound], metadata);
                 case 'plant-parts':
                 case 'flowers':
-                    return plan([shapeNameRound, plantGrowthRound, colorRound], metadata);
+                    return plan([shapeNameRound, plantGrowthRound, materialRound, colorRound], metadata);
                 case 'health':
-                    return plan([habitRound, bodyPartRound, senseRound], metadata);
-                case 'conservation':
+                    return plan([habitRound, bodyUseRound, senseRound, bodyPartRound], metadata);
+                case 'materials':
+                    return plan([materialRound, floatSinkRound, classifyRound], metadata);
                 case 'water-cycle':
+                    return plan([floatSinkRound, storyOrderRound, materialRound, seasonRound], metadata);
+                case 'conservation':
                 case 'recycling':
                 case 'energy':
                 default:
-                    return plan([storyOrderRound, habitRound, seasonRound, classifyRound], metadata);
+                    return plan([storyOrderRound, materialRound, floatSinkRound, habitRound, monthSeasonRound, classifyRound], metadata);
             }
         }
 
@@ -1409,41 +1717,43 @@ window.Generator = (function() {
             switch (type) {
                 case 'emotions':
                 case 'emotion-game':
-                    return plan([emotionRound, emotionRound, habitRound], metadata);
+                    return plan([emotionRound, emotionMatchRound, socialStoryRound, habitRound], metadata);
                 case 'family':
-                    return plan([familyRound, emotionRound, habitRound], metadata);
-                case 'etiquette':
+                    return plan([familyRound, emotionMatchRound, socialStoryRound, habitRound], metadata);
+                case 'apologizing':
+                case 'conflict-resolution':
+                    return plan([socialStoryRound, behaviourSortRound, emotionRound, habitRound], metadata);
                 case 'friendship':
                 case 'sharing':
-                case 'apologizing':
+                case 'teamwork':
+                    return plan([socialStoryRound, behaviourSortRound, emotionMatchRound, familyRound], metadata);
+                case 'etiquette':
                 case 'patience':
                 case 'responsibility':
-                case 'conflict-resolution':
-                case 'teamwork':
                 case 'diversity':
                 case 'self-identity':
                 default:
-                    return plan([habitRound, emotionRound, familyRound], metadata);
+                    return plan([behaviourSortRound, socialStoryRound, emotionMatchRound, habitRound, emotionRound, familyRound], metadata);
             }
         }
 
         if (domain === 'art') {
             switch (type) {
                 case 'colors':
-                    return plan([colorRound, colorRound, patternRound], metadata);
+                    return plan([colorRound, colorMixRound, patternOrderRound, patternRound], metadata);
                 case 'drawing':
                 case 'coloring':
                 case 'finger-painting':
                 case 'illustration':
                 case 'free-drawing':
                 case 'comic':
-                    return plan([paintingRound, paintingRound, colorRound], metadata);
+                    return plan([paintingRound, colorMixRound, paintingRound, colorRound], metadata);
                 case 'music':
-                    return plan([balloonRound, colorRound, paintingRound], metadata);
+                    return plan([balloonRound, patternOrderRound, colorRound, paintingRound], metadata);
                 case 'craft':
                 case 'sculpture':
                 default:
-                    return plan([paintingRound, orderSizeRound, colorRound], metadata);
+                    return plan([paintingRound, materialRound, orderSizeRound, colorMixRound, patternOrderRound], metadata);
             }
         }
 

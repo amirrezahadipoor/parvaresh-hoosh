@@ -1,9 +1,16 @@
-const CACHE_NAME = 'parvaresh-hoosh-v14-contrast-a11y';
+const CACHE_NAME = 'parvaresh-hoosh-v15-content-art';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
   './vendor/gsap.min.js',
+  // Bundled Persian typeface. Without these in the precache the app fell back to
+  // Tahoma on a cold offline start, which looks wrong for Persian text.
+  './assets/fonts/Vazirmatn-Regular.woff2',
+  './assets/fonts/Vazirmatn-Medium.woff2',
+  './assets/fonts/Vazirmatn-Bold.woff2',
+  './assets/fonts/Vazirmatn-ExtraBold.woff2',
+  './assets/fonts/Vazirmatn-Black.woff2',
   // Bundled Persian narration (Android WebView has no fa-IR speech voice).
   './assets/audio/lesson-R-L1-L01.mp3',
   './assets/audio/lesson-R-L1-L02.mp3',
