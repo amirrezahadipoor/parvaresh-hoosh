@@ -36,6 +36,12 @@ window.BalloonPopActivity = (function() {
         headerRow.appendChild(speakerBtn);
         card.appendChild(headerRow);
 
+        const targetText = round.targetText || null;
+        const targetHint = document.createElement('div');
+        targetHint.className = 'balloon-target-hint';
+        targetHint.textContent = targetText ? `هدف: فقط «${targetText}»` : 'همهٔ بادکنک‌ها را لمس کن';
+        card.appendChild(targetHint);
+
         setTimeout(() => {
             AudioEngine.speak(round.speech || 'بادکنک‌ها را لمس کن تا بترکند!');
         }, 150);
@@ -53,7 +59,9 @@ window.BalloonPopActivity = (function() {
         ];
 
         let poppedCount = 0;
-        const totalBalloons = items.length;
+        let correctPopped = 0;
+        let completed = false;
+        const totalBalloons = targetText ? items.filter(item => item.text === targetText).length : items.length;
 
         items.forEach((item, idx) => {
             const b = document.createElement('div');
@@ -69,8 +77,17 @@ window.BalloonPopActivity = (function() {
                 </div>
             `;
 
-            b.addEventListener('click', () => {
-                if (b.classList.contains('popped')) return;
+            b.setAttribute('role', 'button');
+            b.setAttribute('tabindex', '0');
+            b.setAttribute('aria-label', `بادکنک ${item.text}`);
+            const pop = () => {
+                if (completed || b.classList.contains('popped')) return;
+                if (targetText && item.text !== targetText) {
+                    AudioEngine.play('wrong');
+                    targetHint.textContent = `این یکی هدف نیست؛ «${targetText}» را پیدا کن.`;
+                    if (window.Fx) Fx.shake(b);
+                    return;
+                }
                 b.classList.add('popped');
                 AudioEngine.play('pop');
                 AudioEngine.speak(item.sound || item.text);
@@ -81,11 +98,21 @@ window.BalloonPopActivity = (function() {
                 }
 
                 poppedCount++;
-                if (poppedCount >= totalBalloons) {
+                if (targetText) correctPopped++;
+                if (poppedCount >= totalBalloons || (targetText && correctPopped >= totalBalloons)) {
+                    completed = true;
+                    targetHint.textContent = 'آفرین! هدف را درست پیدا کردی.';
                     setTimeout(() => {
                         AudioEngine.play('correct');
                         if (cb && cb.onCorrect) cb.onCorrect(round);
                     }, 800);
+                }
+            };
+            b.addEventListener('click', pop);
+            b.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    pop();
                 }
             });
 

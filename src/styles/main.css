@@ -1487,3 +1487,5 @@ button:focus-visible, [role="button"]:focus-visible {
 
 /* Drag/drop also supports select-then-tap for smaller fingers and keyboard users. */
 [role="button"].selected { border-color: #2563EB !important; background: #EAF3FF !important; box-shadow: 0 0 0 3px rgba(37,99,235,.14), 0 3px 0 #B8CFE8 !important; }
+
+.balloon-target-hint { align-self: center; padding: 6px 10px; border-radius: 999px; color: #23609D; background: #EAF3FF; font-size: 11px; font-weight: 900; }

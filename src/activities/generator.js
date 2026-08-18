@@ -707,11 +707,14 @@ window.Generator = (function() {
             { text: '۲', sound: 'عدد دو' },
             { text: '۳', sound: 'عدد سه' }
         ];
+        const target = pick(pool);
+        const items = shuffle([target, ...shuffle(pool.filter(item => item.text !== target.text)).slice(0, 4)]);
         return {
             type: 'balloon-pop',
-            prompt: 'بادکنک‌ها را بترکان و صداهایشان را بشنو!',
-            items: shuffle(pool).slice(0, 5),
-            speech: 'بادکنک‌ها را لمس کن تا بترکند!'
+            prompt: `فقط بادکنک‌های «${target.text}» را بترکان!`,
+            items,
+            targetText: target.text,
+            speech: `بادکنک ${target.text} را پیدا کن و لمس کن!`
         };
     }
 
