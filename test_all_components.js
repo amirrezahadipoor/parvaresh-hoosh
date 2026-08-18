@@ -187,7 +187,7 @@ function validateRound(round, lessonId) {
 
 for (const item of manifest.items) {
     try {
-        const rounds = Generator.generate(item.id);
+        const rounds = Generator.generate(item.id, item);
         if (!Array.isArray(rounds) || rounds.length === 0) {
             errors.push(`Lesson ${item.id} returned empty rounds!`);
             continue;

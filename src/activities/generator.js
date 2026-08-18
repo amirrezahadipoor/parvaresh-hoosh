@@ -782,9 +782,259 @@ window.Generator = (function() {
     }
 
     // ==========================================
-    // DYNAMIC LESSON RESOLVER
+    // DATA-DRIVEN LESSON RESOLVER
+    // Every curriculum type gets a matching activity plan before the legacy fallback.
     // ==========================================
-    function generate(lessonId) {
+    function inferDomain(lessonId, metadata) {
+        if (metadata && metadata.domain) return metadata.domain;
+        if (String(lessonId).startsWith('R-')) return 'reading';
+        if (String(lessonId).startsWith('M-')) return 'math';
+        if (String(lessonId).startsWith('L-')) return 'logic';
+        if (String(lessonId).startsWith('S-')) return 'science';
+        if (String(lessonId).startsWith('SE-')) return 'socio-emotional';
+        if (String(lessonId).startsWith('A-')) return 'art';
+        return 'general';
+    }
+
+    function lessonLevel(lessonId) {
+        const match = String(lessonId).match(/^[A-Z]+-L(\d+)/);
+        return match ? Math.max(1, Math.min(8, Number(match[1]))) : 1;
+    }
+
+    function plan(factories, metadata) {
+        const list = Array.isArray(factories) ? factories.filter(Boolean) : [];
+        if (!list.length) return [];
+        const rounds = Array.from({ length: 5 }, (_, index) => list[index % list.length]());
+        return rounds.map(round => ({
+            ...round,
+            lessonId: metadata && metadata.id,
+            skillType: metadata && metadata.type,
+            difficulty: metadata && metadata.difficulty || lessonLevel(metadata && metadata.id)
+        }));
+    }
+
+    function colorRound() {
+        const colors = [
+            { name: 'قرمز', value: '#FF4757' },
+            { name: 'آبی', value: '#1E90FF' },
+            { name: 'سبز', value: '#2ED573' },
+            { name: 'زرد', value: '#F9CA24' },
+            { name: 'بنفش', value: '#A29BFE' }
+        ];
+        const target = pick(colors);
+        const options = shuffle([target, ...shuffle(colors.filter(item => item.name !== target.name)).slice(0, 3)]);
+        return mc(
+            `رنگ «${target.name}» را پیدا کن:`,
+            null,
+            options.map(item => ({ img: SvgArt.shape('circle', item.value, 68), label: item.name })),
+            options.indexOf(target),
+            `رنگ ${target.name} را انتخاب کن`
+        );
+    }
+
+    function clockRound() {
+        const hour = rint(1, 12);
+        const options = shuffle([hour, ((hour + 2) % 12) + 1, ((hour + 5) % 12) + 1, ((hour + 8) % 12) + 1]);
+        return mc(
+            `عقربهٔ ساعت، ساعت ${toFaWord(hour)} را نشان می‌دهد؟`,
+            SvgArt.object('clock', 110),
+            options.map(value => ({ label: `${toFaDigit(value)}:۰۰`, big: true })),
+            options.indexOf(hour),
+            `ساعت ${toFaWord(hour)} را پیدا کن`
+        );
+    }
+
+    function lessonPlan(lessonId, metadata) {
+        const domain = inferDomain(lessonId, metadata);
+        const type = metadata && metadata.type || '';
+        const level = lessonLevel(lessonId);
+        const countMax = level <= 2 ? 5 : level <= 4 ? 10 : 20;
+        const pairCount = Math.min(5, 2 + Math.floor(level / 2));
+
+        if (domain === 'reading') {
+            switch (type) {
+                case 'recognition':
+                    return plan([
+                        () => letterSoundRound(pick(ALPHABET)),
+                        () => letterExampleRound(pick(ALPHABET)),
+                        () => tracingRound(pick(ALPHABET).letter, 'letter')
+                    ], metadata);
+                case 'phonemic-awareness':
+                case 'rhyming':
+                    return plan([firstSoundRound, rhymeRound, syllableRound], metadata);
+                case 'blending':
+                case 'word-building':
+                    return plan([blendRound, blendRound, memoryRound.bind(null, 3)], metadata);
+                case 'tracing':
+                    return plan([() => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter'), paintingRound], metadata);
+                case 'sentence-building':
+                case 'word-order':
+                case 'sequencing':
+                case 'creative-writing':
+                case 'story':
+                case 'story-creation':
+                case 'journaling':
+                    return plan([sentenceRound, storyOrderRound, wordMeaningRound], metadata);
+                case 'vocabulary':
+                case 'sight-words':
+                case 'comprehension':
+                case 'character-analysis':
+                case 'fill-blank':
+                case 'matching':
+                case 'reading':
+                default:
+                    return plan([sightWordRound, wordMeaningRound, oppositeRound, sentenceRound], metadata);
+            }
+        }
+
+        if (domain === 'math') {
+            switch (type) {
+                case 'counting':
+                case 'counting-game':
+                    return plan([() => countRound(countMax), () => countRound(countMax), () => tracingRound(toFaDigit(rint(1, countMax)), 'number')], metadata);
+                case 'number-recognition':
+                    return plan([() => numberNameRound(countMax), () => tracingRound(toFaDigit(rint(1, countMax)), 'number'), () => countRound(countMax)], metadata);
+                case 'number-order':
+                case 'number-pattern':
+                case 'place-value':
+                    return plan([() => numberOrderRound(countMax), () => compareRound(countMax), () => numberNameRound(countMax)], metadata);
+                case 'addition':
+                case 'addition-concept':
+                case 'addition-game':
+                    return plan([() => arithRound('+', countMax), () => arithRound('+', countMax), balanceRound], metadata);
+                case 'subtraction':
+                case 'subtraction-concept':
+                case 'subtraction-game':
+                    return plan([() => arithRound('-', countMax), () => arithRound('-', countMax), balanceRound], metadata);
+                case 'shapes':
+                case 'shape-matching':
+                case 'shape-construction':
+                    return plan([shapeNameRound, shapeMatchRound, orderSizeRound], metadata);
+                case 'patterns':
+                case 'create-patterns':
+                    return plan([patternRound, patternRound, ravenRound], metadata);
+                case 'comparison':
+                case 'measurement':
+                case 'volume':
+                    return plan([() => compareRound(countMax), orderSizeRound, balanceRound], metadata);
+                case 'time':
+                    return plan([clockRound, clockRound, () => numberNameRound(12)], metadata);
+                case 'mixed-operations':
+                default:
+                    return plan([() => arithRound('both', countMax), () => compareRound(countMax), () => countRound(countMax), balanceRound], metadata);
+            }
+        }
+
+        if (domain === 'logic') {
+            switch (type) {
+                case 'matching':
+                case 'pairing':
+                    return plan([() => memoryRound(pairCount), () => memoryRound(pairCount), disappearedRound], metadata);
+                case 'jigsaw':
+                case 'puzzle':
+                case 'maze':
+                    return plan([orderSizeRound, ravenRound, shadowRound, storyOrderRound], metadata);
+                case 'categorization':
+                case 'classification':
+                case 'venn-diagram':
+                    return plan([classifyRound, classifyRound, oddOneOutRound.bind(null, 'animals')], metadata);
+                case 'spot-difference':
+                case 'odd-one-out':
+                    return plan([oddOneOutRound.bind(null, 'animals'), oddOneOutRound.bind(null, 'shapes'), shadowRound], metadata);
+                case 'shadow-matching':
+                    return plan([shadowRound, shadowRound, shapeMatchRound], metadata);
+                case 'sequencing':
+                case 'ordering':
+                case 'association':
+                case 'deduction':
+                case 'riddle':
+                    return plan([storyOrderRound, orderSizeRound, ravenRound, classifyRound], metadata);
+                default:
+                    return plan([() => memoryRound(pairCount), ravenRound, shadowRound, storyOrderRound], metadata);
+            }
+        }
+
+        if (domain === 'science') {
+            switch (type) {
+                case 'animal':
+                case 'animals':
+                case 'animal-sounds':
+                    return plan([animalSoundRound, animalHabitatRound, animalSoundRound], metadata);
+                case 'body-parts':
+                    return plan([bodyPartRound, bodyPartRound, senseRound], metadata);
+                case 'senses':
+                    return plan([senseRound, bodyPartRound, senseRound], metadata);
+                case 'seasons':
+                case 'seasons-activity':
+                    return plan([seasonRound, seasonRound, plantGrowthRound], metadata);
+                case 'plant-growth':
+                    return plan([plantGrowthRound, plantGrowthRound, seasonRound], metadata);
+                case 'plant-parts':
+                case 'flowers':
+                    return plan([shapeNameRound, plantGrowthRound, colorRound], metadata);
+                case 'health':
+                    return plan([habitRound, bodyPartRound, senseRound], metadata);
+                case 'conservation':
+                case 'water-cycle':
+                case 'recycling':
+                case 'energy':
+                default:
+                    return plan([storyOrderRound, habitRound, seasonRound, classifyRound], metadata);
+            }
+        }
+
+        if (domain === 'socio-emotional') {
+            switch (type) {
+                case 'emotions':
+                case 'emotion-game':
+                    return plan([emotionRound, emotionRound, habitRound], metadata);
+                case 'family':
+                    return plan([familyRound, emotionRound, habitRound], metadata);
+                case 'etiquette':
+                case 'friendship':
+                case 'sharing':
+                case 'apologizing':
+                case 'patience':
+                case 'responsibility':
+                case 'conflict-resolution':
+                case 'teamwork':
+                case 'diversity':
+                case 'self-identity':
+                default:
+                    return plan([habitRound, emotionRound, familyRound], metadata);
+            }
+        }
+
+        if (domain === 'art') {
+            switch (type) {
+                case 'colors':
+                    return plan([colorRound, colorRound, patternRound], metadata);
+                case 'drawing':
+                case 'coloring':
+                case 'finger-painting':
+                case 'illustration':
+                case 'free-drawing':
+                case 'comic':
+                    return plan([paintingRound, paintingRound, colorRound], metadata);
+                case 'music':
+                    return plan([balloonRound, colorRound, paintingRound], metadata);
+                case 'craft':
+                case 'sculpture':
+                default:
+                    return plan([paintingRound, orderSizeRound, colorRound], metadata);
+            }
+        }
+
+        return null;
+    }
+
+    // ==========================================
+    // LEGACY FALLBACKS (kept for direct calls from old integrations)
+    // ==========================================
+    function generate(lessonId, metadata) {
+        const metadataPlan = lessonPlan(lessonId, metadata);
+        if (metadataPlan && metadataPlan.length) return metadataPlan;
+
         // READING
         if (lessonId.startsWith('R-L1')) {
             const l1 = pick(ALPHABET);
