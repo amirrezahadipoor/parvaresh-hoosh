@@ -496,16 +496,35 @@ window.Generator = (function() {
         );
     }
 
+    // Renders the actual pattern the child is asked to continue. Both pattern
+    // branches used to pass `null` as the stage image, so the round fell through
+    // to a generic decorative fallback and the child had to guess the "next" item
+    // of a sequence that was never drawn.
+    function patternStrip(cells) {
+        // A pattern must be read as ONE unbroken line; wrapping a 6-cell sequence
+        // onto two rows destroys the left-to-right (here right-to-left) logic the
+        // child is meant to infer. Size the cells to fit the row instead.
+        const n = cells.length;
+        const gap = 8;
+        const size = Math.max(44, Math.min(84, Math.floor((352 - gap * (n - 1)) / n)));
+        const html = cells.map(c => c === null
+            ? `<span style="display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:16px;border:3px dashed #B9A9F5;background:#F3EFFF;color:#6C5CE7;font-size:${Math.round(size * 0.5)}px;font-weight:800;">؟</span>`
+            : `<span style="display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;">${c}</span>`
+        ).join('');
+        return `<div dir="rtl" style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:${gap}px;max-width:340px;margin:0 auto">${html}</div>`;
+    }
+
     function patternRound() {
         const p = pick(PATTERNS);
         if (p.type === 'color') {
             const correctColor = PATTERN_COLORS[p.answer];
             const others = shuffle(PATTERN_COLORS.filter(c => c !== correctColor)).slice(0, 2);
             const options = shuffle([correctColor, ...others]);
+            const strip = patternStrip(p.seq.map(i => i === null ? null : SvgArt.shape('circle', PATTERN_COLORS[i], 74)));
             return mc(
                 'کدام رنگ جای علامت سوال در الگو قرار می‌گیرد؟',
-                null,
-                options.map(c => ({ img: SvgArt.shape('circle', c, 65), label: '' })),
+                strip,
+                options.map(c => ({ img: SvgArt.shape('circle', c, 88), label: '' })),
                 options.indexOf(correctColor),
                 'رنگ بعدی در الگو کدام است؟'
             );
@@ -513,10 +532,11 @@ window.Generator = (function() {
             const correctShape = p.answer;
             const others = shuffle(SHAPES.map(s => s.id).filter(x => x !== correctShape)).slice(0, 2);
             const options = shuffle([correctShape, ...others]);
+            const strip = patternStrip(p.seq.map(sid => sid === null ? null : SvgArt.shape(sid, '#6C5CE7', 74)));
             return mc(
                 'کدام شکل جای علامت سوال در الگو قرار می‌گیرد؟',
-                null,
-                options.map(sid => ({ img: SvgArt.shape(sid, '#6C5CE7', 65), label: '' })),
+                strip,
+                options.map(sid => ({ img: SvgArt.shape(sid, '#6C5CE7', 88), label: '' })),
                 options.indexOf(correctShape),
                 'شکل بعدی در الگو کدام است؟'
             );
@@ -937,18 +957,22 @@ window.Generator = (function() {
 
     function countImage(n) {
         const obj = pick(['apple', 'ball', 'star', 'flower', 'balloon']);
+        // The items the child must COUNT were locked at 52px, so five stars occupied
+        // a 273x50 strip inside a ~370x630 stage: tiny objects marooned in white
+        // space. Scale to the count so few items are big and many items still fit.
+        const size = n <= 3 ? 104 : n <= 5 ? 88 : n <= 8 ? 72 : n <= 12 ? 58 : 46;
         let svgs = '';
-        for (let i = 0; i < n; i++) {
-            svgs += SvgArt.object(obj, 52);
-        }
-        return `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:320px;margin:0 auto">${svgs}</div>`;
+        for (let i = 0; i < n; i++) svgs += SvgArt.object(obj, size);
+        return `<div style="display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:10px;max-width:330px;margin:0 auto">${svgs}</div>`;
     }
 
     function arithImage(sign, a, b) {
         const obj = pick(['apple', 'ball', 'star']);
+        const most = Math.max(a, b);
+        const size = most <= 3 ? 74 : most <= 5 ? 62 : most <= 8 ? 50 : 40;
         let left = '', right = '';
-        for (let i = 0; i < a; i++) left += SvgArt.object(obj, 42);
-        for (let i = 0; i < b; i++) right += SvgArt.object(obj, 42);
+        for (let i = 0; i < a; i++) left += SvgArt.object(obj, size);
+        for (let i = 0; i < b; i++) right += SvgArt.object(obj, size);
 
         return `
             <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
@@ -1905,9 +1929,10 @@ window.Generator = (function() {
 
         // Colors -> decorative palette (never reveals the target color).
         if (/رنگ/i.test(prompt)) {
+            // 34px dots were far too small for the centre of a 630px-tall stage.
             const swatches = ['#FF6B6B', '#4ECDC4', '#F9CA24', '#A29BFE', '#FF8A5C', '#2ED573']
-                .map(c => `<span style="display:inline-block;width:34px;height:34px;border-radius:50%;background:${c};border:3px solid #FFF;box-shadow:0 2px 0 rgba(0,0,0,.12);"></span>`).join('');
-            return `<div class="round-visual-flex"><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:230px;">${swatches}</span></div>`;
+                .map(c => `<span style="display:inline-block;width:72px;height:72px;border-radius:50%;background:${c};border:4px solid #FFF;box-shadow:0 3px 0 rgba(0,0,0,.14);"></span>`).join('');
+            return `<div class="round-visual-flex"><span style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:300px;">${swatches}</span></div>`;
         }
 
         // NEVER show the answer image on the stage. This used to render the correct

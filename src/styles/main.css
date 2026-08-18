@@ -915,7 +915,7 @@ html, body {
 .arcade-score-badge, .arcade-combo-badge { padding: 5px 9px; border-radius: var(--r-full); font-size: 12px; font-weight: 900; white-space: nowrap; }
 .arcade-score-badge { color: var(--accent); background: #EDEAFE; }
 .arcade-combo-badge { color: #A03E00; background: #FEF9E7; }
-.action-pill-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 8px 12px; border: 0; border-radius: var(--r-full); color: var(--ink); background: #EFE6DC; font-family: inherit; font-size: 12px; font-weight: 800; box-shadow: 0 3px 0 #D8C8B8; cursor: pointer; }
+.action-pill-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 12px; border: 0; border-radius: var(--r-full); color: var(--ink); background: #EFE6DC; font-family: inherit; font-size: 12px; font-weight: 800; box-shadow: 0 3px 0 #D8C8B8; cursor: pointer; }
 .arcade-game-card { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 12px 8px; border: 2px solid #F0E6DA; border-top: 5px solid var(--gcolor,var(--accent)); border-radius: var(--r-lg); background: #FFF; font-family: inherit; text-align: center; cursor: pointer; box-shadow: var(--sh-sm); }
 .arcade-game-icon { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin-bottom: 7px; border-radius: var(--r-full); color: #FFF; background: var(--gcolor,var(--accent)); }
 .arcade-game-icon svg { display: block; width: 40px; height: 40px; max-width: 40px; max-height: 40px; }

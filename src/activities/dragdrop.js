@@ -115,7 +115,8 @@ window.DragDropActivity = (function() {
             itemEl.setAttribute('role', 'button');
             itemEl.setAttribute('tabindex', '0');
             itemEl.setAttribute('aria-label', item.label || 'کارت قابل جابه‌جایی');
-            itemEl.style.cssText = 'background:#FFFFFF; border-radius:12px; padding:6px 10px; box-shadow:0 3px 0 #E2D3C4; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:grab; touch-action:none; border:2px solid #EFE6DC;';
+            // Draggable chips were ~35x34px, below the 44px touch minimum for a child.
+            itemEl.style.cssText = 'min-width:64px; min-height:48px; background:#FFFFFF; border-radius:12px; padding:8px 14px; box-shadow:0 3px 0 #E2D3C4; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:grab; touch-action:none; border:2px solid #EFE6DC;';
 
             if (item.img) {
                 const imgSpan = document.createElement('div');

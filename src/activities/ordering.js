@@ -108,6 +108,10 @@ window.OrderingActivity = (function() {
             currentOrder.forEach((item, idx) => {
                 const itemEl = document.createElement('div');
                 itemEl.className = `order-step-card ${selectedIndex === idx ? 'selected' : ''}`;
+                // Expose the sort key so the ordering can be verified/automated.
+                itemEl.dataset.slot = String(idx);
+                if (item.idx !== undefined) itemEl.dataset.idx = String(item.idx);
+                if (item.size !== undefined) itemEl.dataset.size = String(item.size);
 
                 // Position badges are useful for "put the steps in order" cards, but on
                 // word-ordering cards a printed ۱..۴ reads as the answer. Only show the
