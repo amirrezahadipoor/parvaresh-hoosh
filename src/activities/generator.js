@@ -861,8 +861,10 @@ window.Generator = (function() {
                     ], metadata);
                 case 'phonemic-awareness':
                 case 'rhyming':
+                case 'syllables':
                     return plan([firstSoundRound, rhymeRound, syllableRound], metadata);
                 case 'blending':
+                case 'letter-connection':
                 case 'word-building':
                     return plan([blendRound, blendRound, memoryRound.bind(null, 3)], metadata);
                 case 'tracing':

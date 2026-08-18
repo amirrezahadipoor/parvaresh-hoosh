@@ -37,7 +37,14 @@
     ];
 
     // ===== INIT =====
+    function registerOfflineShell() {
+        if (!('serviceWorker' in navigator)) return;
+        if (!/^https?:$/.test(window.location.protocol)) return;
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+
     async function init() {
+        registerOfflineShell();
         await Storage.init();
         if (window.Engagement) await window.Engagement.init();
 
@@ -456,6 +463,40 @@
     }
 
     // ===== LEVEL LESSONS SCREEN =====
+    const SKILL_LABELS = {
+        recognition: 'شناخت و انتخاب',
+        'phonemic-awareness': 'آگاهی از صداها',
+        rhyming: 'هم‌قافیه‌ها',
+        syllables: 'بخش‌کردن کلمه',
+        blending: 'ترکیب صداها',
+        'word-building': 'کلمه‌سازی',
+        tracing: 'ردگیری با انگشت',
+        'sentence-building': 'جمله‌سازی',
+        comprehension: 'درک مطلب',
+        vocabulary: 'واژه‌آموزی',
+        counting: 'شمارش',
+        addition: 'جمع',
+        subtraction: 'تفریق',
+        shapes: 'اشکال هندسی',
+        patterns: 'الگوها',
+        comparison: 'مقایسه',
+        time: 'ساعت و زمان',
+        matching: 'جفت‌یابی',
+        categorization: 'دسته‌بندی',
+        sequencing: 'ترتیب و توالی',
+        'odd-one-out': 'عضو متفاوت',
+        'animal-sounds': 'صدای حیوانات',
+        seasons: 'فصل‌ها',
+        emotions: 'شناخت احساسات',
+        etiquette: 'آداب مهربانی',
+        drawing: 'نقاشی خلاق',
+        coloring: 'رنگ‌آمیزی'
+    };
+
+    function skillLabel(type) {
+        return SKILL_LABELS[type] || 'بازی آموزشی';
+    }
+
     function renderLevel() {
         const dom = (state.curriculum && state.curriculum.domains || []).find(x => x.id === state.domainId);
         const level = dom && (dom.levels || []).find(l => l.id === state.levelId);
@@ -483,8 +524,14 @@
 
             card.innerHTML = `
                 <div class="lstate">${isDone ? 'تکمیل' : toFa(i + 1)}</div>
-                <div class="ltitle">${lesson.title}</div>
+                <div class="lesson-card-main">
+                    <div class="ltitle"></div>
+                    <div class="lesson-meta"><span class="lesson-skill"></span><span>۵ فعالیت</span></div>
+                </div>
+                <span class="lesson-open-mark" aria-hidden="true">‹</span>
             `;
+            card.querySelector('.ltitle').textContent = lesson.title;
+            card.querySelector('.lesson-skill').textContent = skillLabel(lesson.type);
 
             card.addEventListener('click', () => {
                 AudioEngine.play('click');
