@@ -1461,12 +1461,19 @@ window.Generator = (function() {
         // cursor walked a 5-slot roundPlan over 4 letters, so one letter was only
         // ever traced (never taught) while another was asked twice.
         if (set && set.length && /صدای الفبا/.test(pkg.title || metadata.title || '')) {
+            // Teach each letter, but break the drill up with hands-on rounds. Before
+            // this, a new child met 60+ consecutive multiple-choice questions and never
+            // reached a game or the painting sheet at all.
             const factories = [];
-            set.forEach(letterObj => {
+            set.forEach((letterObj, i) => {
                 factories.push(() => letterSoundRound(letterObj));
                 factories.push(() => letterExampleRound(letterObj));
+                // Halfway through, hand the child something to DO rather than choose.
+                if (i === 1) factories.push(() => tracingRound(letterObj.letter, 'letter'));
             });
-            factories.push(() => tracingRound(pick(set).letter, 'letter'));
+            // Finish on a game, not another question. A 4-year-old will not sit
+            // through a 12-round lesson, so the set is capped at 10.
+            factories.push(() => balloonRound());
             const rounds = plan(factories, { ...metadata, difficulty: level }, true);
             return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
         }
@@ -1512,12 +1519,10 @@ window.Generator = (function() {
         'problem-solving': 'topic-addition', 'place-value': 'topic-counting',
         'comparison': 'topic-counting', 'number-pattern': 'topic-counting',
         'patterns': 'topic-shapes', 'create-patterns': 'topic-shapes',
-        'measurement': 'topic-shapes', 'volume': 'topic-shapes', 'time': 'topic-counting',
+        
         'plant-parts': 'topic-seasons', 'plant-growth': 'topic-seasons',
         'flowers': 'topic-seasons', 'earth-science': 'topic-seasons',
-        'water-cycle': 'topic-seasons', 'conservation': 'topic-animals',
-        'recycling': 'topic-animals', 'energy': 'topic-seasons',
-        'science': 'topic-senses', 'scientific-reasoning': 'topic-senses',
+        'water-cycle': 'topic-seasons', 
         'health': 'topic-senses',
         'friendship': 'topic-emotions', 'sharing': 'topic-emotions',
         'apologizing': 'topic-emotions', 'etiquette': 'topic-emotions',
@@ -1540,7 +1545,7 @@ window.Generator = (function() {
         'phonemic-awareness': 'topic-words', 'rhyming': 'topic-words',
         'syllables': 'topic-words', 'blending': 'topic-words',
         'word-building': 'topic-words', 'letter-connection': 'topic-words',
-        'vocabulary': 'topic-words', 'matching': 'topic-words',
+        'vocabulary': 'topic-words', 
         'memory-logic': 'topic-memory', 'pairing': 'topic-memory',
         'shadow-matching': 'topic-memory',
         'sequencing': 'topic-sequence', 'ordering': 'topic-sequence',
@@ -1871,17 +1876,46 @@ window.Generator = (function() {
             return `<div class="round-visual-flex"><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:230px;">${swatches}</span></div>`;
         }
 
-        // Image-matching questions (which image starts with…, which word…, builds…)
-        // may safely show the answer image as the question content.
-        if (answerOpt && answerOpt.img && /شروع می‌شود|کدام گزینه|کدام تصویر/i.test(prompt)) {
-            return `<div class="round-visual-flex">${answerOpt.img}</div>`;
+        // NEVER show the answer image on the stage. This used to render the correct
+        // option in the centre of the screen for "کدام تصویر با حرف ... شروع می‌شود؟",
+        // which answered the question for the child (114 rounds were self-answering).
+        // For letter questions the honest visual is the LETTER being asked about.
+        const letterQ = prompt.match(/حرف «([^»]+)»/);
+        if (letterQ && letterQ[1]) {
+            return SvgArt.letterTile(letterQ[1], wordColor(letterQ[1]), 150);
         }
 
-        // Final fallback: a friendly decorative tile so the stage is never blank.
-        // SvgArt.object takes (kind, size). Passing a colour as the 2nd argument used to
-        // shift the size out of place and emit a colour string as the svg width/height,
-        // which browsers reject.
-        return SvgArt.object('star', 110);
+        // Blending: «حروف «ما - شین» کدام کلمه را می‌سازند؟» -> show the syllables.
+        const blendQ = prompt.match(/حروف «([^»]+)»/);
+        if (blendQ && blendQ[1]) {
+            const parts = blendQ[1].split(/\s*-\s*/).filter(Boolean).slice(0, 4);
+            if (parts.length) {
+                const tiles = parts.map(t => SvgArt.wordTile(t, wordColor(t), 74)).join('');
+                return `<div class="round-visual-flex">${tiles}${SvgArt.questionTile('#A4B0BE', 74)}</div>`;
+            }
+        }
+
+        // Riddle / definition rounds («… — این نشانه کدام است؟») -> a thinking mascot
+        // plus a question tile. Honest: it signals "guess", it does not fake an answer.
+        if (/این نشانه کدام|چیست|کدام است/i.test(prompt)) {
+            return `<div class="round-visual-flex">${window.Mascot ? Mascot.svg(104, 'thinking') : ''}${SvgArt.questionTile('#A4B0BE', 88)}</div>`;
+        }
+
+        // Shape questions -> the named shape.
+        const shapeQ = prompt.match(/شکل «([^»]+)»/);
+        if (shapeQ && shapeQ[1] && SHAPE_IMG[shapeQ[1]]) {
+            return SvgArt.shape(SHAPE_IMG[shapeQ[1]][0], SHAPE_IMG[shapeQ[1]][1], 130);
+        }
+
+        // Counting / number questions -> keep the numeric focus.
+        if (/چند|تعداد|بشمار/i.test(prompt)) {
+            return `<div class="round-visual-flex">${SvgArt.questionTile('#A4B0BE', 110)}</div>`;
+        }
+
+        // Final fallback: a neutral "think about it" tile. A big gold STAR used to sit
+        // here on 223 rounds (25% of all quizzes) with no relation to the question,
+        // which is exactly the meaningless decoration reported.
+        return `<div class="round-visual-flex">${window.Mascot ? Mascot.svg(110, 'thinking') : SvgArt.questionTile('#A4B0BE', 110)}</div>`;
     }
 
     // Progressive expansion pack: every new lesson gets a different round mix.

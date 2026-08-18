@@ -203,8 +203,11 @@ window.PaintingActivity = (function() {
         canvas.className = 'paint-canvas';
         // Bigger sheet: the old canvas used only ~44% of the height and capped at
         // 280px, leaving the workshop feeling cramped on a phone.
+        // Size the sheet to the area it will really be displayed in. Previously the
+        // height was computed from the viewport (0.62 * innerHeight) while CSS then
+        // clamped it with max-height, changing the aspect ratio and letterboxing it.
         const width = Math.min(window.innerWidth - 24, 560);
-        const height = Math.min(Math.max(window.innerHeight * 0.62, 320), 620);
+        const height = Math.min(Math.max(window.innerHeight * 0.52, 300), 560);
         const dpr = window.devicePixelRatio || 1;
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -246,12 +249,20 @@ window.PaintingActivity = (function() {
         let strokeHue = 0;
 
         function getPos(e) {
+            // The stylesheet applies `max-width:100%; max-height:100%` to .paint-canvas,
+            // so the element is often displayed SMALLER than the `width`/`height` the
+            // drawing code works in. Subtracting rect.left/top alone therefore produced
+            // a growing offset: the brush painted far from the child's finger and could
+            // not reach the right/bottom of the sheet at all. Convert from displayed
+            // pixels into drawing-space pixels.
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const scaleX = rect.width ? (width / rect.width) : 1;
+            const scaleY = rect.height ? (height / rect.height) : 1;
             return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
             };
         }
 

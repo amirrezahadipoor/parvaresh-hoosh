@@ -522,13 +522,13 @@ html, body {
 /* Option icons: scale any SVG (inline width/height attributes included) down to a
    child-friendly size so tall icons never stretch the touch buttons. */
 .game-tap-choice-btn svg {
-    max-width: 46px;
-    max-height: 46px;
+    max-width: 82px;
+    max-height: 82px;
     width: auto;
     height: auto;
 }
-.game-tap-choice-btn > span:first-child { display: flex; align-items: center; justify-content: center; max-height: 50px; }
-.game-tap-choice-btn > span:first-child svg { max-width: 46px; max-height: 46px; }
+.game-tap-choice-btn > span:first-child { display: flex; align-items: center; justify-content: center; max-height: 86px; }
+.game-tap-choice-btn > span:first-child svg { max-width: 82px; max-height: 82px; }
 
 /* Center visuals: never wider than the stage, never taller than ~38% of the screen.
    The generated art carries hardcoded width/height attributes (e.g. 95x95), so `height:auto`
@@ -920,8 +920,10 @@ html, body {
 .arcade-game-icon { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin-bottom: 7px; border-radius: var(--r-full); color: #FFF; background: var(--gcolor,var(--accent)); }
 .arcade-game-icon svg { display: block; width: 40px; height: 40px; max-width: 40px; max-height: 40px; }
 .app-icon { display: block; flex: 0 0 auto; overflow: visible; }
-.game-option-art { display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; overflow: visible; }
-.game-option-art svg { display: block; width: auto !important; height: auto !important; max-width: 52px; max-height: 48px; }
+/* Option artwork was capped at 52x48px — far too small for a 4-year-old to read
+   the picture inside a 187px-wide button. Roughly doubled. */
+.game-option-art { display: flex; align-items: center; justify-content: center; width: 100%; height: 82px; overflow: visible; }
+.game-option-art svg { display: block; width: auto; height: auto; max-width: 82px; max-height: 82px; }
 .game-tap-choice-btn > span:last-child:not(.game-option-art) { line-height: 1.35; }
 .arcade-game-title { overflow: hidden; text-overflow: ellipsis; font-size: 13px; font-weight: 900; }
 .arcade-game-desc { margin-top: 3px; color: var(--ink2); font-size: 10px; line-height: 1.35; }
@@ -1894,3 +1896,11 @@ button:focus-visible, [role="button"]:focus-visible {
 .challenge-track { height: 8px; margin-top: 11px; border-radius: 999px; background: rgba(255,255,255,.28); overflow: hidden; }
 .challenge-fill { height: 100%; border-radius: 999px; background: #FFF; transition: width .5s ease; }
 .challenge-count { margin-top: 6px; font-size: 11px; font-weight: 900; text-align: left; opacity: .95; }
+
+/* Play zone banner — keeps free-play games visually separate from lessons. */
+.arcade-banner { display: flex; align-items: center; gap: 11px; width: 100%; margin-bottom: 12px; padding: 14px; border: 0; border-radius: var(--r-lg); background: linear-gradient(135deg, #00B894 0%, #26C065 55%, #2ED573 100%); box-shadow: var(--sh-sm); color: #FFF; font-family: inherit; text-align: right; cursor: pointer; }
+.arcade-banner-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 46px; height: 46px; border-radius: var(--r-md); background: rgba(255,255,255,.22); color: #FFF; }
+.arcade-banner-copy { flex: 1; min-width: 0; }
+.arcade-banner-copy b { display: block; font-size: 15px; font-weight: 900; }
+.arcade-banner-copy small { display: block; margin-top: 2px; font-size: 11px; font-weight: 700; opacity: .95; }
+.arcade-banner-go { flex: 0 0 auto; padding: 8px 14px; border-radius: var(--r-full); background: #FFF; color: #04624F; font-size: 13px; font-weight: 900; }

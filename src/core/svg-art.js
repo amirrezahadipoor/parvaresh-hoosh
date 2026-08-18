@@ -411,6 +411,25 @@ window.SvgArt = (function() {
                     <circle cx="61" cy="39" r="1.2" fill="#FFF"/>
                 `, size);
 
+            case 'horse':
+                return wrap(`
+                    <path d="M30 30 L26 14 L40 22 Z" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2.4" stroke-linejoin="round"/>
+                    <path d="M70 30 L74 14 L60 22 Z" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2.4" stroke-linejoin="round"/>
+                    <path d="M50 20 Q30 22 26 40 Q24 54 32 62 Q30 76 42 82 Q50 86 58 82 Q70 76 68 62 Q76 54 74 40 Q70 22 50 20 Z" fill="#E0A458" stroke="#2C3A47" stroke-width="2.6" stroke-linejoin="round"/>
+                    <path d="M50 20 Q40 24 38 34 Q44 30 50 30 Q56 30 62 34 Q60 24 50 20 Z" fill="#8B5A2B"/>
+                    <path d="M44 22 Q42 14 48 10 Q52 16 50 22 Z" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2" stroke-linejoin="round"/>
+                    <ellipse cx="50" cy="72" rx="15" ry="11" fill="#F0C080" stroke="#2C3A47" stroke-width="2.4"/>
+                    <ellipse cx="44" cy="71" rx="2.6" ry="3.4" fill="#2C3A47"/>
+                    <ellipse cx="56" cy="71" rx="2.6" ry="3.4" fill="#2C3A47"/>
+                    <path d="M44 78 Q50 82 56 78" stroke="#2C3A47" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                    <circle cx="39" cy="48" r="4.4" fill="#2C3A47"/>
+                    <circle cx="61" cy="48" r="4.4" fill="#2C3A47"/>
+                    <circle cx="37.6" cy="46.6" r="1.6" fill="#FFF"/>
+                    <circle cx="59.6" cy="46.6" r="1.6" fill="#FFF"/>
+                    <ellipse cx="31" cy="60" rx="4.4" ry="3.2" fill="#FFB8B8" opacity=".6"/>
+                    <ellipse cx="69" cy="60" rx="4.4" ry="3.2" fill="#FFB8B8" opacity=".6"/>
+                `, size);
+
             default:
                 return wrap(window.Mascot ? window.Mascot.svg(size, 'happy') : '<circle cx="50" cy="50" r="30" fill="#FF7675"/>', size);
         }

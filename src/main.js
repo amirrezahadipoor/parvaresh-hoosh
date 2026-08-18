@@ -415,32 +415,6 @@
         });
         dashboard.appendChild(bigPlay);
 
-        const adventure = document.createElement('button');
-        adventure.type = 'button';
-        adventure.className = 'adventure-hero-card';
-        if (nextNode) {
-            adventure.innerHTML = `
-                <span class="adventure-hero-kicker">مسیر پیشنهادی امروز</span>
-                <strong class="adventure-hero-title"></strong>
-                <span class="adventure-hero-meta">یک بازی کوتاه و شاد برای ادامهٔ مسیر</span>
-                <span class="adventure-hero-action">شروع بازی</span>
-            `;
-            adventure.querySelector('.adventure-hero-title').textContent = nextNode.title;
-            adventure.addEventListener('click', () => {
-                AudioEngine.play('click');
-                startAdventureLesson(nextNode);
-            });
-        } else {
-            adventure.disabled = true;
-            adventure.classList.add('completed');
-            adventure.innerHTML = `
-                <span class="adventure-hero-kicker">مسیر ماجراجویی</span>
-                <strong class="adventure-hero-title">آفرین! همهٔ مرحله‌ها کامل شده‌اند</strong>
-                <span class="adventure-hero-meta">حالا می‌توانی هر حوزه‌ای را برای تمرین دوباره انتخاب کنی</span>
-            `;
-        }
-        dashboard.appendChild(adventure);
-
         // ---- Daily challenge -------------------------------------------------
         // Long-term retention was the weakest part of the app: nothing on the home
         // screen changed from day to day. This card rotates deterministically by
@@ -451,7 +425,7 @@
         const dailyPlan = document.createElement('section');
         dailyPlan.className = 'daily-plan-card';
         const todayPlan = window.Engagement ? window.Engagement.getToday() : { completed: 0, goal: 3 };
-        const planLessons = buildDailyPlan(allLessons, todayPlan);
+        const planLessons = buildDailyPlan(allLessons, todayPlan).slice(0, 2);
         dailyPlan.innerHTML = `
             <div class="daily-plan-head"><div><h2>برنامهٔ امروز</h2><p>سه تمرین کوتاه و متنوع</p></div><strong>${toFa(todayPlan.completed)} / ${toFa(todayPlan.goal)}</strong></div>
             <div class="daily-plan-list"></div>
@@ -522,28 +496,39 @@
             grid.appendChild(tile);
         });
 
-        const arcadeTile = document.createElement('button');
-        arcadeTile.type = 'button';
-        arcadeTile.className = 'domain-tile arcade-tile';
-        arcadeTile.innerHTML = `
-            <span class="domain-tile-icon">${window.AppIcons ? window.AppIcons.get('arcade', 26) : 'بازی'}</span>
-            <span class="domain-tile-title">شهربازی هوش</span>
-            <span class="domain-tile-subtitle">بازی‌های کوتاه برای تمرین و شادی</span>
-            <span class="domain-tile-progress arcade-tile-action">ورود به بازی‌ها</span>
+        dashboard.appendChild(grid);
+
+        // ---- Play zone -------------------------------------------------------
+        // The arcade used to be a 7th tile inside the "دنیای یادگیری" grid, so the
+        // free-play games looked like another school subject. It is now its own
+        // clearly separated section: lessons above, games below.
+        const playHeading = document.createElement('div');
+        playHeading.className = 'home-section-heading';
+        playHeading.innerHTML = '<div><h2>بازی و سرگرمی</h2><p>بدون درس؛ فقط بازی کن و تمرین کن</p></div>';
+        dashboard.appendChild(playHeading);
+
+        const arcadeBanner = document.createElement('button');
+        arcadeBanner.type = 'button';
+        arcadeBanner.className = 'arcade-banner';
+        arcadeBanner.innerHTML = `
+            <span class="arcade-banner-icon">${window.AppIcons ? window.AppIcons.get('arcade', 30) : 'بازی'}</span>
+            <span class="arcade-banner-copy">
+                <b>شهربازی هوش</b>
+                <small>شکار بادکنک، پیانو، غذا به حیوانات و بازی‌های کوتاه</small>
+            </span>
+            <span class="arcade-banner-go">برو</span>
         `;
-        arcadeTile.addEventListener('click', () => {
+        arcadeBanner.addEventListener('click', () => {
             AudioEngine.play('click');
             $('#arcade-title').textContent = 'شهربازی هوش';
             Nav.push('arcade');
             renderArcadeGrid();
         });
-        grid.appendChild(arcadeTile);
-        dashboard.appendChild(grid);
+        dashboard.appendChild(arcadeBanner);
 
         // Daily plan & adventure map come after the domain grid: on Android the primary
         // navigation (domain tiles) must be visible right away, not buried below the fold.
         dashboard.appendChild(dailyPlan);
-        dashboard.appendChild(createAdventureMap());
 
         const quickActions = document.createElement('div');
         quickActions.className = 'home-quick-actions';
@@ -798,6 +783,11 @@
 
         const scrollContainer = document.createElement('div');
         scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; touch-action:pan-y; overscroll-behavior-y:contain;';
+
+        // The adventure map lives here rather than on the home screen. Home had three
+        // competing "what to do next" widgets stacked on top of each other; the map
+        // belongs next to the levels it actually describes.
+        if (state.domainId === 'reading') scrollContainer.appendChild(createAdventureMap());
 
         levels.forEach((lv, idx) => {
             const lessons = sortLessonsForChild(lv.lessons || []);
