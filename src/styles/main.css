@@ -1538,3 +1538,17 @@ button:focus-visible, [role="button"]:focus-visible {
 .adventure-map-node.current .adventure-map-node-icon { color: #FFF; background: var(--node-color,#2563EB); box-shadow: 0 0 0 4px rgba(37,99,235,.13); animation: mapNodePulse 1.8s ease-in-out infinite; }
 .adventure-map-node.locked { opacity: .4; cursor: default; }
 @keyframes mapNodePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+/* Android WebView frame: never letterbox the content or let system bars shift hit areas. */
+#app { width: 100vw; max-width: none; height: 100svh; min-height: 100svh; height: 100dvh; min-height: 100dvh; }
+.main-header, .sub-header { width: 100%; overflow: hidden; }
+.main-header > .header-title, .sub-header > .header-title { flex: 1; min-width: 0; margin-inline: 6px; text-align: center; }
+.main-header > div[style*="display:flex"] { flex: 0 0 auto; min-width: 0; }
+.main-header .icon-btn, .main-header .star-badge-btn { flex: 0 0 auto; }
+.icon-btn, .star-badge-btn, .domain-tile, .daily-plan-item, .home-quick-action, .level-card, .lesson-card, .age-choice, .profile-start-btn, .memory-hint-btn, .order-helper-btn { touch-action: manipulation; }
+
+@media (min-width: 600px) and (pointer: fine) {
+    #app { width: 100%; max-width: 560px; border-radius: 24px; }
+}
+.profile-onboarding-actions { grid-template-columns: 1fr; }
+.profile-start-btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }

@@ -357,20 +357,24 @@
             <div class="profile-onboarding-card">
                 <div class="profile-onboarding-mark">شروع</div>
                 <h2>هم‌بازی کوچولویت را بشناسیم</h2>
-                <p>نام و سن اختیاری است و فقط روی همین دستگاه ذخیره می‌شود.</p>
+                <p>نام اختیاری است؛ سن برای تنظیم مسیر یادگیری لازم است و فقط روی همین دستگاه ذخیره می‌شود.</p>
                 <label class="profile-field-label" for="child-name">نام کودک</label>
                 <input id="child-name" class="profile-name-input" type="text" maxlength="24" autocomplete="off" placeholder="مثلاً آریا">
                 <span class="profile-field-label">سن کودک</span>
                 <div class="age-choice-grid" id="age-choice-grid"></div>
                 <div class="profile-onboarding-actions">
-                    <button type="button" class="profile-skip-btn" id="profile-skip">بعداً</button>
-                    <button type="button" class="profile-start-btn" id="profile-start">شروع کنیم</button>
+                    <button type="button" class="profile-start-btn" id="profile-start" disabled>شروع کنیم</button>
                 </div>
             </div>
         `;
 
+        const profile = window.Engagement.getProfile();
+        const nameInput = overlay.querySelector('#child-name');
+        nameInput.value = profile.name || '';
         const ageGrid = overlay.querySelector('#age-choice-grid');
-        let selectedAge = null;
+        let selectedAge = Number(profile.age) || null;
+        const startButton = overlay.querySelector('#profile-start');
+        startButton.disabled = selectedAge === null;
         [4, 5, 6, 7, 8].forEach(age => {
             const button = document.createElement('button');
             button.type = 'button';
@@ -380,8 +384,10 @@
                 selectedAge = age;
                 ageGrid.querySelectorAll('.age-choice').forEach(item => item.classList.remove('selected'));
                 button.classList.add('selected');
+                startButton.disabled = false;
             });
             ageGrid.appendChild(button);
+            if (selectedAge === age) button.classList.add('selected');
         });
 
         const close = async profile => {
@@ -390,10 +396,10 @@
             renderHome();
         };
         overlay.querySelector('#profile-start').addEventListener('click', () => {
+            if (selectedAge === null) return;
             const name = overlay.querySelector('#child-name').value.trim();
             close({ name, age: selectedAge });
         });
-        overlay.querySelector('#profile-skip').addEventListener('click', () => close({ name: '', age: null }));
         document.body.appendChild(overlay);
         setTimeout(() => overlay.querySelector('#child-name').focus(), 50);
     }
@@ -1318,6 +1324,9 @@
                 داده‌ها به صورت ۱۰۰٪ آفلاین روی حافظه دستگاه نگهداری می‌شوند.
             </p>
             <div class="parent-legal-links"><a href="privacy.html">حریم خصوصی</a><a href="terms.html">شرایط استفاده</a></div>
+            <button class="btn-secondary-action" id="btn-change-profile" style="width:100%;">
+                تغییر نام و گروه سنی کودک
+            </button>
             <button class="btn-secondary-action" id="btn-change-pin" style="width:100%;">
                 ${'تنظیم یا تغییر رمز والدین'}
             </button>
@@ -1336,6 +1345,11 @@
                 پاک کردن تمام داده‌ها و شروع مجدد
             </button>
         `;
+
+        settingsCard.querySelector('#btn-change-profile').addEventListener('click', () => {
+            AudioEngine.play('click');
+            showProfileOnboarding();
+        });
 
         settingsCard.querySelector('#btn-change-pin').addEventListener('click', () => {
             AudioEngine.play('click');

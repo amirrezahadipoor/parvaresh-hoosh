@@ -84,7 +84,7 @@ window.Engagement = (function() {
 
     function hasProfile() {
         normalize();
-        return Boolean(state.profileCompleted);
+        return Boolean(state.profileCompleted && state.profile.age !== null);
     }
 
     async function saveProfile(profile) {

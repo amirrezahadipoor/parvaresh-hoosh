@@ -105,9 +105,12 @@ async function main() {
     await wait(2100);
 
     assert.equal(document.querySelector('.screen.active').id, 'screen-home', 'app should leave splash and show home');
-    if (document.querySelector('#profile-skip')) document.querySelector('#profile-skip').click();
-    await wait(10);
-    assert.equal(window.Engagement.hasProfile(), true, 'onboarding skip should persist a local profile decision');
+    if (document.querySelector('.profile-onboarding-overlay')) {
+        document.querySelector('.age-choice').click();
+        document.querySelector('#profile-start').click();
+        await wait(20);
+    }
+    assert.equal(window.Engagement.hasProfile(), true, 'onboarding should persist a selected age');
     assert.ok(document.querySelector('.domain-tile'), 'home learning tiles should render');
     assert.ok(document.querySelector('.daily-plan-card'), 'daily plan should render');
     assert.ok(document.querySelector('#home-content .home-dashboard'), 'home content should be populated');
