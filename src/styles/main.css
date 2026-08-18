@@ -1010,3 +1010,337 @@ html, body {
 .star-counter { display: flex; align-items: center; gap: 3px; flex: 0 0 auto; color: #D35400; font-size: 12px; font-weight: 900; white-space: nowrap; }
 .shadow-silhouette { display: flex; align-items: center; justify-content: center; max-width: 100%; max-height: 100%; }
 .shadow-silhouette svg { max-width: 70px; max-height: 70px; }
+
+/* =========================================================
+   12. ANDROID-FIRST UI/UX PASS
+   Portrait-first layout, safe areas, reliable scrolling and 48dp touch targets.
+   ========================================================= */
+
+html, body {
+    position: static;
+    inset: auto;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden !important;
+    background: #EEF3F8;
+}
+
+body {
+    touch-action: manipulation;
+    overscroll-behavior: none;
+}
+
+button, [role="button"] { font: inherit; -webkit-tap-highlight-color: transparent; }
+button:focus-visible, [role="button"]:focus-visible {
+    outline: 3px solid #2D8CFF;
+    outline-offset: 2px;
+}
+
+#app {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-width: 560px;
+    overflow: hidden !important;
+    background: #F7F9FC;
+    box-shadow: 0 0 40px rgba(26, 44, 68, .12);
+}
+
+.screen, .screen.active {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden !important;
+}
+
+#screen-parents.active { overflow: hidden !important; touch-action: manipulation; }
+
+.main-header, .sub-header {
+    height: calc(64px + env(safe-area-inset-top));
+    min-height: calc(64px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 14px 0;
+    background: rgba(255,255,255,.96);
+    border-bottom: 1px solid #E4EAF1;
+    box-shadow: 0 2px 14px rgba(37, 57, 78, .06);
+}
+
+.header-title {
+    max-width: 48vw;
+    overflow: hidden;
+    color: #1F2A37;
+    font-size: 17px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.icon-btn, .star-badge-btn {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    border: 1px solid #E3EAF2;
+    border-radius: 14px;
+    background: #F5F8FC;
+    box-shadow: 0 2px 0 #DCE5EF;
+}
+
+.star-badge-btn {
+    min-width: 58px;
+    padding-inline: 9px;
+    border-width: 1px;
+}
+
+.main-content {
+    flex: 1;
+    min-height: 0;
+    padding: 14px 14px calc(24px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+#screen-lesson .lesson-body {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.sub-header .icon-btn { flex: 0 0 44px; }
+
+/* Home dashboard */
+.home-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    padding-bottom: 6px;
+}
+
+.home-welcome-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 104px;
+    padding: 14px;
+    border: 1px solid #E5EBF2;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F7FBFF 100%);
+    box-shadow: 0 8px 24px rgba(34, 57, 84, .07);
+}
+
+.home-mascot-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 78px;
+    width: 78px;
+    height: 78px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #EAF4FF;
+    cursor: pointer;
+}
+
+.home-mascot-button svg { width: 76px; height: 76px; }
+.home-welcome-copy { flex: 1; min-width: 0; cursor: pointer; }
+.home-welcome-copy h1 { margin-bottom: 4px; color: #172231; font-size: 19px; font-weight: 900; }
+.home-welcome-copy p { color: #607084; font-size: 13px; font-weight: 700; line-height: 1.55; }
+
+.home-stats-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.home-stat-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 82px;
+    padding: 12px 14px;
+    border: 1px solid #E3EAF2;
+    border-radius: 17px;
+    background: #FFF;
+    box-shadow: 0 4px 14px rgba(34,57,84,.05);
+}
+.home-stat-label { color: #7A8796; font-size: 11px; font-weight: 800; }
+.home-stat-value { margin-top: 3px; color: #1F65B5; font-size: 24px; font-weight: 900; line-height: 1.1; }
+.home-stat-caption { margin-top: 4px; color: #8290A0; font-size: 10px; font-weight: 700; }
+
+.adventure-hero-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 150px;
+    padding: 17px 18px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 22px;
+    color: #FFF;
+    background: linear-gradient(135deg, #2563EB 0%, #4F46E5 58%, #7C3AED 100%);
+    box-shadow: 0 10px 24px rgba(65, 75, 210, .24);
+    text-align: right;
+    cursor: pointer;
+}
+.adventure-hero-card::after {
+    position: absolute;
+    right: -26px;
+    bottom: -48px;
+    width: 150px;
+    height: 150px;
+    border: 20px solid rgba(255,255,255,.10);
+    border-radius: 50%;
+    content: '';
+}
+.adventure-hero-card:active { transform: scale(.985); }
+.adventure-hero-card.completed { cursor: default; opacity: .78; }
+.adventure-hero-kicker { position: relative; z-index: 1; margin-bottom: 7px; color: #CFE0FF; font-size: 11px; font-weight: 800; }
+.adventure-hero-title { position: relative; z-index: 1; max-width: 78%; font-size: 19px; font-weight: 900; line-height: 1.45; }
+.adventure-hero-meta { position: relative; z-index: 1; margin-top: 5px; color: #E1E9FF; font-size: 11px; font-weight: 700; }
+.adventure-hero-action { position: absolute; z-index: 2; left: 16px; bottom: 17px; padding: 8px 12px; border-radius: 999px; color: #173B74; background: #FFF; font-size: 12px; font-weight: 900; }
+
+.home-section-heading { display: flex; align-items: end; justify-content: space-between; padding: 2px 2px 0; }
+.home-section-heading h2 { color: #1F2A37; font-size: 18px; font-weight: 900; }
+.home-section-heading p { margin-top: 2px; color: #7B8998; font-size: 11px; font-weight: 700; }
+
+.home-domains-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    overflow: visible;
+    padding: 0;
+}
+
+.domain-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    min-height: 143px;
+    padding: 12px;
+    border: 1px solid #E1E8F0;
+    border-radius: 19px;
+    color: #1F2A37;
+    background: var(--tile-bg, #FFF);
+    font-family: inherit;
+    text-align: right;
+    box-shadow: 0 5px 15px rgba(34,57,84,.06);
+    cursor: pointer;
+}
+.domain-tile:active { transform: translateY(1px) scale(.985); }
+.domain-tile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 9px;
+    border-radius: 13px;
+    color: #FFF;
+    background: var(--tile-color, #64748B);
+    font-size: 13px;
+    font-weight: 900;
+}
+.domain-tile-title { width: 100%; overflow: hidden; font-size: 13px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.domain-tile-subtitle { width: 100%; min-height: 30px; margin-top: 3px; overflow: hidden; color: #6F7E8D; font-size: 10px; font-weight: 700; line-height: 1.45; }
+.domain-tile-progress { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: auto; color: #7B8998; font-size: 10px; font-weight: 800; }
+.domain-tile-progress i { display: block; flex: 1; height: 5px; overflow: hidden; border-radius: 999px; background: #DCE5EE; }
+.domain-tile-progress i::after { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--tile-color, #64748B); content: ''; }
+.domain-tile-progress i { position: relative; }
+.domain-tile-progress i { --progress-width: 0%; }
+.domain-tile-progress i { width: var(--progress-width); }
+.domain-tile-progress i::after { width: var(--progress-width); }
+.domain-tile-progress b { min-width: 26px; color: #667687; font-size: 9px; text-align: left; }
+.arcade-tile { --tile-color: #0F9F86; --tile-bg: #E8FAF5; }
+.arcade-tile .domain-tile-icon { width: auto; min-width: 40px; padding-inline: 8px; }
+.arcade-tile-action { justify-content: center; min-height: 28px; padding: 6px 9px; border-radius: 9px; color: #087A67; background: #C9F2E7; }
+.arcade-tile-action::before { display: none; }
+
+.home-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; padding-top: 2px; }
+.home-quick-action {
+    min-height: 48px;
+    padding: 10px 8px;
+    border: 1px solid #E1E8F0;
+    border-radius: 14px;
+    color: #435466;
+    background: #FFF;
+    font-size: 12px;
+    font-weight: 900;
+    box-shadow: 0 3px 10px rgba(34,57,84,.05);
+    cursor: pointer;
+}
+.home-quick-action:active { background: #F1F6FA; }
+
+/* Make the progress fill use the actual generated percentage rather than a fixed pseudo-element. */
+.domain-tile-progress i { background: #DCE5EE; }
+.domain-tile-progress i::after { width: 0; }
+
+/* Course lists: comfortable Android rows instead of dense desktop cards. */
+.level-card, .lesson-card {
+    min-height: 68px;
+    margin-bottom: 10px;
+    padding: 12px 13px;
+    border: 1px solid #E1E8F0;
+    border-radius: 17px;
+    box-shadow: 0 4px 12px rgba(34,57,84,.05);
+}
+.level-num, .lstate { width: 42px; height: 42px; }
+.level-name, .ltitle { font-size: 14px; line-height: 1.45; white-space: normal; }
+.level-label { font-size: 11px; }
+.level-progress { padding: 4px 7px; border-radius: 999px; background: #F1F5F9; font-size: 10px; }
+
+/* Lesson header and activity rhythm. */
+.lesson-header { gap: 8px; }
+.lesson-progress-wrap { gap: 8px; }
+.lesson-progress-bar { height: 8px; }
+.star-counter { padding: 6px 8px; border-radius: 10px; background: #FFF8E5; }
+.activity-fullscreen-stage { min-height: 100%; height: auto; gap: 12px; padding: 12px 14px calc(22px + env(safe-area-inset-bottom)); justify-content: flex-start; overflow: visible !important; }
+.activity-prompt-banner { min-height: 58px; padding: 10px 12px; border: 1px solid #E1E8F0; border-radius: 17px; box-shadow: 0 4px 12px rgba(34,57,84,.05); }
+.activity-prompt-text, .quiz-prompt { font-size: 16px; line-height: 1.55; }
+.activity-speaker-btn, .speaker-btn { min-width: 44px; min-height: 44px; }
+.activity-visual-stage { flex: 0 0 auto; min-height: 150px; padding: 8px 0; }
+.activity-options-stage { gap: 10px; margin-top: auto; }
+.game-tap-choice-btn { min-height: 62px; border-width: 2px; border-radius: 16px; box-shadow: 0 3px 0 #D9E2EC; }
+
+@media (max-width: 360px) {
+    .main-content { padding-inline: 11px; }
+    .home-welcome-card { padding: 11px; }
+    .home-mascot-button { flex-basis: 68px; width: 68px; height: 68px; }
+    .home-mascot-button svg { width: 66px; height: 66px; }
+    .domain-tile { min-height: 136px; padding: 10px; }
+    .domain-tile-title { font-size: 12px; }
+    .domain-tile-subtitle { font-size: 9px; }
+}
+
+@media (min-width: 600px) {
+    #app { border-radius: 24px; }
+    .main-content { padding-inline: 20px; }
+    .home-domains-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+.domain-tile-progress i {
+    flex: 1;
+    width: auto !important;
+    height: 5px;
+    background: #DCE5EE;
+}
+.domain-tile-progress i::after {
+    width: var(--progress, 0%);
+    height: 100%;
+    background: var(--tile-color, #64748B);
+}
+
+/* Fallback for older Android WebView versions that do not know dynamic viewport units. */
+#app { height: 100%; min-height: 100%; height: 100dvh; min-height: 100dvh; }
+.screen, .screen.active { height: 100%; min-height: 100%; height: 100dvh; min-height: 100dvh; }

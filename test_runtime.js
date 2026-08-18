@@ -105,12 +105,12 @@ async function main() {
     await wait(2100);
 
     assert.equal(document.querySelector('.screen.active').id, 'screen-home', 'app should leave splash and show home');
-    assert.ok(document.querySelector('.world-card-active'), 'home world card should render');
-    assert.ok(document.querySelector('#home-content .home-living-stage'), 'home content should be populated');
+    assert.ok(document.querySelector('.domain-tile'), 'home learning tiles should render');
+    assert.ok(document.querySelector('#home-content .home-dashboard'), 'home content should be populated');
     assert.equal(errors.length, 0, `browser smoke test errors: ${errors.map(String).join('\n')}`);
 
     // Verify the main navigation path: home -> domain -> level -> lesson -> back.
-    document.querySelector('.world-card-active').click();
+    document.querySelector('.domain-tile').click();
     assert.equal(document.querySelector('.screen.active').id, 'screen-domain');
     assert.ok(document.querySelectorAll('#domain-content .level-card').length > 0, 'domain levels should render');
 

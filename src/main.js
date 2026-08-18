@@ -155,127 +155,168 @@
         updateAudioButtons();
 
         const container = $('#home-content');
+        if (!container) return;
         container.innerHTML = '';
 
-        const homeStage = document.createElement('div');
-        homeStage.className = 'home-living-stage';
+        const dashboard = document.createElement('div');
+        dashboard.className = 'home-dashboard';
 
-        // 1. Companion Mascot Mini Speech Strip
-        const mascotObj = Mascot.getCharacter();
-        const speechStrip = document.createElement('div');
-        speechStrip.className = 'mascot-speech-strip';
+        // Welcome card: one clear primary message and one touch target.
+        const mascot = Mascot.getCharacter();
+        const welcome = document.createElement('section');
+        welcome.className = 'home-welcome-card';
 
-        const miniMascot = document.createElement('div');
-        miniMascot.className = 'mascot-avatar-mini';
-        miniMascot.innerHTML = Mascot.svg(48, 'happy', mascotObj.id);
+        const mascotButton = document.createElement('button');
+        mascotButton.className = 'home-mascot-button';
+        mascotButton.type = 'button';
+        mascotButton.setAttribute('aria-label', 'شنیدن پیام دانا');
+        mascotButton.innerHTML = Mascot.svg(76, 'happy', mascot.id);
 
-        const speechBubble = document.createElement('div');
-        speechBubble.className = 'speech-text-bubble';
-        speechBubble.textContent = pickMsg(window.MESSAGES.greeting);
+        const welcomeCopy = document.createElement('div');
+        welcomeCopy.className = 'home-welcome-copy';
+        const welcomeTitle = document.createElement('h1');
+        welcomeTitle.textContent = 'سلام قهرمان کوچولو';
+        const welcomeText = document.createElement('p');
+        welcomeText.textContent = pickMsg(window.MESSAGES.greeting);
+        welcomeCopy.append(welcomeTitle, welcomeText);
+        welcome.append(mascotButton, welcomeCopy);
 
-        speechStrip.onclick = () => {
+        const sayWelcome = () => {
             AudioEngine.play('bubble');
-            Mascot.bounce(miniMascot);
-            AudioEngine.speak(speechBubble.textContent);
+            Mascot.bounce(mascotButton);
+            AudioEngine.speak(welcomeText.textContent);
         };
+        mascotButton.addEventListener('click', sayWelcome);
+        welcomeCopy.addEventListener('click', sayWelcome);
+        dashboard.appendChild(welcome);
 
-        speechStrip.appendChild(miniMascot);
-        speechStrip.appendChild(speechBubble);
-        homeStage.appendChild(speechStrip);
+        const allLessons = (state.curriculum && state.curriculum.domains || []).flatMap(domain =>
+            (domain.levels || []).flatMap(level => level.lessons || [])
+        );
+        const completedLessons = allLessons.filter(lesson => state.lessonsDone[lesson.id] && state.lessonsDone[lesson.id].done).length;
+        const completion = allLessons.length ? Math.round((completedLessons / allLessons.length) * 100) : 0;
 
-        // 2. World Carousel Stage
-        const carouselWrap = document.createElement('div');
-        carouselWrap.className = 'world-carousel-wrap';
+        const stats = document.createElement('section');
+        stats.className = 'home-stats-row';
+        stats.appendChild(createHomeStat('ستاره‌ها', toFa(state.totalStars || 0), 'امتیازهای تو'));
+        stats.appendChild(createHomeStat('پیشرفت', `${toFa(completion)}٪`, `${toFa(completedLessons)} از ${toFa(allLessons.length)} درس`));
+        dashboard.appendChild(stats);
 
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'carousel-nav-btn';
-        prevBtn.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-        `;
-
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'carousel-nav-btn';
-        nextBtn.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-        `;
-
-        const activeWorldCard = document.createElement('div');
-        activeWorldCard.className = 'world-card-active';
-
-        function updateWorldCard() {
-            const world = WORLDS[state.activeWorldIdx];
-            activeWorldCard.style.setProperty('--wcolor', world.color);
-
-            activeWorldCard.innerHTML = `
-                <span class="world-card-badge">${toFa(state.activeWorldIdx + 1)} از ۶</span>
-                <div class="world-card-visual">
-                    ${Mascot.svg(120, 'happy', world.mascot)}
-                </div>
-                <div style="text-align:center;">
-                    <div class="world-card-title">${world.title}</div>
-                    <div class="world-card-subtitle">${world.subtitle}</div>
-                </div>
-                <button class="world-play-action-btn">ورود به این دنیای شاد</button>
-            `;
-
-            activeWorldCard.onclick = () => {
-                AudioEngine.play('click');
-                if (world.id === 'arcade') {
-                    $('#arcade-title').textContent = 'شهربازی هوش';
-                    Nav.push('arcade');
-                    renderArcadeGrid();
-                } else {
-                    state.domainId = world.id;
-                    Nav.push('domain');
-                    renderDomain();
-                }
-            };
-        }
-
-        prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            AudioEngine.play('click');
-            state.activeWorldIdx = (state.activeWorldIdx - 1 + WORLDS.length) % WORLDS.length;
-            updateWorldCard();
-        };
-
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            AudioEngine.play('click');
-            state.activeWorldIdx = (state.activeWorldIdx + 1) % WORLDS.length;
-            updateWorldCard();
-        };
-
-        updateWorldCard();
-
-        carouselWrap.appendChild(prevBtn);
-        carouselWrap.appendChild(activeWorldCard);
-        carouselWrap.appendChild(nextBtn);
-        homeStage.appendChild(carouselWrap);
-
-        // 3. Quick Play Adventure Journey Button
+        // The single primary call to action is always the next unfinished milestone.
         const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
-        const advBtn = document.createElement('button');
-        advBtn.className = 'btn-primary-action';
-        advBtn.style.cssText = 'flex-shrink:0; margin-top:4px; font-size:16px;';
+        const adventure = document.createElement('button');
+        adventure.type = 'button';
+        adventure.className = 'adventure-hero-card';
         if (nextNode) {
-            advBtn.textContent = `ادامه ماجراجویی (${nextNode.title})`;
-            advBtn.onclick = () => {
-                AudioEngine.play('win');
+            adventure.innerHTML = `
+                <span class="adventure-hero-kicker">مسیر پیشنهادی امروز</span>
+                <strong class="adventure-hero-title"></strong>
+                <span class="adventure-hero-meta">یک بازی کوتاه و شاد برای ادامهٔ مسیر</span>
+                <span class="adventure-hero-action">شروع بازی</span>
+            `;
+            adventure.querySelector('.adventure-hero-title').textContent = nextNode.title;
+            adventure.addEventListener('click', () => {
+                AudioEngine.play('click');
                 startAdventureLesson(nextNode);
-            };
+            });
         } else {
-            advBtn.textContent = 'آفرین! مسیر ماجراجویی کامل شد';
-            advBtn.disabled = true;
-            advBtn.style.opacity = '0.75';
+            adventure.disabled = true;
+            adventure.classList.add('completed');
+            adventure.innerHTML = `
+                <span class="adventure-hero-kicker">مسیر ماجراجویی</span>
+                <strong class="adventure-hero-title">آفرین! همهٔ مرحله‌ها کامل شده‌اند</strong>
+                <span class="adventure-hero-meta">حالا می‌توانی هر حوزه‌ای را برای تمرین دوباره انتخاب کنی</span>
+            `;
         }
-        homeStage.appendChild(advBtn);
+        dashboard.appendChild(adventure);
 
-        container.appendChild(homeStage);
+        const learningHeader = document.createElement('div');
+        learningHeader.className = 'home-section-heading';
+        learningHeader.innerHTML = '<div><h2>دنیای یادگیری</h2><p>یک حوزه را انتخاب کن و شروع کن</p></div>';
+        dashboard.appendChild(learningHeader);
+
+        const grid = document.createElement('div');
+        grid.className = 'domains-grid home-domains-grid';
+
+        const openDomain = domainId => {
+            state.domainId = domainId;
+            AudioEngine.play('click');
+            Nav.push('domain');
+            renderDomain();
+        };
+
+        window.App.domains.forEach(domain => {
+            const lessons = lessonsOfDomain(domain.id);
+            const done = lessons.filter(lesson => state.lessonsDone[lesson.id] && state.lessonsDone[lesson.id].done).length;
+            const tile = document.createElement('button');
+            tile.type = 'button';
+            tile.className = 'domain-tile';
+            tile.style.setProperty('--tile-color', domain.color);
+            tile.style.setProperty('--tile-bg', domain.bg);
+            tile.innerHTML = `
+                <span class="domain-tile-icon"></span>
+                <span class="domain-tile-title"></span>
+                <span class="domain-tile-subtitle"></span>
+                <span class="domain-tile-progress"><i></i><b></b></span>
+            `;
+            tile.querySelector('.domain-tile-icon').textContent = domain.iconChar;
+            tile.querySelector('.domain-tile-title').textContent = domain.title;
+            tile.querySelector('.domain-tile-subtitle').textContent = domain.subtitle;
+            const progress = lessons.length ? Math.round((done / lessons.length) * 100) : 0;
+            tile.querySelector('.domain-tile-progress i').style.setProperty('--progress', `${progress}%`);
+            tile.querySelector('.domain-tile-progress b').textContent = `${toFa(done)} / ${toFa(lessons.length)}`;
+            tile.addEventListener('click', () => openDomain(domain.id));
+            grid.appendChild(tile);
+        });
+
+        const arcadeTile = document.createElement('button');
+        arcadeTile.type = 'button';
+        arcadeTile.className = 'domain-tile arcade-tile';
+        arcadeTile.innerHTML = `
+            <span class="domain-tile-icon">بازی</span>
+            <span class="domain-tile-title">شهربازی هوش</span>
+            <span class="domain-tile-subtitle">بازی‌های کوتاه برای تمرین و شادی</span>
+            <span class="domain-tile-progress arcade-tile-action">ورود به بازی‌ها</span>
+        `;
+        arcadeTile.addEventListener('click', () => {
+            AudioEngine.play('click');
+            $('#arcade-title').textContent = 'شهربازی هوش';
+            Nav.push('arcade');
+            renderArcadeGrid();
+        });
+        grid.appendChild(arcadeTile);
+        dashboard.appendChild(grid);
+
+        const quickActions = document.createElement('div');
+        quickActions.className = 'home-quick-actions';
+        quickActions.appendChild(createHomeAction('ستاره‌ها و همبازی', 'rewards', renderRewards));
+        quickActions.appendChild(createHomeAction('داشبورد والدین', 'parents', renderParents));
+        dashboard.appendChild(quickActions);
+
+        container.appendChild(dashboard);
+    }
+
+    function createHomeStat(label, value, caption) {
+        const card = document.createElement('div');
+        card.className = 'home-stat-card';
+        card.innerHTML = '<span class="home-stat-label"></span><strong class="home-stat-value"></strong><small class="home-stat-caption"></small>';
+        card.querySelector('.home-stat-label').textContent = label;
+        card.querySelector('.home-stat-value').textContent = value;
+        card.querySelector('.home-stat-caption').textContent = caption;
+        return card;
+    }
+
+    function createHomeAction(label, screen, render) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'home-quick-action';
+        button.textContent = label;
+        button.addEventListener('click', () => {
+            AudioEngine.play('click');
+            Nav.push(screen);
+            render();
+        });
+        return button;
     }
 
     function startAdventureLesson(node) {
