@@ -74,7 +74,10 @@
         };
         document.addEventListener('pointerdown', startAudioOnFirstClick);
 
-        // 6. Hide Splash and Launch Home
+        // 6. Initialize Living World Stardust Particles
+        if (window.LivingWorld) LivingWorld.init();
+
+        // 7. Hide Splash and Launch Home
         setTimeout(() => {
             Nav.reset('home');
             renderHome();
@@ -469,6 +472,7 @@
             }
 
             body.innerHTML = '';
+            if (window.LivingWorld) LivingWorld.resetHintTimer('.quiz-option-btn, .shadow-opt-btn, .raven-opt-btn, .simon-bell, .disp-opt-btn');
             renderer.render(body, round, {
                 onCorrect: () => {
                     starCount = Math.min(3, starCount + 1);

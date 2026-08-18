@@ -74,6 +74,7 @@ require('./src/core/audio.js');
 require('./src/core/storage.js');
 require('./src/core/adaptive.js');
 require('./src/core/iq-assessment.js');
+require('./src/core/living-world.js');
 require('./src/core/mascot.js');
 require('./src/core/svg-art.js');
 require('./src/core/fx.js');
