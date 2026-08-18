@@ -855,7 +855,115 @@ window.Generator = (function() {
         );
     }
 
+    function resolveAgeTrack(metadata, pkg) {
+        const age = Number(metadata && metadata.childAge);
+        if (Number.isFinite(age) && age <= 5) return 'preschool';
+        if (Number.isFinite(age) && age >= 7) return 'school';
+        return 'early';
+    }
+
+    function roleFactory(role, level) {
+        const roles = {
+            'letter-sound': () => letterSoundRound(pick(ALPHABET)),
+            'letter-example': () => letterExampleRound(pick(ALPHABET)),
+            trace: () => tracingRound(pick(ALPHABET).letter, 'letter'),
+            'trace-number': () => tracingRound(toFaDigit(rint(1, Math.max(3, level * 3))), 'number'),
+            'first-sound': firstSoundRound,
+            rhyme: rhymeRound,
+            syllable: syllableRound,
+            blend: blendRound,
+            memory: () => memoryRound(Math.min(5, 2 + Math.floor(level / 2))),
+            sentence: sentenceRound,
+            'story-order': storyOrderRound,
+            'word-meaning': wordMeaningRound,
+            'sight-word': sightWordRound,
+            count: () => countRound(level <= 2 ? 5 : level <= 4 ? 10 : 20),
+            'number-name': () => numberNameRound(level <= 2 ? 5 : level <= 4 ? 10 : 20),
+            'number-order': () => numberOrderRound(level <= 2 ? 5 : level <= 4 ? 10 : 20),
+            compare: () => compareRound(level <= 2 ? 5 : level <= 4 ? 10 : 20),
+            add: () => arithRound('+', level <= 2 ? 5 : level <= 4 ? 10 : 20),
+            subtract: () => arithRound('-', level <= 2 ? 5 : level <= 4 ? 10 : 20),
+            balance: balanceRound,
+            'shape-name': shapeNameRound,
+            'shape-match': shapeMatchRound,
+            'order-size': orderSizeRound,
+            pattern: patternRound,
+            color: colorRound,
+            raven: ravenRound,
+            shadow: shadowRound,
+            classify: classifyRound,
+            drag: classifyRound,
+            'odd-animals': () => oddOneOutRound('animals'),
+            'odd-shapes': () => oddOneOutRound('shapes'),
+            'animal-sound': animalSoundRound,
+            'animal-habitat': animalHabitatRound,
+            'body-part': bodyPartRound,
+            sense: senseRound,
+            season: seasonRound,
+            'plant-growth': plantGrowthRound,
+            habit: habitRound,
+            emotion: emotionRound,
+            family: familyRound,
+            painting: paintingRound,
+            balloon: balloonRound,
+            clock: clockRound,
+            disappeared: disappearedRound,
+            simon: () => simonRound(Math.min(5, 2 + level)),
+            sequence: () => simonRound(Math.min(5, 2 + level)),
+            quiz: wordMeaningRound
+        };
+        return roles[role] || roles.quiz;
+    }
+
+    function adaptRoundForAge(round, metadata, pkg) {
+        const trackKey = resolveAgeTrack(metadata, pkg);
+        const track = (pkg.ageTracks && pkg.ageTracks[trackKey]) || { optionCount: 4, hintDelay: 4500, maxNumber: 20, language: 'ساده' };
+        const tagged = {
+            ...round,
+            lessonStory: pkg.story,
+            lessonObjective: pkg.objective,
+            lessonExample: pkg.example,
+            mistakeFeedback: pkg.mistakeFeedback,
+            parentTip: pkg.parentTip,
+            ageTrack: trackKey,
+            ageLanguage: track.language,
+            hintDelay: track.hintDelay,
+            reviewDays: pkg.reviewDays || [1, 3, 7]
+        };
+
+        if (Array.isArray(tagged.options) && Number(track.optionCount) < tagged.options.length) {
+            const correct = tagged.options[tagged.answer];
+            const distractors = tagged.options.filter((_, index) => index !== tagged.answer).slice(0, Math.max(1, track.optionCount - 1));
+            tagged.options = shuffle([correct, ...distractors]);
+            tagged.answer = tagged.options.indexOf(correct);
+        }
+        if (Array.isArray(tagged.shadowOptions) && Number(track.optionCount) < tagged.shadowOptions.length) {
+            const correct = tagged.shadowOptions[tagged.answer];
+            const distractors = tagged.shadowOptions.filter((_, index) => index !== tagged.answer).slice(0, Math.max(1, track.optionCount - 1));
+            tagged.shadowOptions = shuffle([correct, ...distractors]);
+            tagged.answer = tagged.shadowOptions.indexOf(correct);
+        }
+        if (tagged.type === 'memory' && Array.isArray(tagged.cards)) {
+            const maxPairs = trackKey === 'preschool' ? 2 : trackKey === 'early' ? 3 : 4;
+            const pairIds = [...new Set(tagged.cards.map(card => card.pair))].slice(0, maxPairs);
+            tagged.cards = tagged.cards.filter(card => pairIds.includes(card.pair));
+        }
+        if (tagged.type === 'simon-memory') {
+            tagged.length = trackKey === 'preschool' ? Math.min(tagged.length, 2) : trackKey === 'early' ? Math.min(tagged.length, 3) : tagged.length;
+        }
+        return tagged;
+    }
+
+    function authoredLessonPlan(lessonId, metadata, pkg) {
+        const level = lessonLevel(lessonId, metadata);
+        const factories = (pkg.roundPlan || []).map(role => roleFactory(role, level));
+        const rounds = plan(factories, { ...metadata, difficulty: level });
+        return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
+    }
+
     function lessonPlan(lessonId, metadata) {
+        const pkg = window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId];
+        if (pkg) return authoredLessonPlan(lessonId, metadata, pkg);
         const domain = inferDomain(lessonId, metadata);
         const type = metadata && metadata.type || '';
         const level = lessonLevel(lessonId, metadata);

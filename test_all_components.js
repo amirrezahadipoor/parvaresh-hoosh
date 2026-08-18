@@ -68,6 +68,7 @@ require('./src/data/words.js');
 require('./src/data/math-data.js');
 require('./src/data/world-data.js');
 require('./src/data/curriculum.js');
+require('./src/data/lesson-packages.js');
 
 // Load core files
 require('./src/core/config.js');

@@ -38,7 +38,7 @@ global.localStorage = {
 
 [
     'src/data/alphabet.js', 'src/data/words.js', 'src/data/math-data.js',
-    'src/data/world-data.js', 'src/core/config.js', 'src/core/mascot.js',
+    'src/data/world-data.js', 'src/data/lesson-packages.js', 'src/core/config.js', 'src/core/mascot.js',
     'src/core/svg-art.js', 'src/activities/generator.js'
 ].forEach(file => require(path.join(root, file)));
 

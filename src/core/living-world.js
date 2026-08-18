@@ -176,9 +176,10 @@ window.LivingWorld = (function() {
     let hintTimer = null;
     let hintFingerEl = null;
 
-    function resetHintTimer(targetSelector) {
+    function resetHintTimer(targetSelector, delayMs) {
         clearHint();
-        hintTimer = window.setTimeout(() => showFingerHint(targetSelector), 4500);
+        const delay = Number.isFinite(Number(delayMs)) ? Math.max(1800, Number(delayMs)) : 4500;
+        hintTimer = window.setTimeout(() => showFingerHint(targetSelector), delay);
     }
 
     function showFingerHint(targetSelector) {

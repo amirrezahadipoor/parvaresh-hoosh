@@ -1512,3 +1512,9 @@ button:focus-visible, [role="button"]:focus-visible {
 @media (prefers-reduced-motion: reduce) {
     .home-dashboard::before, .home-dashboard::after, .adventure-hero-card::before, .home-domains-grid .domain-tile, .daily-plan-card { animation: none !important; }
 }
+
+.activity-round-host { display: flex; flex: 1; min-height: 0; flex-direction: column; }
+.lesson-context-strip { display: flex; flex-direction: column; gap: 3px; padding: 10px 12px; border: 1px solid #DDE8F3; border-radius: 15px; background: linear-gradient(135deg,#F7FBFF,#EDF6FF); }
+.lesson-context-kicker { color: #3980C5; font-size: 10px; font-weight: 900; }
+.lesson-context-story { color: #23415F; font-size: 13px; font-weight: 900; line-height: 1.5; }
+.lesson-context-objective { color: #718397; font-size: 10px; font-weight: 700; line-height: 1.5; }

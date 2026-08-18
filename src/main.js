@@ -688,8 +688,19 @@
             }
 
             body.innerHTML = '';
-            if (window.LivingWorld) LivingWorld.resetHintTimer('.game-tap-choice-btn, .shadow-opt-btn, .raven-opt-btn, .simon-bell, .disp-opt-btn');
-            renderer.render(body, round, {
+            if (roundIdx === 0 && round.lessonStory) {
+                const context = document.createElement('div');
+                context.className = 'lesson-context-strip';
+                context.innerHTML = '<span class="lesson-context-kicker">ماموریت امروز</span><strong class="lesson-context-story"></strong><small class="lesson-context-objective"></small>';
+                context.querySelector('.lesson-context-story').textContent = round.lessonStory;
+                context.querySelector('.lesson-context-objective').textContent = round.lessonObjective || '';
+                body.appendChild(context);
+            }
+            const activityHost = document.createElement('div');
+            activityHost.className = 'activity-round-host';
+            body.appendChild(activityHost);
+            if (window.LivingWorld) LivingWorld.resetHintTimer('.game-tap-choice-btn, .shadow-opt-btn, .raven-opt-btn, .simon-bell, .disp-opt-btn', round.hintDelay);
+            renderer.render(activityHost, round, {
                 onCorrect: () => {
                     if (roundSettled || lessonFinished) return;
                     roundSettled = true;
