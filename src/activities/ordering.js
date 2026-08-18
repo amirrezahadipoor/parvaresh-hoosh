@@ -42,18 +42,62 @@ window.OrderingActivity = (function() {
 
         let currentOrder = (round.items || []).slice();
         let selectedIndex = null;
+        let moves = 0;
+        let completed = false;
+        let hintUsed = false;
+        const undoStack = [];
 
-        function checkCorrect() {
-            if (round.answer === 'idx') {
-                return currentOrder.every((item, i) => item.idx === i);
-            }
+        const status = document.createElement('div');
+        status.className = 'order-status';
+        status.textContent = 'یک کارت را انتخاب کن، بعد جای کارت دوم را بزن.';
+
+        const actions = document.createElement('div');
+        actions.className = 'order-actions';
+        const hintBtn = document.createElement('button');
+        hintBtn.type = 'button';
+        hintBtn.className = 'order-helper-btn';
+        hintBtn.textContent = 'راهنما (۱)';
+        const resetBtn = document.createElement('button');
+        resetBtn.type = 'button';
+        resetBtn.className = 'order-helper-btn';
+        resetBtn.textContent = 'شروع دوباره';
+        actions.appendChild(hintBtn);
+        actions.appendChild(resetBtn);
+
+        function isCorrectOrder() {
+            if (round.answer === 'idx') return currentOrder.every((item, i) => item.idx === i);
             if (round.answer === 'size') {
-                const sizes = currentOrder.map(it => it.size);
+                const sizes = currentOrder.map(item => item.size);
                 const sorted = sizes.slice().sort((a, b) => a - b);
-                return sizes.every((s, i) => s === sorted[i]);
+                return sizes.every((size, index) => size === sorted[index]);
             }
-            return true;
+            return false;
         }
+
+        hintBtn.addEventListener('click', () => {
+            if (completed || hintUsed) return;
+            hintUsed = true;
+            hintBtn.disabled = true;
+            const correctIndex = currentOrder.findIndex((item, index) => round.answer === 'idx' ? item.idx !== index : false);
+            if (correctIndex >= 0) {
+                selectedIndex = correctIndex;
+                status.textContent = 'این کارت جای درستش را پیدا می‌کند؛ کارت مناسب را انتخاب کن.';
+                renderRow();
+            } else {
+                status.textContent = 'ترتیب را از کوچک به بزرگ یا از اول به آخر بررسی کن.';
+            }
+            AudioEngine.play('bubble');
+        });
+        resetBtn.addEventListener('click', () => {
+            if (completed) return;
+            currentOrder = (round.items || []).slice();
+            selectedIndex = null;
+            moves = 0;
+            undoStack.length = 0;
+            status.textContent = 'دوباره با آرامش شروع کن.';
+            renderRow();
+            AudioEngine.play('click');
+        });
 
         function renderRow() {
             row.innerHTML = '';
@@ -91,18 +135,23 @@ window.OrderingActivity = (function() {
                         selectedIndex = null;
                         renderRow();
                     } else {
+                        undoStack.push(currentOrder.slice());
                         const temp = currentOrder[selectedIndex];
                         currentOrder[selectedIndex] = currentOrder[idx];
                         currentOrder[idx] = temp;
                         selectedIndex = null;
+                        moves++;
+                        status.textContent = `حرکت ${String(moves).replace(/[0-9]/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)])}; ادامه بده.`;
                         AudioEngine.play('bubble');
                         renderRow();
 
                         // Auto-check on swap
-                        if (checkCorrect()) {
+                        if (isCorrectOrder() && !completed) {
+                            completed = true;
+                            status.textContent = 'آفرین! ترتیب درست پیدا شد.';
                             setTimeout(() => {
                                 AudioEngine.play('correct');
-                                if (cb && cb.onCorrect) cb.onCorrect(round);
+                                if (cb && cb.onCorrect) cb.onCorrect(round, { moves, hintUsed });
                             }, 400);
                         }
                     }
@@ -113,18 +162,23 @@ window.OrderingActivity = (function() {
         }
 
         renderRow();
+        stage.appendChild(status);
         stage.appendChild(row);
+        stage.appendChild(actions);
 
         // 3. Submit Action Button
         const submitBtn = document.createElement('button');
         submitBtn.className = 'btn-primary-action';
         submitBtn.textContent = 'بررسی ترتیب';
         submitBtn.onclick = () => {
+            if (completed) return;
             AudioEngine.play('click');
-            if (checkCorrect()) {
+            if (isCorrectOrder() && !completed) {
+                completed = true;
+                status.textContent = 'آفرین! ترتیب درست پیدا شد.';
                 AudioEngine.play('correct');
                 setTimeout(() => {
-                    if (cb && cb.onCorrect) cb.onCorrect(round);
+                    if (cb && cb.onCorrect) cb.onCorrect(round, { moves, hintUsed });
                 }, 500);
             } else {
                 AudioEngine.play('wrong');

@@ -1479,3 +1479,8 @@ button:focus-visible, [role="button"]:focus-visible {
 .paint-template-btn.active { border-color: #2563EB; background: #EAF3FF; box-shadow: inset 0 0 0 1px #2563EB; }
 
 .trace-status { width: 100%; min-height: 24px; padding: 4px 8px; border-radius: 9px; color: #6E7D8E; background: #F5F8FC; font-size: 10px; font-weight: 800; text-align: center; }
+
+.order-status { min-height: 24px; color: #718096; font-size: 11px; font-weight: 800; text-align: center; }
+.order-actions { display: flex; justify-content: center; gap: 8px; width: 100%; }
+.order-helper-btn { min-height: 38px; padding: 7px 11px; border: 1px solid #D7E4F0; border-radius: 10px; color: #23609D; background: #EAF3FF; font-size: 10px; font-weight: 900; cursor: pointer; }
+.order-helper-btn:disabled { opacity: .45; cursor: default; }
