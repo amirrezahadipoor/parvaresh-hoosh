@@ -231,6 +231,7 @@ window.Generator = (function() {
             `کدام کلمه با حرف ${letterObj.letter} شروع می‌شود؟`
         );
         picRound.audioClip = LETTER_AUDIO[letterObj.letter] ? `letter-${LETTER_AUDIO[letterObj.letter]}` : null;
+        picRound.audioAutoPlay = false;   // speaker button only — avoids repeating the intro
         picRound.letter = letterObj.letter;
         return picRound;
     }
@@ -801,6 +802,7 @@ window.Generator = (function() {
         };
         if (kind !== 'number' && LETTER_AUDIO[String(char)]) {
             round.audioClip = `letter-${LETTER_AUDIO[String(char)]}`;
+            round.audioAutoPlay = false;  // speaker button only
             round.letter = String(char);
         }
         return round;
@@ -860,7 +862,11 @@ window.Generator = (function() {
         'عینک': 'glasses', 'عروسک': 'doll', 'طبل': 'drum', 'لامپ': 'lamp',
         'قایق': 'boat', 'قفل': 'lock', 'کلاه': 'hat', 'کفش': 'shoe',
         'هویج': 'carrot', 'هواپیما': 'plane', 'چتر': 'umbrella',
-        'مسواک': 'toothbrush', 'رنگین‌کمان': 'rainbow'
+        'مسواک': 'toothbrush', 'رنگین‌کمان': 'rainbow',
+        'مادر': 'mother', 'مامان': 'mother', 'نان': 'bread', 'پنجره': 'window',
+        'دوچرخه': 'bicycle', 'صابون': 'soap2', 'گیلاس': 'cherry', 'نهنگ': 'whale',
+        'وال': 'whale', 'ببر': 'tiger', 'تاب': 'swing', 'کوه': 'mountain',
+        'مدرسه': 'school', 'وزنه': 'dumbbell'
     };
     const SHAPE_IMG = {
         'دایره': ['circle', '#FF6B6B'], 'مثلث': ['triangle', '#4ECDC4'],
@@ -1012,12 +1018,15 @@ window.Generator = (function() {
         // so they meet harder content instead of looping through easy rounds.
         // `adaptiveDifficulty` comes from Adaptive.getDifficulty() (1..maxLevel).
         const adaptive = Number(metadata && metadata.adaptiveDifficulty);
+        // Age 4 gets the gentlest track, 5-6 early, 7-8 school. Previously 4 and 5
+        // were merged into one bucket, so a 4-year-old got 5-year-old content.
         let track = 'early';
-        if (Number.isFinite(age) && age <= 5) track = 'preschool';
+        if (Number.isFinite(age) && age <= 4) track = 'toddler';
+        else if (Number.isFinite(age) && age <= 5) track = 'preschool';
         else if (Number.isFinite(age) && age >= 7) track = 'school';
 
         if (Number.isFinite(adaptive)) {
-            const ladder = ['preschool', 'early', 'school'];
+            const ladder = ['toddler', 'preschool', 'early', 'school'];
             let idx = ladder.indexOf(track);
             if (adaptive >= 4 && idx < ladder.length - 1) idx++;   // mastering -> harder
             else if (adaptive <= 1 && idx > 0) idx--;              // struggling -> gentler
@@ -1084,7 +1093,13 @@ window.Generator = (function() {
 
     function adaptRoundForAge(round, metadata, pkg) {
         const trackKey = resolveAgeTrack(metadata, pkg);
-        const track = (pkg.ageTracks && pkg.ageTracks[trackKey]) || { optionCount: 4, hintDelay: 4500, maxNumber: 20, language: 'ساده' };
+        let track = (pkg.ageTracks && pkg.ageTracks[trackKey])
+            || (trackKey === 'toddler' && pkg.ageTracks && pkg.ageTracks.preschool)
+            || { optionCount: 4, hintDelay: 4500, maxNumber: 20, language: 'ساده' };
+        if (trackKey === 'toddler') {
+            // Youngest children: fewest choices, longest patience, smallest numbers.
+            track = { ...track, optionCount: 2, hintDelay: 2200, maxNumber: Math.min(3, Number(track.maxNumber) || 3) };
+        }
         const tagged = {
             ...round,
             lessonStory: pkg.story,
@@ -1146,6 +1161,17 @@ window.Generator = (function() {
         const rounds = plan(factories, { ...metadata, difficulty: level });
         return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
     }
+
+
+    // Fallback age tracks for lessons that have no authored package. Without this
+    // 150 of 292 lessons ignored the child's age completely: a 4-year-old and an
+    // 8-year-old saw the same number of options.
+    const GENERIC_AGE_TRACKS = {
+        toddler:   { label: '۴ سال', optionCount: 2, hintDelay: 2200, maxNumber: 3, language: 'خیلی کوتاه و تصویری' },
+        preschool: { label: '۵ سال', optionCount: 2, hintDelay: 2600, maxNumber: 5, language: 'کوتاه و شنیداری' },
+        early:     { label: '۵ تا ۶ سال', optionCount: 3, hintDelay: 3800, maxNumber: 10, language: 'ساده و تصویری' },
+        school:    { label: '۷ تا ۸ سال', optionCount: 4, hintDelay: 5000, maxNumber: 20, language: 'استدلالی و دقیق' }
+    };
 
     function lessonPlan(lessonId, metadata) {
         const pkg = window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId];
@@ -1558,11 +1584,18 @@ window.Generator = (function() {
         return null;
     }
 
+    function adaptGeneric(rounds, metadata) {
+        if (!Array.isArray(rounds) || !rounds.length) return rounds;
+        // Already adapted by an authored package? leave it alone.
+        if (rounds[0] && rounds[0].ageTrack) return rounds;
+        return rounds.map(round => adaptRoundForAge(round, metadata, { ageTracks: GENERIC_AGE_TRACKS }));
+    }
+
     function buildRounds(lessonId, metadata) {
         const progressivePlan = progressiveExtraPlan(lessonId, metadata);
-        if (progressivePlan && progressivePlan.length) return progressivePlan;
+        if (progressivePlan && progressivePlan.length) return adaptGeneric(progressivePlan, metadata);
         const metadataPlan = lessonPlan(lessonId, metadata);
-        if (metadataPlan && metadataPlan.length) return metadataPlan;
+        if (metadataPlan && metadataPlan.length) return adaptGeneric(metadataPlan, metadata);
 
         // READING
         if (lessonId.startsWith('R-L1')) {

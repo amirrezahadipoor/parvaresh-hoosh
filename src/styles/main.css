@@ -1848,3 +1848,11 @@ button:focus-visible, [role="button"]:focus-visible {
 .piano-key-white.next .piano-key-label { color: #8A6D00; }
 @keyframes pianoNext { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
 @media (prefers-reduced-motion: reduce) { .piano-key-white.next { animation: none; } }
+
+/* --------------------------------------------------------------------------
+   Parent dashboard: prominent child-age control (was buried in data settings).
+   -------------------------------------------------------------------------- */
+.profile-age-card .profile-age-current { margin-bottom: 4px; color: var(--ink); font-size: 13px; font-weight: 700; }
+.profile-age-card .profile-age-hint { margin-bottom: 10px; color: var(--ink2); font-size: 11px; font-weight: 700; }
+.age-quick-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.age-quick-grid .age-choice { width: 100%; min-height: 44px; padding: 6px 2px; font-size: 12px; }

@@ -874,8 +874,11 @@
             // the child hears the exact letter being taught in this round; otherwise
             // fall back to the lesson-level intro clip on the first round.
             if (AudioEngine.playClip) {
-                if (round.audioClip) AudioEngine.playClip(round.audioClip);
-                else if (roundIdx === 0) AudioEngine.playClip(`lesson-${lesson.id}`);
+                // Only rounds that INTRODUCE a letter auto-play its narration. The
+                // follow-up picture/tracing rounds keep the clip on their speaker
+                // button so the same intro is not repeated two or three times.
+                if (round.audioClip && round.audioAutoPlay !== false) AudioEngine.playClip(round.audioClip);
+                else if (roundIdx === 0 && !round.audioClip) AudioEngine.playClip(`lesson-${lesson.id}`);
             }
             if (roundIdx === 0 && round.lessonStory) {
                 const context = document.createElement('div');
@@ -1534,6 +1537,34 @@
         scrollBody.appendChild(detailsCard);
 
         // 4. Data Privacy
+        // Dedicated, prominent child-profile card so raising the age is easy to find
+        // (it used to be buried inside "data management" at the bottom).
+        const profileCard = document.createElement('div');
+        profileCard.className = 'parent-card profile-age-card';
+        const curProfile = window.Engagement ? window.Engagement.getProfile() : { name: '', age: null };
+        profileCard.innerHTML = `
+            <h3>پروفایل کودک</h3>
+            <p class="profile-age-current">نام: <strong>${curProfile.name || '—'}</strong> · سن فعلی: <strong>${curProfile.age ? toFa(curProfile.age) + ' سال' : '—'}</strong></p>
+            <p class="profile-age-hint">با تغییر سن، سختی درس‌ها و تعداد گزینه‌ها متناسب می‌شود.</p>
+            <div class="age-quick-grid" id="age-quick-grid"></div>
+        `;
+        const quickGrid = profileCard.querySelector('#age-quick-grid');
+        [4, 5, 6, 7, 8].forEach(age => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'age-choice' + (Number(curProfile.age) === age ? ' selected' : '');
+            b.textContent = `${toFa(age)} سال`;
+            b.addEventListener('click', async () => {
+                AudioEngine.play('click');
+                if (window.Engagement) {
+                    await window.Engagement.saveProfile({ name: curProfile.name || '', age });
+                }
+                renderDashboard(content);
+            });
+            quickGrid.appendChild(b);
+        });
+        scrollBody.appendChild(profileCard);
+
         const settingsCard = document.createElement('div');
         settingsCard.className = 'parent-card';
         settingsCard.innerHTML = `
