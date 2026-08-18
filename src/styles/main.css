@@ -1489,3 +1489,26 @@ button:focus-visible, [role="button"]:focus-visible {
 [role="button"].selected { border-color: #2563EB !important; background: #EAF3FF !important; box-shadow: 0 0 0 3px rgba(37,99,235,.14), 0 3px 0 #B8CFE8 !important; }
 
 .balloon-target-hint { align-self: center; padding: 6px 10px; border-radius: 999px; color: #23609D; background: #EAF3FF; font-size: 11px; font-weight: 900; }
+
+.home-dashboard { position: relative; isolation: isolate; }
+.home-dashboard::before, .home-dashboard::after { position: absolute; z-index: -1; width: 150px; height: 150px; border-radius: 50%; pointer-events: none; content: ''; filter: blur(2px); opacity: .5; }
+.home-dashboard::before { top: 5px; right: -72px; background: radial-gradient(circle, #B9D8FF 0%, transparent 70%); animation: ambientFloatOne 8s ease-in-out infinite alternate; }
+.home-dashboard::after { bottom: 70px; left: -82px; background: radial-gradient(circle, #D9C7FF 0%, transparent 70%); animation: ambientFloatTwo 10s ease-in-out infinite alternate; }
+@keyframes ambientFloatOne { from { transform: translate3d(0,0,0) scale(.9); } to { transform: translate3d(-18px,22px,0) scale(1.08); } }
+@keyframes ambientFloatTwo { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(20px,-18px,0) scale(.88); } }
+.adventure-hero-card { overflow: hidden; }
+.adventure-hero-card::before { position: absolute; top: 0; bottom: 0; left: -40%; width: 25%; transform: skewX(-18deg); background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); content: ''; animation: heroShimmer 6s ease-in-out infinite; }
+@keyframes heroShimmer { 0%, 65% { left: -40%; } 85%, 100% { left: 130%; } }
+.home-domains-grid .domain-tile { animation: tileEnter .45s cubic-bezier(.2,.8,.2,1) both; }
+.home-domains-grid .domain-tile:nth-child(2) { animation-delay: .04s; }
+.home-domains-grid .domain-tile:nth-child(3) { animation-delay: .08s; }
+.home-domains-grid .domain-tile:nth-child(4) { animation-delay: .12s; }
+.home-domains-grid .domain-tile:nth-child(5) { animation-delay: .16s; }
+.home-domains-grid .domain-tile:nth-child(6) { animation-delay: .20s; }
+.home-domains-grid .domain-tile:nth-child(7) { animation-delay: .24s; }
+@keyframes tileEnter { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.daily-plan-card { animation: planEnter .5s .12s both; }
+@keyframes planEnter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+    .home-dashboard::before, .home-dashboard::after, .adventure-hero-card::before, .home-domains-grid .domain-tile, .daily-plan-card { animation: none !important; }
+}
