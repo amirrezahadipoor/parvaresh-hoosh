@@ -1283,6 +1283,14 @@
             <button class="btn-secondary-action" id="btn-export-report" style="width:100%;">
                 دانلود گزارش آفلاین کودک
             </button>
+            <div class="backup-warning">فایل پشتیبان شامل اطلاعات کودک است؛ آن را در جای امن نگه دارید.</div>
+            <button class="btn-secondary-action" id="btn-create-backup" style="width:100%;">
+                ساخت پشتیبان کامل
+            </button>
+            <button class="btn-secondary-action" id="btn-restore-backup" style="width:100%;">
+                بازیابی پشتیبان
+            </button>
+            <input id="backup-file-input" type="file" accept="application/json,.json" hidden>
             <button class="btn-secondary-action" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%;">
                 پاک کردن تمام داده‌ها و شروع مجدد
             </button>
@@ -1296,6 +1304,37 @@
         settingsCard.querySelector('#btn-export-report').addEventListener('click', () => {
             AudioEngine.play('click');
             exportParentReport(iqReport);
+        });
+
+        settingsCard.querySelector('#btn-create-backup').addEventListener('click', async () => {
+            AudioEngine.play('click');
+            try {
+                const payload = await window.BackupRestore.create();
+                window.BackupRestore.download(payload);
+            } catch (error) {
+                AudioEngine.speak('ساخت پشتیبان انجام نشد');
+            }
+        });
+
+        const backupInput = settingsCard.querySelector('#backup-file-input');
+        settingsCard.querySelector('#btn-restore-backup').addEventListener('click', () => {
+            AudioEngine.play('click');
+            backupInput.click();
+        });
+        backupInput.addEventListener('change', async () => {
+            const file = backupInput.files && backupInput.files[0];
+            if (!file) return;
+            try {
+                const payload = JSON.parse(await file.text());
+                window.BackupRestore.validate(payload);
+                if (!window.confirm('اطلاعات فعلی با این پشتیبان جایگزین می‌شود. ادامه می‌دهید؟')) return;
+                await window.BackupRestore.restore(payload);
+                window.location.reload();
+            } catch (error) {
+                window.alert(error.message || 'بازیابی پشتیبان انجام نشد');
+            } finally {
+                backupInput.value = '';
+            }
         });
 
         settingsCard.querySelector('#btn-reset-data').addEventListener('click', async () => {

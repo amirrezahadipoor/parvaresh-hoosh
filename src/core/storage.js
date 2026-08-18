@@ -121,5 +121,34 @@ window.Storage = (function() {
         });
     }
 
-    return { init, save, load, clearAll };
+    async function exportAll() {
+        const all = readLS();
+        if (!db) return all;
+        await new Promise(resolve => {
+            try {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const req = tx.objectStore(STORE_NAME).getAll();
+                req.onsuccess = () => {
+                    (req.result || []).forEach(record => {
+                        if (record && record.id) all[record.id] = record.data;
+                    });
+                    resolve();
+                };
+                req.onerror = resolve;
+            } catch (e) {
+                resolve();
+            }
+        });
+        return all;
+    }
+
+    async function importAll(records) {
+        if (!records || typeof records !== 'object' || Array.isArray(records)) {
+            throw new Error('invalid storage records');
+        }
+        await clearAll();
+        for (const [key, value] of Object.entries(records)) await save(key, value);
+    }
+
+    return { init, save, load, clearAll, exportAll, importAll };
 })();

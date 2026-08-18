@@ -1458,3 +1458,5 @@ button:focus-visible, [role="button"]:focus-visible {
 .daily-plan-copy small { margin-top: 2px; color: #7A8998; font-size: 9px; font-weight: 800; }
 .daily-plan-arrow { color: #8A98A8; font-size: 23px; font-weight: 300; }
 .daily-plan-complete { padding: 10px 4px 2px; color: #087A67; font-size: 12px; font-weight: 900; }
+
+.backup-warning { margin: 8px 0 2px; padding: 8px 10px; border-radius: 10px; color: #7A5A00; background: #FFF8E5; font-size: 10px; font-weight: 800; line-height: 1.5; }

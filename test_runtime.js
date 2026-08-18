@@ -88,7 +88,7 @@ async function main() {
     const scriptPaths = [
         'src/data/alphabet.js', 'src/data/words.js', 'src/data/math-data.js',
         'src/data/world-data.js', 'src/data/curriculum.js', 'src/data/lesson-guide.js',
-        'src/core/config.js', 'src/core/audio.js', 'src/core/storage.js', 'src/core/engagement.js',
+        'src/core/config.js', 'src/core/audio.js', 'src/core/storage.js', 'src/core/backup.js', 'src/core/engagement.js',
         'src/core/adaptive.js', 'src/core/iq-assessment.js', 'src/core/living-world.js',
         'src/core/mascot.js', 'src/core/svg-art.js', 'src/core/fx.js', 'src/core/nav.js',
         'src/activities/generator.js', 'src/activities/adventure-journey.js',
@@ -166,6 +166,10 @@ async function main() {
     confirmKeys.find(button => button.textContent === 'تایید').click();
     await wait(20);
     assert.equal(await window.Storage.load('parvaresh_parent_pin'), '1234', 'PIN setup should persist a confirmed PIN');
+    const backup = await window.BackupRestore.create();
+    assert.equal(backup.format, 'parvaresh-hoosh-backup');
+    assert.ok(backup.records.progress || backup.records.engagement, 'backup should contain local app data');
+    window.BackupRestore.validate(backup);
 
     assert.equal(errors.length, 0, `browser smoke test errors after navigation: ${errors.map(String).join('\n')}`);
     dom.window.close();

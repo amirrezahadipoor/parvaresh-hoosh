@@ -17,6 +17,7 @@ const PRECACHE = [
     './src/core/config.js',
     './src/core/audio.js',
     './src/core/storage.js',
+    './src/core/backup.js',
     './src/core/engagement.js',
     './src/core/adaptive.js',
     './src/core/iq-assessment.js',
