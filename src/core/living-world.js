@@ -184,7 +184,12 @@ window.LivingWorld = (function() {
 
     function showFingerHint(targetSelector) {
         clearHint();
-        const target = document.querySelector(targetSelector || '.game-tap-choice-btn, .adv-play-btn');
+        // Point at the CORRECT choice, not simply the first one on screen. The old
+        // behaviour grabbed whichever element matched first, so the guiding hand
+        // frequently pointed a child at a wrong answer.
+        const all = [...document.querySelectorAll(targetSelector || '.game-tap-choice-btn, .adv-play-btn')];
+        if (!all.length) return;
+        const target = all.find(el => el.dataset && el.dataset.correct === 'true') || all[0];
         if (!target || typeof target.getBoundingClientRect !== 'function') return;
 
         const rect = target.getBoundingClientRect();
@@ -199,13 +204,24 @@ window.LivingWorld = (function() {
                 <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
             </svg>
         `;
+        // Sit OUTSIDE the option: to the left of it when there is room, otherwise to
+        // the right. Previously the hand was pinned under the button's centre, where
+        // it overlapped the option below and could look like it meant that one.
+        const vw = document.documentElement.clientWidth;
+        const vh = document.documentElement.clientHeight;
+        const size = 42;
+        const gap = 6;
+        let left = rect.left - size - gap;
+        if (left < 4) left = Math.min(rect.right + gap, vw - size - 4);
+        const top = Math.max(4, Math.min(rect.top + rect.height / 2 - size / 2, vh - size - 4));
+
         hintFingerEl.style.cssText = `
             position: fixed;
-            left: ${rect.left + rect.width / 2 - 21}px;
-            top: ${rect.bottom + 4}px;
+            left: ${left}px;
+            top: ${top}px;
             z-index: 10000;
             pointer-events: none;
-            animation: bounceFinger 1s ease-in-out infinite alternate;
+            animation: nudgeFinger 1s ease-in-out infinite alternate;
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
         `;
         document.body.appendChild(hintFingerEl);

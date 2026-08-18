@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v18-ux-pass';
+const CACHE_NAME = 'parvaresh-hoosh-v19-persian-voice';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',

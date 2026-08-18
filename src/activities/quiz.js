@@ -61,6 +61,9 @@ window.QuizActivity = (function() {
             btn.className = `game-tap-choice-btn ${opt.big ? 'big-font' : ''} ${opt.tile ? 'tile-option' : ''}`;
             if (opt.tileColor) btn.style.setProperty('--tile-color', opt.tileColor);
             if (opt.label && !opt.img) btn.setAttribute('aria-label', opt.label);
+            // Lets the guiding hand point at the right answer instead of the first
+            // option it happens to find. Not exposed visually or to assistive tech.
+            if (idx === round.answer) btn.dataset.correct = 'true';
 
             if (opt.img) {
                 const imgWrap = document.createElement('span');

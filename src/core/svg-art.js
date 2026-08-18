@@ -1423,6 +1423,75 @@ window.SvgArt = (function() {
     // 7. TILE HELPERS (حروف، اعداد و کلمات داخل کاشی رنگی)
     // Kid-friendly tiles used as option icons & round visuals.
     // ==========================================
+    // ==========================================
+    // EMOTION FACES
+    // A 4-year-old cannot read «سرخوردگی». Feeling questions used to offer
+    // text-only choices, which made them unanswerable for a pre-reader. Each
+    // feeling now gets a distinct drawn face.
+    // ==========================================
+    const EMOTION_FACES = {
+        'خوشحالی':      { bg: '#FFE9A8', brow: 'M32 36 Q38 32 44 35 M56 35 Q62 32 68 36', eye: 'open', mouth: 'M34 60 Q50 76 66 60', blush: true },
+        'ناراحتی':      { bg: '#CFE0F2', brow: 'M32 32 Q38 37 44 38 M56 38 Q62 37 68 32', eye: 'open', mouth: 'M34 70 Q50 56 66 70', tear: true },
+        'تعجب و شگفتی': { bg: '#FFD9C0', brow: 'M30 28 Q38 22 46 27 M54 27 Q62 22 70 28', eye: 'wide', mouth: 'ellipse' },
+        'آرامش':        { bg: '#CFF3E6', brow: 'M32 35 Q38 33 44 35 M56 35 Q62 33 68 35', eye: 'closed', mouth: 'M38 62 Q50 70 62 62' },
+        'شجاعت':        { bg: '#FFCFCF', brow: 'M30 33 Q38 29 46 34 M54 34 Q62 29 70 33', eye: 'open', mouth: 'M34 60 Q50 72 66 60', star: true },
+        'خجالت':        { bg: '#FFD6E8', brow: 'M32 36 Q38 34 44 36 M56 36 Q62 34 68 36', eye: 'closed', mouth: 'M42 64 Q50 68 58 64', blush: true },
+        'دلتنگی':       { bg: '#D6D0FB', brow: 'M32 33 Q38 37 44 38 M56 38 Q62 37 68 33', eye: 'open', mouth: 'M40 68 Q50 62 60 68' },
+        'هیجان':        { bg: '#FFE07A', brow: 'M30 29 Q38 24 46 29 M54 29 Q62 24 70 29', eye: 'wide', mouth: 'M32 58 Q50 78 68 58', star: true },
+        'افتخار':       { bg: '#FFDE9E', brow: 'M32 34 Q38 30 44 33 M56 33 Q62 30 68 34', eye: 'open', mouth: 'M34 60 Q50 74 66 60', crown: true },
+        'عصبانیت':      { bg: '#FFB4A8', brow: 'M30 30 L46 38 M54 38 L70 30', eye: 'open', mouth: 'M36 70 Q50 60 64 70', angry: true },
+        'قدردانی':      { bg: '#CFF3E6', brow: 'M32 35 Q38 32 44 35 M56 35 Q62 32 68 35', eye: 'closed', mouth: 'M36 60 Q50 72 64 60', heart: true },
+        'همدلی':        { bg: '#E4DCFB', brow: 'M32 35 Q38 33 44 36 M56 36 Q62 33 68 35', eye: 'open', mouth: 'M38 64 Q50 70 62 64', heart: true },
+        'کنجکاوی':      { bg: '#CFE7FF', brow: 'M30 32 Q38 26 46 33 M56 35 Q62 33 68 35', eye: 'wide', mouth: 'M42 64 Q50 68 58 63', question: true },
+        'ترس':          { bg: '#D8D8E8', brow: 'M30 30 Q38 25 46 31 M54 31 Q62 25 70 30', eye: 'wide', mouth: 'ellipse', shake: true },
+        'امیدواری':     { bg: '#D8F3C8', brow: 'M32 34 Q38 31 44 34 M56 34 Q62 31 68 34', eye: 'open', mouth: 'M36 61 Q50 71 64 61', star: true },
+        'حسادت':        { bg: '#CDE8CD', brow: 'M30 32 L46 37 M54 37 L70 32', eye: 'open', mouth: 'M40 68 Q50 64 60 68' },
+        'خستگی':        { bg: '#DCD9E8', brow: 'M32 36 Q38 35 44 37 M56 37 Q62 35 68 36', eye: 'closed', mouth: 'M42 66 Q50 70 58 66', zzz: true },
+        'دلسوزی':       { bg: '#FFDCE6', brow: 'M32 34 Q38 36 44 37 M56 37 Q62 36 68 34', eye: 'open', mouth: 'M40 66 Q50 70 60 66', heart: true },
+        'پشیمانی':      { bg: '#D9D2C8', brow: 'M32 33 Q38 38 44 39 M56 39 Q62 38 68 33', eye: 'closed', mouth: 'M40 70 Q50 64 60 70' },
+        'اعتماد':       { bg: '#CFF0F5', brow: 'M32 35 Q38 32 44 35 M56 35 Q62 32 68 35', eye: 'open', mouth: 'M36 61 Q50 70 64 61' },
+        'سرخوردگی':     { bg: '#E0DCD2', brow: 'M32 32 Q38 38 44 39 M56 39 Q62 38 68 32', eye: 'open', mouth: 'M38 70 Q50 63 62 70' },
+        'رضایت':        { bg: '#D8F0D8', brow: 'M32 35 Q38 32 44 35 M56 35 Q62 32 68 35', eye: 'closed', mouth: 'M36 60 Q50 71 64 60', blush: true },
+        'اشتیاق یادگیری': { bg: '#FFF0B8', brow: 'M30 31 Q38 26 46 32 M54 32 Q62 26 70 31', eye: 'wide', mouth: 'M34 60 Q50 74 66 60', star: true },
+        'احساس تنهایی': { bg: '#D3D8E0', brow: 'M32 34 Q38 38 44 39 M56 39 Q62 38 68 34', eye: 'open', mouth: 'M40 69 Q50 64 60 69' },
+        'شادی از موفقیت دیگران': { bg: '#FFE9A8', brow: 'M32 34 Q38 30 44 34 M56 34 Q62 30 68 34', eye: 'closed', mouth: 'M32 58 Q50 77 68 58', heart: true },
+        'آرامش بعد از گریه': { bg: '#CFE8F2', brow: 'M32 35 Q38 33 44 36 M56 36 Q62 33 68 35', eye: 'closed', mouth: 'M40 63 Q50 69 60 63', tear: true }
+    };
+
+    function emotionFace(name, size) {
+        const f = EMOTION_FACES[String(name || '').trim()];
+        size = size || 84;
+        if (!f) return '';
+        let eyes = '';
+        if (f.eye === 'closed') {
+            eyes = '<path d="M34 47 Q40 52 46 47" stroke="#2C3A47" stroke-width="3" stroke-linecap="round" fill="none"/>'
+                 + '<path d="M54 47 Q60 52 66 47" stroke="#2C3A47" stroke-width="3" stroke-linecap="round" fill="none"/>';
+        } else if (f.eye === 'wide') {
+            eyes = '<circle cx="40" cy="48" r="7.5" fill="#FFF" stroke="#2C3A47" stroke-width="2.4"/><circle cx="40" cy="48" r="3.6" fill="#2C3A47"/>'
+                 + '<circle cx="60" cy="48" r="7.5" fill="#FFF" stroke="#2C3A47" stroke-width="2.4"/><circle cx="60" cy="48" r="3.6" fill="#2C3A47"/>';
+        } else {
+            eyes = '<circle cx="40" cy="48" r="5" fill="#2C3A47"/><circle cx="38.6" cy="46.6" r="1.7" fill="#FFF"/>'
+                 + '<circle cx="60" cy="48" r="5" fill="#2C3A47"/><circle cx="58.6" cy="46.6" r="1.7" fill="#FFF"/>';
+        }
+        const mouth = f.mouth === 'ellipse'
+            ? '<ellipse cx="50" cy="66" rx="8" ry="10" fill="#8A3A3A" stroke="#2C3A47" stroke-width="2.4"/>'
+            : `<path d="${f.mouth}" stroke="#2C3A47" stroke-width="3.4" stroke-linecap="round" fill="none"/>`;
+        const extras = [
+            f.blush ? '<ellipse cx="28" cy="60" rx="6" ry="4" fill="#FF9AA2" opacity=".6"/><ellipse cx="72" cy="60" rx="6" ry="4" fill="#FF9AA2" opacity=".6"/>' : '',
+            f.tear ? '<path d="M38 56 Q36 66 40 68 Q44 66 42 56 Z" fill="#5FBEFF" stroke="#2C3A47" stroke-width="1.6"/>' : '',
+            f.star ? '<path d="M82 22 l3 6 6 1 -4.5 4.5 1 6.5 -5.5-3 -5.5 3 1-6.5 -4.5-4.5 6-1 Z" fill="#F9CA24" stroke="#2C3A47" stroke-width="1.6" stroke-linejoin="round"/>' : '',
+            f.heart ? '<path d="M84 26 q4-5 8 0 q3 5 -8 12 q-11-7 -8-12 q4-5 8 0 Z" fill="#FF6B81" stroke="#2C3A47" stroke-width="1.6"/>' : '',
+            f.crown ? '<path d="M32 18 L40 26 L50 14 L60 26 L68 18 L66 30 L34 30 Z" fill="#F9CA24" stroke="#2C3A47" stroke-width="2.2" stroke-linejoin="round"/>' : '',
+            f.question ? '<text x="82" y="30" font-size="24" font-weight="900" fill="#6C5CE7" stroke="#2C3A47" stroke-width="1">؟</text>' : '',
+            f.zzz ? '<text x="76" y="26" font-size="17" font-weight="900" fill="#6C5CE7">Z</text><text x="86" y="16" font-size="12" font-weight="900" fill="#6C5CE7">z</text>' : '',
+            f.angry ? '<path d="M22 34 L14 28 M78 34 L86 28" stroke="#E8354A" stroke-width="3" stroke-linecap="round"/>' : ''
+        ].join('');
+        return wrap(
+            `<circle cx="50" cy="52" r="38" fill="${f.bg}" stroke="#2C3A47" stroke-width="2.8"/>`
+            + `<path d="${f.brow}" stroke="#2C3A47" stroke-width="3.2" stroke-linecap="round" fill="none"/>`
+            + eyes + mouth + extras, size);
+    }
+
     function letterTile(letter, color, size) {
         const c = color || '#6C5CE7';
         size = size || 72;
@@ -1482,5 +1551,5 @@ window.SvgArt = (function() {
         `, size);
     }
 
-    return { shape, numberCard, animal, object, letterTile, numberTile, wordTile, questionTile, soundVisual };
+    return { shape, numberCard, animal, object, letterTile, numberTile, wordTile, questionTile, soundVisual, emotionFace, hasEmotionFace: n => !!EMOTION_FACES[String(n || '').trim()] };
 })();

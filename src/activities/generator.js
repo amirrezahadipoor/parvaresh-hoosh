@@ -711,7 +711,8 @@ window.Generator = (function() {
         return mc(
             pick(emoPhrasings),
             Mascot.svg(95, e.icon || 'happy'),
-            opts.map(x => ({ label: x })),
+            // Pre-readers cannot pick «سرخوردگی» from text. Every feeling shows a face.
+            opts.map(x => ({ label: x, img: SvgArt.emotionFace(x, 84) || undefined })),
             opts.indexOf(e.fa),
             e.situation
         );
@@ -756,7 +757,7 @@ window.Generator = (function() {
         return mc(
             `«${f.role}» — او در خانواده کیست؟`,
             SvgArt.object('house', 95),
-            opts.map(x => ({ label: x })),
+            opts.map(x => ({ label: x, img: SvgArt.object(FAMILY_IMG[x] || 'mother', 78) })),
             opts.indexOf(f.fa),
             f.role
         );
@@ -847,6 +848,14 @@ window.Generator = (function() {
         'جوجه': 'chick', 'مرغ': 'chicken', 'خروس': 'rooster', 'اردک': 'duck',
         'قورباغه': 'frog', 'گوسفند': 'sheep', 'گاو': 'cow', 'روباه': 'fox'
     };
+    // Family members drawn with existing art so the options are not text-only.
+    const FAMILY_IMG = {
+        'مادر': 'mother', 'مادربزرگ': 'mother', 'خاله': 'mother', 'عمه': 'mother',
+        'پدر': 'home', 'پدربزرگ': 'home', 'عمو': 'home', 'دایی': 'home',
+        'خواهر': 'doll', 'دخترخاله': 'doll', 'برادر': 'ball', 'پسرعمو': 'ball',
+        'نوه': 'doll', 'همسایه': 'home', 'دوست': 'ball', 'معلم': 'book'
+    };
+
     const OBJECT_IMG = {
         'سیب': 'apple', 'موز': 'banana', 'پرتقال': 'orange', 'هندوانه': 'watermelon',
         'توپ': 'ball', 'بادکنک': 'balloon', 'خورشید': 'sun', 'ماه': 'moon',
@@ -1180,7 +1189,7 @@ window.Generator = (function() {
         return {
             type: 'drag-match',
             prompt: 'هر حس را به موقعیتش وصل کن:',
-            items: shuffle(chosen.map(e => ({ id: e.fa, label: e.fa, target: e.situation }))),
+            items: shuffle(chosen.map(e => ({ id: e.fa, label: e.fa, img: SvgArt.emotionFace(e.fa, 62) || undefined, target: e.situation }))),
             targets: shuffle(chosen.map(e => ({ id: e.situation, label: e.situation }))),
             speech: 'هر احساس مال کدام موقعیت است؟'
         };
@@ -1361,7 +1370,10 @@ window.Generator = (function() {
         // Youngest: no abstract matrix reasoning, no multi-step ordering, no dragging.
         toddler: {
             avoid: ['raven-matrix', 'balance-scale', 'drag-match', 'order-steps', 'simon-memory', 'disappeared-item'],
-            prefer: ['quiz', 'painting', 'balloon-pop', 'tracing', 'memory']
+            prefer: ['quiz', 'painting', 'balloon-pop', 'tracing', 'memory'],
+            // A 4-year-old cannot read. Any question whose OPTIONS are long words or
+            // whole sentences is unanswerable for them no matter how pretty it looks.
+            maxOptionChars: 8
         },
         preschool: {
             avoid: ['raven-matrix', 'balance-scale'],
@@ -1393,9 +1405,31 @@ window.Generator = (function() {
         return pick([ravenRound, shadowRound, oppositeMatchRound, materialRound, socialStoryRound])();
     }
 
+    // True when every option is a picture/tile, or short enough to recognise by shape.
+    function optionsReadableFor(round, maxChars) {
+        const opts = round && round.options;
+        if (!Array.isArray(opts) || !opts.length) return true;
+        return opts.every(o => {
+            if (o.img || o.tile) return true;
+            const t = String(o.label || '').trim();
+            return t.length <= maxChars;
+        });
+    }
+
     function retypeRoundForTrack(round, trackKey) {
         const rules = TRACK_RULES[trackKey];
         if (!rules || !round || !round.type) return round;
+
+        // Swap out text-heavy questions for the youngest children.
+        if (rules.maxOptionChars && round.type === 'quiz' && !optionsReadableFor(round, rules.maxOptionChars)) {
+            try {
+                const alt = simpleSubstitute();
+                if (alt && optionsReadableFor(alt, rules.maxOptionChars)) {
+                    return { ...alt, lessonId: round.lessonId, skillType: round.skillType, difficulty: round.difficulty };
+                }
+            } catch (e) { /* keep the original */ }
+        }
+
         if (rules.avoid.indexOf(round.type) === -1) return round;
         try {
             const replacement = (trackKey === 'school') ? advancedSubstitute() : simpleSubstitute();
