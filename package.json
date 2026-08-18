@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "start": "python3 -m http.server 8080 --bind 0.0.0.0",
-    "test": "node test_all_components.js && node test_runtime.js",
+    "audit": "node scripts/audit_curriculum.js",
+    "test": "npm run audit && node test_all_components.js && node test_runtime.js",
     "test:runtime": "node test_runtime.js"
   },
   "author": "پرورش هوش کودک",
