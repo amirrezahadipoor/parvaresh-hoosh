@@ -1691,3 +1691,30 @@ button:focus-visible, [role="button"]:focus-visible {
     height: auto;
     min-height: 240px;
 }
+
+/* ---------------------------------------------------------------------------
+   Ordering rows: cards carry an 85px SVG, and with the default `min-width:auto`
+   a flex item refuses to shrink below its content. Rows of 4-5 steps therefore
+   burst past both screen edges (29 of 207 order-steps rounds). Allow shrinking
+   and let the artwork scale down with the card.
+   --------------------------------------------------------------------------- */
+.ordering-horizontal-row { flex-wrap: nowrap; }
+.order-step-card { min-width: 0; }
+.order-step-card > div { max-width: 100%; }
+.order-step-card svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 82px;
+    max-height: 70px;
+}
+.order-step-card > span:last-child { max-width: 100%; overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------------------
+   Painting workshop: the 12 colour swatches (27px) and the tool buttons were
+   well under a child-friendly tap target. The bar already wraps, so growing
+   them costs one extra row while the canvas keeps flex:1.
+   --------------------------------------------------------------------------- */
+.paint-palette-bar, .paint-tools-bar { gap: 8px; }
+.palette-swatch { width: 40px; height: 40px; }
+.tool-btn { min-height: 40px; padding: 8px 12px; font-size: 12px; }

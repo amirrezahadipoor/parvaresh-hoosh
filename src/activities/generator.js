@@ -1284,7 +1284,10 @@ window.Generator = (function() {
         }
 
         // Final fallback: a friendly decorative tile so the stage is never blank.
-        return SvgArt.object('star', '#F9CA24', 110);
+        // SvgArt.object takes (kind, size). Passing a colour as the 2nd argument used to
+        // shift the size out of place and emit a colour string as the svg width/height,
+        // which browsers reject.
+        return SvgArt.object('star', 110);
     }
 
     // Progressive expansion pack: every new lesson gets a different round mix.
