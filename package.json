@@ -1,12 +1,13 @@
 {
   "name": "parvaresh-hoosh",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "پرورش هوش کودک - اپلیکیشن آموزشی و بازی تعاملی کاملاً آفلاین فارسی برای کودکان ۵ تا ۸ سال",
   "main": "index.html",
   "scripts": {
     "start": "python3 -m http.server 8080 --bind 0.0.0.0",
     "audit": "node scripts/audit_curriculum.js",
-    "test": "npm run audit && node test_all_components.js && node test_runtime.js",
+    "audit:assets": "node scripts/audit_assets.js",
+    "test": "npm run audit && npm run audit:assets && node test_all_components.js && node test_runtime.js",
     "test:runtime": "node test_runtime.js",
     "build:web": "node scripts/prepare_web.js",
     "android:sync": "npm run build:web && cap sync android",

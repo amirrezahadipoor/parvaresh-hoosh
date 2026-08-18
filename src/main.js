@@ -14,6 +14,9 @@
         activeWorldIdx: 0
     };
 
+    // Expose read-only app state to progression helpers; no child-facing data is added.
+    window.AppState = state;
+
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
@@ -602,7 +605,7 @@
         scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; touch-action:pan-y; overscroll-behavior-y:contain;';
 
         levels.forEach((lv, idx) => {
-            const lessons = lv.lessons || [];
+            const lessons = sortLessonsForChild(lv.lessons || []);
             const doneInLevel = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
             const isCompleted = lessons.length > 0 && doneInLevel === lessons.length;
 
@@ -614,7 +617,7 @@
                 <div class="level-num" style="background:${isCompleted ? 'var(--ok)' : d.color}">${toFa(idx + 1)}</div>
                 <div class="level-info">
                     <div class="level-name">${lv.title}</div>
-                    <div class="level-label">${lv.label || `سطح ${toFa(idx + 1)}`}</div>
+                    <div class="level-label">${lv.ageBand || ((lv.lessons || [])[0] && (lv.lessons || [])[0].ageBand) || 'مسیر آموزشی'}</div>
                 </div>
                 <div class="level-progress">${toFa(doneInLevel)} / ${toFa(lessons.length)}</div>
             `;
@@ -960,13 +963,36 @@
         };
     }
 
+    function ageStart(ageBand) {
+        const m = String(ageBand || '').match(/(\d+)\s*تا\s*(\d+)/);
+        return m ? Number(m[1]) : 99;
+    }
+
+    // Progression rule: age first, then the curriculum's internal progression rank,
+    // then the lesson's own order. Difficulty is never shown to the child.
+    function sortLevelsForChild(levels) {
+        return [...(levels || [])].sort((a, b) => {
+            const aa = ageStart(a.ageBand || (a.lessons || [])[0]?.ageBand);
+            const ba = ageStart(b.ageBand || (b.lessons || [])[0]?.ageBand);
+            return aa - ba || (a.difficulty || 999) - (b.difficulty || 999) || (a.progressionOrder || 999) - (b.progressionOrder || 999);
+        });
+    }
+
+    function sortLessonsForChild(lessons) {
+        return [...(lessons || [])].sort((a, b) =>
+            ageStart(a.ageBand) - ageStart(b.ageBand) ||
+            (a.difficulty || 999) - (b.difficulty || 999) ||
+            (a.order || 999) - (b.order || 999)
+        );
+    }
+
     function lessonsOfDomain(domainId) {
         const dom = (state.curriculum.domains || []).find(d => d.id === domainId);
         if (!dom) return [];
         const out = [];
-        (dom.levels || []).forEach(lv => {
-            (lv.lessons || []).forEach(l => {
-                out.push({ ...l, levelTitle: lv.title, levelId: lv.id, difficulty: lv.difficulty });
+        sortLevelsForChild(dom.levels).forEach(lv => {
+            sortLessonsForChild(lv.lessons).forEach(l => {
+                out.push({ ...l, levelTitle: lv.title, levelId: lv.id });
             });
         });
         return out;
@@ -974,7 +1000,7 @@
 
     function levelsOfDomain(domainId) {
         const dom = (state.curriculum.domains || []).find(d => d.id === domainId);
-        return dom ? (dom.levels || []) : [];
+        return dom ? sortLevelsForChild(dom.levels) : [];
     }
 
     // ===== REWARDS & MASCOT CUSTOMIZER =====

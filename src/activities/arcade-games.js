@@ -31,7 +31,7 @@ window.ArcadeGames = (function() {
             id: 'cargo-train',
             title: 'قطار بارگیری اعداد و ستاره‌ها',
             subtitle: 'پر کردن واگن‌های قطار با شمارش دقیق',
-            iconHtml: SvgArt.object('car', 38),
+            iconHtml: SvgArt.object('train', 38),
             color: '#6C5CE7',
             bg: '#EFEAFC'
         },
@@ -102,16 +102,26 @@ window.ArcadeGames = (function() {
         };
 
         const balloonItems = [
-            { text: 'الف', sound: 'صدای آ', color: '#FF4757' },
-            { text: 'ب', sound: 'صدای ب', color: '#1E90FF' },
-            { text: 'پ', sound: 'صدای پ', color: '#2ED573' },
-            { text: 'ت', sound: 'صدای ت', color: '#FFA502' },
-            { text: '۱', sound: 'عدد یک', color: '#9B59B6' },
-            { text: '۲', sound: 'عدد دو', color: '#FF6B81' },
-            { text: '۳', sound: 'عدد سه', color: '#00D2D3' },
-            { text: '۴', sound: 'عدد چهار', color: '#F1C40F' },
-            { text: '۵', sound: 'عدد پنج', color: '#FF763B' },
-            { text: 'ستاره', sound: 'ستاره طلایی', color: '#F9CA24' }
+            { text: 'الف', sound: 'صدای آ', color: '#FF4757' }, { text: 'ب', sound: 'صدای ب', color: '#1E90FF' },
+            { text: 'پ', sound: 'صدای پ', color: '#2ED573' }, { text: 'ت', sound: 'صدای ت', color: '#FFA502' },
+            { text: 'ج', sound: 'صدای ج', color: '#9B59B6' }, { text: 'د', sound: 'صدای د', color: '#FF6B81' },
+            { text: 'ر', sound: 'صدای ر', color: '#00D2D3' }, { text: 'س', sound: 'صدای س', color: '#F1C40F' },
+            { text: 'ش', sound: 'صدای ش', color: '#FF763B' }, { text: 'م', sound: 'صدای م', color: '#6C5CE7' },
+            { text: 'ن', sound: 'صدای ن', color: '#00B894' }, { text: 'ک', sound: 'صدای ک', color: '#E84393' },
+            { text: 'گ', sound: 'صدای گ', color: '#0984E3' }, { text: 'ل', sound: 'صدای ل', color: '#D35400' },
+            { text: '۱', sound: 'عدد یک', color: '#9B59B6' }, { text: '۲', sound: 'عدد دو', color: '#FF6B81' },
+            { text: '۳', sound: 'عدد سه', color: '#00D2D3' }, { text: '۴', sound: 'عدد چهار', color: '#F1C40F' },
+            { text: '۵', sound: 'عدد پنج', color: '#FF763B' }, { text: '۶', sound: 'عدد شش', color: '#74B9FF' },
+            { text: '۷', sound: 'عدد هفت', color: '#A29BFE' }, { text: '۸', sound: 'عدد هشت', color: '#55EFC4' },
+            { text: '۹', sound: 'عدد نه', color: '#FD79A8' }, { text: '۱۰', sound: 'عدد ده', color: '#FDCB6E' },
+            { text: 'دایره', sound: 'شکل دایره', color: '#E17055' }, { text: 'مربع', sound: 'شکل مربع', color: '#00CEC9' },
+            { text: 'مثلث', sound: 'شکل مثلث', color: '#6C5CE7' }, { text: 'ستاره', sound: 'ستاره طلایی', color: '#F9CA24' },
+            { text: 'خورشید', sound: 'خورشید', color: '#FFB142' }, { text: 'باران', sound: 'باران', color: '#3498DB' },
+            { text: 'گل', sound: 'گل زیبا', color: '#E84393' }, { text: 'درخت', sound: 'درخت سبز', color: '#2ED573' },
+            { text: 'گربه', sound: 'گربه', color: '#F8A5C2' }, { text: 'سگ', sound: 'سگ', color: '#A0522D' },
+            { text: 'خرگوش', sound: 'خرگوش', color: '#B2BEC3' }, { text: 'فیل', sound: 'فیل', color: '#74B9FF' },
+            { text: 'سیب', sound: 'سیب قرمز', color: '#E74C3C' }, { text: 'موز', sound: 'موز زرد', color: '#F1C40F' },
+            { text: 'کتاب', sound: 'کتاب', color: '#6C5CE7' }, { text: 'قلب', sound: 'قلب مهربانی', color: '#FF6B6B' }
         ];
 
         function spawnBalloon() {
@@ -155,10 +165,14 @@ window.ArcadeGames = (function() {
             stage.appendChild(b);
             activeBalloons.push(b);
 
-            const dur = 4500 + Math.random() * 2000;
+            // Travel the full height of the stage. The distance used to be hardcoded for a
+            // 380px stage, so on taller screens balloons never rose into view.
+            const stageHeight = stage.clientHeight || 380;
+            const travel = stageHeight + 200;
+            const dur = (4500 + Math.random() * 2000) * Math.max(1, travel / 500);
             const anim = b.animate([
-                { transform: 'translateY(360px)', opacity: 1 },
-                { transform: 'translateY(-120px)', opacity: 0.9 }
+                { transform: 'translateY(0px)', opacity: 1 },
+                { transform: `translateY(-${travel}px)`, opacity: 0.9 }
             ], { duration: dur, easing: 'linear' });
             animations.add(anim);
 
@@ -181,9 +195,17 @@ window.ArcadeGames = (function() {
     function launchFeedAnimals(container, onExit) {
         const pairs = [
             { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
-            { animal: 'dog', animalName: 'هاپو باوفا', food: 'استخوان', foodSvg: SvgArt.object('tooth', 50) },
+            { animal: 'dog', animalName: 'هاپو باوفا', food: 'استخوان', foodSvg: SvgArt.object('bone', 50) },
             { animal: 'cat', animalName: 'پیشی ملوس', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) },
-            { animal: 'monkey', animalName: 'میمون زرنگ', food: 'موز', foodSvg: SvgArt.object('banana', 50) }
+            { animal: 'monkey', animalName: 'میمون زرنگ', food: 'موز', foodSvg: SvgArt.object('banana', 50) },
+            { animal: 'elephant', animalName: 'فیل آرام', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
+            { animal: 'bear', animalName: 'خرس مهربان', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
+            { animal: 'turtle', animalName: 'لاک‌پشت آرام', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
+            { animal: 'fox', animalName: 'روباه زرنگ', food: 'پرتقال', foodSvg: SvgArt.object('orange', 50) },
+            { animal: 'frog', animalName: 'قورباغه شاد', food: 'پرتقال', foodSvg: SvgArt.object('orange', 50) },
+            { animal: 'cow', animalName: 'گاو دوست‌داشتنی', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
+            { animal: 'sheep', animalName: 'گوسفند پشمالو', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
+            { animal: 'duck', animalName: 'اردک زرد', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) }
         ];
 
         let currentIdx = 0;
@@ -196,10 +218,12 @@ window.ArcadeGames = (function() {
             const current = pairs[currentIdx % pairs.length];
             const foodOptions = [
                 { name: 'سیب', svg: SvgArt.object('apple', 44) },
-                { name: 'استخوان', svg: SvgArt.object('tooth', 44) },
+                { name: 'استخوان', svg: SvgArt.object('bone', 44) },
                 { name: 'ماهی', svg: SvgArt.animal('fish', 44) },
-                { name: 'موز', svg: SvgArt.object('banana', 44) }
-            ];
+                { name: 'موز', svg: SvgArt.object('banana', 44) },
+                { name: 'پرتقال', svg: SvgArt.object('orange', 44) },
+                { name: 'هندوانه', svg: SvgArt.object('watermelon', 44) }
+            ].sort(() => Math.random() - 0.5);
 
             container.innerHTML = `
                 <div class="arcade-card">
@@ -334,7 +358,7 @@ window.ArcadeGames = (function() {
                     </div>
                     <div class="feed-prompt-title">دقیقاً <b>${toFa(targetCount)} هدیه</b> داخل واگن قطار بگذار:</div>
                     <div class="train-wagon-stage">
-                        <div class="train-locomotive">${SvgArt.object('car', 60)}</div>
+                        <div class="train-locomotive">${SvgArt.object('train', 60)}</div>
                         <div class="train-wagon" id="wagon-box">
                             <span class="wagon-target-badge">${toFa(targetCount)}</span>
                             <div class="wagon-slots" id="wagon-slots"></div>
@@ -421,15 +445,18 @@ window.ArcadeGames = (function() {
             };
 
             const stage = container.querySelector('#speed-mem-stage');
+            const memoryPool = [
+                ['گربه', SvgArt.animal('cat', 50)], ['خرگوش', SvgArt.animal('rabbit', 50)],
+                ['سیب', SvgArt.object('apple', 50)], ['موز', SvgArt.object('banana', 50)],
+                ['فیل', SvgArt.animal('elephant', 50)], ['ماهی', SvgArt.animal('fish', 50)],
+                ['روباه', SvgArt.animal('fox', 50)], ['درخت', SvgArt.object('tree', 50)]
+            ];
+            const pairCount = Math.min(6, 3 + Math.floor(score / 3));
+            const chosen = memoryPool.slice().sort(() => Math.random() - 0.5).slice(0, pairCount);
             const roundDef = {
-                cards: [
-                    { pair: 0, img: SvgArt.animal('cat', 50), label: 'گربه' },
-                    { pair: 0, img: SvgArt.animal('cat', 50), label: 'گربه' },
-                    { pair: 1, img: SvgArt.animal('rabbit', 50), label: 'خرگوش' },
-                    { pair: 1, img: SvgArt.animal('rabbit', 50), label: 'خرگوش' },
-                    { pair: 2, img: SvgArt.object('apple', 50), label: 'سیب' },
-                    { pair: 2, img: SvgArt.object('apple', 50), label: 'سیب' }
-                ].sort(() => Math.random() - 0.5)
+                cards: chosen.flatMap(([label,img], pair) => [
+                    { pair, img, label }, { pair, img, label }
+                ]).sort(() => Math.random() - 0.5)
             };
 
             MemoryActivity.render(stage, roundDef, {
@@ -457,13 +484,14 @@ window.ArcadeGames = (function() {
             { role: 'کودک', color: '#2563EB', prompt: 'با سه شیء کوچک یک الگو بساز.', action: 'الگو ساختم' },
             { role: 'والد', color: '#8B5CF6', prompt: 'تلاش کودک را توصیف کن، نه فقط نتیجه را.', action: 'بازخورد دادم' }
         ];
+        const sessionTurns = turns.slice().sort(() => Math.random() - 0.5);
         let index = 0;
         let score = 0;
         let active = true;
 
         function renderTurn() {
             if (!active) return;
-            const turn = turns[index];
+            const turn = sessionTurns[index % sessionTurns.length];
             container.innerHTML = `
                 <div class="arcade-card cooperative-card">
                     <div class="arcade-hud">

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Window;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
@@ -24,5 +25,20 @@ public class MainActivity extends BridgeActivity {
             controller.setAppearanceLightStatusBars(true);
             controller.setAppearanceLightNavigationBars(true);
         }
+
+        // Android system-back: navigate inside the SPA first; exit only from the home screen.
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (getBridge() == null || getBridge().getWebView() == null) {
+                    finish();
+                    return;
+                }
+                getBridge().getWebView().evaluateJavascript(
+                    "(function(){if(window.Nav&&window.Nav.current&&window.Nav.current()!=='home'){window.Nav.back();return 'handled';}return 'exit';})()",
+                    value -> { if ("\"exit\"".equals(value)) finish(); }
+                );
+            }
+        });
     }
 }

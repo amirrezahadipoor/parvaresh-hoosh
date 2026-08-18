@@ -530,6 +530,36 @@ window.SvgArt = (function() {
                     <path d="M30 62 L26 74 M46 64 L42 78 M62 62 L58 74 M76 64 L72 78" stroke="#0984E3" stroke-width="3.5" stroke-linecap="round"/>
                 `, size);
 
+            case 'bone':
+                return wrap(`
+                    <path d="M24 34 Q18 26 24 20 Q30 14 38 20 L70 52 Q78 58 84 64 Q90 70 84 78 Q78 84 70 78 L38 46 Q30 40 24 34 Z" fill="#FFFDF5" stroke="#2C3A47" stroke-width="2.8" stroke-linejoin="round"/>
+                    <circle cx="25" cy="25" r="8" fill="#FFFDF5" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="34" cy="34" r="7" fill="#FFFDF5" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="75" cy="73" r="8" fill="#FFFDF5" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="84" cy="64" r="7" fill="#FFFDF5" stroke="#2C3A47" stroke-width="2.5"/>
+                `, size);
+
+            case 'soap':
+                return wrap(`
+                    <rect x="22" y="30" width="56" height="52" rx="15" fill="#74B9FF" stroke="#2C3A47" stroke-width="2.8"/>
+                    <path d="M32 28 Q34 16 46 18 Q52 10 62 16 Q72 16 72 28" fill="#E8F7FF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="36" cy="22" r="5" fill="#FFF" opacity=".9"/>
+                    <circle cx="64" cy="18" r="3.5" fill="#FFF" opacity=".9"/>
+                    <path d="M34 48 Q50 40 66 48" fill="none" stroke="#FFF" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+                `, size);
+
+            case 'train':
+                return wrap(`
+                    <path d="M20 26 H68 Q78 26 78 36 V64 H20 Z" fill="#6C5CE7" stroke="#2C3A47" stroke-width="2.8"/>
+                    <rect x="28" y="34" width="14" height="12" rx="2" fill="#E0F7FA" stroke="#2C3A47" stroke-width="1.8"/>
+                    <rect x="48" y="34" width="14" height="12" rx="2" fill="#E0F7FA" stroke="#2C3A47" stroke-width="1.8"/>
+                    <rect x="12" y="52" width="70" height="8" rx="3" fill="#A29BFE" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="30" cy="68" r="8" fill="#2C3A47"/><circle cx="30" cy="68" r="3" fill="#FFF"/>
+                    <circle cx="68" cy="68" r="8" fill="#2C3A47"/><circle cx="68" cy="68" r="3" fill="#FFF"/>
+                    <path d="M78 42 H88 L94 50 H82" fill="#FF7675" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <circle cx="90" cy="66" r="7" fill="#2C3A47"/><circle cx="90" cy="66" r="2.5" fill="#FFF"/>
+                `, size);
+
             case 'car':
                 return wrap(`
                     <path d="M14 62 L24 42 Q28 32 40 32 L76 32 Q88 32 94 42 L106 62 Z" fill="#FF4757" stroke="#2C3A47" stroke-width="2.5"/>

@@ -512,7 +512,7 @@ window.Generator = (function() {
     function storyOrderRound() {
         const steps = [
             { label: '۱. بیدار شدن از خواب', img: SvgArt.object('sun', 65), idx: 0 },
-            { label: '۲. شستن دست و صورت', img: SvgArt.object('tooth', 65), idx: 1 },
+            { label: '۲. شستن دست و صورت', img: SvgArt.object('soap', 65), idx: 1 },
             { label: '۳. خوردن صبحانه مقوی', img: SvgArt.object('apple', 65), idx: 2 },
             { label: '۴. رفتن به مدرسه و بازی', img: SvgArt.object('car', 65), idx: 3 }
         ];
@@ -1287,7 +1287,100 @@ window.Generator = (function() {
         return SvgArt.object('star', '#F9CA24', 110);
     }
 
+    // Progressive expansion pack: every new lesson gets a different round mix.
+    // This prevents the Android app from feeling like the same 5-question loop repeated forever.
+    function progressiveExtraPlan(lessonId, metadata) {
+        if (!metadata || !metadata.extraTier) return null;
+        const v = Math.max(1, Number(metadata.variation || 1));
+        const hard = Number(metadata.extraTier) >= 5;
+        const pickVar = v % 8;
+        const tagExtra = rounds => rounds.map(round => ({ ...round, lessonId: metadata.id || lessonId, skillType: metadata.type, difficulty: metadata.difficulty || (hard ? 5 : 4) }));
+        if (lessonId.startsWith('R-L9') || lessonId.startsWith('R-L10') || lessonId.startsWith('R-L11') || lessonId.startsWith('R-L12')) {
+            const sets = [
+                [sentenceRound(), wordMeaningRound(), storyOrderRound(), oppositeRound(), sightWordRound()],
+                [sightWordRound(), sentenceRound(), rhymeRound(), wordMeaningRound(), storyOrderRound()],
+                [syllableRound(), sentenceRound(), oppositeRound(), wordMeaningRound(), balloonRound()],
+                [storyOrderRound(), sentenceRound(), sightWordRound(), rhymeRound(), wordMeaningRound()],
+                [wordMeaningRound(), oppositeRound(), sentenceRound(), storyOrderRound(), syllableRound()],
+                [rhymeRound(), sightWordRound(), sentenceRound(), oppositeRound(), storyOrderRound()],
+                [sentenceRound(), sentenceRound(), wordMeaningRound(), sightWordRound(), storyOrderRound()],
+                [storyOrderRound(), wordMeaningRound(), oppositeRound(), sentenceRound(), balloonRound()]
+            ];
+            return tagExtra(sets[pickVar]);
+        }
+        if (lessonId.startsWith('M-L10') || lessonId.startsWith('M-L11') || lessonId.startsWith('M-L12') || lessonId.startsWith('M-L13')) {
+            const max = hard ? 20 : 15;
+            const sets = [
+                [arithRound('+',max), arithRound('-',max), compareRound(max), balanceRound(), numberOrderRound(max)],
+                [arithRound('both',max), patternRound(), compareRound(max), countRound(max), balanceRound()],
+                [patternRound(), ravenRound(), arithRound('+',max), arithRound('-',max), compareRound(max)],
+                [countRound(max), numberOrderRound(max), arithRound('both',max), balanceRound(), patternRound()],
+                [compareRound(max), arithRound('+',max), patternRound(), arithRound('-',max), ravenRound()],
+                [balanceRound(), countRound(max), arithRound('both',max), numberOrderRound(max), patternRound()],
+                [arithRound('+',max), arithRound('both',max), ravenRound(), compareRound(max), balanceRound()],
+                [patternRound(), arithRound('-',max), countRound(max), ravenRound(), numberOrderRound(max)]
+            ];
+            return tagExtra(sets[pickVar]);
+        }
+        if (lessonId.startsWith('L-L8') || lessonId.startsWith('L-L9') || lessonId.startsWith('L-L10')) {
+            const mem = hard ? 6 : 4;
+            const sets = [
+                [memoryRound(mem), disappearedRound(), ravenRound(), shadowRound(), classifyRound()],
+                [simonRound(mem-1), memoryRound(mem), classifyRound(), storyOrderRound(), ravenRound()],
+                [shadowRound(), ravenRound(), disappearedRound(), memoryRound(mem), simonRound(mem-1)],
+                [classifyRound(), storyOrderRound(), ravenRound(), shadowRound(), memoryRound(mem)],
+                [ravenRound(), simonRound(mem-1), shadowRound(), classifyRound(), disappearedRound()],
+                [memoryRound(mem), classifyRound(), ravenRound(), storyOrderRound(), shadowRound()],
+                [disappearedRound(), memoryRound(mem), simonRound(mem-1), ravenRound(), classifyRound()],
+                [storyOrderRound(), shadowRound(), memoryRound(mem), ravenRound(), simonRound(mem-1)]
+            ];
+            return tagExtra(sets[pickVar]);
+        }
+        if (lessonId.startsWith('S-L8') || lessonId.startsWith('S-L9') || lessonId.startsWith('S-L10')) {
+            const sets = [
+                [animalHabitatRound(), animalSoundRound(), habitRound(), seasonRound(), plantGrowthRound()],
+                [seasonRound(), animalHabitatRound(), bodyPartRound(), senseRound(), habitRound()],
+                [plantGrowthRound(), habitRound(), animalHabitatRound(), seasonRound(), senseRound()],
+                [animalSoundRound(), bodyPartRound(), seasonRound(), habitRound(), animalHabitatRound()],
+                [senseRound(), plantGrowthRound(), animalSoundRound(), habitRound(), seasonRound()],
+                [habitRound(), animalHabitatRound(), plantGrowthRound(), bodyPartRound(), seasonRound()],
+                [seasonRound(), senseRound(), animalHabitatRound(), animalSoundRound(), habitRound()],
+                [bodyPartRound(), plantGrowthRound(), habitRound(), seasonRound(), animalHabitatRound()]
+            ];
+            return tagExtra(sets[pickVar]);
+        }
+        if (lessonId.startsWith('SE-L7') || lessonId.startsWith('SE-L8') || lessonId.startsWith('SE-L9')) {
+            const sets = [
+                [emotionRound(), habitRound(), familyRound(), habitRound(), emotionRound()],
+                [habitRound(), emotionRound(), habitRound(), familyRound(), emotionRound()],
+                [familyRound(), habitRound(), emotionRound(), habitRound(), familyRound()],
+                [emotionRound(), emotionRound(), habitRound(), familyRound(), habitRound()],
+                [habitRound(), familyRound(), habitRound(), emotionRound(), emotionRound()],
+                [familyRound(), emotionRound(), habitRound(), habitRound(), familyRound()],
+                [emotionRound(), habitRound(), emotionRound(), familyRound(), habitRound()],
+                [habitRound(), emotionRound(), familyRound(), emotionRound(), habitRound()]
+            ];
+            return tagExtra(sets[pickVar]);
+        }
+        if (lessonId.startsWith('A-L6') || lessonId.startsWith('A-L7') || lessonId.startsWith('A-L8')) {
+            const sets = [
+                [paintingRound(), shadowRound(), balloonRound(), paintingRound(), shadowRound()],
+                [balloonRound(), paintingRound(), shadowRound(), paintingRound(), balloonRound()],
+                [shadowRound(), paintingRound(), paintingRound(), balloonRound(), shadowRound()],
+                [paintingRound(), balloonRound(), shadowRound(), balloonRound(), paintingRound()],
+                [shadowRound(), balloonRound(), paintingRound(), shadowRound(), paintingRound()],
+                [paintingRound(), paintingRound(), balloonRound(), shadowRound(), balloonRound()],
+                [balloonRound(), shadowRound(), paintingRound(), paintingRound(), shadowRound()],
+                [paintingRound(), shadowRound(), balloonRound(), shadowRound(), paintingRound()]
+            ];
+            return tagExtra(sets[pickVar]);
+        }
+        return null;
+    }
+
     function buildRounds(lessonId, metadata) {
+        const progressivePlan = progressiveExtraPlan(lessonId, metadata);
+        if (progressivePlan && progressivePlan.length) return progressivePlan;
         const metadataPlan = lessonPlan(lessonId, metadata);
         if (metadataPlan && metadataPlan.length) return metadataPlan;
 
