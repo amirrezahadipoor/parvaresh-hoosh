@@ -871,7 +871,15 @@ window.Generator = (function() {
         'ذرت': 'grain', 'شکلات': 'chocolate', 'شتر': 'camel', 'قوری': 'jar',
         'جام': 'jar', 'برف': 'snow', 'یخ': 'snow', 'ظرف': 'plate',
         'طناب': 'rope', 'رادیو': 'radio', 'میز': 'table', 'رودخانه': 'river',
-        'دریا': 'river'
+        'دریا': 'river',
+        'تخم‌مرغ': 'egg', 'پنیر': 'cheese', 'سوپ': 'soup', 'چوب': 'wood',
+        'آب': 'water', 'حوض': 'water', 'حباب': 'bubble', 'عکس': 'photo',
+        'تاج': 'crown', 'شاه': 'crown', 'جنگل': 'forest', 'فرفره': 'pinwheel',
+        'در': 'door', 'یاس': 'jasmine', 'یوزپلنگ': 'cheetah', 'بلبل': 'nightingale',
+        'صورت': 'mother', 'خواهر': 'mother', 'توت': 'cherry', 'سیر': 'nut',
+        'ویولن': 'violin', 'زنگ': 'bell', 'زمین': 'earth', 'لیمو': 'lemon',
+        'عصا': 'cane', 'پرنده': 'bird2', 'ژاکت': 'shirt', 'غذا': 'soup',
+        'نارنجی': 'orange', 'ضربه': 'drum'
     };
     const SHAPE_IMG = {
         'دایره': ['circle', '#FF6B6B'], 'مثلث': ['triangle', '#4ECDC4'],
@@ -1213,7 +1221,32 @@ window.Generator = (function() {
         'patience': 'topic-emotions', 'family': 'topic-emotions',
         'responsibility': 'topic-emotions', 'self-identity': 'topic-emotions',
         'conflict-resolution': 'topic-emotions', 'teamwork': 'topic-emotions',
-        'diversity': 'topic-emotions'
+        'diversity': 'topic-emotions',
+        // Remaining skill areas -> every lesson now opens with spoken guidance.
+        'creative-art': 'topic-art', 'drawing': 'topic-art', 'colors': 'topic-art',
+        'coloring': 'topic-art', 'finger-painting': 'topic-art',
+        'illustration': 'topic-art', 'craft': 'topic-art', 'sculpture': 'topic-art',
+        'free-drawing': 'topic-art',
+        'reading': 'topic-reading', 'comprehension': 'topic-reading',
+        'story': 'topic-reading', 'character-analysis': 'topic-reading',
+        'sight-words': 'topic-reading', 'language': 'topic-reading',
+        'reasoning': 'topic-logic', 'deduction': 'topic-logic', 'riddle': 'topic-logic',
+        'odd-one-out': 'topic-logic', 'spot-difference': 'topic-logic',
+        'maze': 'topic-logic', 'puzzle': 'topic-logic', 'jigsaw': 'topic-logic',
+        'venn-diagram': 'topic-logic', 'association': 'topic-logic',
+        'phonemic-awareness': 'topic-words', 'rhyming': 'topic-words',
+        'syllables': 'topic-words', 'blending': 'topic-words',
+        'word-building': 'topic-words', 'letter-connection': 'topic-words',
+        'vocabulary': 'topic-words', 'matching': 'topic-words',
+        'memory-logic': 'topic-memory', 'pairing': 'topic-memory',
+        'shadow-matching': 'topic-memory',
+        'sequencing': 'topic-sequence', 'ordering': 'topic-sequence',
+        'word-order': 'topic-sequence',
+        'sentence-building': 'topic-sentence', 'fill-blank': 'topic-sentence',
+        'classification': 'topic-classify', 'categorization': 'topic-classify',
+        'creative-writing': 'topic-create', 'story-creation': 'topic-create',
+        'journaling': 'topic-create', 'comic': 'topic-create',
+        'music': 'topic-music'
     };
 
     function topicClipFor(metadata) {

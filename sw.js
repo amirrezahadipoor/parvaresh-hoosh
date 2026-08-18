@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v11-full-audio';
+const CACHE_NAME = 'parvaresh-hoosh-v12-audio-100';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -47,12 +47,22 @@ const PRECACHE = [
   './assets/audio/letter-zhe.mp3',
   './assets/audio/topic-addition.mp3',
   './assets/audio/topic-animals.mp3',
+  './assets/audio/topic-art.mp3',
+  './assets/audio/topic-classify.mp3',
   './assets/audio/topic-counting.mp3',
+  './assets/audio/topic-create.mp3',
   './assets/audio/topic-emotions.mp3',
+  './assets/audio/topic-logic.mp3',
+  './assets/audio/topic-memory.mp3',
+  './assets/audio/topic-music.mp3',
+  './assets/audio/topic-reading.mp3',
   './assets/audio/topic-seasons.mp3',
   './assets/audio/topic-senses.mp3',
+  './assets/audio/topic-sentence.mp3',
+  './assets/audio/topic-sequence.mp3',
   './assets/audio/topic-shapes.mp3',
-  './assets/audio/topic-subtraction.mp3'
+  './assets/audio/topic-subtraction.mp3',
+  './assets/audio/topic-words.mp3'
 ];
 
 self.addEventListener('install', event => {

@@ -273,7 +273,9 @@ window.AudioEngine = (function() {
         'letter-kaf', 'letter-gaf', 'letter-lam', 'letter-mim', 'letter-nun', 'letter-vav',
         'letter-heh', 'letter-ye',
         'topic-counting', 'topic-addition', 'topic-subtraction', 'topic-shapes',
-        'topic-animals', 'topic-seasons', 'topic-senses', 'topic-emotions'
+        'topic-animals', 'topic-seasons', 'topic-senses', 'topic-emotions',
+        'topic-art', 'topic-reading', 'topic-logic', 'topic-words', 'topic-memory',
+        'topic-sequence', 'topic-sentence', 'topic-classify', 'topic-create', 'topic-music'
     ]);
 
     function hasClip(name) {
