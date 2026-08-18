@@ -278,6 +278,7 @@
             });
         }
         dashboard.appendChild(dailyPlan);
+        dashboard.appendChild(createAdventureMap());
 
         const learningHeader = document.createElement('div');
         learningHeader.className = 'home-section-heading';
@@ -428,6 +429,33 @@
             if (!selected.some(item => item.id === lesson.id)) selected.push(lesson);
         }
         return selected;
+    }
+
+    function createAdventureMap() {
+        const nodes = AdventureJourney.getNodes();
+        const firstIncomplete = nodes.findIndex(node => !(state.lessonsDone[node.lessonId] && state.lessonsDone[node.lessonId].done));
+        const activeIndex = firstIncomplete < 0 ? nodes.length - 1 : firstIncomplete;
+        const completed = nodes.filter(node => state.lessonsDone[node.lessonId] && state.lessonsDone[node.lessonId].done).length;
+        const section = document.createElement('section');
+        section.className = 'adventure-map-card';
+        section.innerHTML = `<div class="adventure-map-head"><div><h2>نقشهٔ ماجراجویی</h2><p>هر مرحله، یک مهارت تازه</p></div><strong>${toFa(completed)} / ${toFa(nodes.length)}</strong></div><div class="adventure-map-track"></div>`;
+        const track = section.querySelector('.adventure-map-track');
+        nodes.forEach((node, index) => {
+            const done = state.lessonsDone[node.lessonId] && state.lessonsDone[node.lessonId].done;
+            const unlocked = index <= activeIndex;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `adventure-map-node ${done ? 'done' : ''} ${index === activeIndex ? 'current' : ''} ${unlocked ? '' : 'locked'}`;
+            button.style.setProperty('--node-color', node.color);
+            button.innerHTML = `<span class="adventure-map-node-icon"></span><small></small>`;
+            button.querySelector('.adventure-map-node-icon').textContent = done ? '✓' : node.icon;
+            button.querySelector('small').textContent = node.title.replace(/^\d+\.\s*/, '');
+            button.disabled = !unlocked;
+            button.setAttribute('aria-label', `${node.title} ${done ? 'تکمیل شده' : unlocked ? 'باز' : 'قفل'}`);
+            if (unlocked) button.addEventListener('click', () => startAdventureLesson(node));
+            track.appendChild(button);
+        });
+        return section;
     }
 
     function createHomeStat(label, value, caption) {

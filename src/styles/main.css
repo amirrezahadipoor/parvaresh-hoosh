@@ -1524,3 +1524,17 @@ button:focus-visible, [role="button"]:focus-visible {
 .cooperative-role { display: inline-flex; align-items: center; justify-content: center; min-width: 86px; min-height: 38px; margin: 10px auto 14px; padding: 7px 15px; border-radius: 999px; color: #FFF; background: var(--role-color, #2563EB); font-size: 16px; font-weight: 900; }
 .cooperative-prompt { min-height: 86px; color: #1F2A37; font-size: 20px; font-weight: 900; line-height: 1.65; }
 .cooperative-note { margin: 10px 0 15px; padding: 10px; border-radius: 12px; color: #718397; background: #F5F8FC; font-size: 11px; font-weight: 800; line-height: 1.5; }
+
+.adventure-map-card { padding: 14px; border: 1px solid #E1E8F0; border-radius: 20px; background: #FFF; box-shadow: 0 5px 16px rgba(34,57,84,.06); }
+.adventure-map-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.adventure-map-head h2 { color: #1F2A37; font-size: 16px; font-weight: 900; }
+.adventure-map-head p { margin-top: 2px; color: #8491A0; font-size: 10px; font-weight: 700; }
+.adventure-map-head strong { padding: 6px 8px; border-radius: 10px; color: #087A67; background: #E8FAF5; font-size: 11px; }
+.adventure-map-track { display: flex; gap: 8px; overflow-x: auto; padding: 13px 2px 4px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.adventure-map-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 70px; gap: 5px; padding: 3px; border: 0; color: #617184; background: transparent; scroll-snap-align: start; cursor: pointer; }
+.adventure-map-node-icon { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 3px solid var(--node-color,#CBD5E1); border-radius: 15px; color: var(--node-color,#64748B); background: #F8FAFC; font-size: 11px; font-weight: 900; }
+.adventure-map-node small { width: 68px; overflow: hidden; font-size: 9px; font-weight: 800; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.adventure-map-node.done .adventure-map-node-icon { border-color: #00B894; color: #FFF; background: #00B894; }
+.adventure-map-node.current .adventure-map-node-icon { color: #FFF; background: var(--node-color,#2563EB); box-shadow: 0 0 0 4px rgba(37,99,235,.13); animation: mapNodePulse 1.8s ease-in-out infinite; }
+.adventure-map-node.locked { opacity: .4; cursor: default; }
+@keyframes mapNodePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
