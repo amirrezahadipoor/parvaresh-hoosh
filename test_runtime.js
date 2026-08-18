@@ -109,6 +109,7 @@ async function main() {
     await wait(10);
     assert.equal(window.Engagement.hasProfile(), true, 'onboarding skip should persist a local profile decision');
     assert.ok(document.querySelector('.domain-tile'), 'home learning tiles should render');
+    assert.ok(document.querySelector('.daily-plan-card'), 'daily plan should render');
     assert.ok(document.querySelector('#home-content .home-dashboard'), 'home content should be populated');
     assert.equal(errors.length, 0, `browser smoke test errors: ${errors.map(String).join('\n')}`);
 

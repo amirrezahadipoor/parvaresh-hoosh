@@ -104,7 +104,8 @@ window.Engagement = (function() {
             completed: state.today.completed,
             goal: state.dailyGoal,
             remaining: Math.max(0, state.dailyGoal - state.today.completed),
-            percent: Math.min(100, Math.round((state.today.completed / state.dailyGoal) * 100))
+            percent: Math.min(100, Math.round((state.today.completed / state.dailyGoal) * 100)),
+            lessonIds: [...state.today.lessonIds]
         };
     }
 

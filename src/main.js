@@ -202,7 +202,7 @@
         dashboard.appendChild(welcome);
 
         const allLessons = (state.curriculum && state.curriculum.domains || []).flatMap(domain =>
-            (domain.levels || []).flatMap(level => level.lessons || [])
+            (domain.levels || []).flatMap(level => (level.lessons || []).map(lesson => ({ ...lesson, domainId: domain.id, levelId: level.id })))
         );
         const completedLessons = allLessons.filter(lesson => state.lessonsDone[lesson.id] && state.lessonsDone[lesson.id].done).length;
         const completion = allLessons.length ? Math.round((completedLessons / allLessons.length) * 100) : 0;
@@ -243,6 +243,41 @@
             `;
         }
         dashboard.appendChild(adventure);
+
+        const dailyPlan = document.createElement('section');
+        dailyPlan.className = 'daily-plan-card';
+        const todayPlan = window.Engagement ? window.Engagement.getToday() : { completed: 0, goal: 3 };
+        const planLessons = buildDailyPlan(allLessons, todayPlan);
+        dailyPlan.innerHTML = `
+            <div class="daily-plan-head"><div><h2>برنامهٔ امروز</h2><p>سه تمرین کوتاه و متنوع</p></div><strong>${toFa(todayPlan.completed)} / ${toFa(todayPlan.goal)}</strong></div>
+            <div class="daily-plan-list"></div>
+        `;
+        const planList = dailyPlan.querySelector('.daily-plan-list');
+        if (!planLessons.length) {
+            const doneMessage = document.createElement('p');
+            doneMessage.className = 'daily-plan-complete';
+            doneMessage.textContent = 'هدف امروز کامل شد؛ آفرین به پشتکارت!';
+            planList.appendChild(doneMessage);
+        } else {
+            planLessons.forEach((lesson, index) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'daily-plan-item';
+                item.innerHTML = `<span class="daily-plan-index">${toFa(index + 1)}</span><span class="daily-plan-copy"><b></b><small></small></span><span class="daily-plan-arrow">‹</span>`;
+                const guide = lessonGuide(lesson.type);
+                item.querySelector('.daily-plan-copy b').textContent = lesson.title;
+                item.querySelector('.daily-plan-copy small').textContent = `${guide.label} · ${toFa(guide.minutes)} دقیقه`;
+                item.addEventListener('click', () => {
+                    AudioEngine.play('click');
+                    state.domainId = lesson.domainId;
+                    state.lessonId = lesson.id;
+                    Nav.push('lesson');
+                    startLesson(lesson);
+                });
+                planList.appendChild(item);
+            });
+        }
+        dashboard.appendChild(dailyPlan);
 
         const learningHeader = document.createElement('div');
         learningHeader.className = 'home-section-heading';
@@ -360,6 +395,25 @@
         overlay.querySelector('#profile-skip').addEventListener('click', () => close({ name: '', age: null }));
         document.body.appendChild(overlay);
         setTimeout(() => overlay.querySelector('#child-name').focus(), 50);
+    }
+
+    function buildDailyPlan(allLessons, today) {
+        const completedToday = new Set((window.Engagement && window.Engagement.getToday && window.Engagement.getToday().lessonIds) || []);
+        const candidates = allLessons.filter(lesson => !completedToday.has(lesson.id) && !(state.lessonsDone[lesson.id] && state.lessonsDone[lesson.id].done));
+        const selected = [];
+        const domains = new Set();
+        for (const lesson of candidates) {
+            if (selected.length >= Math.min(3, today.goal || 3)) break;
+            if (!domains.has(lesson.domainId)) {
+                selected.push(lesson);
+                domains.add(lesson.domainId);
+            }
+        }
+        for (const lesson of candidates) {
+            if (selected.length >= Math.min(3, today.goal || 3)) break;
+            if (!selected.includes(lesson)) selected.push(lesson);
+        }
+        return selected;
     }
 
     function createHomeStat(label, value, caption) {

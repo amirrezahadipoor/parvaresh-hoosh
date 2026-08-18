@@ -1437,3 +1437,24 @@ button:focus-visible, [role="button"]:focus-visible {
 .parent-legal-links { display: flex; gap: 12px; margin: -3px 0 10px; }
 .parent-legal-links a { color: #1557A6; font-size: 11px; font-weight: 900; text-decoration: none; }
 .parent-legal-links a:active { opacity: .7; }
+
+.daily-plan-card {
+    padding: 14px;
+    border: 1px solid #E1E8F0;
+    border-radius: 20px;
+    background: #FFF;
+    box-shadow: 0 5px 16px rgba(34,57,84,.06);
+}
+.daily-plan-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.daily-plan-head h2 { color: #1F2A37; font-size: 16px; font-weight: 900; }
+.daily-plan-head p { margin-top: 2px; color: #8491A0; font-size: 10px; font-weight: 700; }
+.daily-plan-head strong { min-width: 45px; padding: 6px 8px; border-radius: 10px; color: #23609D; background: #EAF3FF; font-size: 12px; text-align: center; }
+.daily-plan-list { display: flex; flex-direction: column; gap: 7px; margin-top: 11px; }
+.daily-plan-item { display: flex; align-items: center; gap: 9px; min-height: 52px; padding: 7px 8px; border: 1px solid #E4EAF1; border-radius: 13px; color: #1F2A37; background: #F9FBFD; text-align: right; cursor: pointer; }
+.daily-plan-item:active { background: #EEF5FB; }
+.daily-plan-index { display: flex; align-items: center; justify-content: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9px; color: #FFF; background: #2563EB; font-size: 12px; font-weight: 900; }
+.daily-plan-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.daily-plan-copy b { overflow: hidden; font-size: 11px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.daily-plan-copy small { margin-top: 2px; color: #7A8998; font-size: 9px; font-weight: 800; }
+.daily-plan-arrow { color: #8A98A8; font-size: 23px; font-weight: 300; }
+.daily-plan-complete { padding: 10px 4px 2px; color: #087A67; font-size: 12px; font-weight: 900; }
