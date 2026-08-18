@@ -233,11 +233,55 @@ window.AudioEngine = (function() {
         }
     };
 
-    // Voice Narration with Web Speech API
+    // ------------------------------------------------------------------
+    // Bundled Persian narration.
+    // Android WebView ships no Persian (fa-IR) speech voice, so the Web Speech
+    // API was silent on every device. Real recorded clips are bundled in
+    // assets/audio and played back directly; TTS stays only as a last resort
+    // for locales that do happen to have a Persian voice installed.
+    // ------------------------------------------------------------------
+    let currentClip = null;
+    let faVoiceSupported = null;
+
+    function hasPersianVoice() {
+        if (faVoiceSupported !== null) return faVoiceSupported;
+        try {
+            if (!('speechSynthesis' in window)) return (faVoiceSupported = false);
+            const voices = window.speechSynthesis.getVoices() || [];
+            if (!voices.length) return false; // not loaded yet; don't cache
+            faVoiceSupported = voices.some(v => v.lang && v.lang.toLowerCase().startsWith('fa'));
+            return faVoiceSupported;
+        } catch (e) { return (faVoiceSupported = false); }
+    }
+
+    function stopClip() {
+        if (currentClip) {
+            try { currentClip.pause(); currentClip.currentTime = 0; } catch (e) {}
+            currentClip = null;
+        }
+    }
+
+    // Play a bundled narration clip by name (no extension), e.g. 'lesson-R-L1-L01'.
+    function playClip(name, onEnd) {
+        if (sfxMuted || !name) return false;
+        try {
+            stopClip();
+            const audio = new Audio(`assets/audio/${name}.mp3`);
+            audio.preload = 'auto';
+            currentClip = audio;
+            audio.onended = () => { currentClip = null; if (onEnd) onEnd(); };
+            audio.onerror = () => { currentClip = null; };
+            const p = audio.play();
+            if (p && p.catch) p.catch(() => { currentClip = null; });
+            return true;
+        } catch (e) { return false; }
+    }
+
+    // Voice Narration: bundled clip first, Web Speech API as fallback
     function speak(text, rate) {
         if (sfxMuted || !text) return;
         try {
-            if ('speechSynthesis' in window) {
+            if ('speechSynthesis' in window && hasPersianVoice()) {
                 window.speechSynthesis.cancel();
                 const Utterance = window.SpeechSynthesisUtterance || (typeof SpeechSynthesisUtterance !== 'undefined' ? SpeechSynthesisUtterance : null);
                 if (!Utterance) return;
@@ -254,6 +298,7 @@ window.AudioEngine = (function() {
     }
 
     function stopSpeak() {
+        stopClip();
         try {
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         } catch (e) {}
@@ -277,6 +322,8 @@ window.AudioEngine = (function() {
     return {
         play,
         speak,
+        playClip,
+        hasPersianVoice,
         stopSpeak,
         startMusic,
         stopMusic,

@@ -1,9 +1,14 @@
-const CACHE_NAME = 'parvaresh-hoosh-v6-brutal-292';
+const CACHE_NAME = 'parvaresh-hoosh-v7-audio-292';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
-  './vendor/gsap.min.js'
+  './vendor/gsap.min.js',
+  // Bundled Persian narration (Android WebView has no fa-IR speech voice).
+  './assets/audio/lesson-R-L1-L01.mp3', './assets/audio/lesson-R-L1-L02.mp3',
+  './assets/audio/lesson-R-L1-L03.mp3', './assets/audio/lesson-R-L1-L04.mp3',
+  './assets/audio/lesson-R-L1-L05.mp3', './assets/audio/lesson-R-L1-L06.mp3',
+  './assets/audio/lesson-R-L1-L07.mp3', './assets/audio/lesson-R-L1-L08.mp3'
 ];
 
 self.addEventListener('install', event => {

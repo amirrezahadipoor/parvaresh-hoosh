@@ -145,6 +145,34 @@ window.Generator = (function() {
     // ==========================================
     // 6. READING & LITERACY ROUNDS
     // ==========================================
+    // ---------------------------------------------------------------------
+    // Lesson-accurate letter selection.
+    // Lessons are titled e.g. «صدای الفبا: اَ - ب - پ - ت» but used to draw a
+    // RANDOM letter from the whole alphabet, so the "اَ ب پ ت" lesson would ask
+    // about «گ» or «ش». Parse the title and teach only those letters.
+    // ---------------------------------------------------------------------
+    function lessonLetters(metadata) {
+        const title = (metadata && metadata.title) || '';
+        const after = title.includes(':') ? title.slice(title.indexOf(':') + 1) : '';
+        if (!after) return null;
+        const found = [];
+        for (const ch of after) {
+            const hit = ALPHABET.find(l => l.letter === ch);
+            if (hit && !found.includes(hit)) found.push(hit);
+        }
+        return found.length ? found : null;
+    }
+
+    // Words that actually have drawn artwork, so options are real pictures.
+    function hasRealArt(word) {
+        return !!(ANIMAL_IMG[word] || OBJECT_IMG[word] || SHAPE_IMG[word] || SEASON_IMG[word]);
+    }
+
+    function bestWordForLetter(letterObj) {
+        const words = FIRST_SOUND_WORDS[letterObj.letter] || [letterObj.example];
+        return words.find(hasRealArt) || words[0];
+    }
+
     function letterSoundRound(letterObj) {
         const correct = letterObj.letter;
         const others = shuffle(ALPHABET.filter(l => l.letter !== correct)).slice(0, 3);
@@ -159,10 +187,26 @@ window.Generator = (function() {
     }
 
     function letterExampleRound(letterObj) {
-        const words = (FIRST_SOUND_WORDS[letterObj.letter] || [letterObj.example]);
-        const correctWord = words[0];
+        // Prefer a word that has real drawn artwork so the child compares pictures,
+        // not text tiles pretending to be pictures.
+        const correctWord = bestWordForLetter(letterObj);
+        const drawable = hasRealArt(correctWord);
+        const others = pickOtherWords(letterObj.letter, 3, [], drawable);
+
+        // Some letters (ص، ض، ظ، ع …) have no illustrated word. Ask about the WORD
+        // rather than showing text tiles under a prompt that promises pictures.
+        if (!drawable) {
+            const opts = shuffle([correctWord, ...others].map(w => ({ label: w })));
+            return mc(
+                `کدام کلمه با حرف «${letterObj.letter}» شروع می‌شود؟`,
+                null,
+                opts,
+                opts.findIndex(o => o.label === correctWord),
+                `کدام کلمه با حرف ${letterObj.letter} شروع می‌شود؟`
+            );
+        }
+
         const correctImg = imgForWord(correctWord);
-        const others = pickOtherWords(letterObj.letter, 3);
         const opts = shuffle([
             { label: correctWord, img: correctImg },
             ...others.map(w => ({ label: w, img: imgForWord(w) }))
@@ -235,15 +279,32 @@ window.Generator = (function() {
     }
 
     function sightWordRound() {
+        // Only words with real artwork can be asked as "which word is this picture?".
+        // Otherwise the stage showed a tile with the word printed on it and asked the
+        // child to read that same word back — the answer was written on the question.
+        const drawable = FREQUENT_WORDS.filter(hasRealArt);
+        if (drawable.length >= 3) {
+            const w = pick(drawable);
+            const others = shuffle(drawable.filter(x => x !== w)).slice(0, 3);
+            const opts = shuffle([w, ...others]);
+            return mc(
+                `این تصویر مربوط به کدام کلمه است؟`,
+                imgForWord(w),
+                opts.map(x => ({ label: x })),
+                opts.indexOf(w),
+                `تصویر ${w} را پیدا کن`
+            );
+        }
+        // Fall back to a genuine reading task instead of a fake picture question.
         const w = pick(FREQUENT_WORDS);
         const others = shuffle(FREQUENT_WORDS.filter(x => x !== w)).slice(0, 3);
         const opts = shuffle([w, ...others]);
         return mc(
-            `این تصویر مربوط به کدام کلمه است؟`,
-            imgForWord(w),
+            `کدام یک واژهٔ «${w}» است؟`,
+            null,
             opts.map(x => ({ label: x })),
             opts.indexOf(w),
-            `تصویر ${w} را پیدا کن`
+            `واژهٔ ${w} را پیدا کن`
         );
     }
 
@@ -266,9 +327,12 @@ window.Generator = (function() {
         const correct = item.word;
         const others = shuffle(WORD_MEANINGS.map(m => m.word).filter(x => x !== correct)).slice(0, 2);
         const opts = shuffle([correct, ...others]);
+        // This is a riddle: the child must infer the word from its description.
+        // Showing a tile with the answer printed on it gave the whole thing away,
+        // so only real artwork may illustrate it.
         return mc(
             `«${item.meaning}» — این نشانه کدام است؟`,
-            imgForWord(item.word),
+            null,
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
             item.meaning
@@ -312,7 +376,9 @@ window.Generator = (function() {
         const opts = shuffle([n, ...others]);
         return mc(
             `عدد «${toFaWord(n)}» کدام است؟`,
-            SvgArt.numberCard(n, '#4ECDC4'),
+            // Showing numberCard(n) printed the answer on the stage. Show that many
+            // objects instead so the child links the spoken name to the numeral.
+            n <= 10 ? countImage(n) : null,
             opts.map(x => ({ label: toFaDigit(x), big: true })),
             opts.indexOf(n),
             `عدد ${toFaWord(n)} را انتخاب کن`
@@ -772,13 +838,22 @@ window.Generator = (function() {
         return SvgArt.wordTile(word, wordColor(word), 85);
     }
 
-    function pickOtherWords(excludeLetter, count, excludeList) {
+    function pickOtherWords(excludeLetter, count, excludeList, preferArt) {
         excludeList = excludeList || [];
         const pool = [];
         Object.keys(FIRST_SOUND_WORDS).forEach(k => {
             if (k !== excludeLetter) pool.push(...FIRST_SOUND_WORDS[k]);
         });
-        return shuffle(pool.filter(w => !excludeList.includes(w))).slice(0, count);
+        const available = pool.filter(w => !excludeList.includes(w));
+        if (preferArt) {
+            // Keep every option visually consistent: if the answer is a real picture,
+            // the distractors must be real pictures too (never a text tile among art).
+            const drawn = shuffle(available.filter(hasRealArt)).slice(0, count);
+            if (drawn.length === count) return drawn;
+            const rest = shuffle(available.filter(w => !drawn.includes(w))).slice(0, count - drawn.length);
+            return shuffle([...drawn, ...rest]);
+        }
+        return shuffle(available).slice(0, count);
     }
 
     function countImage(n) {
@@ -883,11 +958,14 @@ window.Generator = (function() {
         return 'early';
     }
 
-    function roleFactory(role, level) {
+    function roleFactory(role, level, letterCursor) {
+        // `letterCursor` walks the letters this lesson is named after, so the
+        // «اَ ب پ ت» lesson never asks about «گ». Falls back to the full alphabet.
+        const nextLetter = letterCursor || (() => pick(ALPHABET));
         const roles = {
-            'letter-sound': () => letterSoundRound(pick(ALPHABET)),
-            'letter-example': () => letterExampleRound(pick(ALPHABET)),
-            trace: () => tracingRound(pick(ALPHABET).letter, 'letter'),
+            'letter-sound': () => letterSoundRound(nextLetter()),
+            'letter-example': () => letterExampleRound(nextLetter()),
+            trace: () => tracingRound(nextLetter().letter, 'letter'),
             'trace-number': () => tracingRound(toFaDigit(rint(1, Math.max(3, level * 3))), 'number'),
             'first-sound': firstSoundRound,
             rhyme: rhymeRound,
@@ -977,7 +1055,11 @@ window.Generator = (function() {
 
     function authoredLessonPlan(lessonId, metadata, pkg) {
         const level = lessonLevel(lessonId, metadata);
-        const factories = (pkg.roundPlan || []).map(role => roleFactory(role, level));
+        // Letters named in the lesson title (package title is authoritative).
+        const set = lessonLetters(pkg) || lessonLetters(metadata);
+        let li = 0;
+        const letterCursor = set ? () => set[li++ % set.length] : null;
+        const factories = (pkg.roundPlan || []).map(role => roleFactory(role, level, letterCursor));
         const rounds = plan(factories, { ...metadata, difficulty: level });
         return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
     }
@@ -993,12 +1075,20 @@ window.Generator = (function() {
 
         if (domain === 'reading') {
             switch (type) {
-                case 'recognition':
-                    return plan([
-                        () => letterSoundRound(pick(ALPHABET)),
-                        () => letterExampleRound(pick(ALPHABET)),
-                        () => tracingRound(pick(ALPHABET).letter, 'letter')
-                    ], metadata);
+                case 'recognition': {
+                    // Teach the letters this lesson is actually named after.
+                    const set = lessonLetters(metadata) || ALPHABET;
+                    let i = 0;
+                    const nextLetter = () => set[i++ % set.length];
+                    return plan(
+                        set.map((_, idx) => (idx % 3 === 1
+                            ? () => letterExampleRound(nextLetter())
+                            : idx % 3 === 2
+                                ? () => tracingRound(nextLetter().letter, 'letter')
+                                : () => letterSoundRound(nextLetter()))),
+                        metadata
+                    );
+                }
                 case 'phonemic-awareness':
                 case 'rhyming':
                 case 'syllables':
@@ -1197,7 +1287,11 @@ window.Generator = (function() {
 
         // 1) Every option gets a visual identity:
         //    - single letters & numbers become colorful tile buttons (the button IS the icon);
-        //    - words get an SVG icon (object/animal picture or a word tile).
+        //    - words with REAL drawn artwork get that picture;
+        //    - everything else stays clean text. Previously every option was forced
+        //      through a "word tile" (a coloured rectangle with the word written in
+        //      it), which pretended to be an illustration and produced nonsense like
+        //      a picture-tile for the phrase «داد زدن در خانه».
         (round.options || []).forEach(opt => {
             if (!opt.img && opt.label) {
                 const text = String(opt.label).trim();
@@ -1205,7 +1299,7 @@ window.Generator = (function() {
                     opt.tile = true;
                     opt.big = true;
                     opt.tileColor = wordColor(text);
-                } else {
+                } else if (hasRealArt(text)) {
                     opt.img = optionIcon(text);
                 }
             }
@@ -1279,7 +1373,7 @@ window.Generator = (function() {
 
         // Image-matching questions (which image starts with…, which word…, builds…)
         // may safely show the answer image as the question content.
-        if (answerOpt && answerOpt.img && /شروع می‌شود|می‌سازند|نشانه|کدام کلمه|کدام گزینه|کدام تصویر/i.test(prompt)) {
+        if (answerOpt && answerOpt.img && /شروع می‌شود|کدام گزینه|کدام تصویر/i.test(prompt)) {
             return `<div class="round-visual-flex">${answerOpt.img}</div>`;
         }
 

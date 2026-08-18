@@ -285,6 +285,31 @@
 
         // The single primary call to action is always the next unfinished milestone.
         const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
+
+        // ---- Giant animated play button ----
+        // One huge, pulsing target a child can hit without reading anything. It runs
+        // the mixed ladder: lesson -> quiz -> game -> painting, easy to hard.
+        const bigPlay = document.createElement('button');
+        bigPlay.type = 'button';
+        bigPlay.className = 'giant-play-btn';
+        bigPlay.setAttribute('aria-label', 'شروع بازی و یادگیری');
+        bigPlay.innerHTML = `
+            <span class="giant-play-glow" aria-hidden="true"></span>
+            <span class="giant-play-ring" aria-hidden="true"></span>
+            <span class="giant-play-core">
+                <span class="giant-play-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+                </span>
+                <span class="giant-play-label">بزن بریم!</span>
+                <span class="giant-play-sub">درس، سوال، بازی و نقاشی</span>
+            </span>
+        `;
+        bigPlay.addEventListener('click', () => {
+            AudioEngine.play('click');
+            startMixedJourney();
+        });
+        dashboard.appendChild(bigPlay);
+
         const adventure = document.createElement('button');
         adventure.type = 'button';
         adventure.className = 'adventure-hero-card';
@@ -574,6 +599,52 @@
         startLesson(lessonDef);
     }
 
+    // ------------------------------------------------------------------
+    // Mixed journey: one big button starts a varied, easy-to-hard ladder that
+    // alternates domains so the child gets lesson / question / game / painting
+    // in turn instead of the same drill five times.
+    // ------------------------------------------------------------------
+    function startMixedJourney() {
+        const all = [];
+        for (const dom of (state.curriculum && state.curriculum.domains) || []) {
+            for (const lv of dom.levels || []) {
+                for (const l of lv.lessons || []) {
+                    all.push({ ...l, domain: dom.id, difficulty: l.difficulty || lv.difficulty || 1 });
+                }
+            }
+        }
+        if (!all.length) return;
+
+        const done = id => state.lessonsDone[id] && state.lessonsDone[id].done;
+        // Easiest-first, unfinished lessons lead the queue.
+        const pool = all.slice().sort((a, b) => (a.difficulty - b.difficulty));
+        const fresh = pool.filter(l => !done(l.id));
+        const source = fresh.length ? fresh : pool;
+
+        // Round-robin across domains so consecutive picks feel different.
+        const byDomain = {};
+        source.forEach(l => { (byDomain[l.domain] = byDomain[l.domain] || []).push(l); });
+        const order = ['reading', 'math', 'logic', 'science', 'socio-emotional', 'art']
+            .filter(d => byDomain[d] && byDomain[d].length);
+        const extra = Object.keys(byDomain).filter(d => !order.includes(d));
+        const domainRing = [...order, ...extra];
+
+        const queue = [];
+        for (let i = 0; queue.length < 8 && i < 40; i++) {
+            const d = domainRing[i % domainRing.length];
+            const list = byDomain[d];
+            if (list && list.length) queue.push(list.shift());
+        }
+        if (!queue.length) return;
+
+        state.mixedQueue = queue.slice(1);
+        const first = queue[0];
+        state.domainId = first.domain;
+        state.lessonId = first.id;
+        Nav.push('lesson');
+        startLesson(first);
+    }
+
     function findLesson(lessonId) {
         if (!state.curriculum) return null;
         for (const dom of state.curriculum.domains || []) {
@@ -799,6 +870,11 @@
             }
 
             body.innerHTML = '';
+            // Auto-play the bundled Persian narration for alphabet lessons so the
+            // child actually hears each letter's sound on arrival.
+            if (roundIdx === 0 && AudioEngine.playClip) {
+                AudioEngine.playClip(`lesson-${lesson.id}`);
+            }
             if (roundIdx === 0 && round.lessonStory) {
                 const context = document.createElement('div');
                 context.className = 'lesson-context-strip';
@@ -888,6 +964,14 @@
             overlay.querySelector('#btn-continue-result').addEventListener('click', () => {
                 overlay.remove();
                 AudioEngine.play('click');
+                // Continue the mixed ladder if the big play button started one.
+                if (Array.isArray(state.mixedQueue) && state.mixedQueue.length) {
+                    const next = state.mixedQueue.shift();
+                    state.domainId = next.domain;
+                    state.lessonId = next.id;
+                    startLesson(next);
+                    return;
+                }
                 Nav.reset('home');
                 renderHome();
             });
@@ -895,6 +979,7 @@
             overlay.querySelector('#btn-home-result').addEventListener('click', () => {
                 overlay.remove();
                 AudioEngine.play('click');
+                state.mixedQueue = [];
                 Nav.reset('home');
                 renderHome();
             });

@@ -18,9 +18,15 @@ window.IQAssessment = (function() {
         lastUpdated: Date.now()
     };
 
+    // A brand-new child has no data: every dimension starts at zero and only
+    // moves once real answers are recorded. Previously each record was seeded
+    // with a fabricated score of 65, so the parent dashboard showed an
+    // "Overall Index 65" before the child had answered a single question.
+    const BASE_SCORE = 0;
+
     function createDefaultRecord() {
         return {
-            score: 65,
+            score: BASE_SCORE,
             attempts: 0,
             correct: 0,
             history: [],
@@ -52,7 +58,7 @@ window.IQAssessment = (function() {
                 state.records[key] = createDefaultRecord();
                 return;
             }
-            record.score = Number.isFinite(Number(record.score)) ? Math.max(40, Math.min(100, Number(record.score))) : 65;
+            record.score = Number.isFinite(Number(record.score)) ? Math.max(0, Math.min(100, Number(record.score))) : BASE_SCORE;
             record.attempts = Number.isFinite(Number(record.attempts)) ? Math.max(0, Number(record.attempts)) : 0;
             record.correct = Number.isFinite(Number(record.correct)) ? Math.max(0, Number(record.correct)) : 0;
             record.level = Number.isFinite(Number(record.level)) ? Math.max(1, Math.min(8, Number(record.level))) : 1;
@@ -103,8 +109,11 @@ window.IQAssessment = (function() {
         record.attempts++;
         if (isCorrect) record.correct++;
 
-        const delta = isCorrect ? 3.5 : -2.5;
-        record.score = Math.max(40, Math.min(100, record.score + delta));
+        // Grow from the child's real accuracy instead of drifting from a seeded
+        // 65 with a hard floor of 40 (which made an all-wrong child still read 40).
+        const accuracy = record.correct / record.attempts;          // 0..1
+        const confidence = Math.min(1, record.attempts / 12);        // ramps in over ~12 tries
+        record.score = Math.max(0, Math.min(100, Math.round(accuracy * 100 * confidence)));
 
         if (isCorrect && record.score >= 80 && record.level < 8) {
             record.level++;
@@ -134,7 +143,12 @@ window.IQAssessment = (function() {
             let badgeColor = '#95A5A6';
             let advice = 'با تمرین‌های روزانه ۵ دقیقه‌ای به رشد چشمگیر می‌رسد.';
 
-            if (score >= 85) {
+            if (!rec.attempts) {
+                // No data yet: say so instead of inventing a level.
+                status = 'هنوز تمرینی انجام نشده';
+                badgeColor = '#95A5A6';
+                advice = 'وقتی کودک چند بازی از این حوزه را انجام دهد، گزارش اینجا ساخته می‌شود.';
+            } else if (score >= 85) {
                 status = 'استعداد درخشان';
                 badgeColor = '#00B894';
                 advice = 'درک سریع و هوش سرشار در این زمینه؛ آماده برای پازل‌های پیچیده‌تر.';
@@ -170,7 +184,9 @@ window.IQAssessment = (function() {
         const totalAttempts = dimensions.reduce((sum, dimension) => sum + dimension.attempts, 0);
         let headline = 'روند رشد شناختی متعادل و فعال';
 
-        if (overallIQ >= 85) {
+        if (!totalAttempts) {
+            headline = 'هنوز داده‌ای ثبت نشده؛ با اولین بازی گزارش ساخته می‌شود';
+        } else if (overallIQ >= 85) {
             headline = 'عملکرد بازی‌محور قوی و کنجکاوی خوب در پردازش اطلاعات';
         } else if (overallIQ >= 72) {
             headline = 'یادگیری فعال و روبه‌رشد در چند حوزهٔ شناختی';
