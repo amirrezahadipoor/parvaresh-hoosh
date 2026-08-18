@@ -1,52 +1,52 @@
-// Interactive Persian Letter & Number Tracing Engine for "پرورش هوش کودک"
+// Interactive Persian Letter & Number Tracing Engine for "پرورش هوش کودک" (100% Fullscreen)
 window.TracingActivity = (function() {
 
     function render(container, round, cb) {
         container.innerHTML = '';
 
-        const card = document.createElement('div');
-        card.className = 'tracing-card';
+        const stage = document.createElement('div');
+        stage.className = 'activity-fullscreen-stage';
 
-        // Header
-        const headerRow = document.createElement('div');
-        headerRow.className = 'activity-header-row';
+        // 1. Top Prompt
+        const promptBanner = document.createElement('div');
+        promptBanner.className = 'activity-prompt-banner';
 
-        const promptTitle = document.createElement('h2');
-        promptTitle.className = 'quiz-prompt';
+        const promptText = document.createElement('div');
+        promptText.className = 'activity-prompt-text';
         const isLetter = round.kind === 'letter';
-        promptTitle.textContent = `با انگشت روی «${round.char}» بکش`;
+        promptText.textContent = `با انگشت روی «${round.char}» بکش!`;
 
         const speakerBtn = document.createElement('button');
-        speakerBtn.className = 'speaker-btn';
+        speakerBtn.className = 'activity-speaker-btn';
         speakerBtn.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
             </svg>
-            <span>بشنو</span>
         `;
-        speakerBtn.addEventListener('click', () => {
+        speakerBtn.onclick = () => {
             AudioEngine.play('click');
-            AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش`);
-        });
+            AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش گل من!`);
+        };
 
-        headerRow.appendChild(promptTitle);
-        headerRow.appendChild(speakerBtn);
-        card.appendChild(headerRow);
+        promptBanner.appendChild(promptText);
+        promptBanner.appendChild(speakerBtn);
+        stage.appendChild(promptBanner);
 
         setTimeout(() => {
-            AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش`);
+            AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش گل من!`);
         }, 150);
 
-        // Tracing Stage
-        const stageWrap = document.createElement('div');
-        stageWrap.className = 'tracing-stage-wrap';
+        // 2. Fullscreen Canvas Stage
+        const canvasWrap = document.createElement('div');
+        canvasWrap.className = 'fullscreen-canvas-wrap';
 
         const canvas = document.createElement('canvas');
-        canvas.className = 'tracing-canvas';
-        const width = Math.min(window.innerWidth - 48, 360);
-        const height = Math.min(window.innerHeight * 0.42, 280);
+        canvas.className = 'fullscreen-canvas';
+
+        // Responsive Dimensions
+        const width = Math.min(window.innerWidth - 32, 340);
+        const height = Math.min(window.innerHeight * 0.46, 260);
         const dpr = window.devicePixelRatio || 1;
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -66,11 +66,11 @@ window.TracingActivity = (function() {
             ctx.strokeStyle = '#E0D6CC';
             ctx.lineWidth = 2;
             ctx.setLineDash([6, 6]);
-            ctx.strokeRect(16, 16, width - 32, height - 32);
+            ctx.strokeRect(12, 12, width - 24, height - 24);
 
             ctx.beginPath();
-            ctx.moveTo(20, height * 0.72);
-            ctx.lineTo(width - 20, height * 0.72);
+            ctx.moveTo(16, height * 0.72);
+            ctx.lineTo(width - 16, height * 0.72);
             ctx.strokeStyle = '#FFB8B8';
             ctx.stroke();
             ctx.setLineDash([]);
@@ -79,19 +79,19 @@ window.TracingActivity = (function() {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            ctx.fillStyle = '#F1ECE6';
+            ctx.fillStyle = '#F4ECE6';
             ctx.fillText(round.char, width / 2, height / 2);
 
-            ctx.strokeStyle = '#DDD0C4';
+            ctx.strokeStyle = '#D6C8B8';
             ctx.lineWidth = 3;
             ctx.strokeText(round.char, width / 2, height / 2);
 
             ctx.beginPath();
-            ctx.arc(width * 0.72, height * 0.36, 9, 0, Math.PI * 2);
+            ctx.arc(width * 0.72, height * 0.36, 8, 0, Math.PI * 2);
             ctx.fillStyle = '#00B894';
             ctx.fill();
             ctx.strokeStyle = '#FFF';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 2;
             ctx.stroke();
         }
 
@@ -115,7 +115,7 @@ window.TracingActivity = (function() {
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
             ctx.strokeStyle = '#6C5CE7';
-            ctx.lineWidth = 18;
+            ctx.lineWidth = 16;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             AudioEngine.play('drag');
@@ -133,7 +133,7 @@ window.TracingActivity = (function() {
                 AudioEngine.play('bubble');
             }
 
-            if (drawnPoints > 55 && !completed) {
+            if (drawnPoints > 50 && !completed) {
                 checkCompletion();
             }
         }
@@ -150,33 +150,30 @@ window.TracingActivity = (function() {
         canvas.addEventListener('touchmove', draw, { passive: false });
         window.addEventListener('touchend', stopDraw);
 
-        stageWrap.appendChild(canvas);
-        card.appendChild(stageWrap);
+        canvasWrap.appendChild(canvas);
+        stage.appendChild(canvasWrap);
 
-        // Control Buttons
+        // 3. Action Controls
         const controls = document.createElement('div');
-        controls.className = 'tracing-controls';
+        controls.style.cssText = 'display:flex; gap:10px; justify-content:center; width:100%; flex-shrink:0;';
 
         const clearBtn = document.createElement('button');
-        clearBtn.className = 'action-pill-btn';
-        clearBtn.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            <span>دوباره</span>
-        `;
-        clearBtn.addEventListener('click', () => {
+        clearBtn.className = 'btn-secondary-action';
+        clearBtn.style.flex = '1';
+        clearBtn.textContent = 'دوباره بنویس';
+        clearBtn.onclick = () => {
             AudioEngine.play('click');
             drawnPoints = 0;
             completed = false;
             drawBackground();
-        });
+        };
 
         const checkBtn = document.createElement('button');
-        checkBtn.className = 'action-pill-btn primary';
-        checkBtn.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>نوشتم!</span>
-        `;
-        checkBtn.addEventListener('click', () => {
+        checkBtn.className = 'btn-primary-action';
+        checkBtn.style.flex = '1';
+        checkBtn.style.marginTop = '0';
+        checkBtn.textContent = 'نوشتم!';
+        checkBtn.onclick = () => {
             AudioEngine.play('click');
             if (drawnPoints > 15) {
                 checkCompletion();
@@ -184,24 +181,24 @@ window.TracingActivity = (function() {
                 AudioEngine.play('wrong');
                 if (window.Fx) Fx.shake(canvas);
             }
-        });
+        };
 
         controls.appendChild(clearBtn);
         controls.appendChild(checkBtn);
-        card.appendChild(controls);
+        stage.appendChild(controls);
 
         function checkCompletion() {
             if (completed) return;
             completed = true;
             AudioEngine.play('correct');
-            if (window.Fx) Fx.stars(stageWrap, 5);
+            if (window.Fx) Fx.stars(canvasWrap, 5);
 
             setTimeout(() => {
                 if (cb && cb.onCorrect) cb.onCorrect(round);
-            }, 900);
+            }, 800);
         }
 
-        container.appendChild(card);
+        container.appendChild(stage);
     }
 
     return { render };

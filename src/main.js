@@ -1,4 +1,4 @@
-// Main Application Controller & Hub for "پرورش هوش کودک" - ZERO EMOJIS
+// Main Application Controller & Hub for "پرورش هوش کودک" (Zero-Scroll Fullscreen Mobile UX)
 (function() {
     'use strict';
 
@@ -11,7 +11,7 @@
         totalStars: 0,
         sfxMuted: false,
         musicMuted: false,
-        activeTab: 'adventure'
+        activeWorldIdx: 0
     };
 
     const $ = (s) => document.querySelector(s);
@@ -25,6 +25,16 @@
     function pickMsg(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
     }
+
+    // World Carousel Definitions
+    const WORLDS = [
+        { id: 'reading', title: 'جزیره الفبا و کلمات', subtitle: 'شناخت حروف، صداکشی و جمله‌سازی', color: '#FF5252', mascot: 'dana', icon: 'الف' },
+        { id: 'math', title: 'برکه ریاضی و هوش عددی', subtitle: 'شمارش، جمع، تفریق و اشکال هندسی', color: '#00D2D3', mascot: 'toto', icon: '۱۲۳' },
+        { id: 'logic', title: 'قلعه منطق و پازل', subtitle: 'ماتریس‌های ریون، سایه‌شناسی و حافظه', color: '#6C5CE7', mascot: 'shiri', icon: 'منطق' },
+        { id: 'science', title: 'جنگل شگفت‌انگیز علوم', subtitle: 'حیوانات، حواس پنج‌گانه و فصل‌ها', color: '#FFA502', mascot: 'fandogh', icon: 'علوم' },
+        { id: 'art', title: 'کارگاه نقاشی و هنر', subtitle: 'رنگ‌آمیزی شاد و خلاقیت کودکانه', color: '#FD79A8', mascot: 'barfi', icon: 'هنر' },
+        { id: 'arcade', title: 'شهربازی بازی‌های بی‌پایان', subtitle: 'شکار بادکنک، بلز موسیقی و غذا به حیوانات', color: '#00B894', mascot: 'dana', icon: 'بازی' }
+    ];
 
     // ===== INIT =====
     async function init() {
@@ -62,9 +72,8 @@
         updateAudioButtons();
         updateHeaderStars();
 
-        // 4. Bind Global Header & Controls
+        // 4. Bind Global Header Controls
         bindHeader();
-        bindTabs();
 
         // 5. Start Background Music on first user interaction
         const startAudioOnFirstClick = () => {
@@ -81,7 +90,7 @@
         setTimeout(() => {
             Nav.reset('home');
             renderHome();
-        }, 2000);
+        }, 1800);
     }
 
     function bindHeader() {
@@ -117,13 +126,8 @@
     function updateAudioButtons() {
         const musicBtn = $('#btn-music');
         const voiceBtn = $('#btn-voice');
-
-        if (musicBtn) {
-            musicBtn.style.opacity = state.musicMuted ? '0.4' : '1';
-        }
-        if (voiceBtn) {
-            voiceBtn.style.opacity = state.sfxMuted ? '0.4' : '1';
-        }
+        if (musicBtn) musicBtn.style.opacity = state.musicMuted ? '0.4' : '1';
+        if (voiceBtn) voiceBtn.style.opacity = state.sfxMuted ? '0.4' : '1';
     }
 
     function updateHeaderStars() {
@@ -133,55 +137,127 @@
         }
     }
 
-    function bindTabs() {
-        $$('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                AudioEngine.play('click');
-                const targetTab = btn.dataset.tab;
-                state.activeTab = targetTab;
-
-                $$('.tab-btn').forEach(b => b.classList.remove('active'));
-                $$('.tab-pane').forEach(p => p.classList.remove('active'));
-
-                btn.classList.add('active');
-                const pane = $(`#pane-${targetTab}`);
-                if (pane) pane.classList.add('active');
-            });
-        });
-    }
-
-    // ===== HOME SCREEN RENDERING =====
+    // ===== HOME SCREEN RENDERING (CAROUSEL WORLD) =====
     function renderHome() {
         updateHeaderStars();
         updateAudioButtons();
 
-        // 1. Companion Mascot Banner
-        const mascotObj = Mascot.getCharacter();
-        const mascotEl = $('#home-mascot');
-        mascotEl.innerHTML = Mascot.svg(82, 'happy', mascotObj.id);
-        const speech = $('#home-speech');
-        const greeting = pickMsg(MESSAGES.greeting);
-        speech.textContent = `${mascotObj.name}: ${greeting}`;
+        const container = $('#home-content');
+        container.innerHTML = '';
 
-        mascotEl.onclick = () => {
+        const homeStage = document.createElement('div');
+        homeStage.className = 'home-living-stage';
+
+        // 1. Companion Mascot Mini Speech Strip
+        const mascotObj = Mascot.getCharacter();
+        const speechStrip = document.createElement('div');
+        speechStrip.className = 'mascot-speech-strip';
+
+        const miniMascot = document.createElement('div');
+        miniMascot.className = 'mascot-avatar-mini';
+        miniMascot.innerHTML = Mascot.svg(48, 'happy', mascotObj.id);
+
+        const speechBubble = document.createElement('div');
+        speechBubble.className = 'speech-text-bubble';
+        speechBubble.textContent = pickMsg(MESSAGES.greeting);
+
+        speechStrip.onclick = () => {
             AudioEngine.play('bubble');
-            Mascot.bounce(mascotEl);
-            AudioEngine.speak(speech.textContent);
+            Mascot.bounce(miniMascot);
+            AudioEngine.speak(speechBubble.textContent);
         };
 
-        // 2. Next Adventure Milestone Banner
-        const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
-        $('#next-adv-title').textContent = nextNode.title;
+        speechStrip.appendChild(miniMascot);
+        speechStrip.appendChild(speechBubble);
+        homeStage.appendChild(speechStrip);
 
-        $('#btn-start-adventure').onclick = () => {
+        // 2. World Carousel Stage
+        const carouselWrap = document.createElement('div');
+        carouselWrap.className = 'world-carousel-wrap';
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'carousel-nav-btn';
+        prevBtn.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        `;
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'carousel-nav-btn';
+        nextBtn.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        `;
+
+        const activeWorldCard = document.createElement('div');
+        activeWorldCard.className = 'world-card-active';
+
+        function updateWorldCard() {
+            const world = WORLDS[state.activeWorldIdx];
+            activeWorldCard.style.setProperty('--wcolor', world.color);
+
+            activeWorldCard.innerHTML = `
+                <span class="world-card-badge">${toFa(state.activeWorldIdx + 1)} از ۶</span>
+                <div class="world-card-visual">
+                    ${Mascot.svg(120, 'happy', world.mascot)}
+                </div>
+                <div style="text-align:center;">
+                    <div class="world-card-title">${world.title}</div>
+                    <div class="world-card-subtitle">${world.subtitle}</div>
+                </div>
+                <button class="world-play-action-btn">ورود به این دنیای شاد</button>
+            `;
+
+            activeWorldCard.onclick = () => {
+                AudioEngine.play('click');
+                if (world.id === 'arcade') {
+                    $('#arcade-title').textContent = 'شهربازی هوش';
+                    Nav.push('arcade');
+                    renderArcadeGrid();
+                } else {
+                    state.domainId = world.id;
+                    Nav.push('domain');
+                    renderDomain();
+                }
+            };
+        }
+
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            AudioEngine.play('click');
+            state.activeWorldIdx = (state.activeWorldIdx - 1 + WORLDS.length) % WORLDS.length;
+            updateWorldCard();
+        };
+
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            AudioEngine.play('click');
+            state.activeWorldIdx = (state.activeWorldIdx + 1) % WORLDS.length;
+            updateWorldCard();
+        };
+
+        updateWorldCard();
+
+        carouselWrap.appendChild(prevBtn);
+        carouselWrap.appendChild(activeWorldCard);
+        carouselWrap.appendChild(nextBtn);
+        homeStage.appendChild(carouselWrap);
+
+        // 3. Quick Play Adventure Journey Button
+        const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
+        const advBtn = document.createElement('button');
+        advBtn.className = 'btn-primary-action';
+        advBtn.style.cssText = 'flex-shrink:0; margin-top:4px; font-size:16px;';
+        advBtn.textContent = `ادامه ماجراجویی (${nextNode.title})`;
+        advBtn.onclick = () => {
             AudioEngine.play('win');
             startAdventureLesson(nextNode);
         };
+        homeStage.appendChild(advBtn);
 
-        // 3. Render Tabs
-        renderAdventureMap();
-        renderCurriculumGrid();
-        renderArcadeGrid();
+        container.appendChild(homeStage);
     }
 
     function startAdventureLesson(node) {
@@ -204,133 +280,6 @@
         return null;
     }
 
-    // Tab 1: Adventure Map
-    function renderAdventureMap() {
-        const trail = $('#adventure-trail');
-        trail.innerHTML = '';
-        const nodes = AdventureJourney.getNodes();
-        const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
-
-        nodes.forEach(node => {
-            const isDone = state.lessonsDone[node.lessonId] && state.lessonsDone[node.lessonId].done;
-            const isCurrent = node.id === nextNode.id;
-
-            const card = document.createElement('div');
-            card.className = `adv-node-card ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`;
-            card.style.setProperty('--ncolor', node.color);
-
-            card.innerHTML = `
-                <div class="adv-node-icon" style="background:${isDone ? 'var(--ok)' : node.color}">
-                    ${isDone ? 'تکمیل' : node.icon}
-                </div>
-                <div class="adv-node-info">
-                    <div class="adv-node-title">${node.title}</div>
-                    <div class="adv-node-status">
-                        ${isDone ? 'امتیاز کامل دریافت شد' : isCurrent ? 'مرحله جاری برای بازی' : `سطح مهارت ${toFa(node.difficulty)}`}
-                    </div>
-                </div>
-                <div class="adv-node-action">
-                    ${isDone ? 'تکرار بازی' : isCurrent ? 'شروع مرحله' : 'شروع مرحله'}
-                </div>
-            `;
-
-            card.addEventListener('click', () => {
-                AudioEngine.play('click');
-                startAdventureLesson(node);
-            });
-
-            trail.appendChild(card);
-        });
-    }
-
-    // Tab 2: Curriculum Domains
-    function renderCurriculumGrid() {
-        const grid = $('#domains-grid');
-        grid.innerHTML = '';
-
-        App.domains.forEach(d => {
-            const domainDef = (state.curriculum.domains || []).find(x => x.id === d.id);
-            const title = domainDef ? domainDef.title : d.title;
-            const subtitle = d.subtitle || '';
-            const lessons = lessonsOfDomain(d.id);
-            const doneCount = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
-            const pct = lessons.length ? Math.round((100 * doneCount) / lessons.length) : 0;
-
-            const card = document.createElement('button');
-            card.className = 'domain-card';
-            card.style.setProperty('--dcolor', d.color);
-            card.innerHTML = `
-                <div class="domain-icon" style="background:${d.color}">${d.iconChar}</div>
-                <div class="domain-name">${title}</div>
-                <div class="domain-subtitle">${subtitle}</div>
-                <div class="domain-meta">
-                    <div class="mini-bar"><i style="width:${pct}%; background:${d.color}"></i></div>
-                    <span class="mini-text">${toFa(pct)}٪</span>
-                </div>
-            `;
-
-            card.addEventListener('click', () => {
-                AudioEngine.play('click');
-                state.domainId = d.id;
-                Nav.push('domain');
-                renderDomain();
-            });
-
-            grid.appendChild(card);
-        });
-    }
-
-    // Tab 3: Endless Arcade Games
-    function renderArcadeGrid() {
-        const grid = $('#arcade-grid');
-        grid.innerHTML = '';
-        const games = ArcadeGames.list();
-
-        games.forEach(g => {
-            const card = document.createElement('button');
-            card.className = 'arcade-game-card';
-            card.style.setProperty('--gcolor', g.color);
-            card.innerHTML = `
-                <div class="arcade-game-icon" style="background:${g.color}">${g.iconHtml}</div>
-                <div class="arcade-game-title">${g.title}</div>
-                <div class="arcade-game-desc">${g.subtitle}</div>
-            `;
-
-            card.addEventListener('click', () => {
-                AudioEngine.play('click');
-                $('#arcade-title').textContent = g.title;
-                Nav.push('arcade');
-                ArcadeGames.openGame(g.id, $('#arcade-container'), () => {
-                    Nav.back();
-                });
-            });
-
-            grid.appendChild(card);
-        });
-
-        $('#btn-back-arcade').onclick = () => {
-            AudioEngine.play('click');
-            Nav.back();
-        };
-    }
-
-    function lessonsOfDomain(domainId) {
-        const dom = (state.curriculum.domains || []).find(d => d.id === domainId);
-        if (!dom) return [];
-        const out = [];
-        (dom.levels || []).forEach(lv => {
-            (lv.lessons || []).forEach(l => {
-                out.push({ ...l, levelTitle: lv.title, levelId: lv.id, difficulty: lv.difficulty });
-            });
-        });
-        return out;
-    }
-
-    function levelsOfDomain(domainId) {
-        const dom = (state.curriculum.domains || []).find(d => d.id === domainId);
-        return dom ? (dom.levels || []) : [];
-    }
-
     // ===== DOMAIN LEVELS SCREEN =====
     function renderDomain() {
         const d = App.domains.find(x => x.id === state.domainId) || { color: '#6C5CE7', title: 'حوزه' };
@@ -345,6 +294,9 @@
         const doneLessons = allLessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
 
         $('#domain-progress-text').textContent = `${toFa(doneLessons)} از ${toFa(allLessons.length)} درس`;
+
+        const scrollContainer = document.createElement('div');
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px;';
 
         levels.forEach((lv, idx) => {
             const lessons = lv.lessons || [];
@@ -371,8 +323,10 @@
                 renderLevel();
             });
 
-            content.appendChild(card);
+            scrollContainer.appendChild(card);
         });
+
+        content.appendChild(scrollContainer);
 
         $('#btn-back-domain').onclick = () => {
             AudioEngine.play('click');
@@ -389,6 +343,9 @@
 
         const content = $('#level-content');
         content.innerHTML = '';
+
+        const scrollContainer = document.createElement('div');
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px;';
 
         (level.lessons || []).forEach((lesson, i) => {
             const prog = state.lessonsDone[lesson.id];
@@ -409,8 +366,10 @@
                 startLesson(lesson);
             });
 
-            content.appendChild(card);
+            scrollContainer.appendChild(card);
         });
+
+        content.appendChild(scrollContainer);
 
         $('#btn-back-level').onclick = () => {
             AudioEngine.play('click');
@@ -418,7 +377,7 @@
         };
     }
 
-    // ===== LESSON RUNNER =====
+    // ===== LESSON RUNNER (FULLSCREEN ZERO-SCROLL) =====
     function startLesson(lesson) {
         const rounds = Generator.generate(lesson.id);
         const body = $('#lesson-body');
@@ -436,20 +395,20 @@
 
         function updateProgress() {
             const pct = Math.round((100 * roundIdx) / rounds.length);
-            fill.style.width = pct + '%';
-            ptext.textContent = `${toFa(roundIdx + 1)} از ${toFa(rounds.length)}`;
+            if (fill) fill.style.width = pct + '%';
+            if (ptext) ptext.textContent = `${toFa(roundIdx + 1)} از ${toFa(rounds.length)}`;
             if (starsEl) starsEl.textContent = toFa(starCount);
         }
 
         function showMascotMood(mood, msg) {
             const m = document.createElement('div');
-            m.className = 'lesson-mascot';
+            m.style.cssText = 'position:fixed; bottom:70px; left:50%; transform:translateX(-50%); background:#FFF; border-radius:18px; padding:6px 14px; border:2px solid #EFE6DC; box-shadow:0 6px 16px rgba(0,0,0,0.15); display:flex; align-items:center; gap:8px; z-index:9999; animation:popInBounce 0.3s;';
             m.innerHTML = `
-                <div class="mini-mascot">${Mascot.svg(50, mood)}</div>
-                <div class="mini-speech">${msg}</div>
+                <div style="width:36px; height:36px;">${Mascot.svg(36, mood)}</div>
+                <span style="font-size:13px; font-weight:800; color:var(--ink);">${msg}</span>
             `;
-            body.appendChild(m);
-            setTimeout(() => m.remove(), 1600);
+            document.body.appendChild(m);
+            setTimeout(() => m.remove(), 1400);
         }
 
         function nextRound() {
@@ -469,7 +428,7 @@
             }
 
             body.innerHTML = '';
-            if (window.LivingWorld) LivingWorld.resetHintTimer('.quiz-option-btn, .shadow-opt-btn, .raven-opt-btn, .simon-bell, .disp-opt-btn');
+            if (window.LivingWorld) LivingWorld.resetHintTimer('.game-tap-choice-btn, .shadow-opt-btn, .raven-opt-btn, .simon-bell, .disp-opt-btn');
             renderer.render(body, round, {
                 onCorrect: () => {
                     starCount = Math.min(3, starCount + 1);
@@ -479,7 +438,7 @@
                     Adaptive.record(state.domainId || 'reading', true);
                     IQAssessment.recordTrial(state.domainId || round.type, true);
                     roundIdx++;
-                    setTimeout(() => nextRound(), 1000);
+                    setTimeout(() => nextRound(), 800);
                 },
                 onWrong: () => {
                     AudioEngine.play('wrong');
@@ -511,19 +470,18 @@
 
             // Result Celebration Overlay
             const overlay = document.createElement('div');
-            overlay.className = 'result-overlay';
+            overlay.className = 'result-fullscreen-overlay';
 
             overlay.innerHTML = `
-                <div class="result-card">
-                    <div style="margin: 0 auto 10px;">${Mascot.svg(92, 'celebrating')}</div>
-                    <h2>آفرین قهرمان باهوش من!</h2>
-                    <div class="r-stars">امتیاز کامل: ۳ ستاره طلایی</div>
-                    <p>${pickMsg(MESSAGES.win)}</p>
-                    <button class="big-action-btn primary" id="btn-continue-result" style="margin-bottom:10px;">
-                        <span>ادامه ماجراجویی</span>
+                <div class="result-celebrate-card">
+                    <div style="margin: 0 auto 6px;">${Mascot.svg(84, 'celebrating')}</div>
+                    <h2 style="font-size:22px; font-weight:900; margin-bottom:2px;">آفرین قهرمان باهوش من!</h2>
+                    <p style="font-size:14px; font-weight:700; color:var(--ink2); margin-bottom:12px;">${pickMsg(MESSAGES.win)}</p>
+                    <button class="btn-primary-action" id="btn-continue-result">
+                        ادامه ماجراجویی
                     </button>
-                    <button class="action-pill-btn" id="btn-home-result" style="width:100%; justify-content:center;">
-                        <span>بازگشت به خانه</span>
+                    <button class="btn-secondary-action" id="btn-home-result">
+                        بازگشت به صفحه اصلی
                     </button>
                 </div>
             `;
@@ -573,10 +531,69 @@
         }
     }
 
+    // Tab Arcade
+    function renderArcadeGrid() {
+        const content = $('#arcade-container');
+        content.innerHTML = '';
+
+        const scrollContainer = document.createElement('div');
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;';
+
+        const games = ArcadeGames.list();
+        games.forEach(g => {
+            const card = document.createElement('button');
+            card.className = 'arcade-game-card';
+            card.style.setProperty('--gcolor', g.color);
+            card.innerHTML = `
+                <div class="arcade-game-icon" style="background:${g.color}">${g.iconHtml}</div>
+                <div class="arcade-game-title">${g.title}</div>
+                <div class="arcade-game-desc">${g.subtitle}</div>
+            `;
+
+            card.addEventListener('click', () => {
+                AudioEngine.play('click');
+                $('#arcade-title').textContent = g.title;
+                ArcadeGames.openGame(g.id, content, () => {
+                    renderArcadeGrid();
+                });
+            });
+
+            scrollContainer.appendChild(card);
+        });
+
+        content.appendChild(scrollContainer);
+
+        $('#btn-back-arcade').onclick = () => {
+            AudioEngine.play('click');
+            Nav.back();
+            renderHome();
+        };
+    }
+
+    function lessonsOfDomain(domainId) {
+        const dom = (state.curriculum.domains || []).find(d => d.id === domainId);
+        if (!dom) return [];
+        const out = [];
+        (dom.levels || []).forEach(lv => {
+            (lv.lessons || []).forEach(l => {
+                out.push({ ...l, levelTitle: lv.title, levelId: lv.id, difficulty: lv.difficulty });
+            });
+        });
+        return out;
+    }
+
+    function levelsOfDomain(domainId) {
+        const dom = (state.curriculum.domains || []).find(d => d.id === domainId);
+        return dom ? (dom.levels || []) : [];
+    }
+
     // ===== REWARDS & MASCOT CUSTOMIZER =====
     function renderRewards() {
         const content = $('#rewards-content');
         content.innerHTML = '';
+
+        const scrollContainer = document.createElement('div');
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:12px;';
 
         // 1. Stats Hero
         const hero = document.createElement('div');
@@ -585,7 +602,7 @@
             <div class="big">${toFa(state.totalStars || 0)}</div>
             <div class="small">ستاره‌های طلایی جمع‌شده</div>
         `;
-        content.appendChild(hero);
+        scrollContainer.appendChild(hero);
 
         // 2. Choose Companion Mascot
         const pickerSection = document.createElement('div');
@@ -602,7 +619,7 @@
             const card = document.createElement('div');
             card.className = `companion-card ${m.id === currentMascot.id ? 'selected' : ''}`;
             card.innerHTML = `
-                ${Mascot.svg(56, 'happy', m.id)}
+                ${Mascot.svg(52, 'happy', m.id)}
                 <span class="companion-name">${m.name}</span>
             `;
 
@@ -617,7 +634,7 @@
         });
 
         pickerSection.appendChild(grid);
-        content.appendChild(pickerSection);
+        scrollContainer.appendChild(pickerSection);
 
         // 3. Badges List
         const list = document.createElement('div');
@@ -644,7 +661,8 @@
             list.appendChild(el);
         });
 
-        content.appendChild(list);
+        scrollContainer.appendChild(list);
+        content.appendChild(scrollContainer);
 
         $('#btn-back-rewards').onclick = () => {
             AudioEngine.play('click');
@@ -653,7 +671,7 @@
         };
     }
 
-    // ===== PARENT DASHBOARD & IQ RADAR ANALYSIS =====
+    // ===== PARENT DASHBOARD =====
     const PARENT_PIN_KEY = 'parvaresh_parent_pin';
 
     async function renderParents() {
@@ -679,9 +697,9 @@
 
         content.innerHTML = `
             <div class="pin-wrap">
-                <h3 style="font-size:19px; font-weight:900; margin-bottom:6px;">قفل محافظتی ورود والدین</h3>
-                <p style="color:var(--ink2); font-size:13.5px; margin-bottom:14px;">برای اطمینان از حضور والد، پاسخ معادله زیر را وارد کنید:</p>
-                <div style="font-size:24px; font-weight:900; color:#6C5CE7; margin-bottom:16px;">
+                <h3 style="font-size:18px; font-weight:900; margin-bottom:6px;">قفل محافظتی ورود والدین</h3>
+                <p style="color:var(--ink2); font-size:13px; margin-bottom:12px;">پاسخ معادله زیر را برای ورود انتخاب کنید:</p>
+                <div style="font-size:22px; font-weight:900; color:#6C5CE7; margin-bottom:14px;">
                     ${toFa(a)} + ${toFa(b)} = ؟
                 </div>
                 <div class="pin-pad" id="gate-pad"></div>
@@ -710,8 +728,8 @@
     function renderPinEntry(content, correctPin) {
         content.innerHTML = `
             <div class="pin-wrap">
-                <h3 style="font-size:19px; font-weight:900; margin-bottom:6px;">رمز ورود والدین</h3>
-                <p style="color:var(--ink2); font-size:13.5px; margin-bottom:14px;">رمز ۴ رقمی را وارد کنید:</p>
+                <h3 style="font-size:18px; font-weight:900; margin-bottom:6px;">رمز ورود والدین</h3>
+                <p style="color:var(--ink2); font-size:13px; margin-bottom:12px;">رمز ۴ رقمی را وارد کنید:</p>
                 <div class="pin-dots" id="pin-dots"></div>
                 <div class="pin-pad" id="pin-pad"></div>
             </div>
@@ -779,12 +797,12 @@
 
     async function renderDashboard(content) {
         content.innerHTML = '';
-        const panel = document.createElement('div');
-        panel.className = 'parent-panel';
+        const scrollBody = document.createElement('div');
+        scrollBody.className = 'parent-scroll-body';
 
         const iqReport = IQAssessment.getReport();
 
-        // 1. Psychological Growth & Mental Age Milestone
+        // 1. Milestone IQ
         const milestoneCard = document.createElement('div');
         milestoneCard.className = 'milestone-iq-card';
         milestoneCard.innerHTML = `
@@ -794,28 +812,28 @@
                     <div class="milestone-iq-label">شاخص رشد شناختی کودک</div>
                 </div>
                 <div style="text-align:left;">
-                    <div style="font-size:17px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
+                    <div style="font-size:16px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
                     <div style="font-size:12px; opacity:0.9;">سن شناختی تخمینی</div>
                 </div>
             </div>
             <div class="milestone-headline">نکته روان‌شناختی: ${iqReport.headline}</div>
         `;
-        panel.appendChild(milestoneCard);
+        scrollBody.appendChild(milestoneCard);
 
-        // 2. Interactive 6-Axis Radar Spider Chart
+        // 2. Radar Chart
         const radarCard = document.createElement('div');
         radarCard.className = 'parent-radar-container';
         radarCard.innerHTML = `
-            <h3 style="font-size:17px; font-weight:900; margin-bottom:4px;">نمودار راداری ۶ بعد هوش گاردنر و پیاژه</h3>
-            <p style="font-size:12.5px; color:var(--ink2); margin-bottom:10px;">تحلیل توزیع استعدادها و هماهنگی ابعاد شناختی کودک</p>
-            <canvas id="radar-chart" width="340" height="280" class="parent-radar-canvas"></canvas>
+            <h3 style="font-size:16px; font-weight:900; margin-bottom:4px;">نمودار راداری ۶ بعد هوش گاردنر و پیاژه</h3>
+            <p style="font-size:12px; color:var(--ink2); margin-bottom:10px;">تحلیل توزیع استعدادها و ابعاد شناختی</p>
+            <canvas id="radar-chart" width="320" height="260" class="parent-radar-canvas"></canvas>
         `;
-        panel.appendChild(radarCard);
+        scrollBody.appendChild(radarCard);
 
-        // 3. Dimension Detailed Analysis & Parenting Recommendations
+        // 3. Detailed Dimensions
         const detailsCard = document.createElement('div');
         detailsCard.className = 'parent-card';
-        detailsCard.innerHTML = `<h3>تحلیل تخصصی ابعاد ۶ گانه و توصیه‌های والدگری</h3>`;
+        detailsCard.innerHTML = `<h3>تحلیل تخصصی ابعاد ۶ گانه</h3>`;
 
         iqReport.dimensions.forEach(dim => {
             const row = document.createElement('div');
@@ -823,39 +841,39 @@
             row.innerHTML = `
                 <div class="dim-head">
                     <span>${dim.title}</span>
-                    <span style="background:${dim.badgeColor}; color:#FFF; font-size:11.5px; padding:3px 10px; border-radius:12px; font-weight:800;">
+                    <span style="background:${dim.badgeColor}; color:#FFF; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:800;">
                         ${dim.status}
                     </span>
                 </div>
                 <div class="dim-bar">
                     <i style="width:${dim.score}%; background:${dim.color};"></i>
                 </div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--ink2); font-weight:700; margin-bottom:8px;">
-                    <span>امتیاز تسلط: ${toFa(dim.score)} از ۱۰۰</span>
-                    <span>سطح چالشی: ${toFa(dim.level)}</span>
+                <div style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink2); font-weight:700; margin-bottom:6px;">
+                    <span>امتیاز تسلط: ${toFa(dim.score)} / ۱۰۰</span>
+                    <span>سطح: ${toFa(dim.level)}</span>
                 </div>
-                <div class="dim-advice"><b>توصیه روان‌شناختی:</b> ${dim.advice}</div>
+                <div class="dim-advice">${dim.advice}</div>
             `;
             detailsCard.appendChild(row);
         });
 
-        panel.appendChild(detailsCard);
+        scrollBody.appendChild(detailsCard);
 
-        // 4. Data Privacy & Reset
+        // 4. Data Privacy
         const settingsCard = document.createElement('div');
         settingsCard.className = 'parent-card';
         settingsCard.innerHTML = `
-            <h3>مدیریت داده‌ها و حریم خصوصی</h3>
-            <p style="font-size:13px; color:var(--ink2); margin-bottom:12px; line-height:1.6;">
-                تمام اطلاعات به صورت ۱۰۰٪ آفلاین بر روی همین دستگاه نگهداری می‌شود و به هیچ سروری ارسال نمی‌گردد.
+            <h3>مدیریت داده‌ها</h3>
+            <p style="font-size:12px; color:var(--ink2); margin-bottom:10px;">
+                داده‌ها به صورت ۱۰۰٪ آفلاین روی حافظه دستگاه نگهداری می‌شوند.
             </p>
-            <button class="action-pill-btn" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%; justify-content:center;">
-                <span>پاک کردن تمام داده‌ها و شروع مجدد</span>
+            <button class="btn-secondary-action" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%;">
+                پاک کردن تمام داده‌ها و شروع مجدد
             </button>
         `;
 
         settingsCard.querySelector('#btn-reset-data').addEventListener('click', async () => {
-            if (confirm('آیا مطمئن هستید که می‌خواهید تمام پیشرفت و ستاره‌ها بازنشانی شوند؟')) {
+            if (confirm('آیا مایلید تمام داده‌ها بازنشانی شوند؟')) {
                 await Storage.clearAll();
                 Adaptive.reset();
                 state.lessonsDone = {};
@@ -866,8 +884,8 @@
             }
         });
 
-        panel.appendChild(settingsCard);
-        content.appendChild(panel);
+        scrollBody.appendChild(settingsCard);
+        content.appendChild(scrollBody);
 
         setTimeout(() => {
             const canvas = content.querySelector('#radar-chart');
