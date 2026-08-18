@@ -1560,7 +1560,7 @@ button:focus-visible, [role="button"]:focus-visible {
 .memory-hud { display: flex; align-items: center; justify-content: space-between; gap: 7px; width: 100%; }
 .memory-stat { padding: 6px 8px; border-radius: 10px; color: #526173; background: #F1F5F9; font-size: 10px; font-weight: 800; }
 .memory-stat b { color: #1557A6; font-size: 12px; }
-.memory-hint-btn { min-height: 36px; padding: 6px 10px; border: 1px solid #CFE0F2; border-radius: 10px; color: #1557A6; background: #EAF3FF; font-size: 10px; font-weight: 900; cursor: pointer; }
+.memory-hint-btn { box-sizing: border-box; min-height: 44px; min-width: 64px; padding: 8px 12px; border: 1px solid #CFE0F2; border-radius: 10px; color: #1557A6; background: #EAF3FF; font-size: 10px; font-weight: 900; cursor: pointer; }
 .memory-hint-btn:disabled { opacity: .45; cursor: default; }
 .memory-status { width: 100%; min-height: 24px; color: #738397; font-size: 11px; font-weight: 800; text-align: center; }
 .memory-card-image { display: flex; align-items: center; justify-content: center; max-height: 60px; }
@@ -1856,3 +1856,26 @@ button:focus-visible, [role="button"]:focus-visible {
 .profile-age-card .profile-age-hint { margin-bottom: 10px; color: var(--ink2); font-size: 11px; font-weight: 700; }
 .age-quick-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .age-quick-grid .age-choice { width: 100%; min-height: 44px; padding: 6px 2px; font-size: 12px; }
+
+/* --------------------------------------------------------------------------
+   Music picker — choose among the bundled children's melodies.
+   -------------------------------------------------------------------------- */
+.music-picker-overlay { position: fixed; inset: 0; z-index: 11500; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(20,24,32,.6); }
+.music-picker-card { width: 100%; max-width: 420px; padding: 18px; border-radius: 22px; background: #FFF; box-shadow: 0 18px 44px rgba(0,0,0,.3); }
+.music-picker-card h2 { margin-bottom: 4px; color: var(--ink); font-size: 19px; font-weight: 900; }
+.music-picker-card > p { margin-bottom: 12px; color: var(--ink2); font-size: 12px; font-weight: 700; }
+.music-toggle-btn { width: 100%; min-height: 46px; margin-bottom: 12px; border: 0; border-radius: var(--r-md); color: #FFF; background: var(--ok); font-family: inherit; font-size: 14px; font-weight: 900; box-shadow: 0 4px 0 #00997B; cursor: pointer; }
+.music-toggle-btn.is-off { color: var(--ink); background: #EFE6DC; box-shadow: 0 4px 0 #D8C8B8; }
+.music-track-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.music-track-btn { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 52px; padding: 8px; border: 2px solid #EFE6DC; border-radius: var(--r-md); background: #FFF; font-family: inherit; font-size: 13px; font-weight: 800; color: var(--ink); cursor: pointer; box-shadow: 0 3px 0 #E2D3C4; }
+.music-track-btn.active { border-color: var(--accent); color: var(--accent); background: #EDEAFE; }
+.music-note-ico { font-size: 16px; }
+
+/* Per-domain curriculum progress (parent dashboard) */
+.parent-card-sub { margin-bottom: 12px; color: var(--ink2); font-size: 12px; font-weight: 700; }
+.domain-progress-list { display: flex; flex-direction: column; gap: 11px; }
+.domain-progress-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+.domain-progress-name { color: var(--ink); font-size: 13px; font-weight: 800; }
+.domain-progress-count { color: var(--ink2); font-size: 12px; font-weight: 800; }
+.domain-progress-track { height: 9px; border-radius: 999px; background: #EFE6DC; overflow: hidden; }
+.domain-progress-fill { height: 100%; border-radius: 999px; transition: width .5s ease; }

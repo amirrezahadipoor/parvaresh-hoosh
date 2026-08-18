@@ -77,57 +77,142 @@ window.AudioEngine = (function() {
     }
 
     // --- Procedural Background Music (Happy Kid Lullaby / Marimba) ---
-    const bgScale = [
-        261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 523.25, 587.33, 659.25
-    ]; // C4 to E5 major pentatonic / diatonic notes
-    const melodyPattern = [
-        0, 2, 4, 2, 4, 6, 4, 2,
-        0, 4, 6, 7, 6, 4, 2, 0,
-        1, 3, 5, 3, 5, 7, 5, 3,
-        4, 2, 0, 2, 4, 2, 0, -1
+    // ------------------------------------------------------------------
+    // Background music: a small library of real children's melodies instead of
+    // one hardcoded 32-note loop that repeated forever (the "یکنواخت" problem).
+    // Each track has its own notes, tempo, timbre and rhythm. Tracks rotate
+    // automatically when they finish, and can be switched by hand.
+    // ------------------------------------------------------------------
+    const N = {
+        C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+        C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00,
+        R: 0
+    };
+
+    // d = duration in beats. Tracks are written as [freq, beats] pairs.
+    const MUSIC_TRACKS = [
+        {
+            id: 'twinkle', title: 'ستارهٔ کوچولو', tempo: 500, wave: 'triangle',
+            notes: [[N.C4,1],[N.C4,1],[N.G4,1],[N.G4,1],[N.A4,1],[N.A4,1],[N.G4,2],
+                    [N.F4,1],[N.F4,1],[N.E4,1],[N.E4,1],[N.D4,1],[N.D4,1],[N.C4,2],
+                    [N.G4,1],[N.G4,1],[N.F4,1],[N.F4,1],[N.E4,1],[N.E4,1],[N.D4,2],
+                    [N.G4,1],[N.G4,1],[N.F4,1],[N.F4,1],[N.E4,1],[N.E4,1],[N.D4,2],
+                    [N.C4,1],[N.C4,1],[N.G4,1],[N.G4,1],[N.A4,1],[N.A4,1],[N.G4,2],
+                    [N.F4,1],[N.F4,1],[N.E4,1],[N.E4,1],[N.D4,1],[N.D4,1],[N.C4,3],[N.R,1]]
+        },
+        {
+            id: 'rainbow', title: 'رنگین‌کمان شاد', tempo: 380, wave: 'sine',
+            notes: [[N.E4,1],[N.G4,1],[N.C5,2],[N.B4,1],[N.G4,1],[N.A4,2],
+                    [N.F4,1],[N.A4,1],[N.D5,2],[N.C5,1],[N.A4,1],[N.G4,2],
+                    [N.E4,1],[N.G4,1],[N.C5,1],[N.E5,1],[N.D5,2],[N.C5,2],
+                    [N.G4,1],[N.A4,1],[N.G4,1],[N.E4,1],[N.C4,3],[N.R,1]]
+        },
+        {
+            id: 'garden', title: 'باغ گل‌ها', tempo: 440, wave: 'triangle',
+            notes: [[N.G4,1],[N.A4,1],[N.B4,1],[N.C5,1],[N.D5,2],[N.B4,2],
+                    [N.C5,1],[N.B4,1],[N.A4,1],[N.G4,1],[N.A4,3],[N.R,1],
+                    [N.E4,1],[N.G4,1],[N.A4,1],[N.B4,1],[N.C5,2],[N.A4,2],
+                    [N.G4,1],[N.E4,1],[N.D4,1],[N.E4,1],[N.G4,3],[N.R,1]]
+        },
+        {
+            id: 'march', title: 'رژهٔ شادی', tempo: 320, wave: 'square',
+            notes: [[N.C4,1],[N.E4,1],[N.G4,1],[N.C5,1],[N.G4,1],[N.E4,1],[N.C4,2],
+                    [N.D4,1],[N.F4,1],[N.A4,1],[N.D5,1],[N.A4,1],[N.F4,1],[N.D4,2],
+                    [N.E4,1],[N.G4,1],[N.C5,1],[N.E5,1],[N.C5,1],[N.G4,1],[N.E4,2],
+                    [N.G4,1],[N.F4,1],[N.E4,1],[N.D4,1],[N.C4,3],[N.R,1]]
+        },
+        {
+            id: 'lullaby', title: 'لالایی آرام', tempo: 620, wave: 'sine',
+            notes: [[N.C5,2],[N.A4,1],[N.G4,1],[N.E4,2],[N.G4,2],
+                    [N.A4,2],[N.G4,1],[N.E4,1],[N.D4,3],[N.R,1],
+                    [N.C5,2],[N.B4,1],[N.A4,1],[N.G4,2],[N.E4,2],
+                    [N.D4,1],[N.E4,1],[N.G4,1],[N.E4,1],[N.C4,3],[N.R,1]]
+        },
+        {
+            id: 'playtime', title: 'وقت بازی', tempo: 350, wave: 'triangle',
+            notes: [[N.C5,1],[N.B4,1],[N.C5,1],[N.A4,1],[N.G4,2],[N.E4,1],[N.G4,1],
+                    [N.A4,1],[N.G4,1],[N.A4,1],[N.C5,1],[N.B4,2],[N.G4,2],
+                    [N.E5,1],[N.D5,1],[N.C5,1],[N.B4,1],[N.A4,2],[N.C5,2],
+                    [N.G4,1],[N.E4,1],[N.G4,1],[N.C5,1],[N.C4,3],[N.R,1]]
+        }
     ];
+
+    let trackIdx = 0;
     let noteIdx = 0;
+
+    function currentTrack() {
+        return MUSIC_TRACKS[trackIdx % MUSIC_TRACKS.length];
+    }
 
     function playMusicNote() {
         if (musicMuted || !musicPlaying) return;
         const c = ensureCtx();
         if (!c) return;
 
-        const p = melodyPattern[noteIdx % melodyPattern.length];
-        noteIdx++;
+        const track = currentTrack();
+        // Finished this track? move to the next one so the music never repeats
+        // the same tune back to back.
+        if (noteIdx >= track.notes.length) {
+            trackIdx = (trackIdx + 1) % MUSIC_TRACKS.length;
+            noteIdx = 0;
+            musicTimer = setTimeout(playMusicNote, 900);   // short breath between songs
+            return;
+        }
 
-        if (p >= 0 && p < bgScale.length) {
-            const freq = bgScale[p];
+        const [freq, beats] = track.notes[noteIdx];
+        noteIdx++;
+        const dur = (track.tempo * beats) / 1000;
+
+        if (freq > 0) {
             const t0 = c.currentTime;
             const osc = c.createOscillator();
             const g = c.createGain();
-
-            // Soft marimba / music box bell tone
-            osc.type = 'triangle';
+            osc.type = track.wave || 'triangle';
             osc.frequency.setValueAtTime(freq, t0);
             g.gain.setValueAtTime(0, t0);
-            g.gain.linearRampToValueAtTime(0.045, t0 + 0.03);
-            g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.45);
-
+            g.gain.linearRampToValueAtTime(0.05, t0 + 0.03);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur * 0.95);
             osc.connect(g).connect(c.destination);
             osc.start(t0);
-            osc.stop(t0 + 0.5);
+            osc.stop(t0 + dur);
 
-            // Subtle bass accompaniment on downbeats
+            // Gentle bass root under the first beat of each bar.
             if (noteIdx % 4 === 1) {
-                const bassOsc = c.createOscillator();
-                const bassG = c.createGain();
-                bassOsc.type = 'sine';
-                bassOsc.frequency.setValueAtTime(freq / 2, t0);
-                bassG.gain.setValueAtTime(0.03, t0);
-                bassG.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.6);
-                bassOsc.connect(bassG).connect(c.destination);
-                bassOsc.start(t0);
-                bassOsc.stop(t0 + 0.65);
+                const b = c.createOscillator();
+                const bg = c.createGain();
+                b.type = 'sine';
+                b.frequency.setValueAtTime(freq / 2, t0);
+                bg.gain.setValueAtTime(0.028, t0);
+                bg.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+                b.connect(bg).connect(c.destination);
+                b.start(t0);
+                b.stop(t0 + dur + 0.05);
             }
         }
 
-        musicTimer = setTimeout(playMusicNote, 380);
+        musicTimer = setTimeout(playMusicNote, track.tempo * beats);
+    }
+
+    function listTracks() {
+        return MUSIC_TRACKS.map((t, i) => ({ id: t.id, title: t.title, index: i, active: i === trackIdx }));
+    }
+
+    function setTrack(index) {
+        const n = Number(index);
+        if (!Number.isFinite(n)) return currentTrack().title;
+        trackIdx = ((n % MUSIC_TRACKS.length) + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
+        noteIdx = 0;
+        if (musicTimer) clearTimeout(musicTimer);
+        if (musicPlaying && !musicMuted) playMusicNote();
+        return currentTrack().title;
+    }
+
+    function nextTrack() {
+        return setTrack(trackIdx + 1);
+    }
+
+    function currentTrackTitle() {
+        return currentTrack().title;
     }
 
     function startMusic() {
@@ -343,6 +428,10 @@ window.AudioEngine = (function() {
     return {
         play,
         speak,
+        listTracks,
+        setTrack,
+        nextTrack,
+        currentTrackTitle,
         playClip,
         hasClip,
         hasPersianVoice,

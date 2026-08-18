@@ -193,13 +193,10 @@
             renderRewards();
         });
 
-        $('#btn-music').addEventListener('click', async () => {
-            const isOn = AudioEngine.toggleMusic();
-            state.musicMuted = !isOn;
-            if (AudioEngine.setMusicMuted) AudioEngine.setMusicMuted(state.musicMuted);
-            await Storage.save('settings', { sfxMuted: state.sfxMuted, musicMuted: state.musicMuted });
-            updateAudioButtons();
+        // Tap = open the song picker (mute/unmute + choose a tune).
+        $('#btn-music').addEventListener('click', () => {
             AudioEngine.play('click');
+            showMusicPicker();
         });
 
         $('#btn-voice').addEventListener('click', async () => {
@@ -209,6 +206,65 @@
             updateAudioButtons();
             AudioEngine.play('click');
         });
+    }
+
+    function showMusicPicker() {
+        if (document.querySelector('.music-picker-overlay')) return;
+        const overlay = document.createElement('div');
+        overlay.className = 'music-picker-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.innerHTML = `
+            <div class="music-picker-card">
+                <h2>آهنگ‌های شاد</h2>
+                <p>یک آهنگ انتخاب کن یا بگذار خودش عوض شود.</p>
+                <button type="button" class="music-toggle-btn" id="music-toggle"></button>
+                <div class="music-track-list" id="music-track-list"></div>
+                <button type="button" class="btn-secondary-action" id="music-close">بستن</button>
+            </div>
+        `;
+
+        const toggleBtn = overlay.querySelector('#music-toggle');
+        const listEl = overlay.querySelector('#music-track-list');
+
+        const paint = () => {
+            toggleBtn.textContent = state.musicMuted ? 'روشن کردن موسیقی' : 'خاموش کردن موسیقی';
+            toggleBtn.classList.toggle('is-off', !!state.musicMuted);
+            listEl.innerHTML = '';
+            (AudioEngine.listTracks ? AudioEngine.listTracks() : []).forEach(t => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'music-track-btn' + (t.active ? ' active' : '');
+                b.innerHTML = `<span class="music-note-ico" aria-hidden="true">♪</span><span>${t.title}</span>`;
+                b.addEventListener('click', async () => {
+                    AudioEngine.play('click');
+                    if (state.musicMuted) {
+                        state.musicMuted = false;
+                        AudioEngine.setMusicMuted(false);
+                        AudioEngine.startMusic();
+                        await Storage.save('settings', { sfxMuted: state.sfxMuted, musicMuted: false });
+                    }
+                    AudioEngine.setTrack(t.index);
+                    updateAudioButtons();
+                    paint();
+                });
+                listEl.appendChild(b);
+            });
+        };
+
+        toggleBtn.addEventListener('click', async () => {
+            const isOn = AudioEngine.toggleMusic();
+            state.musicMuted = !isOn;
+            AudioEngine.setMusicMuted(state.musicMuted);
+            await Storage.save('settings', { sfxMuted: state.sfxMuted, musicMuted: state.musicMuted });
+            updateAudioButtons();
+            paint();
+        });
+
+        overlay.querySelector('#music-close').addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', ev => { if (ev.target === overlay) overlay.remove(); });
+        paint();
+        document.body.appendChild(overlay);
     }
 
     function updateAudioButtons() {
@@ -1549,6 +1605,40 @@
         });
 
         scrollBody.appendChild(detailsCard);
+
+        // 3b. Per-domain curriculum progress — parents asked "where is my child actually at?"
+        const progressCard = document.createElement('div');
+        progressCard.className = 'parent-card';
+        const pDomains = (state.curriculum && state.curriculum.domains) || [];
+        const domainRows = pDomains.map(domain => {
+            const lessons = (domain.levels || []).flatMap(level => level.lessons || []);
+            const total = lessons.length;
+            const done = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
+            const pct = total ? Math.round((done / total) * 100) : 0;
+            const meta = (window.App.domains || []).find(d => d.id === domain.id) || {};
+            return { title: domain.title || meta.title || domain.id, color: meta.color || '#6C5CE7', done, total, pct };
+        });
+        const grandTotal = domainRows.reduce((a, r) => a + r.total, 0);
+        const grandDone = domainRows.reduce((a, r) => a + r.done, 0);
+        const grandPct = grandTotal ? Math.round((grandDone / grandTotal) * 100) : 0;
+        progressCard.innerHTML = `
+            <h3>پیشرفت در برنامهٔ درسی</h3>
+            <p class="parent-card-sub">${toFa(grandDone)} درس از ${toFa(grandTotal)} درس انجام شده — ${toFa(grandPct)}٪ کل مسیر</p>
+            <div class="domain-progress-list">
+                ${domainRows.map(r => `
+                    <div class="domain-progress-row">
+                        <div class="domain-progress-head">
+                            <span class="domain-progress-name">${r.title}</span>
+                            <span class="domain-progress-count">${toFa(r.done)} / ${toFa(r.total)}</span>
+                        </div>
+                        <div class="domain-progress-track">
+                            <div class="domain-progress-fill" style="width:${r.pct}%; background:${r.color};"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        scrollBody.appendChild(progressCard);
 
         // 4. Data Privacy
         // Dedicated, prominent child-profile card so raising the age is easy to find

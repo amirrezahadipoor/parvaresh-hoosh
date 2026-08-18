@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v12-audio-100';
+const CACHE_NAME = 'parvaresh-hoosh-v13-music-parent';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
