@@ -96,3 +96,7 @@ const MESSAGES = {
         'عالی بود دوست زرنگم! بهت افتخار می‌کنم!'
     ]
 };
+
+// Explicit window exports keep the classic-script bundle compatible with WebViews and test runners.
+window.App = App;
+window.MESSAGES = MESSAGES;

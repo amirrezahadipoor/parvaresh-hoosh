@@ -40,13 +40,21 @@
     async function init() {
         await Storage.init();
 
-        // 1. Load Curriculum
+        // 1. Load the bundled curriculum first, then refresh it from the local JSON when available.
+        state.curriculum = window.CURRICULUM && Array.isArray(window.CURRICULUM.domains)
+            ? window.CURRICULUM
+            : { domains: window.App.domains };
         try {
-            const res = await fetch('content/curriculum.json');
-            state.curriculum = await res.json();
+            if (typeof window.fetch === 'function') {
+                const res = await window.fetch('content/curriculum.json', { cache: 'no-store' });
+                if (res && res.ok) {
+                    const remote = await res.json();
+                    if (remote && Array.isArray(remote.domains)) state.curriculum = remote;
+                }
+            }
         } catch (e) {
-            console.warn('Curriculum fetch fallback:', e);
-            state.curriculum = { domains: App.domains };
+            // The embedded curriculum keeps file:// and offline launches functional.
+            console.warn('Curriculum refresh unavailable; using bundled copy.', e);
         }
 
         // 2. Load Progress & Mascot
@@ -67,6 +75,9 @@
             state.sfxMuted = !!savedSettings.sfxMuted;
             state.musicMuted = !!savedSettings.musicMuted;
             AudioEngine.setSfxMuted(state.sfxMuted);
+            if (AudioEngine.setMusicMuted) AudioEngine.setMusicMuted(state.musicMuted);
+        } else if (AudioEngine.setMusicMuted) {
+            AudioEngine.setMusicMuted(false);
         }
 
         updateAudioButtons();
@@ -109,6 +120,7 @@
         $('#btn-music').addEventListener('click', async () => {
             const isOn = AudioEngine.toggleMusic();
             state.musicMuted = !isOn;
+            if (AudioEngine.setMusicMuted) AudioEngine.setMusicMuted(state.musicMuted);
             await Storage.save('settings', { sfxMuted: state.sfxMuted, musicMuted: state.musicMuted });
             updateAudioButtons();
             AudioEngine.play('click');
@@ -159,7 +171,7 @@
 
         const speechBubble = document.createElement('div');
         speechBubble.className = 'speech-text-bubble';
-        speechBubble.textContent = pickMsg(MESSAGES.greeting);
+        speechBubble.textContent = pickMsg(window.MESSAGES.greeting);
 
         speechStrip.onclick = () => {
             AudioEngine.play('bubble');
@@ -250,20 +262,28 @@
         const advBtn = document.createElement('button');
         advBtn.className = 'btn-primary-action';
         advBtn.style.cssText = 'flex-shrink:0; margin-top:4px; font-size:16px;';
-        advBtn.textContent = `ادامه ماجراجویی (${nextNode.title})`;
-        advBtn.onclick = () => {
-            AudioEngine.play('win');
-            startAdventureLesson(nextNode);
-        };
+        if (nextNode) {
+            advBtn.textContent = `ادامه ماجراجویی (${nextNode.title})`;
+            advBtn.onclick = () => {
+                AudioEngine.play('win');
+                startAdventureLesson(nextNode);
+            };
+        } else {
+            advBtn.textContent = 'آفرین! مسیر ماجراجویی کامل شد';
+            advBtn.disabled = true;
+            advBtn.style.opacity = '0.75';
+        }
         homeStage.appendChild(advBtn);
 
         container.appendChild(homeStage);
     }
 
     function startAdventureLesson(node) {
+        if (!node || !node.lessonId) return;
         state.domainId = node.domain;
         state.lessonId = node.lessonId;
-        const lessonDef = findLesson(node.lessonId) || { id: node.lessonId, title: node.title };
+        const lessonDef = findLesson(node.lessonId);
+        if (!lessonDef) return;
         Nav.push('lesson');
         startLesson(lessonDef);
     }
@@ -282,8 +302,8 @@
 
     // ===== DOMAIN LEVELS SCREEN =====
     function renderDomain() {
-        const d = App.domains.find(x => x.id === state.domainId) || { color: '#6C5CE7', title: 'حوزه' };
-        const dom = (state.curriculum.domains || []).find(x => x.id === state.domainId);
+        const d = window.App.domains.find(x => x.id === state.domainId) || { color: '#6C5CE7', title: 'حوزه' };
+        const dom = (state.curriculum && state.curriculum.domains || []).find(x => x.id === state.domainId);
         $('#domain-title').textContent = dom ? dom.title : d.title;
 
         const content = $('#domain-content');
@@ -337,12 +357,19 @@
 
     // ===== LEVEL LESSONS SCREEN =====
     function renderLevel() {
-        const dom = (state.curriculum.domains || []).find(x => x.id === state.domainId);
-        const level = (dom.levels || []).find(l => l.id === state.levelId);
+        const dom = (state.curriculum && state.curriculum.domains || []).find(x => x.id === state.domainId);
+        const level = dom && (dom.levels || []).find(l => l.id === state.levelId);
         $('#level-title').textContent = level ? level.title : 'درس‌ها';
 
         const content = $('#level-content');
         content.innerHTML = '';
+        if (!level) {
+            const empty = document.createElement('p');
+            empty.textContent = 'این سطح در محتوای فعلی پیدا نشد.';
+            empty.style.cssText = 'padding:20px; text-align:center; color:var(--ink2); font-weight:800;';
+            content.appendChild(empty);
+            return;
+        }
 
         const scrollContainer = document.createElement('div');
         scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px;';
@@ -379,14 +406,18 @@
 
     // ===== LESSON RUNNER (FULLSCREEN ZERO-SCROLL) =====
     function startLesson(lesson) {
-        const rounds = Generator.generate(lesson.id);
+        if (!lesson || !lesson.id) return;
+        const rounds = Generator.generate(lesson.id) || [];
         const body = $('#lesson-body');
+        if (!body) return;
         const fill = $('#lesson-progress-fill');
         const ptext = $('#lesson-progress-text');
         const starsEl = $('#lesson-star-num');
 
         let roundIdx = 0;
         let starCount = 0;
+        let lessonFinished = false;
+        let roundSettled = false;
 
         $('#btn-exit-lesson').onclick = () => {
             AudioEngine.stopSpeak();
@@ -394,7 +425,7 @@
         };
 
         function updateProgress() {
-            const pct = Math.round((100 * roundIdx) / rounds.length);
+            const pct = rounds.length ? Math.round((100 * roundIdx) / rounds.length) : 100;
             if (fill) fill.style.width = pct + '%';
             if (ptext) ptext.textContent = `${toFa(roundIdx + 1)} از ${toFa(rounds.length)}`;
             if (starsEl) starsEl.textContent = toFa(starCount);
@@ -419,6 +450,11 @@
 
             updateProgress();
             const round = rounds[roundIdx];
+            if (!round) {
+                finishLesson();
+                return;
+            }
+            roundSettled = false;
             const renderer = rendererFor(round.type);
 
             if (!renderer) {
@@ -431,18 +467,21 @@
             if (window.LivingWorld) LivingWorld.resetHintTimer('.game-tap-choice-btn, .shadow-opt-btn, .raven-opt-btn, .simon-bell, .disp-opt-btn');
             renderer.render(body, round, {
                 onCorrect: () => {
+                    if (roundSettled || lessonFinished) return;
+                    roundSettled = true;
                     starCount = Math.min(3, starCount + 1);
                     updateProgress();
                     AudioEngine.play('star');
-                    showMascotMood('celebrating', pickMsg(MESSAGES.correct));
+                    showMascotMood('celebrating', pickMsg(window.MESSAGES.correct));
                     Adaptive.record(state.domainId || 'reading', true);
                     IQAssessment.recordTrial(state.domainId || round.type, true);
                     roundIdx++;
                     setTimeout(() => nextRound(), 800);
                 },
                 onWrong: () => {
+                    if (roundSettled || lessonFinished) return;
                     AudioEngine.play('wrong');
-                    showMascotMood('thinking', pickMsg(MESSAGES.wrong));
+                    showMascotMood('thinking', pickMsg(window.MESSAGES.wrong));
                     Adaptive.record(state.domainId || 'reading', false);
                     IQAssessment.recordTrial(state.domainId || round.type, false);
                 }
@@ -450,6 +489,9 @@
         }
 
         function finishLesson() {
+            if (lessonFinished) return;
+            lessonFinished = true;
+            if (window.LivingWorld) LivingWorld.clearHint();
             const stars = Math.max(1, starCount);
             const prev = state.lessonsDone[lesson.id] || { stars: 0, done: false };
             const newStars = Math.max(prev.stars || 0, stars);
@@ -476,7 +518,7 @@
                 <div class="result-celebrate-card">
                     <div style="margin: 0 auto 6px;">${Mascot.svg(84, 'celebrating')}</div>
                     <h2 style="font-size:22px; font-weight:900; margin-bottom:2px;">آفرین قهرمان باهوش من!</h2>
-                    <p style="font-size:14px; font-weight:700; color:var(--ink2); margin-bottom:12px;">${pickMsg(MESSAGES.win)}</p>
+                    <p style="font-size:14px; font-weight:700; color:var(--ink2); margin-bottom:12px;">${pickMsg(window.MESSAGES.win)}</p>
                     <button class="btn-primary-action" id="btn-continue-result">
                         ادامه ماجراجویی
                     </button>
@@ -497,7 +539,7 @@
             overlay.querySelector('#btn-continue-result').addEventListener('click', () => {
                 overlay.remove();
                 AudioEngine.play('click');
-                Nav.back();
+                Nav.reset('home');
                 renderHome();
             });
 
@@ -683,10 +725,10 @@
         };
 
         const storedPin = await Storage.load(PARENT_PIN_KEY);
-        if (!storedPin) {
+        if (!/^\d{4}$/.test(String(storedPin || ''))) {
             renderMathGate(content);
         } else {
-            renderPinEntry(content, storedPin);
+            renderPinEntry(content, String(storedPin));
         }
     }
 
@@ -707,13 +749,16 @@
         `;
 
         const pad = content.querySelector('#gate-pad');
-        const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        let unlocked = false;
+        const keys = Array.from({ length: 13 }, (_, index) => index + 1);
         keys.forEach(k => {
             const btn = document.createElement('button');
             btn.className = 'pin-key';
             btn.textContent = toFa(k);
             btn.addEventListener('click', () => {
+                if (unlocked) return;
                 if (k === correctSum) {
+                    unlocked = true;
                     AudioEngine.play('correct');
                     renderDashboard(content);
                 } else {
@@ -736,6 +781,7 @@
         `;
 
         let buffer = '';
+        let unlocking = false;
         const dotsEl = content.querySelector('#pin-dots');
         const pad = content.querySelector('#pin-pad');
 
@@ -763,7 +809,9 @@
                 } else if (k === 'ok') {
                     b.textContent = 'تایید';
                     b.addEventListener('click', () => {
+                        if (unlocking) return;
                         if (buffer === String(correctPin)) {
+                            unlocking = true;
                             AudioEngine.play('correct');
                             renderDashboard(content);
                         } else {
@@ -780,7 +828,8 @@
                             buffer += k;
                             AudioEngine.play('pop');
                             updateDots();
-                            if (buffer.length === 4 && buffer === String(correctPin)) {
+                            if (buffer.length === 4 && buffer === String(correctPin) && !unlocking) {
+                                unlocking = true;
                                 setTimeout(() => {
                                     AudioEngine.play('correct');
                                     renderDashboard(content);
@@ -793,6 +842,82 @@
             });
         });
         updateDots();
+    }
+
+    function renderPinSetup(content) {
+        let firstPin = '';
+        let buffer = '';
+        let confirming = false;
+        content.innerHTML = '';
+
+        function renderPad() {
+            content.innerHTML = `
+                <div class="pin-wrap">
+                    <h3 style="font-size:18px; font-weight:900; margin-bottom:6px;">${confirming ? 'تکرار رمز والدین' : 'انتخاب رمز والدین'}</h3>
+                    <p style="color:var(--ink2); font-size:13px; margin-bottom:12px;">یک رمز چهار رقمی انتخاب کنید:</p>
+                    <div class="pin-dots" id="pin-dots"></div>
+                    <div class="pin-pad" id="pin-pad"></div>
+                    <button class="btn-secondary-action" id="cancel-pin-setup">انصراف</button>
+                </div>
+            `;
+
+            const dotsEl = content.querySelector('#pin-dots');
+            const pad = content.querySelector('#pin-pad');
+            const updateDots = () => {
+                dotsEl.innerHTML = '';
+                for (let i = 0; i < 4; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = `pin-dot ${i < buffer.length ? 'filled' : ''}`;
+                    dotsEl.appendChild(dot);
+                }
+            };
+
+            const rows = [[1,2,3],[4,5,6],[7,8,9],['del',0,'ok']];
+            rows.forEach(row => row.forEach(key => {
+                const button = document.createElement('button');
+                button.className = 'pin-key';
+                button.textContent = key === 'del' ? '⌫' : key === 'ok' ? 'تایید' : toFa(key);
+                button.addEventListener('click', () => {
+                    AudioEngine.play(key === 'ok' ? 'click' : 'pop');
+                    if (key === 'del') {
+                        buffer = buffer.slice(0, -1);
+                        updateDots();
+                        return;
+                    }
+                    if (key === 'ok') {
+                        if (buffer.length !== 4) {
+                            AudioEngine.play('wrong');
+                            return;
+                        }
+                        if (!confirming) {
+                            firstPin = buffer;
+                            buffer = '';
+                            confirming = true;
+                            renderPad();
+                        } else if (buffer === firstPin) {
+                            Storage.save(PARENT_PIN_KEY, firstPin).then(() => renderDashboard(content));
+                        } else {
+                            AudioEngine.play('wrong');
+                            buffer = '';
+                            confirming = false;
+                            firstPin = '';
+                            renderPad();
+                        }
+                        return;
+                    }
+                    if (buffer.length < 4) {
+                        buffer += String(key);
+                        updateDots();
+                    }
+                });
+                pad.appendChild(button);
+            }));
+
+            content.querySelector('#cancel-pin-setup').addEventListener('click', () => renderDashboard(content));
+            updateDots();
+        }
+
+        renderPad();
     }
 
     async function renderDashboard(content) {
@@ -867,17 +992,31 @@
             <p style="font-size:12px; color:var(--ink2); margin-bottom:10px;">
                 داده‌ها به صورت ۱۰۰٪ آفلاین روی حافظه دستگاه نگهداری می‌شوند.
             </p>
+            <button class="btn-secondary-action" id="btn-change-pin" style="width:100%;">
+                ${'تنظیم یا تغییر رمز والدین'}
+            </button>
             <button class="btn-secondary-action" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%;">
                 پاک کردن تمام داده‌ها و شروع مجدد
             </button>
         `;
 
+        settingsCard.querySelector('#btn-change-pin').addEventListener('click', () => {
+            AudioEngine.play('click');
+            renderPinSetup(content);
+        });
+
         settingsCard.querySelector('#btn-reset-data').addEventListener('click', async () => {
             if (confirm('آیا مایلید تمام داده‌ها بازنشانی شوند؟')) {
                 await Storage.clearAll();
                 Adaptive.reset();
+                if (IQAssessment.reset) IQAssessment.reset();
                 state.lessonsDone = {};
                 state.totalStars = 0;
+                state.sfxMuted = false;
+                state.musicMuted = false;
+                AudioEngine.setSfxMuted(false);
+                if (AudioEngine.setMusicMuted) AudioEngine.setMusicMuted(false);
+                Mascot.setCharacter('dana');
                 AudioEngine.play('pop');
                 renderHome();
                 Nav.reset('home');

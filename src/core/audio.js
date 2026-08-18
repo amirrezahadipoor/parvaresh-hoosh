@@ -18,8 +18,11 @@ window.AudioEngine = (function() {
                 return null;
             }
         }
-        if (ctx && ctx.state === 'suspended') {
-            ctx.resume().catch(() => {});
+        if (ctx && ctx.state === 'suspended' && typeof ctx.resume === 'function') {
+            try {
+                const result = ctx.resume();
+                if (result && typeof result.catch === 'function') result.catch(() => {});
+            } catch (e) {}
         }
         return ctx;
     }
@@ -128,7 +131,7 @@ window.AudioEngine = (function() {
     }
 
     function startMusic() {
-        if (musicPlaying) return;
+        if (musicMuted || musicPlaying) return;
         musicPlaying = true;
         noteIdx = 0;
         playMusicNote();
@@ -140,13 +143,14 @@ window.AudioEngine = (function() {
         musicTimer = null;
     }
 
+    function setMusicMuted(muted) {
+        musicMuted = Boolean(muted);
+        if (musicMuted) stopMusic();
+    }
+
     function toggleMusic() {
-        musicMuted = !musicMuted;
-        if (musicMuted) {
-            stopMusic();
-        } else {
-            startMusic();
-        }
+        setMusicMuted(!musicMuted);
+        if (!musicMuted) startMusic();
         return !musicMuted;
     }
 
@@ -235,7 +239,9 @@ window.AudioEngine = (function() {
         try {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(text);
+                const Utterance = window.SpeechSynthesisUtterance || (typeof SpeechSynthesisUtterance !== 'undefined' ? SpeechSynthesisUtterance : null);
+                if (!Utterance) return;
+                const u = new Utterance(text);
                 u.lang = 'fa-IR';
                 u.rate = rate || 0.88;
                 u.pitch = 1.18;
@@ -278,6 +284,7 @@ window.AudioEngine = (function() {
         isMusicOn,
         setSfxMuted,
         isSfxMuted,
+        setMusicMuted,
         sfx,
         ensureCtx
     };

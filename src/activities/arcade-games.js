@@ -69,8 +69,10 @@ window.ArcadeGames = (function() {
 
         let score = 0;
         let combo = 1;
+        let active = true;
         let activeBalloons = [];
         let spawnInterval = null;
+        const animations = new Set();
 
         const stage = container.querySelector('#balloon-stage');
         const scoreEl = container.querySelector('#balloon-score');
@@ -78,7 +80,14 @@ window.ArcadeGames = (function() {
         const exitBtn = container.querySelector('#arcade-exit-btn');
 
         exitBtn.onclick = () => {
+            active = false;
             clearInterval(spawnInterval);
+            animations.forEach(animation => {
+                try { animation.cancel(); } catch (e) {}
+            });
+            animations.clear();
+            activeBalloons.forEach(balloon => balloon.remove());
+            activeBalloons = [];
             AudioEngine.play('click');
             if (onExit) onExit();
         };
@@ -97,7 +106,7 @@ window.ArcadeGames = (function() {
         ];
 
         function spawnBalloon() {
-            if (activeBalloons.length >= 7) return;
+            if (!active || activeBalloons.length >= 7) return;
             const item = balloonItems[Math.floor(Math.random() * balloonItems.length)];
             const b = document.createElement('div');
             b.className = 'arcade-balloon-item';
@@ -114,7 +123,7 @@ window.ArcadeGames = (function() {
 
             b.addEventListener('pointerdown', (e) => {
                 e.preventDefault();
-                if (b.classList.contains('popped')) return;
+                if (!active || b.classList.contains('popped')) return;
                 b.classList.add('popped');
                 AudioEngine.play('pop');
                 AudioEngine.speak(item.sound);
@@ -142,8 +151,11 @@ window.ArcadeGames = (function() {
                 { transform: 'translateY(360px)', opacity: 1 },
                 { transform: 'translateY(-120px)', opacity: 0.9 }
             ], { duration: dur, easing: 'linear' });
+            animations.add(anim);
 
             anim.onfinish = () => {
+                animations.delete(anim);
+                if (!active) return;
                 if (b.parentNode) b.remove();
                 activeBalloons = activeBalloons.filter(x => x !== b);
                 combo = 1;
@@ -167,8 +179,11 @@ window.ArcadeGames = (function() {
 
         let currentIdx = 0;
         let score = 0;
+        let active = true;
+        let nextTimer = null;
 
         function renderRound() {
+            if (!active) return;
             const current = pairs[currentIdx % pairs.length];
             const foodOptions = [
                 { name: 'سیب', svg: SvgArt.object('apple', 44) },
@@ -192,6 +207,8 @@ window.ArcadeGames = (function() {
             `;
 
             container.querySelector('#feed-exit-btn').onclick = () => {
+                active = false;
+                if (nextTimer) clearTimeout(nextTimer);
                 AudioEngine.play('click');
                 if (onExit) onExit();
             };
@@ -203,6 +220,7 @@ window.ArcadeGames = (function() {
                 btn.innerHTML = `${f.svg}<span class="food-name">${f.name}</span>`;
 
                 btn.onclick = () => {
+                    if (!active) return;
                     if (f.name === current.food) {
                         AudioEngine.play('chew');
                         AudioEngine.play('correct');
@@ -211,7 +229,9 @@ window.ArcadeGames = (function() {
                         btn.classList.add('correct');
                         if (window.Fx) Fx.stars(container.querySelector('#animal-stage'), 5);
 
-                        setTimeout(() => {
+                        nextTimer = setTimeout(() => {
+                            nextTimer = null;
+                            if (!active) return;
                             currentIdx++;
                             renderRound();
                         }, 900);
@@ -288,8 +308,11 @@ window.ArcadeGames = (function() {
     // 4. MATH CARGO TRAIN
     function launchCargoTrain(container, onExit) {
         let score = 0;
+        let active = true;
+        let nextTimer = null;
 
         function nextTrain() {
+            if (!active) return;
             const targetCount = Math.floor(Math.random() * 5) + 2;
             let loadedCount = 0;
 
@@ -312,6 +335,8 @@ window.ArcadeGames = (function() {
             `;
 
             container.querySelector('#train-exit-btn').onclick = () => {
+                active = false;
+                if (nextTimer) clearTimeout(nextTimer);
                 AudioEngine.play('click');
                 if (onExit) onExit();
             };
@@ -324,6 +349,7 @@ window.ArcadeGames = (function() {
                 box.className = 'cargo-box-btn';
                 box.innerHTML = SvgArt.object('gift', 40);
                 box.onclick = () => {
+                    if (!active) return;
                     if (loadedCount < targetCount) {
                         loadedCount++;
                         AudioEngine.play('drop');
@@ -339,7 +365,10 @@ window.ArcadeGames = (function() {
                             score++;
                             container.querySelector('#train-score').textContent = toFa(score);
                             if (window.Fx) Fx.confetti();
-                            setTimeout(nextTrain, 1200);
+                            nextTimer = setTimeout(() => {
+                                nextTimer = null;
+                                nextTrain();
+                            }, 1200);
                         }
                     }
                 };
@@ -357,7 +386,10 @@ window.ArcadeGames = (function() {
     // 5. SPEED MEMORY CHALLENGE
     function launchSpeedMemory(container, onExit) {
         let score = 0;
+        let active = true;
+        let nextTimer = null;
         function nextRound() {
+            if (!active) return;
             container.innerHTML = `
                 <div class="arcade-card">
                     <div class="arcade-hud">
@@ -370,6 +402,8 @@ window.ArcadeGames = (function() {
             `;
 
             container.querySelector('#mem-exit-btn').onclick = () => {
+                active = false;
+                if (nextTimer) clearTimeout(nextTimer);
                 AudioEngine.play('click');
                 if (onExit) onExit();
             };
@@ -388,9 +422,13 @@ window.ArcadeGames = (function() {
 
             MemoryActivity.render(stage, roundDef, {
                 onCorrect: () => {
+                    if (!active) return;
                     score += 5;
                     AudioEngine.play('win');
-                    setTimeout(nextRound, 1000);
+                    nextTimer = setTimeout(() => {
+                        nextTimer = null;
+                        nextRound();
+                    }, 1000);
                 }
             });
         }

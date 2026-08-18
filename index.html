@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#FF6B6B">
     <meta name="description" content="پرورش هوش کودک - اپلیکیشن آموزشی، سنجش هوش کودک و شهربازی تعاملی کاملاً آفلاین برای کودکان ۴.۵ تا ۸ سال">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self' blob:;">
     <title>پرورش هوش کودک</title>
 
     <!-- Bundled Offline Fonts (Vazirmatn) -->
@@ -219,15 +220,15 @@
         </div>
     </div>
 
-    <!-- Vendor Libraries (Bundled 100% Offline) -->
-    <script src="vendor/phaser.min.js"></script>
+    <!-- Small optional animation helper; the app works without it. -->
     <script src="vendor/gsap.min.js"></script>
 
-    <!-- Data Collections -->
+    <!-- Data Collections (including an embedded curriculum fallback) -->
     <script src="src/data/alphabet.js"></script>
     <script src="src/data/words.js"></script>
     <script src="src/data/math-data.js"></script>
     <script src="src/data/world-data.js"></script>
+    <script src="src/data/curriculum.js"></script>
 
     <!-- Core Engines -->
     <script src="src/core/config.js"></script>

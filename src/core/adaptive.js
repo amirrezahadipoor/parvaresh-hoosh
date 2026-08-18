@@ -1,54 +1,72 @@
-// Adaptive Difficulty & Skill Mastery Engine for "پرورش هوش کودک"
-// 100% Local & Adaptive Assessment without stressful tests
-const Adaptive = (function() {
+// Local adaptive difficulty and skill mastery engine.
+window.Adaptive = (function() {
     const KEY = 'parvaresh_hoosh_adaptive_v2';
     let state = { domains: {} };
+
+    function normalize() {
+        if (!state || typeof state !== 'object' || Array.isArray(state)) state = { domains: {} };
+        if (!state.domains || typeof state.domains !== 'object' || Array.isArray(state.domains)) state.domains = {};
+        Object.keys(state.domains).forEach(id => {
+            const d = state.domains[id];
+            if (!d || typeof d !== 'object' || Array.isArray(d)) {
+                delete state.domains[id];
+                return;
+            }
+            d.difficulty = Number.isFinite(Number(d.difficulty)) ? Math.max(window.App.adaptive.minLevel, Math.min(window.App.adaptive.maxLevel, Number(d.difficulty))) : window.App.adaptive.minLevel;
+            d.streak = Number.isFinite(Number(d.streak)) ? Math.max(0, Number(d.streak)) : 0;
+            d.total = Number.isFinite(Number(d.total)) ? Math.max(0, Number(d.total)) : 0;
+            d.correct = Number.isFinite(Number(d.correct)) ? Math.max(0, Math.min(d.total, Number(d.correct))) : 0;
+            d.history = Array.isArray(d.history) ? d.history.slice(-100) : [];
+        });
+    }
 
     function load() {
         try {
             const saved = window.localStorage.getItem(KEY);
             if (saved) state = JSON.parse(saved);
-        } catch (e) {}
+        } catch (e) {
+            state = { domains: {} };
+        }
+        normalize();
     }
 
     function persist() {
-        try {
-            window.localStorage.setItem(KEY, JSON.stringify(state));
-        } catch (e) {}
+        try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
     }
 
     function getDomain(domainId) {
-        if (!state.domains[domainId]) {
-            state.domains[domainId] = {
-                difficulty: 1,
+        const id = domainId || 'general';
+        if (!state.domains[id]) {
+            state.domains[id] = {
+                difficulty: window.App.adaptive.minLevel,
                 streak: 0,
                 total: 0,
                 correct: 0,
                 history: []
             };
         }
-        return state.domains[domainId];
+        return state.domains[id];
     }
 
     function record(domainId, correct) {
         const d = getDomain(domainId);
+        const isCorrect = Boolean(correct);
         d.total++;
-        if (correct) {
+        if (isCorrect) {
             d.correct++;
             d.streak++;
         } else {
             d.streak = 0;
         }
 
-        // Adaptive level step up/down
-        if (d.streak >= App.adaptive.upStreak && d.difficulty < App.adaptive.maxLevel) {
+        if (d.streak >= window.App.adaptive.upStreak && d.difficulty < window.App.adaptive.maxLevel) {
             d.difficulty++;
             d.streak = 0;
-        } else if (!correct && d.streak === 0 && d.difficulty > App.adaptive.minLevel) {
-            d.difficulty = Math.max(App.adaptive.minLevel, d.difficulty - 1);
+        } else if (!isCorrect && d.difficulty > window.App.adaptive.minLevel) {
+            d.difficulty = Math.max(window.App.adaptive.minLevel, d.difficulty - 1);
         }
 
-        d.history.push({ t: Date.now(), correct });
+        d.history.push({ t: Date.now(), correct: isCorrect });
         if (d.history.length > 100) d.history.shift();
         persist();
         return d.difficulty;
@@ -60,14 +78,16 @@ const Adaptive = (function() {
 
     function setDifficulty(domainId, level) {
         const d = getDomain(domainId);
-        d.difficulty = Math.min(App.adaptive.maxLevel, Math.max(App.adaptive.minLevel, level));
+        const numeric = Number(level);
+        d.difficulty = Number.isFinite(numeric)
+            ? Math.min(window.App.adaptive.maxLevel, Math.max(window.App.adaptive.minLevel, numeric))
+            : window.App.adaptive.minLevel;
         persist();
     }
 
     function stats(domainId) {
         const d = getDomain(domainId);
         const accuracy = d.total ? Math.round((100 * d.correct) / d.total) : 0;
-        
         let statusLabel = 'آغاز یادگیری';
         let statusClass = 'neutral';
         let tip = 'با تمرین روزانه ۵ دقیقه، مهارت‌ها به سرعت تثبیت می‌شوند.';
@@ -102,7 +122,7 @@ const Adaptive = (function() {
 
     function reset() {
         state = { domains: {} };
-        persist();
+        try { window.localStorage.removeItem(KEY); } catch (e) {}
     }
 
     load();

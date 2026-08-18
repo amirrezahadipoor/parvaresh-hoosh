@@ -1,7 +1,8 @@
-// High-Precision SVG Art & Asset Library for "پرورش هوش کودک"
-// 100% Custom Vector Art, Zero Emojis, Zero Copyrighted External Images, Responsive
+// Programmatic SVG Art Library - Kid-Friendly High-Fidelity Vector Graphics
+// 100% Vector, Scalable, Programmatically Rendered, Zero Copyrighted External Images
 window.SvgArt = (function() {
 
+    // Helper for crisp SVG wrapper
     function wrap(content, size, vbW, vbH) {
         size = size || 80;
         const w = size;
@@ -12,59 +13,80 @@ window.SvgArt = (function() {
     }
 
     // ==========================================
-    // 1. GEOMETRIC SHAPES
+    // 1. GEOMETRIC SHAPES (اشکال هندسی کارتونی)
     // ==========================================
     function shape(kind, color, size) {
-        const c = color || '#FF5252';
+        const c = color || '#FF6B6B';
         switch (kind) {
             case 'circle':
                 return wrap(`
-                    <circle cx="50" cy="50" r="42" fill="${c}" stroke="#2D3436" stroke-width="3"/>
+                    <circle cx="50" cy="50" r="44" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
                     <circle cx="36" cy="36" r="8" fill="#FFF" opacity="0.45"/>
-                    <circle cx="40" cy="50" r="3.5" fill="#2D3436"/>
-                    <circle cx="60" cy="50" r="3.5" fill="#2D3436"/>
-                    <path d="M44 60 Q50 66 56 60" stroke="#2D3436" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <circle cx="38" cy="50" r="3.5" fill="#2C3A47"/>
+                    <circle cx="62" cy="50" r="3.5" fill="#2C3A47"/>
+                    <path d="M43 62 Q50 69 57 62" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
                 `, size);
 
             case 'square':
                 return wrap(`
-                    <rect x="12" y="12" width="76" height="76" rx="14" fill="${c}" stroke="#2D3436" stroke-width="3"/>
-                    <rect x="20" y="20" width="20" height="20" rx="5" fill="#FFF" opacity="0.4"/>
-                    <circle cx="40" cy="50" r="3.5" fill="#2D3436"/>
-                    <circle cx="60" cy="50" r="3.5" fill="#2D3436"/>
-                    <path d="M44 60 Q50 66 56 60" stroke="#2D3436" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <rect x="10" y="10" width="80" height="80" rx="14" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+                    <rect x="20" y="20" width="22" height="22" rx="6" fill="#FFF" opacity="0.4"/>
+                    <circle cx="38" cy="50" r="3.5" fill="#2C3A47"/>
+                    <circle cx="62" cy="50" r="3.5" fill="#2C3A47"/>
+                    <path d="M43 62 Q50 69 57 62" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
                 `, size);
 
             case 'triangle':
                 return wrap(`
-                    <path d="M50 14 L88 84 A6 6 0 0 1 82 90 L18 90 A6 6 0 0 1 12 84 Z" fill="${c}" stroke="#2D3436" stroke-width="3" stroke-linejoin="round"/>
-                    <circle cx="42" cy="62" r="3" fill="#2D3436"/>
-                    <circle cx="58" cy="62" r="3" fill="#2D3436"/>
-                    <path d="M46 70 Q50 74 54 70" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M50 10 L90 86 A8 8 0 0 1 82 92 L18 92 A8 8 0 0 1 10 86 Z" fill="${c}" stroke="#2C3A47" stroke-width="3" stroke-linejoin="round"/>
+                    <path d="M50 25 L74 76 L26 76 Z" fill="#FFF" opacity="0.25"/>
+                    <circle cx="42" cy="62" r="3" fill="#2C3A47"/>
+                    <circle cx="58" cy="62" r="3" fill="#2C3A47"/>
+                    <path d="M46 72 Q50 76 54 72" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
                 `, size);
+
+            case 'rectangle':
+                return wrap(`
+                    <rect x="8" y="20" width="124" height="64" rx="14" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+                    <rect x="18" y="28" width="20" height="20" rx="5" fill="#FFF" opacity="0.4"/>
+                    <circle cx="56" cy="52" r="3.5" fill="#2C3A47"/>
+                    <circle cx="84" cy="52" r="3.5" fill="#2C3A47"/>
+                    <path d="M64 62 Q70 68 76 62" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                `, size, 140, 100);
+
+            case 'oval':
+                return wrap(`
+                    <ellipse cx="65" cy="50" rx="56" ry="38" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+                    <ellipse cx="48" cy="36" rx="14" ry="8" fill="#FFF" opacity="0.4"/>
+                    <circle cx="52" cy="52" r="3.5" fill="#2C3A47"/>
+                    <circle cx="78" cy="52" r="3.5" fill="#2C3A47"/>
+                    <path d="M60 62 Q65 68 70 62" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                `, size, 130, 100);
 
             case 'diamond':
                 return wrap(`
-                    <path d="M50 10 L88 50 L50 90 L12 50 Z" fill="${c}" stroke="#2D3436" stroke-width="3" stroke-linejoin="round"/>
-                    <circle cx="42" cy="50" r="3.5" fill="#2D3436"/>
-                    <circle cx="58" cy="50" r="3.5" fill="#2D3436"/>
-                    <path d="M46 58 Q50 63 54 58" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M50 8 L90 50 L50 92 L10 50 Z" fill="${c}" stroke="#2C3A47" stroke-width="3" stroke-linejoin="round"/>
+                    <path d="M50 24 L76 50 L50 76 L24 50 Z" fill="#FFF" opacity="0.3"/>
+                    <circle cx="42" cy="50" r="3.5" fill="#2C3A47"/>
+                    <circle cx="58" cy="50" r="3.5" fill="#2C3A47"/>
+                    <path d="M46 60 Q50 65 54 60" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
                 `, size);
 
             case 'star':
                 return wrap(`
-                    <path d="M50 10 L61 36 L90 38 L68 56 L75 86 L50 70 L25 86 L32 56 L10 38 L39 36 Z" fill="${c || '#F1C40F'}" stroke="#D35400" stroke-width="2.5" stroke-linejoin="round"/>
-                    <circle cx="42" cy="48" r="3" fill="#2D3436"/>
-                    <circle cx="58" cy="48" r="3" fill="#2D3436"/>
-                    <path d="M46 56 Q50 61 54 56" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M50 8 L61 36 L92 38 L68 58 L76 90 L50 72 L24 90 L32 58 L8 38 L39 36 Z" fill="${c || '#F9CA24'}" stroke="#E67E22" stroke-width="3" stroke-linejoin="round"/>
+                    <circle cx="42" cy="48" r="3" fill="#2C3A47"/>
+                    <circle cx="58" cy="48" r="3" fill="#2C3A47"/>
+                    <path d="M46 58 Q50 63 54 58" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
                 `, size);
 
             case 'heart':
                 return wrap(`
-                    <path d="M50 82 Q16 56 16 34 A18 18 0 0 1 50 30 A18 18 0 0 1 84 34 Q84 56 50 82 Z" fill="${c || '#FF5252'}" stroke="#C0392B" stroke-width="2.5"/>
-                    <circle cx="42" cy="46" r="3" fill="#2D3436"/>
-                    <circle cx="58" cy="46" r="3" fill="#2D3436"/>
-                    <path d="M46 55 Q50 60 54 55" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M50 82 Q12 56 12 32 A20 20 0 0 1 50 28 A20 20 0 0 1 88 32 Q88 56 50 82 Z" fill="${c || '#FF6B6B'}" stroke="#D63031" stroke-width="3"/>
+                    <circle cx="36" cy="38" r="3" fill="#FFF" opacity="0.6"/>
+                    <circle cx="42" cy="48" r="3" fill="#2C3A47"/>
+                    <circle cx="58" cy="48" r="3" fill="#2C3A47"/>
+                    <path d="M46 57 Q50 62 54 57" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
                 `, size);
 
             default:
@@ -73,122 +95,309 @@ window.SvgArt = (function() {
     }
 
     // ==========================================
-    // 2. NUMBER CARDS WITH SENSORY COUNTERS
+    // 2. NUMBER CARDS (کارت‌های عددی با مهره‌های حسی)
     // ==========================================
     function numberCard(n, color, size) {
-        size = size || 80;
-        const c = color || '#00D2D3';
+        size = size || 90;
+        const c = color || '#FF6B6B';
         const numObj = (window.NUMBERS || []).find(x => x.n === n) || { n, fa: String(n), digit: String(n) };
 
-        const dotsCoord = {
+        const dotCoordinates = {
             0: [],
-            1: [[50, 44]],
-            2: [[32, 44], [68, 44]],
-            3: [[30, 46], [50, 30], [70, 46]],
-            4: [[32, 32], [68, 32], [32, 60], [68, 60]],
-            5: [[30, 30], [70, 30], [50, 45], [30, 60], [70, 60]],
-            6: [[30, 26], [70, 26], [30, 45], [70, 45], [30, 64], [70, 64]],
-            7: [[30, 24], [70, 24], [50, 34], [30, 48], [70, 48], [30, 66], [70, 66]],
-            8: [[28, 24], [50, 24], [72, 24], [28, 45], [72, 45], [28, 66], [50, 66], [72, 66]],
-            9: [[30, 24], [50, 24], [70, 24], [30, 45], [50, 45], [70, 45], [30, 66], [50, 66], [70, 66]],
-            10: [[26, 24], [50, 24], [74, 24], [26, 44], [50, 44], [74, 44], [26, 64], [50, 64], [74, 64], [50, 78]]
+            1: [[50, 48]],
+            2: [[32, 48], [68, 48]],
+            3: [[30, 48], [50, 32], [70, 48]],
+            4: [[32, 32], [68, 32], [32, 64], [68, 64]],
+            5: [[30, 30], [70, 30], [50, 48], [30, 66], [70, 66]],
+            6: [[30, 28], [70, 28], [30, 48], [70, 48], [30, 68], [70, 68]],
+            7: [[30, 26], [70, 26], [50, 38], [30, 50], [70, 50], [30, 72], [70, 72]],
+            8: [[28, 26], [50, 26], [72, 26], [28, 48], [72, 48], [28, 70], [50, 70], [72, 70]],
+            9: [[30, 26], [50, 26], [70, 26], [30, 48], [50, 48], [70, 48], [30, 70], [50, 70], [70, 70]],
+            10: [[26, 24], [50, 24], [74, 24], [26, 44], [50, 44], [74, 44], [26, 64], [50, 64], [74, 64], [50, 80]]
         };
 
-        const dotsSvg = (dotsCoord[n] || []).map(([x, y]) => `
-            <circle cx="${x}" cy="${y}" r="6" fill="${c}" stroke="#FFF" stroke-width="1.5"/>
+        const dots = (dotCoordinates[n] || []).map(([x, y]) => `
+            <circle cx="${x}" cy="${y}" r="6.5" fill="${c}" stroke="#FFF" stroke-width="1.5"/>
             <circle cx="${x - 1.5}" cy="${y - 1.5}" r="2" fill="#FFF" opacity="0.7"/>
         `).join('');
 
         return wrap(`
-            <rect x="6" y="6" width="88" height="88" rx="16" fill="#FFFFFF" stroke="${c}" stroke-width="3.5"/>
-            <rect x="9" y="9" width="82" height="82" rx="13" fill="${c}" opacity="0.08"/>
-            ${dotsSvg}
-            <rect x="30" y="66" width="40" height="22" rx="8" fill="#FFF" stroke="${c}" stroke-width="1.8"/>
-            <text x="50" y="82" text-anchor="middle" font-size="16" font-weight="900" fill="${c}">${numObj.digit}</text>
+            <rect x="5" y="5" width="90" height="90" rx="18" fill="#FFFFFF" stroke="${c}" stroke-width="4"/>
+            <rect x="9" y="9" width="82" height="82" rx="14" fill="${c}" opacity="0.08"/>
+            ${dots}
+            <rect x="30" y="66" width="40" height="24" rx="8" fill="#FFF" stroke="${c}" stroke-width="2"/>
+            <text x="50" y="83" text-anchor="middle" font-size="18" font-weight="900" fill="${c}">${numObj.digit}</text>
         `, size);
     }
 
     // ==========================================
-    // 3. ANIMALS (PRECISE VECTOR CRAFT)
+    // 3. ANIMALS (حیوانات کارتونی دوست‌داشتنی)
     // ==========================================
     function animal(kind, size) {
-        size = size || 80;
+        size = size || 90;
         switch (kind) {
             case 'cat':
                 return wrap(`
-                    <path d="M26 36 L18 14 L42 26 Z" fill="#F8A5C2" stroke="#2D3436" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M74 36 L82 14 L58 26 Z" fill="#F8A5C2" stroke="#2D3436" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M26 36 L18 14 L42 26 Z" fill="#F8A5C2" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M74 36 L82 14 L58 26 Z" fill="#F8A5C2" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
                     <path d="M28 32 L22 18 L38 26 Z" fill="#FFD1DC"/>
                     <path d="M72 32 L78 18 L62 26 Z" fill="#FFD1DC"/>
-                    <ellipse cx="50" cy="56" rx="34" ry="28" fill="#F8A5C2" stroke="#2D3436" stroke-width="2.5"/>
-                    <ellipse cx="36" cy="50" rx="5" ry="6" fill="#2D3436"/>
+                    <ellipse cx="50" cy="56" rx="34" ry="28" fill="#F8A5C2" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="36" cy="50" rx="5" ry="6" fill="#2C3A47"/>
                     <circle cx="34.5" cy="48" r="2" fill="#FFF"/>
-                    <ellipse cx="64" cy="50" rx="5" ry="6" fill="#2D3436"/>
+                    <ellipse cx="64" cy="50" rx="5" ry="6" fill="#2C3A47"/>
                     <circle cx="62.5" cy="48" r="2" fill="#FFF"/>
                     <circle cx="25" cy="58" r="5" fill="#FF7675" opacity="0.5"/>
                     <circle cx="75" cy="58" r="5" fill="#FF7675" opacity="0.5"/>
                     <path d="M47 58 L53 58 L50 62 Z" fill="#E84393"/>
-                    <path d="M44 64 Q50 69 56 64" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
-                    <line x1="14" y1="54" x2="28" y2="56" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
-                    <line x1="14" y1="62" x2="28" y2="60" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
-                    <line x1="86" y1="54" x2="72" y2="56" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
-                    <line x1="86" y1="62" x2="72" y2="60" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M44 64 Q50 69 56 64" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <line x1="14" y1="54" x2="28" y2="56" stroke="#2C3A47" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="14" y1="62" x2="28" y2="60" stroke="#2C3A47" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="86" y1="54" x2="72" y2="56" stroke="#2C3A47" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="86" y1="62" x2="72" y2="60" stroke="#2C3A47" stroke-width="2" stroke-linecap="round"/>
                 `, size);
 
             case 'dog':
                 return wrap(`
-                    <ellipse cx="20" cy="48" rx="10" ry="22" fill="#A0522D" stroke="#2D3436" stroke-width="2.5" transform="rotate(-15 20 48)"/>
-                    <ellipse cx="80" cy="48" rx="10" ry="22" fill="#A0522D" stroke="#2D3436" stroke-width="2.5" transform="rotate(15 80 48)"/>
-                    <ellipse cx="50" cy="54" rx="32" ry="28" fill="#F5CD79" stroke="#2D3436" stroke-width="2.5"/>
+                    <ellipse cx="20" cy="48" rx="10" ry="22" fill="#A0522D" stroke="#2C3A47" stroke-width="2.5" transform="rotate(-15 20 48)"/>
+                    <ellipse cx="80" cy="48" rx="10" ry="22" fill="#A0522D" stroke="#2C3A47" stroke-width="2.5" transform="rotate(15 80 48)"/>
+                    <ellipse cx="50" cy="54" rx="32" ry="28" fill="#F5CD79" stroke="#2C3A47" stroke-width="2.5"/>
                     <ellipse cx="36" cy="48" rx="10" ry="12" fill="#ECCC68"/>
-                    <circle cx="36" cy="48" r="4.5" fill="#2D3436"/>
+                    <circle cx="36" cy="48" r="4.5" fill="#2C3A47"/>
                     <circle cx="34.5" cy="46" r="1.6" fill="#FFF"/>
-                    <circle cx="64" cy="48" r="4.5" fill="#2D3436"/>
+                    <circle cx="64" cy="48" r="4.5" fill="#2C3A47"/>
                     <circle cx="62.5" cy="46" r="1.6" fill="#FFF"/>
                     <ellipse cx="50" cy="64" rx="14" ry="10" fill="#FFF3D1"/>
-                    <ellipse cx="50" cy="58" rx="5" ry="3.5" fill="#2D3436"/>
-                    <path d="M50 62 L50 67 M45 67 Q50 71 55 67" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <ellipse cx="50" cy="58" rx="5" ry="3.5" fill="#2C3A47"/>
+                    <path d="M50 62 L50 67 M45 67 Q50 71 55 67" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
                     <circle cx="28" cy="58" r="4" fill="#FF7675" opacity="0.4"/>
                     <circle cx="72" cy="58" r="4" fill="#FF7675" opacity="0.4"/>
                 `, size);
 
             case 'rabbit':
                 return wrap(`
-                    <ellipse cx="36" cy="22" rx="9" ry="22" fill="#FFF" stroke="#2D3436" stroke-width="2.5"/>
-                    <ellipse cx="36" cy="22" rx="5" ry="16" fill="#FFB8B8"/>
-                    <ellipse cx="64" cy="22" rx="9" ry="22" fill="#FFF" stroke="#2D3436" stroke-width="2.5"/>
-                    <ellipse cx="64" cy="22" rx="5" ry="16" fill="#FFB8B8"/>
-                    <ellipse cx="50" cy="60" rx="32" ry="28" fill="#FFFFFF" stroke="#2D3436" stroke-width="2.5"/>
-                    <circle cx="38" cy="56" r="4.5" fill="#2D3436"/><circle cx="36.5" cy="54" r="1.8" fill="#FFF"/>
-                    <circle cx="62" cy="56" r="4.5" fill="#2D3436"/><circle cx="60.5" cy="54" r="1.8" fill="#FFF"/>
-                    <circle cx="26" cy="62" r="5.5" fill="#FF7675" opacity="0.55"/>
-                    <circle cx="74" cy="62" r="5.5" fill="#FF7675" opacity="0.55"/>
-                    <ellipse cx="50" cy="62" rx="3" ry="2.2" fill="#FF7675"/>
-                    <path d="M46 66 Q50 70 54 66" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
-                    <rect x="47.5" y="68" width="5" height="4" rx="1" fill="#FFF" stroke="#2D3436" stroke-width="1.5"/>
+                    <ellipse cx="36" cy="24" rx="9" ry="22" fill="#FFF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="36" cy="24" rx="5" ry="16" fill="#FFB8B8"/>
+                    <ellipse cx="64" cy="24" rx="9" ry="22" fill="#FFF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="64" cy="24" rx="5" ry="16" fill="#FFB8B8"/>
+                    <ellipse cx="50" cy="62" rx="30" ry="26" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="38" cy="58" r="4.5" fill="#2C3A47"/>
+                    <circle cx="36.5" cy="56" r="1.8" fill="#FFF"/>
+                    <circle cx="62" cy="58" r="4.5" fill="#2C3A47"/>
+                    <circle cx="60.5" cy="56" r="1.8" fill="#FFF"/>
+                    <circle cx="26" cy="64" r="5.5" fill="#FF7675" opacity="0.55"/>
+                    <circle cx="74" cy="64" r="5.5" fill="#FF7675" opacity="0.55"/>
+                    <ellipse cx="50" cy="64" rx="3" ry="2.2" fill="#FF7675"/>
+                    <path d="M46 68 Q50 72 54 68" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <rect x="47.5" y="70" width="5" height="4" rx="1" fill="#FFF" stroke="#2C3A47" stroke-width="1.5"/>
+                `, size);
+
+            case 'lion':
+                return wrap(`
+                    <circle cx="50" cy="52" r="42" fill="#E67E22" stroke="#D35400" stroke-width="3"/>
+                    <path d="M50 10 L56 20 L66 12 L70 24 L82 20 L82 32 L94 34 L88 46 L98 52 L88 58 L94 70 L82 72 L82 84 L70 80 L66 92 L56 84 L50 94 L44 84 L34 92 L30 80 L18 84 L18 72 L6 70 L12 58 L2 52 L12 46 L6 34 L18 32 L18 20 L30 24 L34 12 L44 20 Z" fill="#F39C12"/>
+                    <circle cx="28" cy="30" r="8" fill="#F1C40F" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="72" cy="30" r="8" fill="#F1C40F" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="50" cy="54" r="28" fill="#F1C40F" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="50" cy="62" rx="12" ry="8" fill="#FEF5D3"/>
+                    <circle cx="40" cy="48" r="4.5" fill="#2C3A47"/>
+                    <circle cx="38.5" cy="46" r="1.6" fill="#FFF"/>
+                    <circle cx="60" cy="48" r="4.5" fill="#2C3A47"/>
+                    <circle cx="58.5" cy="46" r="1.6" fill="#FFF"/>
+                    <path d="M46 58 L54 58 L50 63 Z" fill="#8E44AD"/>
+                    <path d="M44 66 Q50 71 56 66" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <circle cx="30" cy="56" r="4" fill="#FF7675" opacity="0.5"/>
+                    <circle cx="70" cy="56" r="4" fill="#FF7675" opacity="0.5"/>
+                `, size);
+
+            case 'elephant':
+                return wrap(`
+                    <ellipse cx="20" cy="50" rx="16" ry="22" fill="#74B9FF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="20" cy="50" rx="10" ry="14" fill="#A4D4FF"/>
+                    <ellipse cx="80" cy="50" rx="16" ry="22" fill="#74B9FF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="80" cy="50" rx="10" ry="14" fill="#A4D4FF"/>
+                    <circle cx="50" cy="52" r="28" fill="#74B9FF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="38" cy="46" r="4" fill="#2C3A47"/>
+                    <circle cx="36.8" cy="44.5" r="1.5" fill="#FFF"/>
+                    <circle cx="62" cy="46" r="4" fill="#2C3A47"/>
+                    <circle cx="60.8" cy="44.5" r="1.5" fill="#FFF"/>
+                    <path d="M46 54 Q44 76 56 82 Q64 82 60 74 Q52 72 52 54 Z" fill="#74B9FF" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M46 64 Q50 67 52 64" stroke="#0984E3" stroke-width="2"/>
+                    <path d="M47 70 Q51 73 54 70" stroke="#0984E3" stroke-width="2"/>
+                    <circle cx="30" cy="56" r="4" fill="#FF7675" opacity="0.5"/>
+                    <circle cx="70" cy="56" r="4" fill="#FF7675" opacity="0.5"/>
+                `, size);
+
+            case 'bear':
+                return wrap(`
+                    <circle cx="26" cy="28" r="11" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="26" cy="28" r="6" fill="#D2996E"/>
+                    <circle cx="74" cy="28" r="11" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="74" cy="28" r="6" fill="#D2996E"/>
+                    <circle cx="50" cy="54" r="30" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="50" cy="62" rx="14" ry="10" fill="#E8C39E"/>
+                    <circle cx="38" cy="46" r="4" fill="#2C3A47"/>
+                    <circle cx="36.8" cy="44.5" r="1.4" fill="#FFF"/>
+                    <circle cx="62" cy="46" r="4" fill="#2C3A47"/>
+                    <circle cx="60.8" cy="44.5" r="1.4" fill="#FFF"/>
+                    <ellipse cx="50" cy="58" rx="5" ry="3.5" fill="#2C3A47"/>
+                    <path d="M45 66 Q50 71 55 66" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <circle cx="28" cy="56" r="4" fill="#FF7675" opacity="0.4"/>
+                    <circle cx="72" cy="56" r="4" fill="#FF7675" opacity="0.4"/>
+                `, size);
+
+            case 'monkey':
+                return wrap(`
+                    <circle cx="18" cy="50" r="12" fill="#B38054" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="18" cy="50" r="7" fill="#FFCE9E"/>
+                    <circle cx="82" cy="50" r="12" fill="#B38054" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="82" cy="50" r="7" fill="#FFCE9E"/>
+                    <circle cx="50" cy="50" r="30" fill="#B38054" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M30 46 Q38 34 50 44 Q62 34 70 46 Q74 68 50 72 Q26 68 30 46 Z" fill="#FFCE9E"/>
+                    <circle cx="42" cy="46" r="4.5" fill="#2C3A47"/>
+                    <circle cx="40.5" cy="44.5" r="1.6" fill="#FFF"/>
+                    <circle cx="58" cy="46" r="4.5" fill="#2C3A47"/>
+                    <circle cx="56.5" cy="44.5" r="1.6" fill="#FFF"/>
+                    <circle cx="47" cy="56" r="1.5" fill="#2C3A47"/>
+                    <circle cx="53" cy="56" r="1.5" fill="#2C3A47"/>
+                    <path d="M42 62 Q50 70 58 62" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
                 `, size);
 
             case 'fish':
                 return wrap(`
-                    <path d="M20 50 Q45 20 80 50 Q45 80 20 50 Z" fill="#55EFC4" stroke="#2D3436" stroke-width="2.5"/>
-                    <path d="M20 50 L4 32 L8 50 L4 68 Z" fill="#00B894" stroke="#2D3436" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M20 50 Q45 20 80 50 Q45 80 20 50 Z" fill="#55EFC4" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M20 50 L4 32 L8 50 L4 68 Z" fill="#00B894" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
                     <path d="M50 32 Q60 18 70 32" stroke="#00B894" stroke-width="4" stroke-linecap="round" fill="none"/>
                     <path d="M50 68 Q60 82 70 68" stroke="#00B894" stroke-width="4" stroke-linecap="round" fill="none"/>
-                    <circle cx="68" cy="44" r="5" fill="#2D3436"/>
+                    <circle cx="68" cy="44" r="5" fill="#2C3A47"/>
                     <circle cx="66.5" cy="42.5" r="2" fill="#FFF"/>
-                    <path d="M80 50 Q75 54 80 56" stroke="#2D3436" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <path d="M80 50 Q75 54 80 56" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <path d="M48 42 Q54 48 48 54 M40 46 Q46 52 40 58" stroke="#00B894" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <circle cx="62" cy="52" r="3.5" fill="#FF7675" opacity="0.6"/>
+                `, size);
+
+            case 'turtle':
+                return wrap(`
+                    <circle cx="26" cy="38" r="7" fill="#00B894" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="74" cy="38" r="7" fill="#00B894" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="26" cy="66" r="7" fill="#00B894" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="74" cy="66" r="7" fill="#00B894" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="16" cy="52" r="4" fill="#00B894"/>
+                    <circle cx="84" cy="52" r="10" fill="#00B894" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="87" cy="49" r="2.5" fill="#2C3A47"/>
+                    <circle cx="86.2" cy="48.2" r="0.9" fill="#FFF"/>
+                    <ellipse cx="50" cy="52" rx="30" ry="24" fill="#55EFC4" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M38 44 L62 44 L70 52 L62 60 L38 60 L30 52 Z" fill="#00B894" stroke="#2C3A47" stroke-width="1.8"/>
                 `, size);
 
             case 'butterfly':
                 return wrap(`
-                    <ellipse cx="32" cy="38" rx="20" ry="18" fill="#F368E0" stroke="#2D3436" stroke-width="2"/>
+                    <ellipse cx="32" cy="38" rx="20" ry="18" fill="#F368E0" stroke="#2C3A47" stroke-width="2"/>
                     <circle cx="32" cy="38" r="8" fill="#FFEAA7"/>
-                    <ellipse cx="68" cy="38" rx="20" ry="18" fill="#F368E0" stroke="#2D3436" stroke-width="2"/>
+                    <ellipse cx="68" cy="38" rx="20" ry="18" fill="#F368E0" stroke="#2C3A47" stroke-width="2"/>
                     <circle cx="68" cy="38" r="8" fill="#FFEAA7"/>
                     <ellipse cx="34" cy="64" rx="14" ry="14" fill="#FF9FF3" stroke="#2C3A47" stroke-width="2"/>
                     <ellipse cx="66" cy="64" rx="14" ry="14" fill="#FF9FF3" stroke="#2C3A47" stroke-width="2"/>
                     <path d="M48 28 Q42 12 36 14 M52 28 Q58 12 64 14" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
                     <rect x="46" y="26" width="8" height="48" rx="4" fill="#6C5CE7" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="50" cy="32" r="2" fill="#FFF"/>
+                `, size);
+
+            case 'fox':
+                return wrap(`
+                    <path d="M24 38 L16 14 L40 28 Z" fill="#FF763B" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M76 38 L84 14 L60 28 Z" fill="#FF763B" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M25 31 L21 20 L34 28 Z M75 31 L79 20 L66 28 Z" fill="#FFD6C4"/>
+                    <ellipse cx="50" cy="55" rx="32" ry="28" fill="#FF763B" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M20 58 Q30 78 50 76 Q70 78 80 58 Q70 65 50 64 Q30 65 20 58 Z" fill="#FFF"/>
+                    <circle cx="38" cy="48" r="5" fill="#2C3A47"/><circle cx="36.5" cy="46.5" r="1.8" fill="#FFF"/>
+                    <circle cx="62" cy="48" r="5" fill="#2C3A47"/><circle cx="60.5" cy="46.5" r="1.8" fill="#FFF"/>
+                    <path d="M46 55 Q50 51 54 55 Q50 60 46 55 Z" fill="#2C3A47"/>
+                    <path d="M44 63 Q50 69 56 63" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                `, size);
+
+            case 'bee':
+                return wrap(`
+                    <ellipse cx="40" cy="30" rx="10" ry="18" fill="#E0F7FA" stroke="#2C3A47" stroke-width="2" opacity="0.8" transform="rotate(-25 40 30)"/>
+                    <ellipse cx="60" cy="30" rx="10" ry="18" fill="#E0F7FA" stroke="#2C3A47" stroke-width="2" opacity="0.8" transform="rotate(25 60 30)"/>
+                    <ellipse cx="50" cy="56" rx="26" ry="22" fill="#F9CA24" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M44 35 L44 77 M56 35 L56 77" stroke="#2C3A47" stroke-width="6"/>
+                    <circle cx="68" cy="50" r="3.5" fill="#2C3A47"/>
+                    <circle cx="67" cy="48.5" r="1.2" fill="#FFF"/>
+                    <circle cx="66" cy="58" r="3" fill="#FF7675" opacity="0.6"/>
+                    <path d="M24 56 L16 56 L24 59 Z" fill="#2C3A47"/>
+                `, size);
+
+            case 'chick':
+            case 'chicken':
+            case 'rooster':
+                return wrap(`
+                    <circle cx="50" cy="54" r="30" fill="#F9CA24" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M28 54 Q34 66 42 56" stroke="#F6B93B" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    <path d="M68 50 L82 54 L68 58 Z" fill="#FF7675" stroke="#2C3A47" stroke-width="1.8"/>
+                    <circle cx="58" cy="44" r="4.5" fill="#2C3A47"/>
+                    <circle cx="56.5" cy="42.5" r="1.8" fill="#FFF"/>
+                    <path d="M44 24 Q50 14 56 24" stroke="#FF7675" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M42 84 L42 94 M38 94 L46 94 M58 84 L58 94 M54 94 L62 94" stroke="#E67E22" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="52" cy="52" r="4" fill="#FF7675" opacity="0.5"/>
+                `, size);
+
+            case 'duck':
+                return wrap(`
+                    <ellipse cx="46" cy="62" rx="30" ry="22" fill="#F9CA24" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="66" cy="42" r="16" fill="#F9CA24" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M78 40 Q94 42 88 50 Q78 50 78 44 Z" fill="#FF7675" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="68" cy="38" r="3.5" fill="#2C3A47"/>
+                    <circle cx="67" cy="37" r="1.2" fill="#FFF"/>
+                    <path d="M32 58 Q48 50 56 64" stroke="#F6B93B" stroke-width="4" stroke-linecap="round" fill="none"/>
+                `, size);
+
+            case 'frog':
+                return wrap(`
+                    <ellipse cx="50" cy="56" rx="32" ry="26" fill="#2ED573" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="34" cy="34" r="11" fill="#2ED573" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="34" cy="34" r="7" fill="#FFFFFF"/>
+                    <circle cx="34" cy="34" r="4" fill="#2C3A47"/>
+                    <circle cx="32.5" cy="32.5" r="1.5" fill="#FFF"/>
+                    <circle cx="66" cy="34" r="11" fill="#2ED573" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="66" cy="34" r="7" fill="#FFFFFF"/>
+                    <circle cx="66" cy="34" r="4" fill="#2C3A47"/>
+                    <circle cx="64.5" cy="32.5" r="1.5" fill="#FFF"/>
+                    <path d="M30 56 Q50 70 70 56" stroke="#2C3A47" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <circle cx="26" cy="54" r="5" fill="#FF7675" opacity="0.6"/>
+                    <circle cx="74" cy="54" r="5" fill="#FF7675" opacity="0.6"/>
+                `, size);
+
+            case 'sheep':
+                return wrap(`
+                    <circle cx="32" cy="46" r="16" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="68" cy="46" r="16" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="40" cy="32" r="16" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="60" cy="32" r="16" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="50" cy="62" r="18" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2"/>
+                    <ellipse cx="50" cy="50" rx="16" ry="18" fill="#2C3A47"/>
+                    <ellipse cx="32" cy="42" rx="7" ry="4" fill="#2C3A47" transform="rotate(-20 32 42)"/>
+                    <ellipse cx="68" cy="42" rx="7" ry="4" fill="#2C3A47" transform="rotate(20 68 42)"/>
+                    <circle cx="44" cy="46" r="2.5" fill="#FFF"/>
+                    <circle cx="56" cy="46" r="2.5" fill="#FFF"/>
+                    <rect x="36" y="74" width="6" height="16" rx="3" fill="#2C3A47"/>
+                    <rect x="58" y="74" width="6" height="16" rx="3" fill="#2C3A47"/>
+                `, size);
+
+            case 'cow':
+                return wrap(`
+                    <path d="M26 24 Q22 14 16 18 M74 24 Q78 14 84 18" stroke="#FFA502" stroke-width="4" stroke-linecap="round"/>
+                    <ellipse cx="20" cy="36" rx="8" ry="5" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2" transform="rotate(-20 20 36)"/>
+                    <ellipse cx="80" cy="36" rx="8" ry="5" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2" transform="rotate(20 80 36)"/>
+                    <ellipse cx="50" cy="46" rx="28" ry="22" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M30 32 Q42 30 38 44 Q26 46 30 32 Z" fill="#2C3A47"/>
+                    <ellipse cx="50" cy="62" rx="18" ry="12" fill="#FFB8B8" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="43" cy="62" r="2.5" fill="#2C3A47"/>
+                    <circle cx="57" cy="62" r="2.5" fill="#2C3A47"/>
+                    <circle cx="38" cy="40" r="3.5" fill="#2C3A47"/>
+                    <circle cx="37" cy="39" r="1.2" fill="#FFF"/>
+                    <circle cx="62" cy="40" r="3.5" fill="#2C3A47"/>
+                    <circle cx="61" cy="39" r="1.2" fill="#FFF"/>
                 `, size);
 
             default:
@@ -197,7 +406,7 @@ window.SvgArt = (function() {
     }
 
     // ==========================================
-    // 4. OBJECTS, FRUITS & PROPS
+    // 4. OBJECTS, FRUITS, VEHICLES & NATURE
     // ==========================================
     function object(kind, size) {
         size = size || 80;
@@ -205,67 +414,243 @@ window.SvgArt = (function() {
             case 'apple':
                 return wrap(`
                     <path d="M50 28 Q48 12 56 10" stroke="#795548" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-                    <path d="M54 14 Q68 12 64 24 Q54 24 54 14 Z" fill="#2ED573" stroke="#2D3436" stroke-width="1.5"/>
-                    <path d="M50 32 Q20 20 18 52 Q16 84 50 86 Q84 84 82 52 Q80 20 50 32 Z" fill="#FF4757" stroke="#2D3436" stroke-width="2.5"/>
+                    <path d="M54 14 Q68 12 64 24 Q54 24 54 14 Z" fill="#2ED573" stroke="#2C3A47" stroke-width="1.5"/>
+                    <path d="M50 32 Q20 20 18 52 Q16 84 50 86 Q84 84 82 52 Q80 20 50 32 Z" fill="#FF4757" stroke="#2C3A47" stroke-width="2.5"/>
                     <path d="M30 38 Q24 48 24 60" stroke="#FFF" stroke-width="4" stroke-linecap="round" opacity="0.45" fill="none"/>
-                    <circle cx="42" cy="52" r="3" fill="#2D3436"/>
-                    <circle cx="58" cy="52" r="3" fill="#2D3436"/>
-                    <path d="M46 60 Q50 64 54 60" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <circle cx="42" cy="52" r="3" fill="#2C3A47"/>
+                    <circle cx="58" cy="52" r="3" fill="#2C3A47"/>
+                    <path d="M46 60 Q50 64 54 60" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <circle cx="34" cy="56" r="3.5" fill="#FFA502" opacity="0.4"/>
+                    <circle cx="66" cy="56" r="3.5" fill="#FFA502" opacity="0.4"/>
                 `, size);
 
             case 'banana':
                 return wrap(`
-                    <path d="M22 28 Q10 68 46 84 Q72 94 84 76 Q88 64 78 54 Q68 44 54 50 Q40 56 36 46 Q30 36 24 24 Z" fill="#FFEAA7" stroke="#2D3436" stroke-width="2.5"/>
+                    <path d="M22 28 Q10 68 46 84 Q72 94 84 76 Q88 64 78 54 Q68 44 54 50 Q40 56 36 46 Q30 36 24 24 Z" fill="#FFEAA7" stroke="#2C3A47" stroke-width="2.5"/>
                     <path d="M22 28 Q14 20 18 16 Q24 16 26 22 Z" fill="#795548"/>
-                    <circle cx="52" cy="60" r="3" fill="#2D3436"/>
-                    <path d="M58 66 Q64 68 68 62" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M30 46 Q26 72 64 78" stroke="#FDCB6E" stroke-width="3" fill="none"/>
+                    <circle cx="52" cy="60" r="3" fill="#2C3A47"/>
+                    <path d="M58 66 Q64 68 68 62" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                `, size);
+
+            case 'orange':
+                return wrap(`
+                    <path d="M50 22 Q48 10 54 8" stroke="#795548" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <path d="M52 12 Q64 8 62 18 Z" fill="#2ED573"/>
+                    <circle cx="50" cy="56" r="36" fill="#FFA502" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="34" cy="40" r="8" fill="#FFF" opacity="0.35"/>
+                    <circle cx="42" cy="54" r="3" fill="#2C3A47"/>
+                    <circle cx="58" cy="54" r="3" fill="#2C3A47"/>
+                    <path d="M46 62 Q50 67 54 62" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                `, size);
+
+            case 'watermelon':
+                return wrap(`
+                    <path d="M14 44 Q50 92 86 44 Z" fill="#FF4757" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M10 40 Q50 98 90 40 L86 44 Q50 92 14 44 Z" fill="#2ED573" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="36" cy="54" rx="2" ry="3.5" fill="#2C3A47" transform="rotate(15 36 54)"/>
+                    <ellipse cx="50" cy="62" rx="2" ry="3.5" fill="#2C3A47"/>
+                    <ellipse cx="64" cy="54" rx="2" ry="3.5" fill="#2C3A47" transform="rotate(-15 64 54)"/>
                 `, size);
 
             case 'balloon':
                 return wrap(`
-                    <path d="M50 82 L46 88 L54 88 Z" fill="#FF4757" stroke="#2D3436" stroke-width="2"/>
+                    <path d="M50 82 L46 88 L54 88 Z" fill="#FF4757" stroke="#2C3A47" stroke-width="2"/>
                     <path d="M50 88 Q46 96 52 104" stroke="#A4B0BE" stroke-width="2" fill="none"/>
-                    <ellipse cx="50" cy="46" rx="34" ry="38" fill="#FF4757" stroke="#2D3436" stroke-width="2.5"/>
+                    <ellipse cx="50" cy="46" rx="34" ry="38" fill="#FF4757" stroke="#2C3A47" stroke-width="2.5"/>
                     <path d="M30 30 Q24 44 26 56" stroke="#FFF" stroke-width="4" stroke-linecap="round" opacity="0.5" fill="none"/>
                 `, size, 100, 110);
 
             case 'ball':
                 return wrap(`
-                    <circle cx="50" cy="50" r="40" fill="#3867D6" stroke="#2D3436" stroke-width="2.5"/>
-                    <path d="M50 10 A40 40 0 0 1 90 50" fill="#FF4757" stroke="#2D3436" stroke-width="2.5"/>
-                    <path d="M50 90 A40 40 0 0 1 10 50" fill="#FFA502" stroke="#2D3436" stroke-width="2.5"/>
+                    <circle cx="50" cy="50" r="40" fill="#3867D6" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M50 10 A40 40 0 0 1 90 50" fill="#FF4757" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M50 90 A40 40 0 0 1 10 50" fill="#FFA502" stroke="#2C3A47" stroke-width="2.5"/>
                     <path d="M50 10 L50 90 M10 50 L90 50" stroke="#FFF" stroke-width="3"/>
+                    <circle cx="50" cy="50" r="10" fill="#FFF" stroke="#2C3A47" stroke-width="2"/>
+                `, size);
+
+            case 'sun':
+                return wrap(`
+                    <g stroke="#FFA502" stroke-width="4" stroke-linecap="round">
+                        <line x1="50" y1="8" x2="50" y2="18"/>
+                        <line x1="50" y1="82" x2="50" y2="92"/>
+                        <line x1="8" y1="50" x2="18" y2="50"/>
+                        <line x1="82" y1="50" x2="92" y2="50"/>
+                        <line x1="20" y1="20" x2="28" y2="28"/>
+                        <line x1="72" y1="72" x2="80" y2="80"/>
+                        <line x1="80" y1="20" x2="72" y2="28"/>
+                        <line x1="20" y1="80" x2="28" y2="72"/>
+                    </g>
+                    <circle cx="50" cy="50" r="28" fill="#F9CA24" stroke="#FFA502" stroke-width="2.5"/>
+                    <circle cx="40" cy="46" r="3.5" fill="#2C3A47"/>
+                    <circle cx="60" cy="46" r="3.5" fill="#2C3A47"/>
+                    <path d="M42 56 Q50 64 58 56" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <circle cx="32" cy="52" r="3.5" fill="#FF7675" opacity="0.6"/>
+                    <circle cx="68" cy="52" r="3.5" fill="#FF7675" opacity="0.6"/>
+                `, size);
+
+            case 'moon':
+                return wrap(`
+                    <path d="M68 14 A38 38 0 1 0 86 66 A32 32 0 0 1 68 14 Z" fill="#F9CA24" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="54" cy="48" r="3" fill="#2C3A47"/>
+                    <path d="M50 58 Q54 62 60 58" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <circle cx="48" cy="54" r="3" fill="#FF7675" opacity="0.5"/>
+                `, size);
+
+            case 'star':
+                return shape('star', '#F9CA24', size);
+
+            case 'flower':
+                return wrap(`
+                    <circle cx="50" cy="28" r="14" fill="#FF7675" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="70" cy="42" r="14" fill="#FF7675" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="64" cy="66" r="14" fill="#FF7675" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="36" cy="66" r="14" fill="#FF7675" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="30" cy="42" r="14" fill="#FF7675" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="14" fill="#F9CA24" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M50 78 L50 96" stroke="#2ED573" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M50 86 Q62 82 66 74" stroke="#2ED573" stroke-width="4" stroke-linecap="round"/>
+                `, size);
+
+            case 'tree':
+                return wrap(`
+                    <rect x="42" y="60" width="16" height="34" rx="4" fill="#795548" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="34" cy="50" r="18" fill="#2ED573" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="66" cy="50" r="18" fill="#2ED573" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="50" cy="32" r="22" fill="#26DE81" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="40" cy="34" r="3.5" fill="#FF4757"/>
+                    <circle cx="60" cy="40" r="3.5" fill="#FF4757"/>
+                    <circle cx="48" cy="52" r="3.5" fill="#FF4757"/>
+                `, size);
+
+            case 'rain':
+                return wrap(`
+                    <path d="M26 50 Q16 50 16 40 Q16 28 30 28 Q34 16 48 16 Q62 16 68 28 Q80 28 80 40 Q80 50 70 50 Z" fill="#74B9FF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M30 62 L26 74 M46 64 L42 78 M62 62 L58 74 M76 64 L72 78" stroke="#0984E3" stroke-width="3.5" stroke-linecap="round"/>
                 `, size);
 
             case 'car':
                 return wrap(`
-                    <path d="M14 62 L24 42 Q28 32 40 32 L76 32 Q88 32 94 42 L106 62 Z" fill="#FF4757" stroke="#2D3436" stroke-width="2.5"/>
-                    <rect x="10" y="58" width="104" height="16" rx="6" fill="#FF6B81" stroke="#2D3436" stroke-width="2.5"/>
-                    <rect x="36" y="38" width="22" height="16" rx="3" fill="#E0F7FA" stroke="#2D3436" stroke-width="1.8"/>
-                    <rect x="64" y="38" width="22" height="16" rx="3" fill="#E0F7FA" stroke="#2D3436" stroke-width="1.8"/>
-                    <circle cx="34" cy="74" r="10" fill="#2D3436"/>
+                    <path d="M14 62 L24 42 Q28 32 40 32 L76 32 Q88 32 94 42 L106 62 Z" fill="#FF4757" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="10" y="58" width="104" height="16" rx="6" fill="#FF6B81" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="36" y="38" width="22" height="16" rx="3" fill="#E0F7FA" stroke="#2C3A47" stroke-width="1.8"/>
+                    <rect x="64" y="38" width="22" height="16" rx="3" fill="#E0F7FA" stroke="#2C3A47" stroke-width="1.8"/>
+                    <circle cx="34" cy="74" r="10" fill="#2C3A47"/>
                     <circle cx="34" cy="74" r="4.5" fill="#FFF"/>
-                    <circle cx="90" cy="74" r="10" fill="#2D3436"/>
+                    <circle cx="90" cy="74" r="10" fill="#2C3A47"/>
                     <circle cx="90" cy="74" r="4.5" fill="#FFF"/>
                 `, size, 120, 90);
 
-            case 'gift':
+            case 'book':
                 return wrap(`
-                    <rect x="18" y="38" width="64" height="50" rx="6" fill="#FF4757" stroke="#2D3436" stroke-width="2.5"/>
-                    <rect x="12" y="30" width="76" height="14" rx="4" fill="#FF6B81" stroke="#2D3436" stroke-width="2.5"/>
-                    <rect x="44" y="30" width="12" height="58" fill="#F9CA24"/>
+                    <path d="M16 24 Q50 32 50 80 Q50 32 84 24 L84 76 Q50 84 50 84 Q50 84 16 76 Z" fill="#4ECDC4" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M50 32 L50 84" stroke="#2C3A47" stroke-width="2"/>
+                    <line x1="26" y1="42" x2="42" y2="44" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="26" y1="52" x2="42" y2="54" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="58" y1="44" x2="74" y2="42" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="58" y1="54" x2="74" y2="52" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+                `, size);
+
+            case 'house':
+            case 'home':
+                return wrap(`
+                    <path d="M50 14 L90 46 L10 46 Z" fill="#FF7675" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <rect x="20" y="46" width="60" height="42" rx="4" fill="#FFEAA7" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="38" y="60" width="24" height="28" rx="4" fill="#74B9FF" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="56" cy="74" r="2" fill="#2C3A47"/>
+                    <circle cx="50" cy="34" r="6" fill="#FFF" stroke="#2C3A47" stroke-width="1.8"/>
+                `, size);
+
+            case 'eye':
+                return wrap(`
+                    <path d="M10 50 Q50 16 90 50 Q50 84 10 50 Z" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="50" cy="50" r="18" fill="#74B9FF" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="9" fill="#2C3A47"/>
+                    <circle cx="46" cy="46" r="3.5" fill="#FFFFFF"/>
+                `, size);
+
+            case 'ear':
+                return wrap(`
+                    <path d="M38 18 Q72 16 72 46 Q72 74 48 82 Q32 86 32 68 Q32 50 48 48 Q54 46 54 36 Q54 26 42 26 Z" fill="#FFD1DC" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M48 38 Q58 42 54 54" stroke="#FF7675" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                `, size);
+
+            case 'nose':
+                return wrap(`
+                    <path d="M36 30 Q50 20 54 54 Q64 56 62 66 Q58 74 44 72 Q30 72 32 60 Q34 52 46 54" fill="#FFD1DC" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <circle cx="42" cy="66" r="2.5" fill="#2C3A47"/>
+                    <circle cx="54" cy="66" r="2.5" fill="#2C3A47"/>
+                `, size);
+
+            case 'hand':
+                return wrap(`
+                    <path d="M32 50 L32 28 Q32 22 38 22 Q44 22 44 28 L44 46 L46 22 Q46 16 52 16 Q58 16 58 22 L58 46 L60 26 Q60 20 66 20 Q72 20 72 26 L72 50 L74 34 Q74 28 80 28 Q86 28 86 34 L84 64 Q80 86 56 86 Q36 86 30 68 L24 54 Q20 46 26 42 Q32 38 36 46 Z" fill="#FFD1DC" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                `, size);
+
+            case 'tongue':
+                return wrap(`
+                    <path d="M50 86 Q28 74 28 52 Q28 34 50 34 Q72 34 72 52 Q72 74 50 86 Z" fill="#FF7675" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M50 42 L50 74" stroke="#D63031" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+                    <circle cx="40" cy="54" r="2" fill="#FFF" opacity="0.6"/><circle cx="60" cy="60" r="2" fill="#FFF" opacity="0.6"/>
+                `, size);
+
+            case 'foot':
+                return wrap(`
+                    <path d="M38 84 Q30 70 34 50 Q36 40 44 42 Q50 44 49 56 Q52 38 60 40 Q67 42 63 60 Q68 46 75 50 Q82 54 72 72 Q66 86 52 88 Z" fill="#FFD1DC" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <circle cx="43" cy="34" r="7" fill="#FFD1DC" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="57" cy="30" r="7" fill="#FFD1DC" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="70" cy="34" r="7" fill="#FFD1DC" stroke="#2C3A47" stroke-width="2"/>
+                `, size);
+
+            case 'brain':
+                return wrap(`
+                    <path d="M42 78 Q30 78 30 66 Q22 62 28 52 Q24 40 36 38 Q36 24 48 28 Q56 18 64 28 Q78 24 76 40 Q88 44 78 54 Q84 66 70 70 Q66 82 56 76 Q48 84 42 78 Z" fill="#F368E0" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M42 36 Q48 42 44 50 Q52 54 48 64 M60 32 Q54 40 60 46 Q54 54 62 60 Q58 68 64 72" fill="none" stroke="#C0398E" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="42" cy="50" r="2.5" fill="#2C3A47"/><circle cx="60" cy="50" r="2.5" fill="#2C3A47"/>
+                    <path d="M46 58 Q50 62 54 58" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
                 `, size);
 
             case 'tooth':
                 return wrap(`
-                    <path d="M26 34 Q18 58 30 78 Q38 88 42 76 Q46 64 50 64 Q54 64 58 76 Q62 88 70 78 Q82 58 74 34 Q68 18 50 18 Q32 18 26 34 Z" fill="#FFFFFF" stroke="#2D3436" stroke-width="2.5"/>
-                    <circle cx="40" cy="42" r="3" fill="#2D3436"/>
-                    <circle cx="60" cy="42" r="3" fill="#2D3436"/>
-                    <path d="M44 50 Q50 55 56 50" stroke="#2D3436" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M26 34 Q18 58 30 78 Q38 88 42 76 Q46 64 50 64 Q54 64 58 76 Q62 88 70 78 Q82 58 74 34 Q68 18 50 18 Q32 18 26 34 Z" fill="#FFFFFF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="40" cy="42" r="3" fill="#2C3A47"/>
+                    <circle cx="60" cy="42" r="3" fill="#2C3A47"/>
+                    <path d="M44 50 Q50 55 56 50" stroke="#2C3A47" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M32 30 Q30 42 34 50" stroke="#74B9FF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
+                `, size);
+
+            case 'clock':
+                return wrap(`
+                    <circle cx="50" cy="50" r="40" fill="#FFFFFF" stroke="#6C5CE7" stroke-width="4"/>
+                    <circle cx="50" cy="50" r="3" fill="#2C3A47"/>
+                    <line x1="50" y1="50" x2="50" y2="24" stroke="#2C3A47" stroke-width="3.5" stroke-linecap="round"/>
+                    <line x1="50" y1="50" x2="68" y2="50" stroke="#FF4757" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="50" cy="18" r="2" fill="#2C3A47"/>
+                    <circle cx="82" cy="50" r="2" fill="#2C3A47"/>
+                    <circle cx="50" cy="82" r="2" fill="#2C3A47"/>
+                    <circle cx="18" cy="50" r="2" fill="#2C3A47"/>
+                `, size);
+
+            case 'gift':
+                return wrap(`
+                    <rect x="18" y="38" width="64" height="50" rx="6" fill="#FF4757" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="12" y="30" width="76" height="14" rx="4" fill="#FF6B81" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="44" y="30" width="12" height="58" fill="#F9CA24"/>
+                    <ellipse cx="38" cy="22" rx="10" ry="6" fill="#F9CA24" stroke="#2C3A47" stroke-width="2" transform="rotate(-25 38 22)"/>
+                    <ellipse cx="62" cy="22" rx="10" ry="6" fill="#F9CA24" stroke="#2C3A47" stroke-width="2" transform="rotate(25 62 22)"/>
+                `, size);
+
+            case 'cake':
+                return wrap(`
+                    <rect x="16" y="52" width="68" height="36" rx="6" fill="#FFEAA7" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M16 62 Q33 70 50 62 Q67 70 84 62 L84 52 L16 52 Z" fill="#F8A5C2"/>
+                    <rect x="47" y="32" width="6" height="20" rx="2" fill="#74B9FF" stroke="#2C3A47" stroke-width="1.5"/>
+                    <path d="M50 18 Q54 26 50 30 Q46 26 50 18 Z" fill="#FFA502"/>
                 `, size);
 
             default:
-                return wrap(`<rect x="10" y="10" width="80" height="80" rx="16" fill="#00D2D3"/>`, size);
+                return wrap(`<rect x="10" y="10" width="80" height="80" rx="16" fill="#4ECDC4"/>`, size);
         }
     }
 

@@ -1,23 +1,45 @@
-// Living Animated World, Magic Stardust Particle Engine & Touch Physics for "پرورش هوش کودک"
-// 100% Fullscreen, ZERO Scrolling for child, Fluid GSAP & Canvas Animations - ZERO EMOJIS
+// Living Animated World, Stardust Particles & Touch Hints for "پرورش هوش کودک"
+// Optional visual enhancement: the app remains fully functional if Canvas is unavailable.
 window.LivingWorld = (function() {
     let stardustCanvas = null;
     let stardustCtx = null;
     let particles = [];
     let animFrameId = null;
+    let initialized = false;
+    let trailBound = false;
 
     const STAR_COLORS = ['#FF4757', '#FFA502', '#2ED573', '#00D2D3', '#1E90FF', '#9B59B6', '#F1C40F', '#FF6B81'];
 
+    function raf(callback) {
+        const request = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+        return request ? request.call(window, callback) : window.setTimeout(() => callback(Date.now()), 16);
+    }
+
+    function caf(id) {
+        const cancel = window.cancelAnimationFrame || window.webkitCancelAnimationFrame;
+        if (cancel) cancel.call(window, id);
+        else window.clearTimeout(id);
+    }
+
     function init() {
+        if (initialized) return;
+        initialized = true;
         createStardustCanvas();
         bindTouchTrail();
-        animateParticles();
+        startParticles();
     }
 
     function createStardustCanvas() {
-        if (document.getElementById('stardust-canvas')) return;
+        if (document.getElementById('stardust-canvas')) {
+            stardustCanvas = document.getElementById('stardust-canvas');
+            stardustCtx = stardustCanvas.getContext && stardustCanvas.getContext('2d');
+            resizeCanvas();
+            return;
+        }
+
         stardustCanvas = document.createElement('canvas');
         stardustCanvas.id = 'stardust-canvas';
+        stardustCanvas.setAttribute('aria-hidden', 'true');
         stardustCanvas.style.cssText = `
             position: fixed;
             inset: 0;
@@ -27,21 +49,33 @@ window.LivingWorld = (function() {
             z-index: 99999;
         `;
         document.body.appendChild(stardustCanvas);
-        stardustCtx = stardustCanvas.getContext('2d');
+        try {
+            stardustCtx = stardustCanvas.getContext && stardustCanvas.getContext('2d');
+        } catch (e) {
+            stardustCtx = null;
+        }
         resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas, { passive: true });
     }
 
     function resizeCanvas() {
         if (!stardustCanvas) return;
-        const dpr = window.devicePixelRatio || 1;
-        stardustCanvas.width = window.innerWidth * dpr;
-        stardustCanvas.height = window.innerHeight * dpr;
-        stardustCtx.scale(dpr, dpr);
+        const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+        const width = Math.max(1, window.innerWidth || stardustCanvas.clientWidth || 1);
+        const height = Math.max(1, window.innerHeight || stardustCanvas.clientHeight || 1);
+        stardustCanvas.width = Math.round(width * dpr);
+        stardustCanvas.height = Math.round(height * dpr);
+        if (!stardustCtx) return;
+        if (typeof stardustCtx.setTransform === 'function') {
+            stardustCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        } else if (typeof stardustCtx.scale === 'function') {
+            stardustCtx.scale(dpr, dpr);
+        }
     }
 
     function addParticle(x, y) {
-        if (particles.length > 60) particles.shift();
+        if (!stardustCtx) return;
+        if (particles.length >= 60) particles.shift();
         const color = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
         particles.push({
             x,
@@ -58,10 +92,15 @@ window.LivingWorld = (function() {
     }
 
     function bindTouchTrail() {
+        if (trailBound) return;
+        trailBound = true;
+
         function onPointer(e) {
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            if (clientX !== undefined && clientY !== undefined) {
+            if (!stardustCtx || document.hidden) return;
+            const touch = e.touches && e.touches[0];
+            const clientX = touch ? touch.clientX : e.clientX;
+            const clientY = touch ? touch.clientY : e.clientY;
+            if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
                 for (let i = 0; i < 3; i++) {
                     addParticle(clientX + (Math.random() - 0.5) * 12, clientY + (Math.random() - 0.5) * 12);
                 }
@@ -72,66 +111,85 @@ window.LivingWorld = (function() {
         window.addEventListener('touchmove', onPointer, { passive: true });
         window.addEventListener('touchstart', onPointer, { passive: true });
         window.addEventListener('mousedown', onPointer, { passive: true });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) stopParticles();
+            else startParticles();
+        });
+    }
+
+    function startParticles() {
+        if (!stardustCtx || animFrameId !== null) return;
+        animFrameId = raf(animateParticles);
+    }
+
+    function stopParticles() {
+        if (animFrameId !== null) {
+            caf(animFrameId);
+            animFrameId = null;
+        }
     }
 
     function animateParticles() {
-        if (stardustCtx) {
-            stardustCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        animFrameId = null;
+        if (!stardustCtx || document.hidden) return;
 
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.rotation += p.vRot;
-                p.life -= 0.035;
-                p.alpha = Math.max(0, p.life);
+        const width = window.innerWidth || 1;
+        const height = window.innerHeight || 1;
+        stardustCtx.clearRect(0, 0, width, height);
 
-                if (p.life <= 0) {
-                    particles.splice(i, 1);
-                    continue;
-                }
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.vRot;
+            p.life -= 0.035;
+            p.alpha = Math.max(0, p.life);
 
-                stardustCtx.save();
-                stardustCtx.translate(p.x, p.y);
-                stardustCtx.rotate(p.rotation);
-                stardustCtx.globalAlpha = p.alpha;
-                stardustCtx.fillStyle = p.color;
-                stardustCtx.shadowColor = p.color;
-                stardustCtx.shadowBlur = 8;
-
-                const s = p.size * p.life;
-                stardustCtx.beginPath();
-                stardustCtx.moveTo(0, -s);
-                stardustCtx.quadraticCurveTo(0, 0, s, 0);
-                stardustCtx.quadraticCurveTo(0, 0, 0, s);
-                stardustCtx.quadraticCurveTo(0, 0, -s, 0);
-                stardustCtx.quadraticCurveTo(0, 0, 0, -s);
-                stardustCtx.fill();
-                stardustCtx.restore();
+            if (p.life <= 0) {
+                particles.splice(i, 1);
+                continue;
             }
+
+            stardustCtx.save();
+            stardustCtx.translate(p.x, p.y);
+            stardustCtx.rotate(p.rotation);
+            stardustCtx.globalAlpha = p.alpha;
+            stardustCtx.fillStyle = p.color;
+            stardustCtx.shadowColor = p.color;
+            stardustCtx.shadowBlur = 8;
+
+            const s = p.size * p.life;
+            stardustCtx.beginPath();
+            stardustCtx.moveTo(0, -s);
+            stardustCtx.quadraticCurveTo(0, 0, s, 0);
+            stardustCtx.quadraticCurveTo(0, 0, 0, s);
+            stardustCtx.quadraticCurveTo(0, 0, -s, 0);
+            stardustCtx.quadraticCurveTo(0, 0, 0, -s);
+            stardustCtx.fill();
+            stardustCtx.restore();
         }
-        animFrameId = requestAnimationFrame(animateParticles);
+
+        animFrameId = raf(animateParticles);
     }
 
-    // Auto Finger Hint System for Non-readers: if inactive for 4.5 seconds, finger points to target
+    // Auto finger hint for children who have not interacted for a few seconds.
     let hintTimer = null;
     let hintFingerEl = null;
 
     function resetHintTimer(targetSelector) {
         clearHint();
-        hintTimer = setTimeout(() => {
-            showFingerHint(targetSelector);
-        }, 4500);
+        hintTimer = window.setTimeout(() => showFingerHint(targetSelector), 4500);
     }
 
     function showFingerHint(targetSelector) {
         clearHint();
-        const target = document.querySelector(targetSelector || '.quiz-option-btn, .adv-play-btn');
-        if (!target) return;
+        const target = document.querySelector(targetSelector || '.game-tap-choice-btn, .adv-play-btn');
+        if (!target || typeof target.getBoundingClientRect !== 'function') return;
 
         const rect = target.getBoundingClientRect();
         hintFingerEl = document.createElement('div');
         hintFingerEl.className = 'magic-finger-hint';
+        hintFingerEl.setAttribute('aria-hidden', 'true');
         hintFingerEl.innerHTML = `
             <svg width="42" height="42" viewBox="0 0 24 24" fill="#F1C40F" stroke="#2D3436" stroke-width="1.8">
                 <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
@@ -153,7 +211,7 @@ window.LivingWorld = (function() {
     }
 
     function clearHint() {
-        if (hintTimer) clearTimeout(hintTimer);
+        if (hintTimer) window.clearTimeout(hintTimer);
         hintTimer = null;
         if (hintFingerEl) {
             hintFingerEl.remove();
@@ -161,11 +219,12 @@ window.LivingWorld = (function() {
         }
     }
 
-    window.addEventListener('pointerdown', clearHint);
+    window.addEventListener('pointerdown', clearHint, { passive: true });
 
     return {
         init,
         resetHintTimer,
-        clearHint
+        clearHint,
+        stop: stopParticles
     };
 })();

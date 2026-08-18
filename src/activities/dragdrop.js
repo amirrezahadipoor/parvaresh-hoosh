@@ -100,7 +100,9 @@ window.DragDropActivity = (function() {
                 startX = e.clientX;
                 startY = e.clientY;
 
-                if (itemEl.setPointerCapture) itemEl.setPointerCapture(e.pointerId);
+                try {
+                    if (itemEl.setPointerCapture) itemEl.setPointerCapture(e.pointerId);
+                } catch (err) {}
                 itemEl.style.zIndex = '1000';
                 itemEl.style.transform = 'scale(1.15)';
             }
@@ -153,6 +155,7 @@ window.DragDropActivity = (function() {
             itemEl.addEventListener('pointerdown', onDown);
             itemEl.addEventListener('pointermove', onMove);
             itemEl.addEventListener('pointerup', onUp);
+            itemEl.addEventListener('pointercancel', onUp);
 
             itemsPool.appendChild(itemEl);
         });

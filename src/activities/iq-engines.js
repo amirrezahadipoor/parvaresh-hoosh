@@ -59,7 +59,6 @@ window.IQEngines = (function() {
                         btn.classList.add('correct');
                         card.querySelector('#raven-target').innerHTML = opt.img;
                         AudioEngine.play('correct');
-                        IQAssessment.recordTrial('raven', true);
                         if (window.Fx) Fx.stars(card, 5);
                         setTimeout(() => {
                             if (cb && cb.onCorrect) cb.onCorrect(round);
@@ -67,7 +66,6 @@ window.IQEngines = (function() {
                     } else {
                         btn.classList.add('wrong');
                         AudioEngine.play('wrong');
-                        IQAssessment.recordTrial('raven', false);
                         if (window.Fx) Fx.shake(btn);
                         setTimeout(() => btn.classList.remove('wrong'), 600);
                     }
@@ -126,7 +124,6 @@ window.IQEngines = (function() {
                         answered = true;
                         btn.classList.add('correct');
                         AudioEngine.play('correct');
-                        IQAssessment.recordTrial('shadow', true);
                         if (window.Fx) Fx.stars(card, 5);
                         setTimeout(() => {
                             if (cb && cb.onCorrect) cb.onCorrect(round);
@@ -134,7 +131,6 @@ window.IQEngines = (function() {
                     } else {
                         btn.classList.add('wrong');
                         AudioEngine.play('wrong');
-                        IQAssessment.recordTrial('shadow', false);
                         if (window.Fx) Fx.shake(btn);
                         setTimeout(() => btn.classList.remove('wrong'), 600);
                     }
@@ -228,7 +224,6 @@ window.IQEngines = (function() {
                             acceptingInput = false;
                             statusEl.textContent = 'آفرین حافظه فوق‌العاده‌ای داری!';
                             AudioEngine.play('win');
-                            IQAssessment.recordTrial('simon', true);
                             if (window.Fx) Fx.confetti();
                             setTimeout(() => {
                                 if (cb && cb.onCorrect) cb.onCorrect(round);
@@ -238,7 +233,6 @@ window.IQEngines = (function() {
                         acceptingInput = false;
                         statusEl.textContent = 'اشکالی نداره قشنگم، یک بار دیگه با هم ببینیم!';
                         AudioEngine.play('wrong');
-                        IQAssessment.recordTrial('simon', false);
                         if (window.Fx) Fx.shake(card.querySelector('#simon-bells'));
                         setTimeout(playSequence, 1200);
                     }
@@ -310,6 +304,7 @@ window.IQEngines = (function() {
 
                     const optsDiv = card.querySelector('#disp-opts');
                     optsDiv.style.display = 'flex';
+                    let answered = false;
 
                     initialItems.forEach(opt => {
                         const btn = document.createElement('button');
@@ -317,10 +312,11 @@ window.IQEngines = (function() {
                         btn.innerHTML = `${opt.img}<span>${opt.label}</span>`;
 
                         btn.onclick = () => {
+                            if (answered) return;
                             if (opt.id === missingItem.id) {
+                                answered = true;
                                 AudioEngine.play('correct');
                                 btn.classList.add('correct');
-                                IQAssessment.recordTrial('disappeared', true);
                                 if (window.Fx) Fx.stars(card, 5);
                                 setTimeout(() => {
                                     if (cb && cb.onCorrect) cb.onCorrect(round);
@@ -328,7 +324,6 @@ window.IQEngines = (function() {
                             } else {
                                 AudioEngine.play('wrong');
                                 btn.classList.add('wrong');
-                                IQAssessment.recordTrial('disappeared', false);
                                 if (window.Fx) Fx.shake(btn);
                                 setTimeout(() => btn.classList.remove('wrong'), 600);
                             }
@@ -380,8 +375,8 @@ window.IQEngines = (function() {
                     </div>
                 </div>
                 <div class="balance-choices-row" id="balance-choices">
-                    <button class="balance-choice-btn" data-choice="left">کفه راست (سنگین‌تر)</button>
-                    <button class="balance-choice-btn" data-choice="right">کفه چپ (سنگین‌تر)</button>
+                    <button class="balance-choice-btn" data-choice="left">کفه چپ (سنگین‌تر)</button>
+                    <button class="balance-choice-btn" data-choice="right">کفه راست (سنگین‌تر)</button>
                 </div>
             `;
 
@@ -399,7 +394,6 @@ window.IQEngines = (function() {
                         answered = true;
                         btn.classList.add('correct');
                         AudioEngine.play('correct');
-                        IQAssessment.recordTrial('math', true);
                         if (window.Fx) Fx.stars(card, 5);
                         setTimeout(() => {
                             if (cb && cb.onCorrect) cb.onCorrect(round);
@@ -407,7 +401,6 @@ window.IQEngines = (function() {
                     } else {
                         btn.classList.add('wrong');
                         AudioEngine.play('wrong');
-                        IQAssessment.recordTrial('math', false);
                         if (window.Fx) Fx.shake(btn);
                         setTimeout(() => btn.classList.remove('wrong'), 600);
                     }

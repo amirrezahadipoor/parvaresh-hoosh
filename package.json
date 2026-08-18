@@ -5,13 +5,23 @@
   "main": "index.html",
   "scripts": {
     "start": "python3 -m http.server 8080 --bind 0.0.0.0",
-    "test": "node test_all_components.js"
+    "test": "node test_all_components.js && node test_runtime.js",
+    "test:runtime": "node test_runtime.js"
   },
   "author": "پرورش هوش کودک",
   "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
-    "@capacitor/cli": "^7.6.8",
+    "@capacitor/cli": "8.5.0",
     "@capacitor/core": "^8.5.0"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
   }
 }

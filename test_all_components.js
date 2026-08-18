@@ -1,4 +1,4 @@
-// Comprehensive Node.js Test for "پرورش هوش کودک" (100% of 142 lessons + IQ engines + Arcade + Radar)
+// Deterministic data, generator and renderer smoke tests; DOM behavior is covered by test_runtime.js
 const fs = require('fs');
 
 function createMockEl(tag) {
@@ -67,6 +67,7 @@ require('./src/data/alphabet.js');
 require('./src/data/words.js');
 require('./src/data/math-data.js');
 require('./src/data/world-data.js');
+require('./src/data/curriculum.js');
 
 // Load core files
 require('./src/core/config.js');
@@ -133,8 +134,56 @@ console.log('All arcade games rendered without error!');
 
 // Test All 142 Curriculum Lessons
 const manifest = JSON.parse(fs.readFileSync('./content/content_manifest.json', 'utf8'));
+const curriculum = JSON.parse(fs.readFileSync('./content/curriculum.json', 'utf8'));
 let passed = 0;
 const errors = [];
+const knownTypes = new Set([
+    'quiz', 'memory', 'drag-match', 'tracing', 'order-steps', 'order-size',
+    'painting', 'balloon-pop', 'raven-matrix', 'shadow-match', 'simon-memory',
+    'disappeared-item', 'balance-scale'
+]);
+const curriculumIds = new Set((curriculum.domains || []).flatMap(domain =>
+    (domain.levels || []).flatMap(level => (level.lessons || []).map(lesson => lesson.id))
+));
+if (curriculumIds.size !== manifest.items.length || curriculumIds.size !== curriculum.totalLessons) {
+    errors.push(`Curriculum count mismatch: ${curriculumIds.size} generated IDs, ${manifest.items.length} manifest items.`);
+}
+if (!window.CURRICULUM || window.CURRICULUM.domains.length !== curriculum.domains.length) {
+    errors.push('Bundled curriculum fallback is missing or incomplete.');
+}
+
+function validateRound(round, lessonId) {
+    if (!round || !knownTypes.has(round.type)) {
+        errors.push(`Lesson ${lessonId} has unknown round type: ${round && round.type}`);
+        return;
+    }
+    if (round.type === 'quiz') {
+        if (!Array.isArray(round.options) || round.options.length < 2 || !Number.isInteger(round.answer) || round.answer < 0 || round.answer >= round.options.length) {
+            errors.push(`Lesson ${lessonId} has an invalid quiz answer/options pair.`);
+        }
+    } else if (round.type === 'memory') {
+        const cards = round.cards || [];
+        const pairs = new Set(cards.map(card => card.pair));
+        if (!cards.length || cards.length % 2 || pairs.size * 2 !== cards.length) errors.push(`Lesson ${lessonId} has invalid memory cards.`);
+    } else if (round.type === 'drag-match') {
+        const targets = new Set((round.targets || []).map(target => target.id));
+        if (!targets.size || !(round.items || []).length || (round.items || []).some(item => !targets.has(item.target))) {
+            errors.push(`Lesson ${lessonId} has invalid drag/drop targets.`);
+        }
+    } else if (round.type === 'order-steps' || round.type === 'order-size') {
+        const items = round.items || [];
+        if (items.length < 2 || !['idx', 'size'].includes(round.answer)) errors.push(`Lesson ${lessonId} has invalid ordering data.`);
+        if (round.answer === 'idx' && new Set(items.map(item => item.idx)).size !== items.length) errors.push(`Lesson ${lessonId} has duplicate ordering indices.`);
+    } else if (round.type === 'raven-matrix') {
+        if ((round.grid || []).length !== 3 || !(round.options || []).length || !Number.isInteger(round.answer)) errors.push(`Lesson ${lessonId} has invalid Raven data.`);
+    } else if (round.type === 'shadow-match') {
+        if (!round.originalImg || !(round.shadowOptions || []).length || !Number.isInteger(round.answer)) errors.push(`Lesson ${lessonId} has invalid shadow data.`);
+    } else if (round.type === 'simon-memory') {
+        if (!Number.isInteger(round.length) || round.length < 2) errors.push(`Lesson ${lessonId} has invalid Simon length.`);
+    } else if (round.type === 'balance-scale') {
+        if (!(round.leftCount > 0) || !(round.rightCount > 0) || round.leftCount === round.rightCount) errors.push(`Lesson ${lessonId} has invalid balance data.`);
+    }
+}
 
 for (const item of manifest.items) {
     try {
@@ -145,6 +194,7 @@ for (const item of manifest.items) {
         }
 
         for (const round of rounds) {
+            validateRound(round, item.id);
             const container = createMockEl('div');
             let renderer = null;
             switch (round.type) {
@@ -161,9 +211,9 @@ for (const item of manifest.items) {
                 case 'simon-memory': renderer = IQEngines.SimonSequenceActivity; break;
                 case 'disappeared-item': renderer = IQEngines.DisappearedItemActivity; break;
                 case 'balance-scale': renderer = IQEngines.BalanceScaleActivity; break;
-                default: renderer = QuizActivity; break;
+                default: renderer = null; break;
             }
-
+            if (!renderer) continue;
             renderer.render(container, round, { onCorrect: () => {}, onWrong: () => {} });
         }
         passed++;
@@ -172,7 +222,7 @@ for (const item of manifest.items) {
     }
 }
 
-console.log(`\nResults: ${passed} of ${manifest.items.length} lessons fully verified!`);
+console.log(`\nResults: ${passed} of ${manifest.items.length} lessons generated and structurally validated.`);
 
 // Test all 5 Mascot characters
 const characters = Mascot.listCharacters();
@@ -189,6 +239,6 @@ if (errors.length > 0) {
     console.error('Errors:', errors);
     process.exit(1);
 } else {
-    console.log('\nSUCCESS: 100% of all lessons, IQ engines, adventure path, arcade games, and mascots verified!');
+    console.log('\nSUCCESS: curriculum data, generated rounds, SVG assets, IQ engines and arcade render smoke checks passed.');
     process.exit(0);
 }

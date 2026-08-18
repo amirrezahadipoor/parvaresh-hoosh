@@ -35,12 +35,13 @@ window.AdventureJourney = (function() {
     }
 
     function getNextNode(lessonsDone) {
+        const progress = lessonsDone || {};
         for (const node of JOURNEY_NODES) {
-            if (!lessonsDone[node.lessonId] || !lessonsDone[node.lessonId].done) {
+            if (!progress[node.lessonId] || !progress[node.lessonId].done) {
                 return node;
             }
         }
-        return JOURNEY_NODES[JOURNEY_NODES.length - 1];
+        return null;
     }
 
     return { getNodes, getNextNode };

@@ -18,22 +18,45 @@ window.IQAssessment = (function() {
         lastUpdated: Date.now()
     };
 
+    function createDefaultRecord() {
+        return {
+            score: 65,
+            attempts: 0,
+            correct: 0,
+            history: [],
+            level: 1
+        };
+    }
+
     function load() {
         try {
             const data = localStorage.getItem(STORAGE_KEY);
-            if (data) state = JSON.parse(data);
-        } catch (e) {}
+            const parsed = data ? JSON.parse(data) : null;
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                state = parsed;
+            }
+        } catch (e) {
+            state = { records: {}, lastUpdated: Date.now() };
+        }
+
+        if (!state || typeof state !== 'object' || Array.isArray(state)) {
+            state = { records: {}, lastUpdated: Date.now() };
+        }
+        if (!state.records || typeof state.records !== 'object' || Array.isArray(state.records)) {
+            state.records = {};
+        }
 
         Object.keys(DOMAINS).forEach(key => {
-            if (!state.records[key]) {
-                state.records[key] = {
-                    score: 65,
-                    attempts: 0,
-                    correct: 0,
-                    history: [],
-                    level: 1
-                };
+            const record = state.records[key];
+            if (!record || typeof record !== 'object' || Array.isArray(record)) {
+                state.records[key] = createDefaultRecord();
+                return;
             }
+            record.score = Number.isFinite(Number(record.score)) ? Math.max(40, Math.min(100, Number(record.score))) : 65;
+            record.attempts = Number.isFinite(Number(record.attempts)) ? Math.max(0, Number(record.attempts)) : 0;
+            record.correct = Number.isFinite(Number(record.correct)) ? Math.max(0, Number(record.correct)) : 0;
+            record.level = Number.isFinite(Number(record.level)) ? Math.max(1, Math.min(8, Number(record.level))) : 1;
+            record.history = Array.isArray(record.history) ? record.history.slice(-50) : [];
         });
     }
 
@@ -42,6 +65,13 @@ window.IQAssessment = (function() {
             state.lastUpdated = Date.now();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch (e) {}
+    }
+
+    function reset() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        state = { records: {}, lastUpdated: Date.now() };
+        load();
+        persist();
     }
 
     function resolveDimension(domainOrType) {
@@ -161,12 +191,29 @@ window.IQAssessment = (function() {
     }
 
     function drawRadarChart(canvas) {
-        if (!canvas) return;
-        const dpr = window.devicePixelRatio || 1;
-        const width = canvas.width / dpr;
-        const height = canvas.height / dpr;
-        const ctx = canvas.getContext('2d');
+        if (!canvas || typeof canvas.getContext !== 'function') return;
+        let ctx = null;
+        try {
+            ctx = canvas.getContext('2d');
+        } catch (e) {
+            return;
+        }
+        if (!ctx) return;
 
+        const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+        const rect = typeof canvas.getBoundingClientRect === 'function' ? canvas.getBoundingClientRect() : null;
+        const width = Math.max(160, Math.round(canvas.clientWidth || (rect && rect.width) || 320));
+        const height = Math.max(140, Math.round(canvas.clientHeight || (rect && rect.height) || 260));
+        const targetWidth = Math.round(width * dpr);
+        const targetHeight = Math.round(height * dpr);
+
+        if (canvas.width !== targetWidth) canvas.width = targetWidth;
+        if (canvas.height !== targetHeight) canvas.height = targetHeight;
+        if (typeof ctx.setTransform === 'function') {
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        } else if (typeof ctx.scale === 'function') {
+            ctx.scale(dpr, dpr);
+        }
         ctx.clearRect(0, 0, width, height);
 
         const centerX = width / 2;
@@ -261,6 +308,7 @@ window.IQAssessment = (function() {
         recordTrial,
         getReport,
         drawRadarChart,
+        reset,
         DOMAINS
     };
 })();
