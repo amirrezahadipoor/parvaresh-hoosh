@@ -38,16 +38,20 @@ window.DragDropActivity = (function() {
 
         // 2. Drop Target Zones (Top Half)
         const targetsRow = document.createElement('div');
-        targetsRow.style.cssText = 'display:flex; gap:10px; width:100%; justify-content:center; flex:1; min-height:0; align-items:center;';
+        // Previously flex:1 with a 120px max-height, which parked the whole puzzle in
+        // the vertical centre with large dead zones above and below it.
+        // Sit under the prompt at a sensible height; do NOT stretch to fill the whole
+        // stage (that produced 1000px-tall dashed boxes holding one word each).
+        targetsRow.style.cssText = 'display:flex; gap:10px; width:100%; justify-content:center; align-items:stretch; flex:0 0 auto; margin:14px 0 0;';
         const targetElements = {};
 
         (round.targets || []).forEach(t => {
             const targetEl = document.createElement('div');
             targetEl.dataset.targetId = t.id;
-            targetEl.style.cssText = 'flex:1; max-width:180px; height:100%; max-height:120px; border-radius:16px; border:3px dashed #D6C7B8; background:#FCFAF7; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px;';
+            targetEl.style.cssText = 'flex:1; max-width:180px; min-height:132px; border-radius:16px; border:3px dashed #D6C7B8; background:#FCFAF7; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:8px; padding:12px 6px;';
 
             const label = document.createElement('span');
-            label.style.cssText = 'font-size:13px; font-weight:900; color:var(--ink); margin-bottom:4px;';
+            label.style.cssText = 'font-size:13px; font-weight:900; color:var(--ink); text-align:center; line-height:1.35;';
             label.textContent = t.label;
             targetEl.appendChild(label);
 
@@ -70,7 +74,7 @@ window.DragDropActivity = (function() {
 
         // 3. Draggable Items Dock (Bottom Half)
         const itemsPool = document.createElement('div');
-        itemsPool.style.cssText = 'display:flex; gap:10px; justify-content:center; flex-wrap:wrap; padding:8px; background:#F4EDE4; border-radius:16px; flex-shrink:0;';
+        itemsPool.style.cssText = 'display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; padding:12px 8px; background:#F4EDE4; border-radius:16px; flex:0 0 auto; min-height:74px;';
 
         let placedCount = 0;
         let selectedItem = null;
@@ -195,6 +199,9 @@ window.DragDropActivity = (function() {
             itemsPool.appendChild(itemEl);
         });
 
+        const spacer = document.createElement('div');
+        spacer.style.cssText = 'flex:1 1 auto; min-height:0;';
+        stage.appendChild(spacer);
         stage.appendChild(itemsPool);
         container.appendChild(stage);
     }

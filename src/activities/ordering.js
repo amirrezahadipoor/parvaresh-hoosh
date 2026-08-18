@@ -101,15 +101,24 @@ window.OrderingActivity = (function() {
 
         function renderRow() {
             row.innerHTML = '';
+            // Steps whose text already starts with «۱.» must NOT also get a slot badge,
+            // otherwise the card reads «۱ ۱. کاشت دانه». And on word-ordering cards a
+            // slot badge reads as the answer. So: never show slot badges here.
+            const showPositionBadges = false;
             currentOrder.forEach((item, idx) => {
                 const itemEl = document.createElement('div');
                 itemEl.className = `order-step-card ${selectedIndex === idx ? 'selected' : ''}`;
 
-                const badge = document.createElement('span');
-                badge.className = 'order-step-num';
-                const faDigits = ['۱', '۲', '۳', '۴', '۵'];
-                badge.textContent = faDigits[idx] || (idx + 1);
-                itemEl.appendChild(badge);
+                // Position badges are useful for "put the steps in order" cards, but on
+                // word-ordering cards a printed ۱..۴ reads as the answer. Only show the
+                // badge when the labels are not already numbered by the content.
+                if (showPositionBadges) {
+                    const badge = document.createElement('span');
+                    badge.className = 'order-step-num';
+                    const faDigits = ['۱', '۲', '۳', '۴', '۵'];
+                    badge.textContent = faDigits[idx] || (idx + 1);
+                    itemEl.appendChild(badge);
+                }
 
                 if (item.img) {
                     const imgWrap = document.createElement('div');
@@ -118,7 +127,10 @@ window.OrderingActivity = (function() {
                     itemEl.appendChild(imgWrap);
                 }
 
-                if (item.label) {
+                // Word tiles already render the word inside the artwork. Printing the
+                // label underneath produced cards reading «بازی بازی» / «کرد کرد».
+                const labelInsideArt = !!(item.img && item.label && String(item.img).includes(item.label));
+                if (item.label && !labelInsideArt) {
                     const label = document.createElement('span');
                     label.style.fontSize = '12px';
                     label.style.fontWeight = '800';

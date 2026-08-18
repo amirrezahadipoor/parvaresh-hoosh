@@ -72,6 +72,7 @@ window.TracingActivity = (function() {
 
         let isDrawing = false;
         let drawnPoints = 0;
+        let checkAttempts = 0;
         let guidedPoints = 0;
         let completed = false;
 
@@ -164,7 +165,8 @@ window.TracingActivity = (function() {
             }
 
             if (drawnPoints > 50 && !completed) {
-                checkCompletion();
+                // Silent auto-check: must not consume the child's attempt budget.
+                checkCompletion(true);
             }
         }
 
@@ -214,6 +216,17 @@ window.TracingActivity = (function() {
             if (drawnPoints > 15) {
                 checkCompletion();
             } else {
+                checkAttempts++;
+                if (checkAttempts >= 3 && drawnPoints > 0) {
+                    // Three taps with something drawn: accept it and move on rather
+                    // than leaving the child on a round they cannot pass.
+                    completed = true;
+                    traceStatus.textContent = 'آفرین! تمرین کردی.';
+                    AudioEngine.play('correct');
+                    if (window.Fx) Fx.stars(canvasWrap, 5);
+                    setTimeout(() => { if (cb && cb.onCorrect) cb.onCorrect(round, { accuracy: 0 }); }, 700);
+                    return;
+                }
                 AudioEngine.play('wrong');
                 traceStatus.textContent = 'چند حرکت دیگر هم روی مسیر بکش.';
                 if (window.Fx) Fx.shake(canvas);
@@ -224,14 +237,24 @@ window.TracingActivity = (function() {
         controls.appendChild(checkBtn);
         stage.appendChild(controls);
 
-        function checkCompletion() {
+        function checkCompletion(silent) {
             if (completed) return;
             const accuracy = drawnPoints ? guidedPoints / drawnPoints : 0;
             if (guideAvailable && accuracy < 0.22) {
-                AudioEngine.play('wrong');
-                traceStatus.textContent = 'خیلی خوب بود؛ این بار کمی نزدیک‌تر به مسیر کم‌رنگ بکش.';
-                if (window.Fx) Fx.shake(canvas);
-                return;
+                // Auto-checks while drawing never nag and never spend an attempt.
+                if (silent) return;
+                checkAttempts++;
+                // A 4-year-old's motor control is not precise. Refusing forever left
+                // the child permanently stuck here with no way to continue, which
+                // blocked the entire lesson. Ask twice, then accept the effort.
+                if (checkAttempts < 3) {
+                    AudioEngine.play('wrong');
+                    traceStatus.textContent = checkAttempts === 1
+                        ? 'خیلی خوب بود؛ این بار کمی نزدیک‌تر به مسیر کم‌رنگ بکش.'
+                        : 'نزدیک شدی! یک بار دیگر روی مسیر کم‌رنگ بکش.';
+                    if (window.Fx) Fx.shake(canvas);
+                    return;
+                }
             }
             completed = true;
             traceStatus.textContent = `آفرین! مسیر را ${toFaPercent(Math.round(Math.min(1, accuracy) * 100))}٪ نزدیک دنبال کردی.`;
