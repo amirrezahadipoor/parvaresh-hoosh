@@ -88,7 +88,7 @@ async function main() {
     const scriptPaths = [
         'src/data/alphabet.js', 'src/data/words.js', 'src/data/math-data.js',
         'src/data/world-data.js', 'src/data/curriculum.js',
-        'src/core/config.js', 'src/core/audio.js', 'src/core/storage.js',
+        'src/core/config.js', 'src/core/audio.js', 'src/core/storage.js', 'src/core/engagement.js',
         'src/core/adaptive.js', 'src/core/iq-assessment.js', 'src/core/living-world.js',
         'src/core/mascot.js', 'src/core/svg-art.js', 'src/core/fx.js', 'src/core/nav.js',
         'src/activities/generator.js', 'src/activities/adventure-journey.js',
@@ -105,6 +105,9 @@ async function main() {
     await wait(2100);
 
     assert.equal(document.querySelector('.screen.active').id, 'screen-home', 'app should leave splash and show home');
+    if (document.querySelector('#profile-skip')) document.querySelector('#profile-skip').click();
+    await wait(10);
+    assert.equal(window.Engagement.hasProfile(), true, 'onboarding skip should persist a local profile decision');
     assert.ok(document.querySelector('.domain-tile'), 'home learning tiles should render');
     assert.ok(document.querySelector('#home-content .home-dashboard'), 'home content should be populated');
     assert.equal(errors.length, 0, `browser smoke test errors: ${errors.map(String).join('\n')}`);

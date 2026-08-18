@@ -39,6 +39,7 @@
     // ===== INIT =====
     async function init() {
         await Storage.init();
+        if (window.Engagement) await window.Engagement.init();
 
         // 1. Load the bundled curriculum first, then refresh it from the local JSON when available.
         state.curriculum = window.CURRICULUM && Array.isArray(window.CURRICULUM.domains)
@@ -101,6 +102,7 @@
         setTimeout(() => {
             Nav.reset('home');
             renderHome();
+            if (window.Engagement && !window.Engagement.hasProfile()) showProfileOnboarding();
         }, 1800);
     }
 
@@ -163,6 +165,8 @@
 
         // Welcome card: one clear primary message and one touch target.
         const mascot = Mascot.getCharacter();
+        const profile = window.Engagement ? window.Engagement.getProfile() : { name: '', age: null };
+        const childName = profile.name || 'قهرمان کوچولو';
         const welcome = document.createElement('section');
         welcome.className = 'home-welcome-card';
 
@@ -175,7 +179,7 @@
         const welcomeCopy = document.createElement('div');
         welcomeCopy.className = 'home-welcome-copy';
         const welcomeTitle = document.createElement('h1');
-        welcomeTitle.textContent = 'سلام قهرمان کوچولو';
+        welcomeTitle.textContent = `سلام ${childName}`;
         const welcomeText = document.createElement('p');
         welcomeText.textContent = pickMsg(window.MESSAGES.greeting);
         welcomeCopy.append(welcomeTitle, welcomeText);
@@ -196,10 +200,13 @@
         const completedLessons = allLessons.filter(lesson => state.lessonsDone[lesson.id] && state.lessonsDone[lesson.id].done).length;
         const completion = allLessons.length ? Math.round((completedLessons / allLessons.length) * 100) : 0;
 
+        const today = window.Engagement ? window.Engagement.getToday() : { completed: 0, goal: 3, percent: 0 };
+        const streak = window.Engagement ? window.Engagement.getStreak() : { current: 0 };
         const stats = document.createElement('section');
         stats.className = 'home-stats-row';
         stats.appendChild(createHomeStat('ستاره‌ها', toFa(state.totalStars || 0), 'امتیازهای تو'));
-        stats.appendChild(createHomeStat('پیشرفت', `${toFa(completion)}٪`, `${toFa(completedLessons)} از ${toFa(allLessons.length)} درس`));
+        stats.appendChild(createHomeStat('امروز', `${toFa(today.completed)} / ${toFa(today.goal)}`, 'فعالیت روزانه'));
+        stats.appendChild(createHomeStat('زنجیره', `${toFa(streak.current)} روز`, 'تمرین پیوسته'));
         dashboard.appendChild(stats);
 
         // The single primary call to action is always the next unfinished milestone.
@@ -232,7 +239,7 @@
 
         const learningHeader = document.createElement('div');
         learningHeader.className = 'home-section-heading';
-        learningHeader.innerHTML = '<div><h2>دنیای یادگیری</h2><p>یک حوزه را انتخاب کن و شروع کن</p></div>';
+        learningHeader.innerHTML = `<div><h2>دنیای یادگیری</h2><p>پیشرفت کلی ${toFa(completion)}٪ · یک حوزه را انتخاب کن</p></div>`;
         dashboard.appendChild(learningHeader);
 
         const grid = document.createElement('div');
@@ -294,6 +301,58 @@
         dashboard.appendChild(quickActions);
 
         container.appendChild(dashboard);
+    }
+
+    function showProfileOnboarding() {
+        if (!window.Engagement || document.querySelector('.profile-onboarding-overlay')) return;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'profile-onboarding-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.innerHTML = `
+            <div class="profile-onboarding-card">
+                <div class="profile-onboarding-mark">شروع</div>
+                <h2>هم‌بازی کوچولویت را بشناسیم</h2>
+                <p>نام و سن اختیاری است و فقط روی همین دستگاه ذخیره می‌شود.</p>
+                <label class="profile-field-label" for="child-name">نام کودک</label>
+                <input id="child-name" class="profile-name-input" type="text" maxlength="24" autocomplete="off" placeholder="مثلاً آریا">
+                <span class="profile-field-label">سن کودک</span>
+                <div class="age-choice-grid" id="age-choice-grid"></div>
+                <div class="profile-onboarding-actions">
+                    <button type="button" class="profile-skip-btn" id="profile-skip">بعداً</button>
+                    <button type="button" class="profile-start-btn" id="profile-start">شروع کنیم</button>
+                </div>
+            </div>
+        `;
+
+        const ageGrid = overlay.querySelector('#age-choice-grid');
+        let selectedAge = null;
+        [4, 5, 6, 7, 8].forEach(age => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'age-choice';
+            button.textContent = `${toFa(age)} سال`;
+            button.addEventListener('click', () => {
+                selectedAge = age;
+                ageGrid.querySelectorAll('.age-choice').forEach(item => item.classList.remove('selected'));
+                button.classList.add('selected');
+            });
+            ageGrid.appendChild(button);
+        });
+
+        const close = async profile => {
+            await window.Engagement.saveProfile(profile);
+            overlay.remove();
+            renderHome();
+        };
+        overlay.querySelector('#profile-start').addEventListener('click', () => {
+            const name = overlay.querySelector('#child-name').value.trim();
+            close({ name, age: selectedAge });
+        });
+        overlay.querySelector('#profile-skip').addEventListener('click', () => close({ name: '', age: null }));
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.querySelector('#child-name').focus(), 50);
     }
 
     function createHomeStat(label, value, caption) {
@@ -549,6 +608,7 @@
                 lessonsDone: state.lessonsDone,
                 totalStars: state.totalStars
             });
+            if (window.Engagement) window.Engagement.recordLesson(lesson.id);
             updateHeaderStars();
 
             // Result Celebration Overlay
@@ -986,6 +1046,21 @@
         `;
         scrollBody.appendChild(milestoneCard);
 
+        const todayEngagement = window.Engagement ? window.Engagement.getToday() : { completed: 0, goal: 3, percent: 0 };
+        const streakEngagement = window.Engagement ? window.Engagement.getStreak() : { current: 0, best: 0 };
+        const childProfile = window.Engagement ? window.Engagement.getProfile() : { name: '', age: null };
+        const engagementCard = document.createElement('div');
+        engagementCard.className = 'parent-card engagement-parent-card';
+        engagementCard.innerHTML = `
+            <div class="engagement-parent-head">
+                <div><h3>روال تمرین کودک</h3><p>${childProfile.name || 'قهرمان کوچولو'} · هدف امروز ${toFa(todayEngagement.goal)} فعالیت</p></div>
+                <strong>${toFa(streakEngagement.current)} روز</strong>
+            </div>
+            <div class="engagement-parent-progress"><i style="width:${todayEngagement.percent}%;"></i></div>
+            <div class="engagement-parent-meta"><span>امروز: ${toFa(todayEngagement.completed)} از ${toFa(todayEngagement.goal)}</span><span>بهترین زنجیره: ${toFa(streakEngagement.best)} روز</span></div>
+        `;
+        scrollBody.appendChild(engagementCard);
+
         // 2. Radar Chart
         const radarCard = document.createElement('div');
         radarCard.className = 'parent-radar-container';
@@ -1051,6 +1126,7 @@
                 await Storage.clearAll();
                 Adaptive.reset();
                 if (IQAssessment.reset) IQAssessment.reset();
+                if (window.Engagement) await window.Engagement.reset();
                 state.lessonsDone = {};
                 state.totalStars = 0;
                 state.sfxMuted = false;
