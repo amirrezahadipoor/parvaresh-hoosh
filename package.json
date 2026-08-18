@@ -8,5 +8,9 @@
     "build": "echo 'Build step for Capacitor in later phases'"
   },
   "author": "Khanak Academy",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [],
+  "dependencies": {
+    "playwright": "^1.62.1"
+  }
 }
