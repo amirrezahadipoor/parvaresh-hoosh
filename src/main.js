@@ -493,8 +493,12 @@
         coloring: 'رنگ‌آمیزی'
     };
 
+    function lessonGuide(type) {
+        return (window.LESSON_GUIDE && window.LESSON_GUIDE[type]) || window.LESSON_GUIDE_DEFAULT || { label: 'بازی آموزشی', objective: '', parentTip: '', minutes: 6 };
+    }
+
     function skillLabel(type) {
-        return SKILL_LABELS[type] || 'بازی آموزشی';
+        return lessonGuide(type).label || SKILL_LABELS[type] || 'بازی آموزشی';
     }
 
     function renderLevel() {
@@ -530,8 +534,11 @@
                 </div>
                 <span class="lesson-open-mark" aria-hidden="true">‹</span>
             `;
+            const guide = lessonGuide(lesson.type);
+            card.setAttribute('aria-label', `${lesson.title}؛ ${guide.objective}`);
             card.querySelector('.ltitle').textContent = lesson.title;
             card.querySelector('.lesson-skill').textContent = skillLabel(lesson.type);
+            card.querySelector('.lesson-meta span:last-child').textContent = `${toFa(guide.minutes)} دقیقه`;
 
             card.addEventListener('click', () => {
                 AudioEngine.play('click');

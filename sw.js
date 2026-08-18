@@ -11,6 +11,7 @@ const PRECACHE = [
     './src/data/math-data.js',
     './src/data/world-data.js',
     './src/data/curriculum.js',
+    './src/data/lesson-guide.js',
     './content/curriculum.json',
     './content/content_manifest.json',
     './src/core/config.js',
