@@ -50,7 +50,7 @@
             <div class="splash-content">
                 <div class="splash-logo" id="splash-logo"></div>
                 <h1 class="app-title">پرورش هوش کودک</h1>
-                <p class="app-subtitle">یادگیری شیرین، سنجش هوش و شهربازی بازی‌های شاد</p>
+                <p class="app-subtitle">یادگیری شیرین، سنجش هوش و بازی‌های شاد</p>
                 <div class="loading-bar">
                     <div class="loading-progress"></div>
                 </div>
@@ -61,21 +61,29 @@
         <div id="screen-home" class="screen">
             <header class="main-header">
                 <button class="icon-btn" id="btn-parent" aria-label="بخش والدین" title="داشبورد والدین">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
                 </button>
                 <span class="header-title">پرورش هوش کودک</span>
                 <div style="display:flex; gap:6px; align-items:center;">
                     <button class="star-badge-btn" id="btn-stars" aria-label="ستاره‌های من">
-                        <span>★</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#F1C40F"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         <span id="header-star-count">۰</span>
                     </button>
                     <button class="icon-btn" id="btn-music" aria-label="موسیقی پس‌زمینه" title="موسیقی">
-                        🎵
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
                     </button>
                     <button class="icon-btn" id="btn-voice" aria-label="تنظیمات صدا" title="صدا">
-                        🔊
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                        </svg>
                     </button>
                 </div>
             </header>
@@ -84,24 +92,24 @@
                 <!-- Companion Mascot Hero Banner -->
                 <div class="mascot-hero-card">
                     <div class="mascot-avatar" id="home-mascot" title="تغییر کاراکتر"></div>
-                    <div class="speech-bubble" id="home-speech">سلام دوست باهوشم! آماده‌ای ماجراجویی رو شروع کنیم؟</div>
+                    <div class="speech-bubble" id="home-speech">سلام قشنگم! بیا با هم بازی‌های شاد و پر از جایزه رو شروع کنیم!</div>
                 </div>
 
                 <!-- Big Primary Action: Continue Adventure Journey -->
                 <div class="adventure-banner-card" id="btn-start-adventure">
                     <div class="adv-text-wrap">
-                        <span class="adv-badge">🌟 ماجراجویی هوشمند</span>
+                        <span class="adv-badge">ماجراجویی هوشمند</span>
                         <h3 class="adv-title" id="next-adv-title">ادامه مسیر ماجراجویی</h3>
                         <p class="adv-desc">مرحله پیشنهادی بعدی را شروع کن!</p>
                     </div>
-                    <button class="adv-play-btn">بزن بریم! 🚀</button>
+                    <button class="adv-play-btn">بزن بریم!</button>
                 </div>
 
                 <!-- Navigation Tabs (ماجراجویی | درس‌ها | شهربازی هوش) -->
                 <div class="home-tab-switcher">
-                    <button class="tab-btn active" data-tab="adventure">🗺️ نقشه ماجراجویی</button>
-                    <button class="tab-btn" data-tab="curriculum">📚 حوزه‌های درسی</button>
-                    <button class="tab-btn" data-tab="arcade">🎡 شهربازی هوش</button>
+                    <button class="tab-btn active" data-tab="adventure">نقشه ماجراجویی</button>
+                    <button class="tab-btn" data-tab="curriculum">حوزه‌های درسی</button>
+                    <button class="tab-btn" data-tab="arcade">شهربازی هوش</button>
                 </div>
 
                 <!-- Tab 1: Adventure Island Map -->
@@ -125,7 +133,7 @@
         <div id="screen-arcade" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-arcade" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
@@ -138,7 +146,7 @@
         <div id="screen-domain" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-domain" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
@@ -152,7 +160,7 @@
         <div id="screen-level" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-level" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
@@ -165,7 +173,7 @@
         <div id="screen-lesson" class="screen">
             <header class="sub-header lesson-header">
                 <button class="icon-btn" id="btn-exit-lesson" aria-label="خروج از مرحله">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
@@ -176,7 +184,10 @@
                     </div>
                     <span class="lesson-progress-text" id="lesson-progress-text">۱ از ۵</span>
                 </div>
-                <div class="star-counter" id="star-counter">★ ۰</div>
+                <div class="star-counter" id="star-counter">
+                    <span>امتیاز:</span>
+                    <span id="lesson-star-num">۰</span>
+                </div>
             </header>
             <main class="lesson-body" id="lesson-body"></main>
         </div>
@@ -185,11 +196,11 @@
         <div id="screen-rewards" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-rewards" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
-                <span class="header-title">ستاره‌ها و انتخاب کاراکتر</span>
+                <span class="header-title">ستاره‌ها و انتخاب همبازی</span>
             </header>
             <main class="main-content" id="rewards-content"></main>
         </div>
@@ -198,7 +209,7 @@
         <div id="screen-parents" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-parents" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>

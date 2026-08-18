@@ -1,4 +1,4 @@
-// Main Application Controller & Hub for "پرورش هوش کودک"
+// Main Application Controller & Hub for "پرورش هوش کودک" - ZERO EMOJIS
 (function() {
     'use strict';
 
@@ -120,11 +120,9 @@
 
         if (musicBtn) {
             musicBtn.style.opacity = state.musicMuted ? '0.4' : '1';
-            musicBtn.textContent = state.musicMuted ? '🔇' : '🎵';
         }
         if (voiceBtn) {
             voiceBtn.style.opacity = state.sfxMuted ? '0.4' : '1';
-            voiceBtn.textContent = state.sfxMuted ? '🔈' : '🔊';
         }
     }
 
@@ -223,16 +221,16 @@
 
             card.innerHTML = `
                 <div class="adv-node-icon" style="background:${isDone ? 'var(--ok)' : node.color}">
-                    ${isDone ? '✓' : node.icon}
+                    ${isDone ? 'تکمیل' : node.icon}
                 </div>
                 <div class="adv-node-info">
                     <div class="adv-node-title">${node.title}</div>
                     <div class="adv-node-status">
-                        ${isDone ? '⭐⭐⭐ تکمیل شد' : isCurrent ? '📍 مرحله جاری (بزن بریم!)' : `سطح دشواری ${toFa(node.difficulty)}`}
+                        ${isDone ? 'امتیاز کامل دریافت شد' : isCurrent ? 'مرحله جاری برای بازی' : `سطح مهارت ${toFa(node.difficulty)}`}
                     </div>
                 </div>
                 <div class="adv-node-action">
-                    ${isDone ? 'تکرار بازی' : isCurrent ? 'شروع ▶' : 'آماده'}
+                    ${isDone ? 'تکرار بازی' : isCurrent ? 'شروع مرحله' : 'شروع مرحله'}
                 </div>
             `;
 
@@ -293,7 +291,7 @@
             card.className = 'arcade-game-card';
             card.style.setProperty('--gcolor', g.color);
             card.innerHTML = `
-                <div class="arcade-game-icon" style="background:${g.color}">${g.icon}</div>
+                <div class="arcade-game-icon" style="background:${g.color}">${g.iconHtml}</div>
                 <div class="arcade-game-title">${g.title}</div>
                 <div class="arcade-game-desc">${g.subtitle}</div>
             `;
@@ -400,9 +398,8 @@
             card.className = `lesson-card ${isDone ? 'done' : ''}`;
 
             card.innerHTML = `
-                <div class="lstate">${isDone ? '✓' : toFa(i + 1)}</div>
+                <div class="lstate">${isDone ? 'تکمیل' : toFa(i + 1)}</div>
                 <div class="ltitle">${lesson.title}</div>
-                ${isDone ? `<span style="color:#F1C40F; font-size:16px; font-weight:900;">${'★'.repeat(prog.stars || 3)}</span>` : ''}
             `;
 
             card.addEventListener('click', () => {
@@ -427,7 +424,7 @@
         const body = $('#lesson-body');
         const fill = $('#lesson-progress-fill');
         const ptext = $('#lesson-progress-text');
-        const starsEl = $('#star-counter');
+        const starsEl = $('#lesson-star-num');
 
         let roundIdx = 0;
         let starCount = 0;
@@ -441,14 +438,14 @@
             const pct = Math.round((100 * roundIdx) / rounds.length);
             fill.style.width = pct + '%';
             ptext.textContent = `${toFa(roundIdx + 1)} از ${toFa(rounds.length)}`;
-            starsEl.textContent = `★ ${toFa(starCount)}`;
+            if (starsEl) starsEl.textContent = toFa(starCount);
         }
 
         function showMascotMood(mood, msg) {
             const m = document.createElement('div');
             m.className = 'lesson-mascot';
             m.innerHTML = `
-                <div class="mini-mascot">${Mascot.svg(56, mood)}</div>
+                <div class="mini-mascot">${Mascot.svg(50, mood)}</div>
                 <div class="mini-speech">${msg}</div>
             `;
             body.appendChild(m);
@@ -515,19 +512,18 @@
             // Result Celebration Overlay
             const overlay = document.createElement('div');
             overlay.className = 'result-overlay';
-            const starString = '★'.repeat(stars) + '☆'.repeat(3 - stars);
 
             overlay.innerHTML = `
                 <div class="result-card">
                     <div style="margin: 0 auto 10px;">${Mascot.svg(92, 'celebrating')}</div>
-                    <h2>آفرین قهرمان باهوش!</h2>
-                    <div class="r-stars">${starString}</div>
+                    <h2>آفرین قهرمان باهوش من!</h2>
+                    <div class="r-stars">امتیاز کامل: ۳ ستاره طلایی</div>
                     <p>${pickMsg(MESSAGES.win)}</p>
                     <button class="big-action-btn primary" id="btn-continue-result" style="margin-bottom:10px;">
-                        <span>ادامه ماجراجویی 🚀</span>
+                        <span>ادامه ماجراجویی</span>
                     </button>
                     <button class="action-pill-btn" id="btn-home-result" style="width:100%; justify-content:center;">
-                        <span>بازگشت به خانه 🏠</span>
+                        <span>بازگشت به خانه</span>
                     </button>
                 </div>
             `;
@@ -594,7 +590,7 @@
         // 2. Choose Companion Mascot
         const pickerSection = document.createElement('div');
         pickerSection.className = 'companion-picker-section';
-        pickerSection.innerHTML = `<div class="companion-picker-title">🦊 همبازی و کاراکتر موردعلاقه‌ات را انتخاب کن:</div>`;
+        pickerSection.innerHTML = `<div class="companion-picker-title">همبازی و کاراکتر موردعلاقه‌ات را انتخاب کن:</div>`;
 
         const grid = document.createElement('div');
         grid.className = 'companion-grid';
@@ -628,22 +624,21 @@
         list.className = 'achievement-list';
 
         const achievements = [
-            { id: 'first', icon: '⭐', name: 'اولین ستاره درخشان', cond: state.totalStars >= 1 },
-            { id: 'ten', icon: '🌟', name: '۱۰ ستاره طلایی', cond: state.totalStars >= 10 },
-            { id: 'fifty', icon: '🏆', name: '۵۰ ستاره قهرمانی', cond: state.totalStars >= 50 },
-            { id: 'hundred', icon: '👑', name: '۱۰۰ ستاره جادویی', cond: state.totalStars >= 100 },
-            { id: 'reader', icon: '📚', name: 'استاد الفبا و کلمات', cond: (state.totalStars >= 15) },
-            { id: 'mathematician', icon: '🔢', name: 'نابغه ریاضی و هوش', cond: (state.totalStars >= 20) }
+            { id: 'first', name: 'اولین ستاره درخشان', cond: state.totalStars >= 1 },
+            { id: 'ten', name: '۱۰ ستاره طلایی', cond: state.totalStars >= 10 },
+            { id: 'fifty', name: '۵۰ ستاره قهرمانی', cond: state.totalStars >= 50 },
+            { id: 'hundred', name: '۱۰۰ ستاره جادویی', cond: state.totalStars >= 100 },
+            { id: 'reader', name: 'استاد الفبا و کلمات', cond: (state.totalStars >= 15) },
+            { id: 'mathematician', name: 'نابغه ریاضی و هوش', cond: (state.totalStars >= 20) }
         ];
 
         achievements.forEach(a => {
             const el = document.createElement('div');
             el.className = `achievement ${a.cond ? '' : 'locked'}`;
             el.innerHTML = `
-                <div class="a-icon">${a.icon}</div>
                 <div class="a-name">${a.name}</div>
                 <span style="font-size:12px; color:${a.cond ? 'var(--ok)' : 'var(--ink-light)'}; font-weight:800; margin-top:4px; display:block;">
-                    ${a.cond ? 'کسب شده ✓' : 'قفل شده 🔒'}
+                    ${a.cond ? 'کسب شده' : 'قفل'}
                 </span>
             `;
             list.appendChild(el);
@@ -684,10 +679,9 @@
 
         content.innerHTML = `
             <div class="pin-wrap">
-                <div style="font-size:40px; margin-bottom:8px;">🔒</div>
-                <h3 style="font-size:20px; font-weight:900; margin-bottom:6px;">قفل محافظتی ورود والدین</h3>
-                <p style="color:var(--ink2); font-size:14px; margin-bottom:16px;">برای اطمینان از حضور والد، پاسخ معادله زیر را وارد کنید:</p>
-                <div style="font-size:26px; font-weight:900; color:#6C5CE7; margin-bottom:18px;">
+                <h3 style="font-size:19px; font-weight:900; margin-bottom:6px;">قفل محافظتی ورود والدین</h3>
+                <p style="color:var(--ink2); font-size:13.5px; margin-bottom:14px;">برای اطمینان از حضور والد، پاسخ معادله زیر را وارد کنید:</p>
+                <div style="font-size:24px; font-weight:900; color:#6C5CE7; margin-bottom:16px;">
                     ${toFa(a)} + ${toFa(b)} = ؟
                 </div>
                 <div class="pin-pad" id="gate-pad"></div>
@@ -716,9 +710,8 @@
     function renderPinEntry(content, correctPin) {
         content.innerHTML = `
             <div class="pin-wrap">
-                <div style="font-size:40px; margin-bottom:8px;">🔐</div>
-                <h3 style="font-size:20px; font-weight:900; margin-bottom:6px;">رمز ورود والدین</h3>
-                <p style="color:var(--ink2); font-size:14px; margin-bottom:16px;">رمز ۴ رقمی را وارد کنید:</p>
+                <h3 style="font-size:19px; font-weight:900; margin-bottom:6px;">رمز ورود والدین</h3>
+                <p style="color:var(--ink2); font-size:13.5px; margin-bottom:14px;">رمز ۴ رقمی را وارد کنید:</p>
                 <div class="pin-dots" id="pin-dots"></div>
                 <div class="pin-pad" id="pin-pad"></div>
             </div>
@@ -750,7 +743,7 @@
                         AudioEngine.play('click');
                     });
                 } else if (k === 'ok') {
-                    b.textContent = '✓';
+                    b.textContent = 'تایید';
                     b.addEventListener('click', () => {
                         if (buffer === String(correctPin)) {
                             AudioEngine.play('correct');
@@ -798,14 +791,14 @@
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <div class="milestone-iq-number">${toFa(iqReport.overallIQ)}</div>
-                    <div class="milestone-iq-label">شاخص رشد شناختی (IQ Index)</div>
+                    <div class="milestone-iq-label">شاخص رشد شناختی کودک</div>
                 </div>
                 <div style="text-align:left;">
-                    <div style="font-size:18px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
+                    <div style="font-size:17px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
                     <div style="font-size:12px; opacity:0.9;">سن شناختی تخمینی</div>
                 </div>
             </div>
-            <div class="milestone-headline">💡 ${iqReport.headline}</div>
+            <div class="milestone-headline">نکته روان‌شناختی: ${iqReport.headline}</div>
         `;
         panel.appendChild(milestoneCard);
 
@@ -813,23 +806,23 @@
         const radarCard = document.createElement('div');
         radarCard.className = 'parent-radar-container';
         radarCard.innerHTML = `
-            <h3 style="font-size:18px; font-weight:900; margin-bottom:4px;">🕸️ نمودار راداری ۶ بعد هوش گاردنر و پیاژه</h3>
-            <p style="font-size:13px; color:var(--ink2); margin-bottom:12px;">تحلیل توزیع استعدادها و هماهنگی ابعاد شناختی کودک</p>
-            <canvas id="radar-chart" width="340" height="300" class="parent-radar-canvas"></canvas>
+            <h3 style="font-size:17px; font-weight:900; margin-bottom:4px;">نمودار راداری ۶ بعد هوش گاردنر و پیاژه</h3>
+            <p style="font-size:12.5px; color:var(--ink2); margin-bottom:10px;">تحلیل توزیع استعدادها و هماهنگی ابعاد شناختی کودک</p>
+            <canvas id="radar-chart" width="340" height="280" class="parent-radar-canvas"></canvas>
         `;
         panel.appendChild(radarCard);
 
         // 3. Dimension Detailed Analysis & Parenting Recommendations
         const detailsCard = document.createElement('div');
         detailsCard.className = 'parent-card';
-        detailsCard.innerHTML = `<h3>📋 تحلیل تخصصی ابعاد ۶ گانه و توصیه‌های والدگری</h3>`;
+        detailsCard.innerHTML = `<h3>تحلیل تخصصی ابعاد ۶ گانه و توصیه‌های والدگری</h3>`;
 
         iqReport.dimensions.forEach(dim => {
             const row = document.createElement('div');
             row.className = 'dimension-report-card';
             row.innerHTML = `
                 <div class="dim-head">
-                    <span>${dim.icon} ${dim.title}</span>
+                    <span>${dim.title}</span>
                     <span style="background:${dim.badgeColor}; color:#FFF; font-size:11.5px; padding:3px 10px; border-radius:12px; font-weight:800;">
                         ${dim.status}
                     </span>
@@ -841,7 +834,7 @@
                     <span>امتیاز تسلط: ${toFa(dim.score)} از ۱۰۰</span>
                     <span>سطح چالشی: ${toFa(dim.level)}</span>
                 </div>
-                <div class="dim-advice">💡 <b>توصیه روان‌شناختی:</b> ${dim.advice}</div>
+                <div class="dim-advice"><b>توصیه روان‌شناختی:</b> ${dim.advice}</div>
             `;
             detailsCard.appendChild(row);
         });
@@ -852,9 +845,9 @@
         const settingsCard = document.createElement('div');
         settingsCard.className = 'parent-card';
         settingsCard.innerHTML = `
-            <h3>⚙️ مدیریت داده‌ها و حریم خصوصی</h3>
+            <h3>مدیریت داده‌ها و حریم خصوصی</h3>
             <p style="font-size:13px; color:var(--ink2); margin-bottom:12px; line-height:1.6;">
-                🔒 تمام اطلاعات به صورت ۱۰۰٪ آفلاین بر روی همین دستگاه نگهداری می‌شود و به هیچ سروری ارسال نمی‌گردد.
+                تمام اطلاعات به صورت ۱۰۰٪ آفلاین بر روی همین دستگاه نگهداری می‌شود و به هیچ سروری ارسال نمی‌گردد.
             </p>
             <button class="action-pill-btn" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%; justify-content:center;">
                 <span>پاک کردن تمام داده‌ها و شروع مجدد</span>
@@ -876,7 +869,6 @@
         panel.appendChild(settingsCard);
         content.appendChild(panel);
 
-        // Draw radar chart on next frame
         setTimeout(() => {
             const canvas = content.querySelector('#radar-chart');
             if (canvas) IQAssessment.drawRadarChart(canvas);

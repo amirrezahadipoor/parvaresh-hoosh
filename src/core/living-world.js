@@ -1,13 +1,11 @@
 // Living Animated World, Magic Stardust Particle Engine & Touch Physics for "پرورش هوش کودک"
-// 100% Fullscreen, ZERO Scrolling for child, Fluid GSAP & Canvas Animations
+// 100% Fullscreen, ZERO Scrolling for child, Fluid GSAP & Canvas Animations - ZERO EMOJIS
 window.LivingWorld = (function() {
     let stardustCanvas = null;
     let stardustCtx = null;
     let particles = [];
-    let isTouchActive = false;
     let animFrameId = null;
 
-    // Stardust Palette
     const STAR_COLORS = ['#FF4757', '#FFA502', '#2ED573', '#00D2D3', '#1E90FF', '#9B59B6', '#F1C40F', '#FF6B81'];
 
     function init() {
@@ -93,14 +91,13 @@ window.LivingWorld = (function() {
                     continue;
                 }
 
-                // Draw Twinkling 4-Point Stardust
                 stardustCtx.save();
                 stardustCtx.translate(p.x, p.y);
                 stardustCtx.rotate(p.rotation);
                 stardustCtx.globalAlpha = p.alpha;
                 stardustCtx.fillStyle = p.color;
                 stardustCtx.shadowColor = p.color;
-                stardustCtx.shadowBlur = 10;
+                stardustCtx.shadowBlur = 8;
 
                 const s = p.size * p.life;
                 stardustCtx.beginPath();
@@ -129,18 +126,24 @@ window.LivingWorld = (function() {
 
     function showFingerHint(targetSelector) {
         clearHint();
-        const target = document.querySelector(targetSelector || '.quiz-option-btn, .adv-play-btn, .stage-play-btn');
+        const target = document.querySelector(targetSelector || '.quiz-option-btn, .adv-play-btn');
         if (!target) return;
 
         const rect = target.getBoundingClientRect();
         hintFingerEl = document.createElement('div');
         hintFingerEl.className = 'magic-finger-hint';
-        hintFingerEl.innerHTML = '👆';
+        hintFingerEl.innerHTML = `
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="#F1C40F" stroke="#2D3436" stroke-width="1.8">
+                <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
+                <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
+            </svg>
+        `;
         hintFingerEl.style.cssText = `
             position: fixed;
-            left: ${rect.left + rect.width / 2 - 20}px;
-            top: ${rect.bottom + 6}px;
-            font-size: 38px;
+            left: ${rect.left + rect.width / 2 - 21}px;
+            top: ${rect.bottom + 4}px;
             z-index: 10000;
             pointer-events: none;
             animation: bounceFinger 1s ease-in-out infinite alternate;
@@ -158,7 +161,6 @@ window.LivingWorld = (function() {
         }
     }
 
-    // Reset hint on any interaction
     window.addEventListener('pointerdown', clearHint);
 
     return {

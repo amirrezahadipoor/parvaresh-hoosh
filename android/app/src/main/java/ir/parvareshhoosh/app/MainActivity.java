@@ -1,4 +1,4 @@
-package ir.parvareshhoosh.khanak;
+package ir.parvareshhoosh.app;
 
 import com.getcapacitor.BridgeActivity;
 

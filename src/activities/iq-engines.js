@@ -1,5 +1,5 @@
 // Advanced Early Childhood Cognitive IQ Engines for "پرورش هوش کودک"
-// Built for Ages 4.5 to 8: Non-reader friendly, Voice-first, Visual Scaffolding, Tactile Physics
+// Built for Ages 4.5 to 8: Non-reader friendly, Voice-first, Visual Scaffolding, Tactile Physics - ZERO EMOJIS
 window.IQEngines = (function() {
 
     function toFa(n) {
@@ -163,20 +163,18 @@ window.IQEngines = (function() {
                     <button class="speaker-btn" id="simon-speak"><span>بشنو</span></button>
                 </div>
                 <div class="simon-bells-grid" id="simon-bells">
-                    <button class="simon-bell red" data-idx="0"><span class="bell-icon">🔔</span></button>
-                    <button class="simon-bell yellow" data-idx="1"><span class="bell-icon">🔔</span></button>
-                    <button class="simon-bell green" data-idx="2"><span class="bell-icon">🔔</span></button>
-                    <button class="simon-bell blue" data-idx="3"><span class="bell-icon">🔔</span></button>
+                    <button class="simon-bell red" data-idx="0"><svg width="34" height="34" viewBox="0 0 24 24" fill="#FFF"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
+                    <button class="simon-bell yellow" data-idx="1"><svg width="34" height="34" viewBox="0 0 24 24" fill="#FFF"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
+                    <button class="simon-bell green" data-idx="2"><svg width="34" height="34" viewBox="0 0 24 24" fill="#FFF"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
+                    <button class="simon-bell blue" data-idx="3"><svg width="34" height="34" viewBox="0 0 24 24" fill="#FFF"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
                 </div>
                 <div class="simon-step-indicator" id="simon-steps">مرحله: ${toFa(sequenceLength)} تایی</div>
             `;
 
             const bellFrequencies = [261.63, 329.63, 392.00, 523.25];
-            const bellColors = ['#FF4757', '#FFA502', '#2ED573', '#1E90FF'];
             const bells = card.querySelectorAll('.simon-bell');
             const statusEl = card.querySelector('#simon-status');
 
-            // Generate sequence
             const sequence = [];
             for (let i = 0; i < sequenceLength; i++) {
                 sequence.push(Math.floor(Math.random() * 4));
@@ -227,7 +225,6 @@ window.IQEngines = (function() {
                     if (clickedIdx === sequence[userIndex]) {
                         userIndex++;
                         if (userIndex >= sequence.length) {
-                            // Won Simon Round!
                             acceptingInput = false;
                             statusEl.textContent = 'آفرین حافظه فوق‌العاده‌ای داری!';
                             AudioEngine.play('win');
@@ -238,9 +235,8 @@ window.IQEngines = (function() {
                             }, 1000);
                         }
                     } else {
-                        // Failed Sequence -> Replay
                         acceptingInput = false;
-                        statusEl.textContent = 'اشکالی نداره، یک بار دیگه با هم ببینیم!';
+                        statusEl.textContent = 'اشکالی نداره قشنگم، یک بار دیگه با هم ببینیم!';
                         AudioEngine.play('wrong');
                         IQAssessment.recordTrial('simon', false);
                         if (window.Fx) Fx.shake(card.querySelector('#simon-bells'));
@@ -285,7 +281,9 @@ window.IQEngines = (function() {
                         ${initialItems.map(item => `<div class="tray-item">${item.img}<span class="tray-label">${item.label}</span></div>`).join('')}
                     </div>
                     <div class="magic-curtain" id="magic-curtain" style="display:none;">
-                        <span class="magic-hat-icon">🎩✨</span>
+                        <span class="magic-hat-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="#F1C40F"><path d="M2 17h20v2H2zM4 15l2-9h12l2 9z"></path></svg>
+                        </span>
                         <p>اجی مجی لا ترجی!</p>
                     </div>
                 </div>
@@ -296,18 +294,16 @@ window.IQEngines = (function() {
                 AudioEngine.speak('این وسایل را خوب نگاه کن و به خاطر بسپار!');
             }, 150);
 
-            // Phase 1: Memorize for 3.5 seconds
             setTimeout(() => {
                 const curtain = card.querySelector('#magic-curtain');
                 const grid = card.querySelector('#tray-grid');
                 curtain.style.display = 'flex';
                 AudioEngine.play('bubble');
 
-                // Phase 2: Remove 1 item behind curtain
                 setTimeout(() => {
                     curtain.style.display = 'none';
                     grid.innerHTML = remainingItems.map(item => `<div class="tray-item">${item.img}<span class="tray-label">${item.label}</span></div>`).join('') +
-                        `<div class="tray-item missing-slot"><span>❓</span></div>`;
+                        `<div class="tray-item missing-slot"><span>؟</span></div>`;
 
                     card.querySelector('#disp-prompt').textContent = 'کدام وسیله غیب شد و دیگر در سینی نیست؟';
                     AudioEngine.speak('کدام وسیله ناپدید شد؟');
@@ -358,28 +354,34 @@ window.IQEngines = (function() {
             const leftCount = round.leftCount || 3;
             const rightCount = round.rightCount || 1;
             const heavier = leftCount > rightCount ? 'left' : leftCount < rightCount ? 'right' : 'equal';
-
             const leftTiltDeg = leftCount > rightCount ? 14 : leftCount < rightCount ? -14 : 0;
+
+            let leftApples = '';
+            for (let i = 0; i < leftCount; i++) leftApples += SvgArt.object('apple', 28);
+            let rightApples = '';
+            for (let i = 0; i < rightCount; i++) rightApples += SvgArt.object('apple', 28);
 
             card.innerHTML = `
                 <div class="activity-header-row">
-                    <h2 class="quiz-prompt">کدام کفه ترازو سنگین‌تر است؟</h2>
+                    <h2 class="quiz-prompt">کدام کفه ترازو سنگین‌تر است و پایین رفته؟</h2>
                     <button class="speaker-btn" id="balance-speak"><span>بشنو</span></button>
                 </div>
                 <div class="scale-visual-wrap">
                     <div class="scale-beam" style="transform: rotate(${leftTiltDeg}deg);">
                         <div class="scale-pan left-pan">
-                            <div class="pan-items">${'🍎'.repeat(leftCount)}</div>
+                            <div class="pan-items">${leftApples}</div>
                         </div>
-                        <div class="scale-fulcrum">⚖️</div>
+                        <div class="scale-fulcrum">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="#F39C12"><polygon points="12 2 2 22 22 22"></polygon></svg>
+                        </div>
                         <div class="scale-pan right-pan">
-                            <div class="pan-items">${'🍎'.repeat(rightCount)}</div>
+                            <div class="pan-items">${rightApples}</div>
                         </div>
                     </div>
                 </div>
                 <div class="balance-choices-row" id="balance-choices">
-                    <button class="balance-choice-btn" data-choice="left">👈 کفه راست (سنگین‌تر)</button>
-                    <button class="balance-choice-btn" data-choice="right">👉 کفه چپ (سنگین‌تر)</button>
+                    <button class="balance-choice-btn" data-choice="left">کفه راست (سنگین‌تر)</button>
+                    <button class="balance-choice-btn" data-choice="right">کفه چپ (سنگین‌تر)</button>
                 </div>
             `;
 

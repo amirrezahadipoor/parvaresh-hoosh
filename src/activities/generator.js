@@ -537,8 +537,8 @@ window.Generator = (function() {
             type: 'drag-match',
             prompt: 'حیوانات و میوه‌ها را در جای درست بگذار:',
             targets: [
-                { id: 'animals', label: '🐾 حیوانات' },
-                { id: 'fruits', label: '🍎 میوه‌ها' }
+                { id: 'animals', label: 'حیوانات' },
+                { id: 'fruits', label: 'میوه‌ها' }
             ],
             items,
             speech: 'حیوانات و میوه‌ها را جدا کن'

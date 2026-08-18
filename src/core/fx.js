@@ -44,15 +44,12 @@ window.Fx = (function() {
             s.className = 'star-pop';
             s.style.cssText = `
                 position: fixed;
-                font-size: ${34 + Math.random() * 24}px;
                 left: ${35 + Math.random() * 30}vw;
                 top: 30vh;
                 z-index: 9999;
                 pointer-events: none;
-                color: #F9CA24;
-                text-shadow: 0 2px 6px rgba(0,0,0,0.2);
             `;
-            s.textContent = '★';
+            s.innerHTML = `<svg width="44" height="44" viewBox="0 0 24 24" fill="#F1C40F"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
             frag.appendChild(s);
             const dur = 900 + Math.random() * 500;
             const delay = i * 150;

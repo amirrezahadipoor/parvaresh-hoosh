@@ -1,16 +1,16 @@
 // Advanced Early Childhood Cognitive Assessment & Radar Intelligence Engine
-// Based on Gardner's Multiple Intelligences, Raven's Matrices, and Piagetian Early Stages
+// Based on Gardner's Multiple Intelligences, Raven's Matrices, and Piagetian Early Stages - ZERO EMOJIS
 window.IQAssessment = (function() {
     const STORAGE_KEY = 'parvaresh_hoosh_iq_v3';
 
-    // 6 Core Cognitive Dimensions
+    // 6 Core Cognitive Dimensions (Clean text without emojis)
     const DOMAINS = {
-        logic: { id: 'logic', title: 'استدلال منطقی و حل مسئله', short: 'منطق و الگو', color: '#A29BFE', icon: '🧩' },
-        spatial: { id: 'spatial', title: 'هوش فضایی و تجسم هندسی', short: 'تجسم فضایی', color: '#00D2D3', icon: '📐' },
-        memory: { id: 'memory', title: 'حافظه فعال و تمرکز شناختی', short: 'حافظه و تمرکز', color: '#FF763B', icon: '⚡' },
-        math: { id: 'math', title: 'هوش عددی و درک ریاضی', short: 'حس عدد و حساب', color: '#4ECDC4', icon: '🔢' },
-        verbal: { id: 'verbal', title: 'هوش کلامی و آواشناسی', short: 'زبان و الفبا', color: '#FF6B6B', icon: '📚' },
-        science_socio: { id: 'science_socio', title: 'کشف محیط و هوش هیجانی', short: 'علوم و احساسات', color: '#F9CA24', icon: '🌱' }
+        logic: { id: 'logic', title: 'استدلال منطقی و حل مسئله', short: 'منطق و الگو', color: '#A29BFE' },
+        spatial: { id: 'spatial', title: 'هوش فضایی و تجسم هندسی', short: 'تجسم فضایی', color: '#00D2D3' },
+        memory: { id: 'memory', title: 'حافظه فعال و تمرکز شناختی', short: 'حافظه و تمرکز', color: '#FF763B' },
+        math: { id: 'math', title: 'هوش عددی و درک ریاضی', short: 'حس عدد و حساب', color: '#4ECDC4' },
+        verbal: { id: 'verbal', title: 'هوش کلامی و آواشناسی', short: 'زبان و الفبا', color: '#FF6B6B' },
+        science_socio: { id: 'science_socio', title: 'کشف محیط و هوش هیجانی', short: 'علوم و احساسات', color: '#F9CA24' }
     };
 
     let state = {
@@ -24,11 +24,10 @@ window.IQAssessment = (function() {
             if (data) state = JSON.parse(data);
         } catch (e) {}
 
-        // Ensure all dimensions exist
         Object.keys(DOMAINS).forEach(key => {
             if (!state.records[key]) {
                 state.records[key] = {
-                    score: 65, // Baseline 65% for emergent learner
+                    score: 65,
                     attempts: 0,
                     correct: 0,
                     history: [],
@@ -45,7 +44,6 @@ window.IQAssessment = (function() {
         } catch (e) {}
     }
 
-    // Map curriculum domain / game type to cognitive dimension
     function resolveDimension(domainOrType) {
         switch (domainOrType) {
             case 'reading':
@@ -67,7 +65,6 @@ window.IQAssessment = (function() {
         }
     }
 
-    // Record an event with response time & correctness
     function recordTrial(domainOrType, isCorrect, responseTimeMs) {
         const dimKey = resolveDimension(domainOrType);
         const record = state.records[dimKey];
@@ -76,8 +73,6 @@ window.IQAssessment = (function() {
         record.attempts++;
         if (isCorrect) record.correct++;
 
-        // Calculate moving adaptive IQ score (range 40 - 100)
-        const recentAccuracy = record.attempts > 0 ? (record.correct / record.attempts) : 0.65;
         const delta = isCorrect ? 3.5 : -2.5;
         record.score = Math.max(40, Math.min(100, record.score + delta));
 
@@ -95,7 +90,6 @@ window.IQAssessment = (function() {
         persist();
     }
 
-    // Get comprehensive report data for Parents
     function getReport() {
         const dimensions = [];
         let totalScore = 0;
@@ -111,7 +105,7 @@ window.IQAssessment = (function() {
             let advice = 'با تمرین‌های روزانه ۵ دقیقه‌ای به رشد چشمگیر می‌رسد.';
 
             if (score >= 85) {
-                status = 'استعداد درخشان ⭐';
+                status = 'استعداد درخشان';
                 badgeColor = '#00B894';
                 advice = 'درک سریع و هوش سرشار در این زمینه؛ آماده برای پازل‌های پیچیده‌تر.';
             } else if (score >= 70) {
@@ -132,7 +126,6 @@ window.IQAssessment = (function() {
                 id: def.id,
                 title: def.title,
                 short: def.short,
-                icon: def.icon,
                 color: def.color,
                 score,
                 level: rec.level,
@@ -145,7 +138,6 @@ window.IQAssessment = (function() {
 
         const overallIQ = Math.round(totalScore / dimensions.length);
 
-        // Developmental Milestone Interpretation
         let estimatedMentalAge = '۵ الی ۵.۵ سال';
         let headline = 'روند رشد شناختی متعادل و فعال';
 
@@ -168,7 +160,6 @@ window.IQAssessment = (function() {
         };
     }
 
-    // Render an interactive 6-axis Radar Chart on a Canvas
     function drawRadarChart(canvas) {
         if (!canvas) return;
         const dpr = window.devicePixelRatio || 1;
@@ -187,7 +178,7 @@ window.IQAssessment = (function() {
         const numAxes = dims.length;
         const angleStep = (Math.PI * 2) / numAxes;
 
-        // 1. Draw Concentric Background Webs (20%, 40%, 60%, 80%, 100%)
+        // Concentric webs
         const levels = [0.25, 0.5, 0.75, 1.0];
         levels.forEach(lvl => {
             ctx.beginPath();
@@ -204,7 +195,7 @@ window.IQAssessment = (function() {
             ctx.stroke();
         });
 
-        // 2. Draw Spokes (Axes)
+        // Spokes
         for (let i = 0; i < numAxes; i++) {
             const angle = i * angleStep - Math.PI / 2;
             const x = centerX + Math.cos(angle) * radius;
@@ -217,7 +208,6 @@ window.IQAssessment = (function() {
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
-            // Label around spoke
             const labelDist = radius + 22;
             const lx = centerX + Math.cos(angle) * labelDist;
             const ly = centerY + Math.sin(angle) * labelDist;
@@ -229,12 +219,12 @@ window.IQAssessment = (function() {
             ctx.fillText(dims[i].short, lx, ly);
         }
 
-        // 3. Draw Animated Data Polygon
+        // Polygon
         ctx.beginPath();
         const points = [];
         dims.forEach((d, i) => {
             const angle = i * angleStep - Math.PI / 2;
-            const ratio = (d.score - 20) / 80; // normalize 20-100
+            const ratio = (d.score - 20) / 80;
             const currentR = Math.max(radius * 0.25, radius * Math.min(1.0, ratio));
             const x = centerX + Math.cos(angle) * currentR;
             const y = centerY + Math.sin(angle) * currentR;
@@ -245,7 +235,6 @@ window.IQAssessment = (function() {
         });
         ctx.closePath();
 
-        // Polygon gradient fill
         const grad = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, radius);
         grad.addColorStop(0, 'rgba(108, 92, 231, 0.45)');
         grad.addColorStop(1, 'rgba(0, 210, 211, 0.25)');
@@ -256,7 +245,6 @@ window.IQAssessment = (function() {
         ctx.lineWidth = 3.5;
         ctx.stroke();
 
-        // 4. Draw Glowing Data Nodes
         points.forEach(p => {
             ctx.beginPath();
             ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);

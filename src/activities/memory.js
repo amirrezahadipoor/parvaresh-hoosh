@@ -57,7 +57,7 @@ window.MemoryActivity = (function() {
             cardItem.innerHTML = `
                 <div class="card-flipper">
                     <div class="card-front">
-                        <div class="mystery-pattern">★</div>
+                        <div class="mystery-pattern">؟</div>
                     </div>
                     <div class="card-back">
                         <div class="card-visual">${c.img}</div>
