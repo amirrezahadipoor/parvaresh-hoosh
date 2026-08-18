@@ -870,10 +870,12 @@
             }
 
             body.innerHTML = '';
-            // Auto-play the bundled Persian narration for alphabet lessons so the
-            // child actually hears each letter's sound on arrival.
-            if (roundIdx === 0 && AudioEngine.playClip) {
-                AudioEngine.playClip(`lesson-${lesson.id}`);
+            // Auto-play bundled Persian narration. Per-letter clips take priority so
+            // the child hears the exact letter being taught in this round; otherwise
+            // fall back to the lesson-level intro clip on the first round.
+            if (AudioEngine.playClip) {
+                if (round.audioClip) AudioEngine.playClip(round.audioClip);
+                else if (roundIdx === 0) AudioEngine.playClip(`lesson-${lesson.id}`);
             }
             if (roundIdx === 0 && round.lessonStory) {
                 const context = document.createElement('div');
@@ -1095,6 +1097,37 @@
 
         const scrollContainer = document.createElement('div');
         scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:12px; touch-action:pan-y; overscroll-behavior-y:contain;';
+
+        // 0. Painting gallery — the child's saved artwork, shown large.
+        let gallery = [];
+        try { gallery = JSON.parse(localStorage.getItem('ph_gallery') || '[]'); } catch (e) { gallery = []; }
+        if (gallery.length) {
+            const galleryCard = document.createElement('section');
+            galleryCard.className = 'gallery-card';
+            galleryCard.innerHTML = `<div class="gallery-head"><h2>گالری نقاشی‌های من</h2><strong>${toFa(gallery.length)}</strong></div><div class="gallery-grid"></div>`;
+            const grid = galleryCard.querySelector('.gallery-grid');
+            gallery.forEach((item, index) => {
+                const fig = document.createElement('button');
+                fig.type = 'button';
+                fig.className = 'gallery-item';
+                fig.setAttribute('aria-label', `نقاشی شمارهٔ ${toFa(index + 1)}`);
+                const im = document.createElement('img');
+                im.src = item.img;
+                im.alt = '';
+                fig.appendChild(im);
+                fig.addEventListener('click', () => {
+                    AudioEngine.play('click');
+                    const viewer = document.createElement('div');
+                    viewer.className = 'gallery-viewer';
+                    viewer.innerHTML = `<div class="gallery-viewer-inner"><img src="${item.img}" alt=""><button class="big-action-btn" id="gallery-close">بستن</button></div>`;
+                    viewer.addEventListener('click', ev => { if (ev.target === viewer) viewer.remove(); });
+                    viewer.querySelector('#gallery-close').addEventListener('click', () => viewer.remove());
+                    document.body.appendChild(viewer);
+                });
+                grid.appendChild(fig);
+            });
+            scrollContainer.appendChild(galleryCard);
+        }
 
         // 1. Stats Hero
         const hero = document.createElement('div');

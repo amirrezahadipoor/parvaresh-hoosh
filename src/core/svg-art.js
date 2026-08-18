@@ -679,6 +679,193 @@ window.SvgArt = (function() {
                     <path d="M50 18 Q54 26 50 30 Q46 26 50 18 Z" fill="#FFA502"/>
                 `, size);
 
+            // ---- Added artwork: high-frequency vocabulary that previously fell
+            // back to a text tile. Same flat, thick-outlined kid style as above.
+            case 'grape':
+                return wrap(`
+                    <path d="M50 20 L50 30" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M50 24 Q60 16 68 20" stroke="#2ED573" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    <circle cx="38" cy="42" r="10" fill="#A29BFE" stroke="#2C3A47" stroke-width="2.2"/>
+                    <circle cx="58" cy="42" r="10" fill="#A29BFE" stroke="#2C3A47" stroke-width="2.2"/>
+                    <circle cx="48" cy="56" r="10" fill="#8E7BFF" stroke="#2C3A47" stroke-width="2.2"/>
+                    <circle cx="30" cy="58" r="9" fill="#8E7BFF" stroke="#2C3A47" stroke-width="2.2"/>
+                    <circle cx="66" cy="58" r="9" fill="#8E7BFF" stroke="#2C3A47" stroke-width="2.2"/>
+                    <circle cx="48" cy="74" r="9" fill="#6C5CE7" stroke="#2C3A47" stroke-width="2.2"/>
+                `, size);
+
+            case 'pomegranate':
+                return wrap(`
+                    <circle cx="50" cy="56" r="32" fill="#E74C3C" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M50 24 L44 12 L56 14 Z" fill="#C0392B" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="42" cy="52" r="4" fill="#FFD1D1" opacity=".85"/>
+                    <circle cx="58" cy="52" r="4" fill="#FFD1D1" opacity=".85"/>
+                    <circle cx="50" cy="66" r="4" fill="#FFD1D1" opacity=".85"/>
+                `, size);
+
+            case 'icecream':
+                return wrap(`
+                    <path d="M36 52 L50 92 L64 52 Z" fill="#E1A95F" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <circle cx="42" cy="44" r="14" fill="#FF7BAC" stroke="#2C3A47" stroke-width="2.2"/>
+                    <circle cx="58" cy="44" r="14" fill="#FFD86B" stroke="#2C3A47" stroke-width="2.2"/>
+                    <circle cx="50" cy="32" r="13" fill="#7ED6C1" stroke="#2C3A47" stroke-width="2.2"/>
+                `, size);
+
+            case 'shirt':
+                return wrap(`
+                    <path d="M32 22 L44 18 Q50 26 56 18 L68 22 L82 34 L72 44 L68 40 L68 84 L32 84 L32 40 L28 44 L18 34 Z"
+                        fill="#48B0F7" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M44 18 Q50 30 56 18" fill="none" stroke="#2C3A47" stroke-width="2.2"/>
+                `, size);
+
+            case 'sock':
+                return wrap(`
+                    <path d="M38 16 L62 16 L62 56 Q62 66 72 70 L82 74 Q88 78 84 84 Q80 90 72 88 L46 80 Q36 76 36 62 L36 20 Z"
+                        fill="#FF8A5C" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <rect x="36" y="16" width="26" height="10" rx="3" fill="#FFD86B" stroke="#2C3A47" stroke-width="2"/>
+                `, size);
+
+            case 'box':
+                return wrap(`
+                    <path d="M18 40 L50 28 L82 40 L82 76 L50 88 L18 76 Z" fill="#D9A066" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M18 40 L50 52 L82 40" fill="none" stroke="#2C3A47" stroke-width="2.2"/>
+                    <path d="M50 52 L50 88" fill="none" stroke="#2C3A47" stroke-width="2.2"/>
+                `, size);
+
+            case 'tea':
+                return wrap(`
+                    <path d="M24 40 L72 40 L68 76 Q66 84 56 84 L40 84 Q30 84 28 76 Z" fill="#FFF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M30 46 L66 46 L63 72 Q62 78 55 78 L41 78 Q34 78 33 72 Z" fill="#C0703A"/>
+                    <path d="M72 48 Q86 50 84 60 Q82 70 70 68" fill="none" stroke="#2C3A47" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M42 28 Q46 22 42 16" fill="none" stroke="#B2BEC3" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M54 28 Q58 22 54 16" fill="none" stroke="#B2BEC3" stroke-width="3" stroke-linecap="round"/>
+                `, size);
+
+            case 'candle':
+                return wrap(`
+                    <rect x="38" y="38" width="24" height="48" rx="5" fill="#FFE3B3" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="30" y="84" width="40" height="8" rx="4" fill="#B2BEC3" stroke="#2C3A47" stroke-width="2"/>
+                    <path d="M50 34 L50 26" stroke="#2C3A47" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M50 8 Q60 20 50 26 Q40 20 50 8 Z" fill="#FFA502" stroke="#E67E22" stroke-width="2"/>
+                `, size);
+
+            case 'chair':
+                return wrap(`
+                    <rect x="30" y="16" width="40" height="38" rx="6" fill="#F8A5C2" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="24" y="52" width="52" height="10" rx="4" fill="#E8879F" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="28" y="62" width="7" height="26" rx="3" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2"/>
+                    <rect x="65" y="62" width="7" height="26" rx="3" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2"/>
+                `, size);
+
+            case 'glasses':
+                return wrap(`
+                    <circle cx="30" cy="52" r="17" fill="#DFF6FF" stroke="#2C3A47" stroke-width="3"/>
+                    <circle cx="70" cy="52" r="17" fill="#DFF6FF" stroke="#2C3A47" stroke-width="3"/>
+                    <path d="M47 52 Q50 46 53 52" fill="none" stroke="#2C3A47" stroke-width="3"/>
+                    <path d="M13 48 L4 40" stroke="#2C3A47" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M87 48 L96 40" stroke="#2C3A47" stroke-width="3" stroke-linecap="round"/>
+                `, size);
+
+            case 'doll':
+                return wrap(`
+                    <circle cx="50" cy="32" r="18" fill="#FFE0BD" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M32 28 Q34 10 50 10 Q66 10 68 28 Q60 20 50 22 Q40 20 32 28 Z" fill="#8B5A2B" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="43" cy="33" r="2.6" fill="#2C3A47"/><circle cx="57" cy="33" r="2.6" fill="#2C3A47"/>
+                    <path d="M45 40 Q50 44 55 40" fill="none" stroke="#2C3A47" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M34 54 L66 54 L72 86 L28 86 Z" fill="#FF7BAC" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                `, size);
+
+            case 'drum':
+                return wrap(`
+                    <rect x="22" y="42" width="56" height="34" rx="6" fill="#E74C3C" stroke="#2C3A47" stroke-width="2.5"/>
+                    <ellipse cx="50" cy="42" rx="28" ry="9" fill="#FFF0D6" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M26 48 L74 68 M74 48 L26 68" stroke="#FFD86B" stroke-width="3"/>
+                    <path d="M22 24 L36 40" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M78 24 L64 40" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>
+                `, size);
+
+            case 'lamp':
+                return wrap(`
+                    <path d="M50 12 A24 24 0 0 1 50 60 A24 24 0 0 1 50 12 Z" fill="#FFE066" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M40 58 Q50 66 60 58" fill="#FFE066" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="42" y="62" width="16" height="12" rx="2" fill="#B2BEC3" stroke="#2C3A47" stroke-width="2"/>
+                    <rect x="44" y="74" width="12" height="10" rx="2" fill="#8D9AA5" stroke="#2C3A47" stroke-width="2"/>
+                    <path d="M18 26 L26 30 M82 26 L74 30 M22 56 L30 54 M78 56 L70 54" stroke="#FFA502" stroke-width="3" stroke-linecap="round"/>
+                `, size);
+
+            case 'boat':
+                return wrap(`
+                    <path d="M14 66 L86 66 L74 84 L26 84 Z" fill="#FF6B6B" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M50 14 L50 62" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M54 20 L78 44 L54 52 Z" fill="#FFD86B" stroke="#2C3A47" stroke-width="2.2" stroke-linejoin="round"/>
+                    <path d="M46 24 L26 46 L46 52 Z" fill="#7ED6C1" stroke="#2C3A47" stroke-width="2.2" stroke-linejoin="round"/>
+                    <path d="M8 90 Q20 84 32 90 T56 90 T80 90" fill="none" stroke="#48B0F7" stroke-width="3.5" stroke-linecap="round"/>
+                `, size);
+
+            case 'lock':
+                return wrap(`
+                    <path d="M34 44 L34 32 A16 16 0 0 1 66 32 L66 44" fill="none" stroke="#8D9AA5" stroke-width="7" stroke-linecap="round"/>
+                    <rect x="24" y="44" width="52" height="42" rx="8" fill="#FFC048" stroke="#2C3A47" stroke-width="2.5"/>
+                    <circle cx="50" cy="62" r="6" fill="#2C3A47"/>
+                    <rect x="47" y="64" width="6" height="12" rx="3" fill="#2C3A47"/>
+                `, size);
+
+            case 'hat':
+                return wrap(`
+                    <ellipse cx="50" cy="70" rx="40" ry="12" fill="#48B0F7" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M28 68 Q28 26 50 26 Q72 26 72 68 Z" fill="#74B9FF" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M28 58 Q50 66 72 58" fill="none" stroke="#2C3A47" stroke-width="2.5"/>
+                `, size);
+
+            case 'shoe':
+                return wrap(`
+                    <path d="M18 50 L40 50 Q46 62 62 64 L80 68 Q88 72 88 80 L18 80 Z" fill="#E74C3C" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <rect x="16" y="78" width="74" height="8" rx="4" fill="#2C3A47"/>
+                    <path d="M30 56 L40 56 M34 64 L46 64" stroke="#FFF" stroke-width="3" stroke-linecap="round"/>
+                `, size);
+
+            case 'carrot':
+                return wrap(`
+                    <path d="M32 38 L68 38 L50 92 Z" fill="#FF8A3D" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M38 52 L60 52 M42 66 L56 66 M46 78 L54 78" stroke="#E06A1B" stroke-width="2.6" stroke-linecap="round"/>
+                    <path d="M50 34 Q40 16 28 14 Q34 28 44 34 Z" fill="#2ED573" stroke="#2C3A47" stroke-width="2"/>
+                    <path d="M50 34 Q60 14 74 12 Q68 28 56 34 Z" fill="#26B65E" stroke="#2C3A47" stroke-width="2"/>
+                `, size);
+
+            case 'plane':
+                return wrap(`
+                    <path d="M12 58 Q12 48 24 47 L64 44 Q78 43 86 48 Q92 51 86 55 Q78 60 64 60 L28 62 Q12 63 12 58 Z"
+                        fill="#DFE9F3" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M40 47 L30 26 L40 26 L58 45 Z" fill="#B9CEE0" stroke="#2C3A47" stroke-width="2.2" stroke-linejoin="round"/>
+                    <path d="M38 60 L30 76 L39 76 L54 60 Z" fill="#B9CEE0" stroke="#2C3A47" stroke-width="2.2" stroke-linejoin="round"/>
+                    <path d="M14 47 L10 34 L18 34 L24 47 Z" fill="#9FB8CC" stroke="#2C3A47" stroke-width="2" stroke-linejoin="round"/>
+                    <circle cx="70" cy="51" r="3.4" fill="#48B0F7" stroke="#2C3A47" stroke-width="1.5"/>
+                    <circle cx="58" cy="51" r="3.4" fill="#48B0F7" stroke="#2C3A47" stroke-width="1.5"/>
+                `, size);
+
+            case 'umbrella':
+                return wrap(`
+                    <path d="M10 52 Q10 16 50 16 Q90 16 90 52 Z" fill="#FF6B6B" stroke="#2C3A47" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M10 52 Q22 42 34 52 Q46 42 50 52 Q54 42 66 52 Q78 42 90 52" fill="none" stroke="#2C3A47" stroke-width="2.2"/>
+                    <path d="M50 52 L50 78 Q50 88 40 88 Q32 88 32 80" fill="none" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>
+                `, size);
+
+            case 'toothbrush':
+                return wrap(`
+                    <rect x="16" y="52" width="56" height="12" rx="6" fill="#48B0F7" stroke="#2C3A47" stroke-width="2.5"/>
+                    <rect x="66" y="46" width="20" height="24" rx="6" fill="#DFE9F3" stroke="#2C3A47" stroke-width="2.5"/>
+                    <path d="M70 40 L70 46 M76 38 L76 46 M82 40 L82 46" stroke="#7ED6C1" stroke-width="4" stroke-linecap="round"/>
+                `, size);
+
+            case 'rainbow':
+                return wrap(`
+                    <path d="M10 74 A40 40 0 0 1 90 74" fill="none" stroke="#FF6B6B" stroke-width="9"/>
+                    <path d="M19 74 A31 31 0 0 1 81 74" fill="none" stroke="#FFA502" stroke-width="9"/>
+                    <path d="M28 74 A22 22 0 0 1 72 74" fill="none" stroke="#FFD86B" stroke-width="9"/>
+                    <path d="M37 74 A13 13 0 0 1 63 74" fill="none" stroke="#2ED573" stroke-width="9"/>
+                    <circle cx="18" cy="78" r="8" fill="#FFF" stroke="#2C3A47" stroke-width="2"/>
+                    <circle cx="82" cy="78" r="8" fill="#FFF" stroke="#2C3A47" stroke-width="2"/>
+                `, size);
+
             default:
                 return wrap(`<rect x="10" y="10" width="80" height="80" rx="16" fill="#4ECDC4"/>`, size);
         }

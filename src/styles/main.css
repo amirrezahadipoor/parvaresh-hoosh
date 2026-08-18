@@ -1801,3 +1801,50 @@ button:focus-visible, [role="button"]:focus-visible {
 @media (prefers-reduced-motion: reduce) {
     .giant-play-btn, .giant-play-icon, .giant-play-ring, .giant-play-glow { animation: none !important; }
 }
+
+/* --------------------------------------------------------------------------
+   Painting gallery (rewards screen) — the child's saved artwork, shown large.
+   -------------------------------------------------------------------------- */
+.gallery-card { padding: 14px; margin-bottom: 12px; border: 1px solid #E1E8F0; border-radius: 20px; background: #FFF; box-shadow: 0 5px 16px rgba(34,57,84,.06); }
+.gallery-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.gallery-head h2 { color: #1F2A37; font-size: 16px; font-weight: 900; }
+.gallery-head strong { padding: 6px 10px; border-radius: 10px; color: #6C5CE7; background: #EDEAFE; font-size: 12px; }
+.gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.gallery-item { padding: 0; border: 2px solid #EFE6DC; border-radius: 14px; background: #FFF; overflow: hidden; cursor: pointer; }
+.gallery-item img { display: block; width: 100%; height: 120px; object-fit: contain; background: #FFF; }
+.gallery-viewer { position: fixed; inset: 0; z-index: 12000; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(20,24,32,.72); }
+.gallery-viewer-inner { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 520px; padding: 14px; border-radius: 20px; background: #FFF; }
+.gallery-viewer-inner img { width: 100%; max-height: 66vh; object-fit: contain; border: 2px solid #EFE6DC; border-radius: 14px; }
+.paint-save-btn { color: #0B6E5B; background: #C9F2E7; box-shadow: 0 3px 0 #A5DCCD; }
+
+/* --------------------------------------------------------------------------
+   Grand piano — real white/black key layout with a guided song mode.
+   -------------------------------------------------------------------------- */
+.piano-song-bar { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 10px; }
+.piano-song-btn { font-size: 11px; }
+.piano-song-btn.active { color: #FFF; background: #6C5CE7; box-shadow: 0 3px 0 #4E3DC7; }
+.piano-stage { flex: 1 1 auto; display: flex; align-items: stretch; min-height: 230px; padding: 10px; border: 2px solid #EFE6DC; border-radius: var(--r-lg); background: linear-gradient(180deg, #2C3A47, #1B242C); }
+.piano-keys { position: relative; width: 100%; height: 100%; min-height: 210px; }
+.piano-key { position: absolute; top: 0; padding: 0; border: 0; font-family: inherit; cursor: pointer; }
+.piano-key-white {
+    height: 100%;
+    border: 2px solid #2C3A47;
+    border-radius: 0 0 10px 10px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F1F4F8 92%);
+    box-shadow: inset 0 -8px 0 rgba(0,0,0,.07);
+    display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px;
+    z-index: 1;
+}
+.piano-key-black {
+    height: 62%;
+    border-radius: 0 0 8px 8px;
+    background: linear-gradient(180deg, #3B4653 0%, #10161C 100%);
+    box-shadow: 0 4px 0 rgba(0,0,0,.45);
+    z-index: 2;
+}
+.piano-key-label { color: #55606B; font-size: 12px; font-weight: 900; pointer-events: none; }
+.piano-key.pressed { transform: translateY(3px); filter: brightness(.94); }
+.piano-key-white.next { background: linear-gradient(180deg, #FFF6C8 0%, #FFE066 100%); animation: pianoNext 1.1s ease-in-out infinite; }
+.piano-key-white.next .piano-key-label { color: #8A6D00; }
+@keyframes pianoNext { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
+@media (prefers-reduced-motion: reduce) { .piano-key-white.next { animation: none; } }

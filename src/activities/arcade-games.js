@@ -44,6 +44,14 @@ window.ArcadeGames = (function() {
             bg: '#E7F9F0'
         },
         {
+            id: 'grand-piano',
+            title: 'پیانوی بزرگ من',
+            subtitle: 'نواختن آزاد و یادگیری آهنگ‌های کودکانه',
+            iconHtml: `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M8 5v9M12 5v9M16 5v9"></path></svg>`,
+            color: '#111827',
+            bg: '#E8EAF0'
+        },
+        {
             id: 'turn-taking',
             title: 'نوبت من و تو',
             subtitle: 'بازی گفت‌وگویی کودک و والد',
@@ -531,6 +539,135 @@ window.ArcadeGames = (function() {
         renderTurn();
     }
 
+
+    // 7. GRAND PIANO — a real keyboard with white + black keys, free play and
+    // a guided song mode that lights the next key to press.
+    function launchGrandPiano(container, onExit) {
+        const WHITE = [
+            { n: 'دو', f: 261.63, id: 'C' }, { n: 'ر', f: 293.66, id: 'D' },
+            { n: 'می', f: 329.63, id: 'E' }, { n: 'فا', f: 349.23, id: 'F' },
+            { n: 'سل', f: 392.00, id: 'G' }, { n: 'لا', f: 440.00, id: 'A' },
+            { n: 'سی', f: 493.88, id: 'B' }, { n: 'دو۲', f: 523.25, id: 'C2' }
+        ];
+        // Black keys sit between specific white keys (no black between E-F and B-C).
+        const BLACK = [
+            { f: 277.18, after: 0 }, { f: 311.13, after: 1 },
+            { f: 369.99, after: 3 }, { f: 415.30, after: 4 }, { f: 466.16, after: 5 }
+        ];
+        const SONGS = [
+            { title: 'ستاره کوچولو', keys: ['C','C','G','G','A','A','G','F','F','E','E','D','D','C'] },
+            { title: 'زنگوله‌ها', keys: ['E','E','E','E','E','E','E','G','C','D','E'] },
+            { title: 'قایق من', keys: ['C','C','C','D','E','E','D','E','F','G'] }
+        ];
+
+        let songMode = null;
+        let songPos = 0;
+        let score = 0;
+
+        container.innerHTML = `
+            <div class="arcade-card">
+                <div class="arcade-hud">
+                    <button class="action-pill-btn" id="piano-exit-btn"><span>بازگشت</span></button>
+                    <div class="arcade-score-badge" id="piano-status">نواختن آزاد</div>
+                    <div class="arcade-combo-badge" id="piano-score">امتیاز: ۰</div>
+                </div>
+                <div class="piano-song-bar" id="piano-song-bar"></div>
+                <div class="piano-stage">
+                    <div class="piano-keys" id="piano-keys"></div>
+                </div>
+            </div>
+        `;
+
+        container.querySelector('#piano-exit-btn').onclick = () => {
+            AudioEngine.play('click');
+            if (window.GameProgress) window.GameProgress.record('grand-piano', score, 1);
+            if (onExit) onExit();
+        };
+
+        const statusEl = container.querySelector('#piano-status');
+        const scoreEl = container.querySelector('#piano-score');
+        const keysEl = container.querySelector('#piano-keys');
+        const songBar = container.querySelector('#piano-song-bar');
+
+        const freeBtn = document.createElement('button');
+        freeBtn.className = 'action-pill-btn piano-song-btn active';
+        freeBtn.textContent = 'نواختن آزاد';
+        freeBtn.onclick = () => { songMode = null; songPos = 0; refreshSongButtons(); highlight(); statusEl.textContent = 'نواختن آزاد'; };
+        songBar.appendChild(freeBtn);
+
+        SONGS.forEach(song => {
+            const b = document.createElement('button');
+            b.className = 'action-pill-btn piano-song-btn';
+            b.textContent = song.title;
+            b.onclick = () => {
+                AudioEngine.play('click');
+                songMode = song; songPos = 0;
+                refreshSongButtons(); highlight();
+                statusEl.textContent = song.title;
+            };
+            songBar.appendChild(b);
+        });
+
+        function refreshSongButtons() {
+            [...songBar.querySelectorAll('.piano-song-btn')].forEach(b => b.classList.remove('active'));
+            const label = songMode ? songMode.title : 'نواختن آزاد';
+            const match = [...songBar.querySelectorAll('.piano-song-btn')].find(b => b.textContent === label);
+            if (match) match.classList.add('active');
+        }
+
+        function highlight() {
+            keysEl.querySelectorAll('.piano-key').forEach(k => k.classList.remove('next'));
+            if (!songMode) return;
+            const want = songMode.keys[songPos];
+            const target = keysEl.querySelector(`.piano-key[data-id="${want}"]`);
+            if (target) target.classList.add('next');
+        }
+
+        function press(key, freq, id) {
+            AudioEngine.play('bell', freq);
+            key.classList.add('pressed');
+            setTimeout(() => key.classList.remove('pressed'), 160);
+            if (window.Fx) Fx.pop(key);
+            if (!songMode) return;
+            if (id === songMode.keys[songPos]) {
+                songPos++;
+                score += 10;
+                scoreEl.textContent = `امتیاز: ${toFa(score)}`;
+                if (songPos >= songMode.keys.length) {
+                    statusEl.textContent = 'آفرین! آهنگ کامل شد';
+                    AudioEngine.play('win');
+                    if (window.Fx) Fx.confetti();
+                    if (window.GameProgress) window.GameProgress.record('grand-piano', score, 1);
+                    songPos = 0;
+                }
+                highlight();
+            }
+        }
+
+        // White keys first (they form the row), black keys are absolutely placed.
+        WHITE.forEach((w, i) => {
+            const key = document.createElement('button');
+            key.className = 'piano-key piano-key-white';
+            key.dataset.id = w.id;
+            key.style.left = `${(i / WHITE.length) * 100}%`;
+            key.style.width = `${100 / WHITE.length}%`;
+            key.innerHTML = `<span class="piano-key-label">${w.n}</span>`;
+            key.onclick = () => press(key, w.f, w.id);
+            keysEl.appendChild(key);
+        });
+        BLACK.forEach(bk => {
+            const key = document.createElement('button');
+            key.className = 'piano-key piano-key-black';
+            const unit = 100 / WHITE.length;
+            key.style.left = `${unit * (bk.after + 1) - unit * 0.3}%`;
+            key.style.width = `${unit * 0.6}%`;
+            key.onclick = ev => { ev.stopPropagation(); press(key, bk.f, null); };
+            keysEl.appendChild(key);
+        });
+
+        highlight();
+    }
+
     function openGame(gameId, container, onExit) {
         switch (gameId) {
             case 'balloon-catcher': launchBalloonCatcher(container, onExit); break;
@@ -538,6 +675,7 @@ window.ArcadeGames = (function() {
             case 'music-bells': launchMusicBells(container, onExit); break;
             case 'cargo-train': launchCargoTrain(container, onExit); break;
             case 'speed-memory': launchSpeedMemory(container, onExit); break;
+            case 'grand-piano': launchGrandPiano(container, onExit); break;
             case 'turn-taking': launchTurnTaking(container, onExit); break;
             default: launchBalloonCatcher(container, onExit); break;
         }

@@ -25,6 +25,8 @@ window.QuizActivity = (function() {
         `;
         speakerBtn.onclick = () => {
             AudioEngine.play('click');
+            // Replay the real recorded clip for this letter when we have one.
+            if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
             AudioEngine.speak(round.speech || round.prompt);
         };
 
@@ -34,6 +36,8 @@ window.QuizActivity = (function() {
 
         // Auto-play voice narration
         setTimeout(() => {
+            // main.js already auto-plays the bundled clip for this round.
+            if (round.audioClip) return;
             AudioEngine.speak(round.speech || round.prompt);
         }, 150);
 

@@ -173,17 +173,29 @@ window.Generator = (function() {
         return words.find(hasRealArt) || words[0];
     }
 
+    // Map each letter to its bundled narration clip id (assets/audio/letter-<id>.mp3).
+    const LETTER_AUDIO = {
+        'ا':'alef','ب':'be','پ':'pe','ت':'te','ث':'se','ج':'jim','چ':'che','ح':'he',
+        'خ':'khe','د':'dal','ذ':'zal','ر':'re','ز':'ze','ژ':'zhe','س':'sin','ش':'shin',
+        'ص':'sad','ض':'zad','ط':'ta','ظ':'za','ع':'eyn','غ':'gheyn','ف':'fe','ق':'ghaf',
+        'ک':'kaf','گ':'gaf','ل':'lam','م':'mim','ن':'nun','و':'vav','ه':'heh','ی':'ye'
+    };
+
     function letterSoundRound(letterObj) {
         const correct = letterObj.letter;
         const others = shuffle(ALPHABET.filter(l => l.letter !== correct)).slice(0, 3);
         const opts = shuffle([correct, ...others.map(l => l.letter)]);
-        return mc(
+        const round = mc(
             `کدام حرف صدای «${letterObj.name}» است؟`,
             null,
             opts.map(l => ({ label: l, big: true })),
             opts.indexOf(correct),
             `صدای حرف ${letterObj.name}`
         );
+        // Bundled narration for this exact letter, auto-played by the activity.
+        round.audioClip = LETTER_AUDIO[correct] ? `letter-${LETTER_AUDIO[correct]}` : null;
+        round.letter = correct;
+        return round;
     }
 
     function letterExampleRound(letterObj) {
@@ -211,13 +223,16 @@ window.Generator = (function() {
             { label: correctWord, img: correctImg },
             ...others.map(w => ({ label: w, img: imgForWord(w) }))
         ]);
-        return mc(
+        const picRound = mc(
             `کدام تصویر با حرف «${letterObj.letter}» شروع می‌شود؟`,
             null,
             opts,
             opts.findIndex(o => o.label === correctWord),
             `کدام کلمه با حرف ${letterObj.letter} شروع می‌شود؟`
         );
+        picRound.audioClip = LETTER_AUDIO[letterObj.letter] ? `letter-${LETTER_AUDIO[letterObj.letter]}` : null;
+        picRound.letter = letterObj.letter;
+        return picRound;
     }
 
     function firstSoundRound() {
@@ -687,8 +702,13 @@ window.Generator = (function() {
         const e = pick(EMOTIONS);
         const others = shuffle(EMOTIONS.map(x => x.fa).filter(x => x !== e.fa)).slice(0, 3);
         const opts = shuffle([e.fa, ...others]);
-        return mc(
+        const emoPhrasings = [
             `«${e.situation}» چه حسی داریم؟`,
+            `«${e.situation}» — این چه احساسی است؟`,
+            `وقتی این اتفاق می‌افتد چه حسی پیدا می‌کنیم؟ «${e.situation}»`
+        ];
+        return mc(
+            pick(emoPhrasings),
             Mascot.svg(95, e.icon || 'happy'),
             opts.map(x => ({ label: x })),
             opts.indexOf(e.fa),
@@ -698,16 +718,34 @@ window.Generator = (function() {
 
     function habitRound() {
         const good = pick(GOOD_HABITS);
-        const badPool = ['داد زدن در خانه', 'نخوردن صبحانه', 'به وسایل خطرناک دست زدن', 'ریختن زباله روی زمین'];
+        const badPool = [
+            'داد زدن در خانه', 'نخوردن صبحانه', 'به وسایل خطرناک دست زدن',
+            'ریختن زباله روی زمین', 'پریدن وسط حرف دیگران', 'قهر کردن سر بازی',
+            'شکستن اسباب‌بازی از عصبانیت', 'مسخره کردن دوستان',
+            'باز گذاشتن شیر آب', 'نشستن طولانی جلوی تلویزیون'
+        ];
         const others = shuffle(badPool).slice(0, 2);
         const opts = shuffle([good.fa, ...others]);
-        return mc(
+        // Vary the wording so the same habit question does not feel identical
+        // across dozens of rounds.
+        const phrasings = [
             'کدام رفتار پسندیده و مفید است؟',
+            'کدام کار درست است؟',
+            'یک بچهٔ مهربان کدام کار را می‌کند؟',
+            'کدام رفتار باعث می‌شود دیگران خوشحال شوند؟',
+            'کدام یک عادت خوب است؟',
+            'اگر بخواهی کار درست را انتخاب کنی، کدام است؟'
+        ];
+        const round = mc(
+            pick(phrasings),
             null,
             opts.map(x => ({ label: x })),
             opts.indexOf(good.fa),
             'کدام رفتار خوب و درست است؟'
         );
+        // Teach the "why", not just the right answer.
+        round.explain = good.desc || '';
+        return round;
     }
 
     function familyRound() {
@@ -755,12 +793,17 @@ window.Generator = (function() {
     }
 
     function tracingRound(char, kind) {
-        return {
+        const round = {
             type: 'tracing',
             char: String(char),
             kind: kind || 'letter',
             speech: `با انگشت روی ${kind === 'number' ? 'عدد' : 'حرف'} ${char} بکش`
         };
+        if (kind !== 'number' && LETTER_AUDIO[String(char)]) {
+            round.audioClip = `letter-${LETTER_AUDIO[String(char)]}`;
+            round.letter = String(char);
+        }
+        return round;
     }
 
     function balloonRound() {
@@ -809,7 +852,15 @@ window.Generator = (function() {
         'ابر': 'rain', 'ماشین': 'car', 'کتاب': 'book', 'خانه': 'house',
         'چشم': 'eye', 'گوش': 'ear', 'بینی': 'nose', 'دست': 'hand',
         'زبان': 'tongue', 'پا': 'foot', 'دندان': 'tooth', 'مغز': 'brain',
-        'ساعت': 'clock', 'هدیه': 'gift', 'کیک': 'cake'
+        'ساعت': 'clock', 'هدیه': 'gift', 'کیک': 'cake',
+        // Newly illustrated vocabulary (previously fell back to text tiles).
+        'انگور': 'grape', 'انار': 'pomegranate', 'بستنی': 'icecream',
+        'پیراهن': 'shirt', 'لباس': 'shirt', 'جوراب': 'sock', 'جعبه': 'box',
+        'چای': 'tea', 'فنجان': 'tea', 'شمع': 'candle', 'صندلی': 'chair',
+        'عینک': 'glasses', 'عروسک': 'doll', 'طبل': 'drum', 'لامپ': 'lamp',
+        'قایق': 'boat', 'قفل': 'lock', 'کلاه': 'hat', 'کفش': 'shoe',
+        'هویج': 'carrot', 'هواپیما': 'plane', 'چتر': 'umbrella',
+        'مسواک': 'toothbrush', 'رنگین‌کمان': 'rainbow'
     };
     const SHAPE_IMG = {
         'دایره': ['circle', '#FF6B6B'], 'مثلث': ['triangle', '#4ECDC4'],
@@ -908,10 +959,14 @@ window.Generator = (function() {
         return Math.max(1, Math.min(8, level));
     }
 
-    function plan(factories, metadata) {
+    function plan(factories, metadata, exactLength) {
         const list = Array.isArray(factories) ? factories.filter(Boolean) : [];
         if (!list.length) return [];
-        const rounds = Array.from({ length: 5 }, (_, index) => list[index % list.length]());
+        // Default lesson length is 5 rounds. `exactLength` lets a lesson run every
+        // factory it built (alphabet lessons must cover all four of their letters,
+        // which needs 9 rounds — truncating to 5 silently dropped two letters).
+        const count = exactLength ? list.length : 5;
+        const rounds = Array.from({ length: count }, (_, index) => list[index % list.length]());
         return rounds.map(round => ({
             ...round,
             lessonId: metadata && metadata.id,
@@ -953,9 +1008,22 @@ window.Generator = (function() {
 
     function resolveAgeTrack(metadata, pkg) {
         const age = Number(metadata && metadata.childAge);
-        if (Number.isFinite(age) && age <= 5) return 'preschool';
-        if (Number.isFinite(age) && age >= 7) return 'school';
-        return 'early';
+        // A gifted child who is consistently correct is promoted to the next track
+        // so they meet harder content instead of looping through easy rounds.
+        // `adaptiveDifficulty` comes from Adaptive.getDifficulty() (1..maxLevel).
+        const adaptive = Number(metadata && metadata.adaptiveDifficulty);
+        let track = 'early';
+        if (Number.isFinite(age) && age <= 5) track = 'preschool';
+        else if (Number.isFinite(age) && age >= 7) track = 'school';
+
+        if (Number.isFinite(adaptive)) {
+            const ladder = ['preschool', 'early', 'school'];
+            let idx = ladder.indexOf(track);
+            if (adaptive >= 4 && idx < ladder.length - 1) idx++;   // mastering -> harder
+            else if (adaptive <= 1 && idx > 0) idx--;              // struggling -> gentler
+            track = ladder[idx];
+        }
+        return track;
     }
 
     function roleFactory(role, level, letterCursor) {
@@ -1057,6 +1125,21 @@ window.Generator = (function() {
         const level = lessonLevel(lessonId, metadata);
         // Letters named in the lesson title (package title is authoritative).
         const set = lessonLetters(pkg) || lessonLetters(metadata);
+
+        // Alphabet lessons get a complete, deterministic plan. The old rotating
+        // cursor walked a 5-slot roundPlan over 4 letters, so one letter was only
+        // ever traced (never taught) while another was asked twice.
+        if (set && set.length && /صدای الفبا/.test(pkg.title || metadata.title || '')) {
+            const factories = [];
+            set.forEach(letterObj => {
+                factories.push(() => letterSoundRound(letterObj));
+                factories.push(() => letterExampleRound(letterObj));
+            });
+            factories.push(() => tracingRound(pick(set).letter, 'letter'));
+            const rounds = plan(factories, { ...metadata, difficulty: level }, true);
+            return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
+        }
+
         let li = 0;
         const letterCursor = set ? () => set[li++ % set.length] : null;
         const factories = (pkg.roundPlan || []).map(role => roleFactory(role, level, letterCursor));

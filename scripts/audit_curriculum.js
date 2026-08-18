@@ -52,8 +52,13 @@ let mapped = 0;
 
 for (const lesson of lessons) {
     const rounds = window.Generator.generate(lesson.id, lesson);
-    if (!Array.isArray(rounds) || rounds.length !== 5) {
-        errors.push(`${lesson.id}: expected exactly 5 rounds`);
+    // Standard lessons are 5 rounds. Alphabet lessons run one sound round plus one
+    // picture round for EVERY letter in their title, then a tracing round, so a
+    // 4-letter lesson is legitimately 9 rounds.
+    const isAlphabet = /صدای الفبا/.test(lesson.title || '');
+    const okLength = isAlphabet ? rounds.length >= 5 && rounds.length <= 12 : rounds.length === 5;
+    if (!Array.isArray(rounds) || !okLength) {
+        errors.push(`${lesson.id}: unexpected round count ${Array.isArray(rounds) ? rounds.length : 'n/a'}`);
         continue;
     }
     if (rounds.some(round => round.lessonId !== lesson.id || round.skillType !== lesson.type)) {

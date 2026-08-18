@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v7-audio-292';
+const CACHE_NAME = 'parvaresh-hoosh-v8-letters';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -8,7 +8,17 @@ const PRECACHE = [
   './assets/audio/lesson-R-L1-L01.mp3', './assets/audio/lesson-R-L1-L02.mp3',
   './assets/audio/lesson-R-L1-L03.mp3', './assets/audio/lesson-R-L1-L04.mp3',
   './assets/audio/lesson-R-L1-L05.mp3', './assets/audio/lesson-R-L1-L06.mp3',
-  './assets/audio/lesson-R-L1-L07.mp3', './assets/audio/lesson-R-L1-L08.mp3'
+  './assets/audio/lesson-R-L1-L07.mp3', './assets/audio/lesson-R-L1-L08.mp3',
+  './assets/audio/letter-alef.mp3',
+  './assets/audio/letter-be.mp3',
+  './assets/audio/letter-pe.mp3',
+  './assets/audio/letter-te.mp3',
+  './assets/audio/letter-se.mp3',
+  './assets/audio/letter-jim.mp3',
+  './assets/audio/letter-che.mp3',
+  './assets/audio/letter-he.mp3',
+  './assets/audio/letter-khe.mp3',
+  './assets/audio/letter-dal.mp3'
 ];
 
 self.addEventListener('install', event => {

@@ -26,7 +26,7 @@ window.TracingActivity = (function() {
         `;
         speakerBtn.onclick = () => {
             AudioEngine.play('click');
-            AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش گل من!`);
+            if (!(round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip))) AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش گل من!`);
         };
 
         promptBanner.appendChild(promptText);
@@ -34,7 +34,7 @@ window.TracingActivity = (function() {
         stage.appendChild(promptBanner);
 
         setTimeout(() => {
-            AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش گل من!`);
+            if (!(round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip))) AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش گل من!`);
         }, 150);
 
         // 2. Fullscreen Canvas Stage

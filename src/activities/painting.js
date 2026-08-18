@@ -146,7 +146,12 @@ window.PaintingActivity = (function() {
         undoBtn.addEventListener('click', () => {
             if (!ctx || !ctx.putImageData || !undoStack.length) return;
             AudioEngine.play('click');
-            ctx.putImageData(undoStack.pop(), 0, 0);
+            const snap = undoStack.pop();
+            // putImageData ignores the current transform, so reset it, restore the
+            // device-pixel snapshot, then re-apply the dpr scale for future strokes.
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.putImageData(snap.data || snap, 0, 0);
+            ctx.setTransform(snap.dpr || 1, 0, 0, snap.dpr || 1, 0, 0);
         });
 
         const clearBtn = document.createElement('button');
@@ -196,8 +201,10 @@ window.PaintingActivity = (function() {
 
         const canvas = document.createElement('canvas');
         canvas.className = 'paint-canvas';
-        const width = Math.min(window.innerWidth - 48, 380);
-        const height = Math.min(window.innerHeight * 0.44, 280);
+        // Bigger sheet: the old canvas used only ~44% of the height and capped at
+        // 280px, leaving the workshop feeling cramped on a phone.
+        const width = Math.min(window.innerWidth - 24, 560);
+        const height = Math.min(Math.max(window.innerHeight * 0.62, 320), 620);
         const dpr = window.devicePixelRatio || 1;
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -228,7 +235,7 @@ window.PaintingActivity = (function() {
         function saveSnapshot() {
             if (!ctx.getImageData) return;
             try {
-                undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                undoStack.push({ data: ctx.getImageData(0, 0, canvas.width, canvas.height), dpr });
                 if (undoStack.length > 12) undoStack.shift();
             } catch (e) {}
         }
@@ -316,6 +323,26 @@ window.PaintingActivity = (function() {
 
         canvasWrap.appendChild(canvas);
         card.appendChild(canvasWrap);
+
+        // Save-to-gallery button
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'action-pill-btn paint-save-btn';
+        saveBtn.textContent = 'ذخیره در گالری';
+        saveBtn.addEventListener('click', () => {
+            AudioEngine.play('click');
+            try {
+                const dataUrl = canvas.toDataURL('image/png');
+                const saved = JSON.parse(localStorage.getItem('ph_gallery') || '[]');
+                saved.unshift({ img: dataUrl, at: Date.now() });
+                localStorage.setItem('ph_gallery', JSON.stringify(saved.slice(0, 12)));
+                saveBtn.textContent = 'ذخیره شد ✓';
+                if (window.Fx) Fx.stars(canvasWrap, 4);
+                setTimeout(() => { saveBtn.textContent = 'ذخیره در گالری'; }, 1600);
+            } catch (e) {
+                saveBtn.textContent = 'ذخیره نشد';
+            }
+        });
+        toolsBar.appendChild(saveBtn);
 
         // Completion / Next Button
         const finishBtn = document.createElement('button');
