@@ -1,58 +1,55 @@
-// Node.js Deep Verification of all components and all 142 lessons for "پرورش هوش کودک"
+// Node.js Deep Verification of all components, arcade games, adventure path and 142 lessons
 const fs = require('fs');
+
+function createMockEl(tag) {
+    const el = {
+        tagName: (tag || 'DIV').toUpperCase(),
+        className: '',
+        style: { setProperty: () => {} },
+        dataset: {},
+        innerHTML: '',
+        textContent: '',
+        children: [],
+        appendChild: (c) => el.children.push(c),
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        setAttribute: () => {},
+        getAttribute: () => null,
+        classList: {
+            add: () => {},
+            remove: () => {},
+            contains: () => false
+        },
+        querySelector: () => createMockEl('div'),
+        querySelectorAll: () => [createMockEl('div')],
+        animate: () => ({ onfinish: () => {} }),
+        getContext: () => ({
+            scale: () => {},
+            clearRect: () => {},
+            fillRect: () => {},
+            beginPath: () => {},
+            moveTo: () => {},
+            lineTo: () => {},
+            stroke: () => {},
+            fill: () => {},
+            arc: () => {},
+            strokeRect: () => {},
+            setLineDash: () => {},
+            fillText: () => {},
+            strokeText: () => {}
+        }),
+        getBoundingClientRect: () => ({ left: 0, top: 0, right: 300, bottom: 300, width: 300, height: 300 })
+    };
+    return el;
+}
 
 global.window = global;
 global.window.addEventListener = () => {};
 global.window.removeEventListener = () => {};
 global.document = {
-    querySelector: () => ({
-        addEventListener: () => {},
-        style: {},
-        setProperty: () => {},
-        innerHTML: '',
-        appendChild: () => {},
-        querySelector: () => null,
-        querySelectorAll: () => []
-    }),
-    querySelectorAll: () => [],
-    createElement: (tag) => {
-        const el = {
-            tagName: tag.toUpperCase(),
-            className: '',
-            style: { setProperty: () => {} },
-            dataset: {},
-            innerHTML: '',
-            textContent: '',
-            children: [],
-            appendChild: (c) => el.children.push(c),
-            addEventListener: () => {},
-            removeEventListener: () => {},
-            setAttribute: () => {},
-            getAttribute: () => null,
-            classList: {
-                add: () => {},
-                remove: () => {},
-                contains: () => false
-            },
-            getContext: () => ({
-                scale: () => {},
-                clearRect: () => {},
-                fillRect: () => {},
-                beginPath: () => {},
-                moveTo: () => {},
-                lineTo: () => {},
-                stroke: () => {},
-                fill: () => {},
-                arc: () => {},
-                strokeRect: () => {},
-                setLineDash: () => {},
-                fillText: () => {},
-                strokeText: () => {}
-            }),
-            getBoundingClientRect: () => ({ left: 0, top: 0, right: 300, bottom: 300, width: 300, height: 300 })
-        };
-        return el;
-    },
+    querySelector: () => createMockEl('div'),
+    querySelectorAll: () => [createMockEl('div')],
+    createElement: (tag) => createMockEl(tag),
     addEventListener: () => {}
 };
 
@@ -79,8 +76,10 @@ require('./src/core/svg-art.js');
 require('./src/core/fx.js');
 require('./src/core/nav.js');
 
-// Load activities
+// Load activities & adventure & arcade
 require('./src/activities/generator.js');
+require('./src/activities/adventure-journey.js');
+require('./src/activities/arcade-games.js');
 require('./src/activities/quiz.js');
 require('./src/activities/memory.js');
 require('./src/activities/dragdrop.js');
@@ -90,6 +89,10 @@ require('./src/activities/painting.js');
 require('./src/activities/balloon-pop.js');
 
 global.AudioEngine = window.AudioEngine;
+global.Mascot = window.Mascot;
+global.SvgArt = window.SvgArt;
+global.AdventureJourney = window.AdventureJourney;
+global.ArcadeGames = window.ArcadeGames;
 global.QuizActivity = window.QuizActivity;
 global.MemoryActivity = window.MemoryActivity;
 global.DragDropActivity = window.DragDropActivity;
@@ -98,12 +101,24 @@ global.OrderingActivity = window.OrderingActivity;
 global.PaintingActivity = window.PaintingActivity;
 global.BalloonPopActivity = window.BalloonPopActivity;
 
-const curriculum = JSON.parse(fs.readFileSync('./content/curriculum.json', 'utf8'));
+console.log('All modules loaded without error!');
+
+// Test Adventure Journey
+const nodes = AdventureJourney.getNodes();
+console.log(`Adventure Journey: ${nodes.length} progressive milestones configured.`);
+
+// Test Arcade Games
+const arcadeList = ArcadeGames.list();
+console.log(`Arcade Games: ${arcadeList.length} endless games available.`);
+
+for (const game of arcadeList) {
+    const dummyDiv = createMockEl('div');
+    ArcadeGames.openGame(game.id, dummyDiv, () => {});
+}
+console.log('All arcade games rendered without error!');
+
+// Test All 142 Curriculum Lessons
 const manifest = JSON.parse(fs.readFileSync('./content/content_manifest.json', 'utf8'));
-
-console.log(`Curriculum: ${curriculum.domains.length} domains`);
-console.log(`Manifest: ${manifest.items.length} total items`);
-
 let passed = 0;
 const errors = [];
 
@@ -116,7 +131,7 @@ for (const item of manifest.items) {
         }
 
         for (const round of rounds) {
-            const container = document.createElement('div');
+            const container = createMockEl('div');
             let renderer = null;
             switch (round.type) {
                 case 'quiz': renderer = QuizActivity; break;
@@ -140,9 +155,21 @@ for (const item of manifest.items) {
 
 console.log(`\nResults: ${passed} of ${manifest.items.length} lessons fully verified!`);
 
+// Test all 5 Mascot characters
+const characters = Mascot.listCharacters();
+console.log(`\nTesting ${characters.length} Mascot Characters:`);
+characters.forEach(c => {
+    ['happy', 'thinking', 'celebrating'].forEach(m => {
+        const str = Mascot.svg(80, m, c.id);
+        if (!str.includes('<svg')) errors.push(`Character ${c.id} mood ${m} failed!`);
+    });
+    console.log(`- Character ${c.name}: OK`);
+});
+
 if (errors.length > 0) {
     console.error('Errors:', errors);
     process.exit(1);
 } else {
-    console.log('SUCCESS: All 142 lessons and interactive engines tested with 100% pass rate!');
+    console.log('\nSUCCESS: 100% of all lessons, adventure path, arcade games, and mascots verified!');
+    process.exit(0);
 }

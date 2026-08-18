@@ -1,4 +1,4 @@
-// Main Application Controller for "پرورش هوش کودک"
+// Main Application Controller & Hub for "پرورش هوش کودک"
 (function() {
     'use strict';
 
@@ -9,10 +9,13 @@
         lessonId: null,
         lessonsDone: {}, // lessonId -> { stars: number, done: boolean, domain: string, lastPlayed: number }
         totalStars: 0,
-        muted: false
+        sfxMuted: false,
+        musicMuted: false,
+        activeTab: 'adventure'
     };
 
     const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
 
     function toFa(num) {
         const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
@@ -36,26 +39,42 @@
             state.curriculum = { domains: App.domains };
         }
 
-        // 2. Load Progress
+        // 2. Load Progress & Mascot
         const savedProgress = await Storage.load('progress');
         if (savedProgress) {
             state.lessonsDone = savedProgress.lessonsDone || {};
             state.totalStars = savedProgress.totalStars || 0;
         }
 
+        const savedMascot = await Storage.load('selected_mascot');
+        if (savedMascot) {
+            Mascot.setCharacter(savedMascot);
+        }
+
         // 3. Load Settings
         const savedSettings = await Storage.load('settings');
         if (savedSettings) {
-            state.muted = !!savedSettings.muted;
-            AudioEngine.setMuted(state.muted);
+            state.sfxMuted = !!savedSettings.sfxMuted;
+            state.musicMuted = !!savedSettings.musicMuted;
+            AudioEngine.setSfxMuted(state.sfxMuted);
         }
-        updateVoiceBtn();
+
+        updateAudioButtons();
         updateHeaderStars();
 
-        // 4. Bind Global Header Controls
+        // 4. Bind Global Header & Controls
         bindHeader();
+        bindTabs();
 
-        // 5. Hide Splash and Launch Home
+        // 5. Start Background Music on first user interaction
+        const startAudioOnFirstClick = () => {
+            AudioEngine.ensureCtx();
+            if (!state.musicMuted) AudioEngine.startMusic();
+            document.removeEventListener('pointerdown', startAudioOnFirstClick);
+        };
+        document.addEventListener('pointerdown', startAudioOnFirstClick);
+
+        // 6. Hide Splash and Launch Home
         setTimeout(() => {
             Nav.reset('home');
             renderHome();
@@ -75,20 +94,34 @@
             renderRewards();
         });
 
+        $('#btn-music').addEventListener('click', async () => {
+            const isOn = AudioEngine.toggleMusic();
+            state.musicMuted = !isOn;
+            await Storage.save('settings', { sfxMuted: state.sfxMuted, musicMuted: state.musicMuted });
+            updateAudioButtons();
+            AudioEngine.play('click');
+        });
+
         $('#btn-voice').addEventListener('click', async () => {
-            state.muted = !state.muted;
-            AudioEngine.setMuted(state.muted);
-            await Storage.save('settings', { muted: state.muted });
-            updateVoiceBtn();
+            state.sfxMuted = !state.sfxMuted;
+            AudioEngine.setSfxMuted(state.sfxMuted);
+            await Storage.save('settings', { sfxMuted: state.sfxMuted, musicMuted: state.musicMuted });
+            updateAudioButtons();
             AudioEngine.play('click');
         });
     }
 
-    function updateVoiceBtn() {
-        const btn = $('#btn-voice');
-        if (btn) {
-            btn.style.opacity = state.muted ? '0.45' : '1';
-            btn.style.filter = state.muted ? 'grayscale(1)' : 'none';
+    function updateAudioButtons() {
+        const musicBtn = $('#btn-music');
+        const voiceBtn = $('#btn-voice');
+
+        if (musicBtn) {
+            musicBtn.style.opacity = state.musicMuted ? '0.4' : '1';
+            musicBtn.textContent = state.musicMuted ? '🔇' : '🎵';
+        }
+        if (voiceBtn) {
+            voiceBtn.style.opacity = state.sfxMuted ? '0.4' : '1';
+            voiceBtn.textContent = state.sfxMuted ? '🔈' : '🔊';
         }
     }
 
@@ -99,9 +132,122 @@
         }
     }
 
-    // ===== HOME SCREEN =====
+    function bindTabs() {
+        $$('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                AudioEngine.play('click');
+                const targetTab = btn.dataset.tab;
+                state.activeTab = targetTab;
+
+                $$('.tab-btn').forEach(b => b.classList.remove('active'));
+                $$('.tab-pane').forEach(p => p.classList.remove('active'));
+
+                btn.classList.add('active');
+                const pane = $(`#pane-${targetTab}`);
+                if (pane) pane.classList.add('active');
+            });
+        });
+    }
+
+    // ===== HOME SCREEN RENDERING =====
     function renderHome() {
         updateHeaderStars();
+        updateAudioButtons();
+
+        // 1. Companion Mascot Banner
+        const mascotObj = Mascot.getCharacter();
+        const mascotEl = $('#home-mascot');
+        mascotEl.innerHTML = Mascot.svg(82, 'happy', mascotObj.id);
+        const speech = $('#home-speech');
+        const greeting = pickMsg(MESSAGES.greeting);
+        speech.textContent = `${mascotObj.name}: ${greeting}`;
+
+        mascotEl.onclick = () => {
+            AudioEngine.play('bubble');
+            Mascot.bounce(mascotEl);
+            AudioEngine.speak(speech.textContent);
+        };
+
+        // 2. Next Adventure Milestone Banner
+        const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
+        $('#next-adv-title').textContent = nextNode.title;
+
+        $('#btn-start-adventure').onclick = () => {
+            AudioEngine.play('win');
+            startAdventureLesson(nextNode);
+        };
+
+        // 3. Render Tab 1: Adventure Map Trail
+        renderAdventureMap();
+
+        // 4. Render Tab 2: Curriculum 6 Domains
+        renderCurriculumGrid();
+
+        // 5. Render Tab 3: Endless Arcade Games
+        renderArcadeGrid();
+    }
+
+    function startAdventureLesson(node) {
+        state.domainId = node.domain;
+        state.lessonId = node.lessonId;
+        const lessonDef = findLesson(node.lessonId) || { id: node.lessonId, title: node.title };
+        Nav.push('lesson');
+        startLesson(lessonDef);
+    }
+
+    function findLesson(lessonId) {
+        if (!state.curriculum) return null;
+        for (const dom of state.curriculum.domains || []) {
+            for (const lv of dom.levels || []) {
+                for (const l of lv.lessons || []) {
+                    if (l.id === lessonId) return l;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Tab 1: Adventure Map
+    function renderAdventureMap() {
+        const trail = $('#adventure-trail');
+        trail.innerHTML = '';
+        const nodes = AdventureJourney.getNodes();
+        const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
+
+        nodes.forEach(node => {
+            const isDone = state.lessonsDone[node.lessonId] && state.lessonsDone[node.lessonId].done;
+            const isCurrent = node.id === nextNode.id;
+
+            const card = document.createElement('div');
+            card.className = `adv-node-card ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`;
+            card.style.setProperty('--ncolor', node.color);
+
+            card.innerHTML = `
+                <div class="adv-node-icon" style="background:${isDone ? 'var(--ok)' : node.color}">
+                    ${isDone ? '✓' : node.icon}
+                </div>
+                <div class="adv-node-info">
+                    <div class="adv-node-title">${node.title}</div>
+                    <div class="adv-node-status">
+                        ${isDone ? '⭐⭐⭐ تکمیل شد' : isCurrent ? '📍 مرحله جاری (بزن بریم!)' : `سطح دشواری ${toFa(node.difficulty)}`}
+                    </div>
+                </div>
+                <div class="adv-node-action">
+                    ${isDone ? 'تکرار بازی' : isCurrent ? 'شروع ▶' : 'آماده'}
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                AudioEngine.play('click');
+                startAdventureLesson(node);
+            });
+
+            trail.appendChild(card);
+        });
+    }
+
+    // Tab 2: Curriculum Domains
+    function renderCurriculumGrid() {
         const grid = $('#domains-grid');
         grid.innerHTML = '';
 
@@ -135,23 +281,40 @@
 
             grid.appendChild(card);
         });
+    }
 
-        // Mascot Greeting
-        const mascotEl = $('#home-mascot');
-        mascotEl.innerHTML = Mascot.svg(86, 'happy');
-        const speech = $('#home-speech');
-        const greetingText = pickMsg(MESSAGES.greeting);
-        speech.textContent = greetingText;
+    // Tab 3: Endless Arcade Games
+    function renderArcadeGrid() {
+        const grid = $('#arcade-grid');
+        grid.innerHTML = '';
+        const games = ArcadeGames.list();
 
-        mascotEl.onclick = () => {
-            AudioEngine.play('bubble');
-            Mascot.bounce(mascotEl);
-            AudioEngine.speak(speech.textContent);
+        games.forEach(g => {
+            const card = document.createElement('button');
+            card.className = 'arcade-game-card';
+            card.style.setProperty('--gcolor', g.color);
+            card.innerHTML = `
+                <div class="arcade-game-icon" style="background:${g.color}">${g.icon}</div>
+                <div class="arcade-game-title">${g.title}</div>
+                <div class="arcade-game-desc">${g.subtitle}</div>
+            `;
+
+            card.addEventListener('click', () => {
+                AudioEngine.play('click');
+                $('#arcade-title').textContent = g.title;
+                Nav.push('arcade');
+                ArcadeGames.openGame(g.id, $('#arcade-container'), () => {
+                    Nav.back();
+                });
+            });
+
+            grid.appendChild(card);
+        });
+
+        $('#btn-back-arcade').onclick = () => {
+            AudioEngine.play('click');
+            Nav.back();
         };
-
-        setTimeout(() => {
-            AudioEngine.speak(speech.textContent);
-        }, 500);
     }
 
     function lessonsOfDomain(domainId) {
@@ -316,14 +479,14 @@
                     updateProgress();
                     AudioEngine.play('star');
                     showMascotMood('celebrating', pickMsg(MESSAGES.correct));
-                    Adaptive.record(state.domainId, true);
+                    Adaptive.record(state.domainId || 'reading', true);
                     roundIdx++;
                     setTimeout(() => nextRound(), 1000);
                 },
                 onWrong: () => {
                     AudioEngine.play('wrong');
                     showMascotMood('thinking', pickMsg(MESSAGES.wrong));
-                    Adaptive.record(state.domainId, false);
+                    Adaptive.record(state.domainId || 'reading', false);
                 }
             });
         }
@@ -336,7 +499,7 @@
             state.lessonsDone[lesson.id] = {
                 stars: newStars,
                 done: true,
-                domain: state.domainId,
+                domain: state.domainId || 'reading',
                 lastPlayed: Date.now()
             };
 
@@ -354,15 +517,15 @@
 
             overlay.innerHTML = `
                 <div class="result-card">
-                    <div style="margin: 0 auto 10px;">${Mascot.svg(90, 'celebrating')}</div>
-                    <h2>آفرین قهرمان!</h2>
+                    <div style="margin: 0 auto 10px;">${Mascot.svg(92, 'celebrating')}</div>
+                    <h2>آفرین قهرمان باهوش!</h2>
                     <div class="r-stars">${starString}</div>
                     <p>${pickMsg(MESSAGES.win)}</p>
                     <button class="big-action-btn primary" id="btn-continue-result" style="margin-bottom:10px;">
-                        <span>ادامه ماجراجویی</span>
+                        <span>ادامه ماجراجویی 🚀</span>
                     </button>
                     <button class="action-pill-btn" id="btn-home-result" style="width:100%; justify-content:center;">
-                        <span>بازگشت به خانه</span>
+                        <span>بازگشت به خانه 🏠</span>
                     </button>
                 </div>
             `;
@@ -373,12 +536,13 @@
                 Fx.stars(overlay, 6);
             }
             AudioEngine.play('win');
+            AudioEngine.play('applause');
 
             overlay.querySelector('#btn-continue-result').addEventListener('click', () => {
                 overlay.remove();
                 AudioEngine.play('click');
                 Nav.back();
-                renderDomain();
+                renderHome();
             });
 
             overlay.querySelector('#btn-home-result').addEventListener('click', () => {
@@ -406,11 +570,12 @@
         }
     }
 
-    // ===== REWARDS & ACHIEVEMENTS =====
+    // ===== REWARDS & MASCOT CUSTOMIZER =====
     function renderRewards() {
         const content = $('#rewards-content');
         content.innerHTML = '';
 
+        // 1. Stats Hero
         const hero = document.createElement('div');
         hero.className = 'stats-hero';
         hero.innerHTML = `
@@ -419,6 +584,39 @@
         `;
         content.appendChild(hero);
 
+        // 2. Choose Companion Mascot
+        const pickerSection = document.createElement('div');
+        pickerSection.className = 'companion-picker-section';
+        pickerSection.innerHTML = `<div class="companion-picker-title">🦊 همبازی و کاراکتر موردعلاقه‌ات را انتخاب کن:</div>`;
+
+        const grid = document.createElement('div');
+        grid.className = 'companion-grid';
+
+        const mascots = Mascot.listCharacters();
+        const currentMascot = Mascot.getCharacter();
+
+        mascots.forEach(m => {
+            const card = document.createElement('div');
+            card.className = `companion-card ${m.id === currentMascot.id ? 'selected' : ''}`;
+            card.innerHTML = `
+                ${Mascot.svg(56, 'happy', m.id)}
+                <span class="companion-name">${m.name}</span>
+            `;
+
+            card.onclick = () => {
+                AudioEngine.play('bubble');
+                Mascot.setCharacter(m.id);
+                renderRewards();
+                renderHome();
+            };
+
+            grid.appendChild(card);
+        });
+
+        pickerSection.appendChild(grid);
+        content.appendChild(pickerSection);
+
+        // 3. Badges List
         const list = document.createElement('div');
         list.className = 'achievement-list';
 
@@ -449,6 +647,7 @@
         $('#btn-back-rewards').onclick = () => {
             AudioEngine.play('click');
             Nav.back();
+            renderHome();
         };
     }
 

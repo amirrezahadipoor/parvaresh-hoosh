@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#FF6B6B">
-    <meta name="description" content="پرورش هوش کودک - اپلیکیشن آموزشی و بازی تعاملی کاملاً آفلاین برای کودکان ۵ تا ۸ سال">
+    <meta name="description" content="پرورش هوش کودک - اپلیکیشن آموزشی، شهربازی هوش و بازی تعاملی کاملاً آفلاین برای کودکان ۵ تا ۸ سال">
     <title>پرورش هوش کودک</title>
 
     <!-- Bundled Offline Fonts (Vazirmatn) -->
@@ -50,50 +50,95 @@
             <div class="splash-content">
                 <div class="splash-logo" id="splash-logo"></div>
                 <h1 class="app-title">پرورش هوش کودک</h1>
-                <p class="app-subtitle">یادگیری شیرین با بازی و شادی</p>
+                <p class="app-subtitle">یادگیری شیرین، شهربازی هوش و بازی‌های شاد</p>
                 <div class="loading-bar">
                     <div class="loading-progress"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. Home Screen -->
+        <!-- 2. Home Screen (Hub: Adventure Map & Quick Launch) -->
         <div id="screen-home" class="screen">
             <header class="main-header">
                 <button class="icon-btn" id="btn-parent" aria-label="بخش والدین" title="داشبورد والدین">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
                 </button>
                 <span class="header-title">پرورش هوش کودک</span>
-                <div style="display:flex; gap:8px; align-items:center;">
+                <div style="display:flex; gap:6px; align-items:center;">
                     <button class="star-badge-btn" id="btn-stars" aria-label="ستاره‌های من">
                         <span>★</span>
                         <span id="header-star-count">۰</span>
                     </button>
+                    <button class="icon-btn" id="btn-music" aria-label="موسیقی پس‌زمینه" title="موسیقی">
+                        🎵
+                    </button>
                     <button class="icon-btn" id="btn-voice" aria-label="تنظیمات صدا" title="صدا">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                        </svg>
+                        🔊
                     </button>
                 </div>
             </header>
+
             <main class="main-content" id="home-content">
+                <!-- Companion Mascot Hero Banner -->
                 <div class="mascot-hero-card">
-                    <div class="mascot-avatar" id="home-mascot"></div>
-                    <div class="speech-bubble" id="home-speech">سلام دوست باهوش من! امروز چی بازی کنیم؟</div>
+                    <div class="mascot-avatar" id="home-mascot" title="تغییر کاراکتر"></div>
+                    <div class="speech-bubble" id="home-speech">سلام دوست باهوشم! آماده‌ای ماجراجویی رو شروع کنیم؟</div>
                 </div>
-                <div class="domains-grid" id="domains-grid"></div>
+
+                <!-- Big Primary Action: Continue Adventure Journey -->
+                <div class="adventure-banner-card" id="btn-start-adventure">
+                    <div class="adv-text-wrap">
+                        <span class="adv-badge">🌟 ماجراجویی هوشمند</span>
+                        <h3 class="adv-title" id="next-adv-title">ادامه مسیر ماجراجویی</h3>
+                        <p class="adv-desc">مرحله پیشنهادی بعدی را شروع کن!</p>
+                    </div>
+                    <button class="adv-play-btn">بزن بریم! 🚀</button>
+                </div>
+
+                <!-- Navigation Tabs (ماجراجویی | درس‌ها | شهربازی هوش) -->
+                <div class="home-tab-switcher">
+                    <button class="tab-btn active" data-tab="adventure">🗺️ نقشه ماجراجویی</button>
+                    <button class="tab-btn" data-tab="curriculum">📚 حوزه‌های درسی</button>
+                    <button class="tab-btn" data-tab="arcade">🎡 شهربازی هوش</button>
+                </div>
+
+                <!-- Tab 1: Adventure Island Map -->
+                <div class="tab-pane active" id="pane-adventure">
+                    <div class="adventure-map-trail" id="adventure-trail"></div>
+                </div>
+
+                <!-- Tab 2: Curriculum 6 Domains -->
+                <div class="tab-pane" id="pane-curriculum">
+                    <div class="domains-grid" id="domains-grid"></div>
+                </div>
+
+                <!-- Tab 3: Endless Arcade Games -->
+                <div class="tab-pane" id="pane-arcade">
+                    <div class="arcade-grid" id="arcade-grid"></div>
+                </div>
             </main>
         </div>
 
-        <!-- 3. Domain Screen (Levels list) -->
+        <!-- 3. Arcade Runner Screen -->
+        <div id="screen-arcade" class="screen">
+            <header class="sub-header">
+                <button class="icon-btn" id="btn-back-arcade" aria-label="بازگشت">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+                <span class="header-title" id="arcade-title">شهربازی هوش</span>
+            </header>
+            <main class="main-content" id="arcade-container"></main>
+        </div>
+
+        <!-- 4. Domain Screen (Levels list) -->
         <div id="screen-domain" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-domain" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
@@ -103,11 +148,11 @@
             <main class="main-content" id="domain-content"></main>
         </div>
 
-        <!-- 4. Level Lessons Screen -->
+        <!-- 5. Level Lessons Screen -->
         <div id="screen-level" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-level" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
@@ -116,11 +161,11 @@
             <main class="main-content" id="level-content"></main>
         </div>
 
-        <!-- 5. Lesson Runner / Activity Player -->
+        <!-- 6. Lesson Runner / Activity Player -->
         <div id="screen-lesson" class="screen">
             <header class="sub-header lesson-header">
                 <button class="icon-btn" id="btn-exit-lesson" aria-label="خروج از مرحله">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
@@ -136,24 +181,24 @@
             <main class="lesson-body" id="lesson-body"></main>
         </div>
 
-        <!-- 6. Rewards & Badges Screen -->
+        <!-- 7. Rewards & Mascot Customizer -->
         <div id="screen-rewards" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-rewards" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
-                <span class="header-title">ستاره‌ها و افتخارات من</span>
+                <span class="header-title">ستاره‌ها و انتخاب کاراکتر</span>
             </header>
             <main class="main-content" id="rewards-content"></main>
         </div>
 
-        <!-- 7. Parent Dashboard Screen -->
+        <!-- 8. Parent Dashboard Screen -->
         <div id="screen-parents" class="screen">
             <header class="sub-header">
                 <button class="icon-btn" id="btn-back-parents" aria-label="بازگشت">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
@@ -183,8 +228,10 @@
     <script src="src/core/fx.js"></script>
     <script src="src/core/nav.js"></script>
 
-    <!-- Interactive Activities -->
+    <!-- Interactive Activities & Arcade -->
     <script src="src/activities/generator.js"></script>
+    <script src="src/activities/adventure-journey.js"></script>
+    <script src="src/activities/arcade-games.js"></script>
     <script src="src/activities/quiz.js"></script>
     <script src="src/activities/memory.js"></script>
     <script src="src/activities/dragdrop.js"></script>
