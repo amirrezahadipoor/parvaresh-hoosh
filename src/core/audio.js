@@ -261,9 +261,25 @@ window.AudioEngine = (function() {
         }
     }
 
+    // Clips that actually ship in assets/audio. Asking for anything else used to
+    // fire a 404 on every lesson without narration.
+    const AVAILABLE_CLIPS = new Set([
+        'lesson-R-L1-L01', 'lesson-R-L1-L02', 'lesson-R-L1-L03', 'lesson-R-L1-L04',
+        'lesson-R-L1-L05', 'lesson-R-L1-L06', 'lesson-R-L1-L07', 'lesson-R-L1-L08',
+        'letter-alef', 'letter-be', 'letter-pe', 'letter-te', 'letter-se', 'letter-jim',
+        'letter-che', 'letter-he', 'letter-khe', 'letter-dal', 'letter-zal', 'letter-re',
+        'letter-ze', 'letter-zhe', 'letter-sin', 'letter-shin', 'letter-sad', 'letter-zad',
+        'letter-ta', 'letter-za', 'letter-eyn', 'letter-gheyn', 'letter-fe', 'letter-ghaf',
+        'letter-kaf', 'letter-gaf', 'letter-lam', 'letter-mim', 'letter-nun', 'letter-vav'
+    ]);
+
+    function hasClip(name) {
+        return !!name && AVAILABLE_CLIPS.has(String(name));
+    }
+
     // Play a bundled narration clip by name (no extension), e.g. 'lesson-R-L1-L01'.
     function playClip(name, onEnd) {
-        if (sfxMuted || !name) return false;
+        if (sfxMuted || !name || !hasClip(name)) return false;
         try {
             stopClip();
             const audio = new Audio(`assets/audio/${name}.mp3`);
@@ -323,6 +339,7 @@ window.AudioEngine = (function() {
         play,
         speak,
         playClip,
+        hasClip,
         hasPersianVoice,
         stopSpeak,
         startMusic,

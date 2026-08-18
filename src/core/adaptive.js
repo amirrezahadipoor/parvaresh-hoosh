@@ -59,11 +59,28 @@ window.Adaptive = (function() {
             d.streak = 0;
         }
 
+        // Smarter progression: a single slip no longer demotes the child. We look at
+        // recent accuracy (last 8 answers) so difficulty tracks real ability rather
+        // than one unlucky tap, which used to yo-yo the level constantly.
+        if (!isCorrect) d.misses = (d.misses || 0) + 1; else d.misses = 0;
+
+        const recent = d.history.slice(-7).concat([{ correct: isCorrect }]);
+        const recentAcc = recent.length >= 4
+            ? recent.filter(h => h.correct).length / recent.length
+            : null;
+
         if (d.streak >= window.App.adaptive.upStreak && d.difficulty < window.App.adaptive.maxLevel) {
             d.difficulty++;
             d.streak = 0;
-        } else if (!isCorrect && d.difficulty > window.App.adaptive.minLevel) {
+            d.misses = 0;
+        } else if (recentAcc !== null && recentAcc >= 0.85 && d.difficulty < window.App.adaptive.maxLevel) {
+            // Consistently strong across a window -> promote even without a long streak.
+            d.difficulty++;
+            d.misses = 0;
+        } else if (d.misses >= 2 && recentAcc !== null && recentAcc < 0.5 && d.difficulty > window.App.adaptive.minLevel) {
+            // Two misses in a row AND a weak window -> ease off.
             d.difficulty = Math.max(window.App.adaptive.minLevel, d.difficulty - 1);
+            d.misses = 0;
         }
 
         d.history.push({ t: Date.now(), correct: isCorrect });

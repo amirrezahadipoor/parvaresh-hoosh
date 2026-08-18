@@ -866,7 +866,12 @@ window.Generator = (function() {
         'مادر': 'mother', 'مامان': 'mother', 'نان': 'bread', 'پنجره': 'window',
         'دوچرخه': 'bicycle', 'صابون': 'soap2', 'گیلاس': 'cherry', 'نهنگ': 'whale',
         'وال': 'whale', 'ببر': 'tiger', 'تاب': 'swing', 'کوه': 'mountain',
-        'مدرسه': 'school', 'وزنه': 'dumbbell'
+        'مدرسه': 'school', 'وزنه': 'dumbbell',
+        'زرافه': 'giraffe', 'فندق': 'nut', 'شانه': 'comb', 'راکت': 'racket',
+        'ذرت': 'grain', 'شکلات': 'chocolate', 'شتر': 'camel', 'قوری': 'jar',
+        'جام': 'jar', 'برف': 'snow', 'یخ': 'snow', 'ظرف': 'plate',
+        'طناب': 'rope', 'رادیو': 'radio', 'میز': 'table', 'رودخانه': 'river',
+        'دریا': 'river'
     };
     const SHAPE_IMG = {
         'دایره': ['circle', '#FF6B6B'], 'مثلث': ['triangle', '#4ECDC4'],

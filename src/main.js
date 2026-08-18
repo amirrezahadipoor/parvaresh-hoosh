@@ -624,8 +624,20 @@
         // Round-robin across domains so consecutive picks feel different.
         const byDomain = {};
         source.forEach(l => { (byDomain[l.domain] = byDomain[l.domain] || []).push(l); });
+
+        // Smarter ordering: domains the child is weakest at come first, so practice
+        // goes where it is actually needed instead of a fixed reading-first list.
+        const weakness = domain => {
+            if (!window.Adaptive || !window.Adaptive.stats) return 0.5;
+            try {
+                const st = window.Adaptive.stats(domain);
+                if (!st || !st.total) return 0.6;        // untouched -> fairly high priority
+                return 1 - (st.accuracy || 0) / 100;      // lower accuracy -> higher priority
+            } catch (e) { return 0.5; }
+        };
         const order = ['reading', 'math', 'logic', 'science', 'socio-emotional', 'art']
-            .filter(d => byDomain[d] && byDomain[d].length);
+            .filter(d => byDomain[d] && byDomain[d].length)
+            .sort((a, b) => weakness(b) - weakness(a));
         const extra = Object.keys(byDomain).filter(d => !order.includes(d));
         const domainRing = [...order, ...extra];
 
@@ -878,7 +890,9 @@
                 // follow-up picture/tracing rounds keep the clip on their speaker
                 // button so the same intro is not repeated two or three times.
                 if (round.audioClip && round.audioAutoPlay !== false) AudioEngine.playClip(round.audioClip);
-                else if (roundIdx === 0 && !round.audioClip) AudioEngine.playClip(`lesson-${lesson.id}`);
+                else if (roundIdx === 0 && !round.audioClip && AudioEngine.hasClip(`lesson-${lesson.id}`)) {
+                    AudioEngine.playClip(`lesson-${lesson.id}`);
+                }
             }
             if (roundIdx === 0 && round.lessonStory) {
                 const context = document.createElement('div');
