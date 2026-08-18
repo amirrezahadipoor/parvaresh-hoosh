@@ -393,6 +393,7 @@
         const close = async profile => {
             await window.Engagement.saveProfile(profile);
             overlay.remove();
+            Nav.reset('home');
             renderHome();
         };
         overlay.querySelector('#profile-start').addEventListener('click', () => {
