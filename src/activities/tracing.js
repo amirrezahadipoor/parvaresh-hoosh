@@ -56,8 +56,23 @@ window.TracingActivity = (function() {
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
 
+        const guideCanvas = document.createElement('canvas');
+        guideCanvas.width = canvas.width;
+        guideCanvas.height = canvas.height;
+        const guideCtx = guideCanvas.getContext && guideCanvas.getContext('2d');
+        let guideAvailable = Boolean(guideCtx && guideCtx.getImageData);
+        if (guideAvailable) {
+            guideCtx.scale(dpr, dpr);
+            guideCtx.font = `900 ${Math.round(height * 0.62)}px Vazirmatn, Tahoma, sans-serif`;
+            guideCtx.textAlign = 'center';
+            guideCtx.textBaseline = 'middle';
+            guideCtx.fillStyle = '#FFFFFF';
+            guideCtx.fillText(round.char, width / 2, height / 2);
+        }
+
         let isDrawing = false;
         let drawnPoints = 0;
+        let guidedPoints = 0;
         let completed = false;
 
         function drawBackground() {
@@ -107,6 +122,20 @@ window.TracingActivity = (function() {
             };
         }
 
+        function isNearGuide(pos) {
+            if (!guideAvailable) return true;
+            try {
+                const x = Math.max(0, Math.min(canvas.width - 1, Math.round(pos.x * dpr)));
+                const y = Math.max(0, Math.min(canvas.height - 1, Math.round(pos.y * dpr)));
+                const radius = Math.round(14 * dpr);
+                const data = guideCtx.getImageData(Math.max(0, x - radius), Math.max(0, y - radius), Math.min(canvas.width - Math.max(0, x - radius), radius * 2 + 1), Math.min(canvas.height - Math.max(0, y - radius), radius * 2 + 1)).data;
+                for (let index = 3; index < data.length; index += 4) if (data[index] > 20) return true;
+            } catch (error) {
+                guideAvailable = false;
+            }
+            return false;
+        }
+
         function startDraw(e) {
             if (completed) return;
             e.preventDefault();
@@ -128,6 +157,7 @@ window.TracingActivity = (function() {
             ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
             drawnPoints++;
+            if (isNearGuide(pos)) guidedPoints++;
 
             if (drawnPoints % 25 === 0) {
                 AudioEngine.play('bubble');
@@ -152,6 +182,10 @@ window.TracingActivity = (function() {
 
         canvasWrap.appendChild(canvas);
         stage.appendChild(canvasWrap);
+        const traceStatus = document.createElement('div');
+        traceStatus.className = 'trace-status';
+        traceStatus.textContent = 'روی مسیر کم‌رنگ حرکت کن؛ لازم نیست کاملاً دقیق باشی.';
+        stage.appendChild(traceStatus);
 
         // 3. Action Controls
         const controls = document.createElement('div');
@@ -164,7 +198,9 @@ window.TracingActivity = (function() {
         clearBtn.onclick = () => {
             AudioEngine.play('click');
             drawnPoints = 0;
+            guidedPoints = 0;
             completed = false;
+            traceStatus.textContent = 'روی مسیر کم‌رنگ حرکت کن؛ لازم نیست کاملاً دقیق باشی.';
             drawBackground();
         };
 
@@ -179,6 +215,7 @@ window.TracingActivity = (function() {
                 checkCompletion();
             } else {
                 AudioEngine.play('wrong');
+                traceStatus.textContent = 'چند حرکت دیگر هم روی مسیر بکش.';
                 if (window.Fx) Fx.shake(canvas);
             }
         };
@@ -189,13 +226,25 @@ window.TracingActivity = (function() {
 
         function checkCompletion() {
             if (completed) return;
+            const accuracy = drawnPoints ? guidedPoints / drawnPoints : 0;
+            if (guideAvailable && accuracy < 0.22) {
+                AudioEngine.play('wrong');
+                traceStatus.textContent = 'خیلی خوب بود؛ این بار کمی نزدیک‌تر به مسیر کم‌رنگ بکش.';
+                if (window.Fx) Fx.shake(canvas);
+                return;
+            }
             completed = true;
+            traceStatus.textContent = `آفرین! مسیر را ${toFaPercent(Math.round(Math.min(1, accuracy) * 100))}٪ نزدیک دنبال کردی.`;
             AudioEngine.play('correct');
             if (window.Fx) Fx.stars(canvasWrap, 5);
 
             setTimeout(() => {
-                if (cb && cb.onCorrect) cb.onCorrect(round);
+                if (cb && cb.onCorrect) cb.onCorrect(round, { accuracy });
             }, 800);
+        }
+
+        function toFaPercent(value) {
+            return String(value).replace(/[0-9]/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
         }
 
         container.appendChild(stage);
