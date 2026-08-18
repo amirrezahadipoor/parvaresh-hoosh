@@ -41,7 +41,109 @@ window.Generator = (function() {
     }
 
     // ==========================================
-    // 1. READING & LITERACY ROUNDS
+    // 1. RAVEN'S MATRICES FOR KIDS
+    // ==========================================
+    function ravenRound() {
+        const shapeTypes = ['circle', 'square', 'triangle', 'diamond'];
+        const colors = ['#FF4757', '#1E90FF', '#2ED573', '#FFA502'];
+
+        const baseShape = pick(shapeTypes);
+        const secondShape = pick(shapeTypes.filter(s => s !== baseShape));
+
+        const grid = [
+            SvgArt.shape(baseShape, colors[0], 70),
+            SvgArt.shape(baseShape, colors[1], 70),
+            SvgArt.shape(secondShape, colors[0], 70)
+        ];
+
+        const correctImg = SvgArt.shape(secondShape, colors[1], 70);
+        const distractors = [
+            SvgArt.shape(secondShape, colors[2], 70),
+            SvgArt.shape(baseShape, colors[1], 70),
+            SvgArt.shape(secondShape, colors[0], 70)
+        ];
+
+        const allOpts = shuffle([{ img: correctImg, isCorrect: true }, ...distractors.map(d => ({ img: d, isCorrect: false }))]);
+        const answerIdx = allOpts.findIndex(x => x.isCorrect);
+
+        return {
+            type: 'raven-matrix',
+            grid,
+            options: allOpts,
+            answer: answerIdx,
+            speech: 'شکل کامل‌کننده الگو را پیدا کن'
+        };
+    }
+
+    // ==========================================
+    // 2. SHADOW SILHOUETTE MATCH
+    // ==========================================
+    function shadowRound() {
+        const pool = ['cat', 'dog', 'rabbit', 'lion', 'elephant', 'apple', 'car', 'tree', 'flower'];
+        const targetKey = pick(pool);
+        const isAnimal = ['cat', 'dog', 'rabbit', 'lion', 'elephant'].includes(targetKey);
+
+        const originalImg = isAnimal ? SvgArt.animal(targetKey, 95) : SvgArt.object(targetKey, 95);
+        const correctShadow = originalImg;
+
+        const otherKeys = shuffle(pool.filter(k => k !== targetKey)).slice(0, 2);
+        const distractorShadows = otherKeys.map(k => {
+            return ['cat', 'dog', 'rabbit', 'lion', 'elephant'].includes(k) ? SvgArt.animal(k, 95) : SvgArt.object(k, 95);
+        });
+
+        const allShadows = shuffle([
+            { img: correctShadow, isCorrect: true },
+            ...distractorShadows.map(img => ({ img, isCorrect: false }))
+        ]);
+
+        return {
+            type: 'shadow-match',
+            originalImg,
+            shadowOptions: allShadows,
+            answer: allShadows.findIndex(x => x.isCorrect),
+            speech: 'سایه دقیق این تصویر را پیدا کن!'
+        };
+    }
+
+    // ==========================================
+    // 3. BALANCE SCALE
+    // ==========================================
+    function balanceRound() {
+        const leftCount = rint(1, 4);
+        let rightCount = rint(1, 4);
+        while (rightCount === leftCount) rightCount = rint(1, 4);
+
+        return {
+            type: 'balance-scale',
+            leftCount,
+            rightCount,
+            speech: 'کدام کفه ترازو سنگین‌تر است؟'
+        };
+    }
+
+    // ==========================================
+    // 4. SIMON SEQUENCE
+    // ==========================================
+    function simonRound(len) {
+        return {
+            type: 'simon-memory',
+            length: len || 3,
+            speech: 'صدای زنگ‌ها را به خاطر بسپار!'
+        };
+    }
+
+    // ==========================================
+    // 5. DISAPPEARED ITEM
+    // ==========================================
+    function disappearedRound() {
+        return {
+            type: 'disappeared-item',
+            speech: 'تصاویر سینی را به خاطر بسپار!'
+        };
+    }
+
+    // ==========================================
+    // 6. READING & LITERACY ROUNDS
     // ==========================================
     function letterSoundRound(letterObj) {
         const correct = letterObj.letter;
@@ -187,7 +289,7 @@ window.Generator = (function() {
     }
 
     // ==========================================
-    // 2. MATHEMATICS ROUNDS
+    // 7. MATHEMATICS ROUNDS
     // ==========================================
     function countRound(max) {
         const n = rint(1, max);
@@ -340,7 +442,7 @@ window.Generator = (function() {
     }
 
     // ==========================================
-    // 3. LOGIC & PUZZLE ROUNDS
+    // 8. LOGIC & PUZZLE ROUNDS
     // ==========================================
     function oddOneOutRound(kind) {
         if (kind === 'animals') {
@@ -444,7 +546,7 @@ window.Generator = (function() {
     }
 
     // ==========================================
-    // 4. SCIENCE & NATURE ROUNDS
+    // 9. SCIENCE & NATURE ROUNDS
     // ==========================================
     function animalSoundRound() {
         const a = pick(ANIMALS);
@@ -513,7 +615,7 @@ window.Generator = (function() {
     }
 
     // ==========================================
-    // 5. SOCIO-EMOTIONAL ROUNDS
+    // 10. SOCIO-EMOTIONAL ROUNDS
     // ==========================================
     function emotionRound() {
         const e = pick(EMOTIONS);
@@ -556,7 +658,7 @@ window.Generator = (function() {
     }
 
     // ==========================================
-    // 6. MEMORY, TRACING, BALLOON & ART
+    // 11. MEMORY, TRACING, BALLOON & ART
     // ==========================================
     function memoryRound(pairCount) {
         const pool = [
@@ -729,44 +831,44 @@ window.Generator = (function() {
         }
 
         if (lessonId.startsWith('M-L2')) {
-            return [countRound(10), numberNameRound(10), compareRound(10), numberOrderRound(10), countRound(10)];
+            return [countRound(10), numberNameRound(10), compareRound(10), numberOrderRound(10), balanceRound()];
         }
 
         if (lessonId.startsWith('M-L3')) {
-            return [shapeNameRound(), shapeMatchRound(), patternRound(), shapeNameRound(), shapeMatchRound()];
+            return [shapeNameRound(), shapeMatchRound(), shadowRound(), shapeNameRound(), shapeMatchRound()];
         }
 
         if (lessonId.startsWith('M-L4')) {
-            return [arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5), arithRound('+', 5)];
+            return [arithRound('+', 5), arithRound('+', 5), balanceRound(), arithRound('+', 5), arithRound('+', 5)];
         }
 
         if (lessonId.startsWith('M-L5')) {
-            return [arithRound('-', 5), arithRound('-', 5), arithRound('-', 10), arithRound('-', 10), arithRound('-', 10)];
+            return [arithRound('-', 5), arithRound('-', 5), arithRound('-', 10), balanceRound(), arithRound('-', 10)];
         }
 
         if (lessonId.startsWith('M-L6')) {
-            return [patternRound(), patternRound(), patternRound(), patternRound(), patternRound()];
+            return [patternRound(), ravenRound(), patternRound(), ravenRound(), patternRound()];
         }
 
         if (lessonId.startsWith('M-L7') || lessonId.startsWith('M-L8')) {
-            return [arithRound('both', 10), compareRound(20), orderSizeRound(), arithRound('+', 10), countRound(20)];
+            return [arithRound('both', 10), compareRound(20), balanceRound(), arithRound('+', 10), countRound(20)];
         }
 
         // LOGIC
         if (lessonId.startsWith('L-L1')) {
-            return [memoryRound(3), classifyRound(), memoryRound(3), classifyRound(), memoryRound(4)];
+            return [memoryRound(3), classifyRound(), disappearedRound(), classifyRound(), memoryRound(4)];
         }
 
         if (lessonId.startsWith('L-L2')) {
-            return [oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals'), oddOneOutRound('shapes'), oddOneOutRound('animals')];
+            return [oddOneOutRound('animals'), shadowRound(), oddOneOutRound('shapes'), shadowRound(), oddOneOutRound('animals')];
         }
 
         if (lessonId.startsWith('L-L3')) {
-            return [memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4), memoryRound(4)];
+            return [simonRound(3), memoryRound(4), simonRound(4), memoryRound(4), disappearedRound()];
         }
 
         if (lessonId.startsWith('L-L4') || lessonId.startsWith('L-L5') || lessonId.startsWith('L-L6')) {
-            return [orderSizeRound(), plantGrowthRound(), storyOrderRound(), classifyRound(), oddOneOutRound('animals')];
+            return [ravenRound(), shadowRound(), storyOrderRound(), balanceRound(), ravenRound()];
         }
 
         // SCIENCE
@@ -801,11 +903,11 @@ window.Generator = (function() {
 
         // ART
         if (lessonId.startsWith('A-L')) {
-            return [balloonRound(), paintingRound(), memoryRound(3), paintingRound(), balloonRound()];
+            return [balloonRound(), paintingRound(), shadowRound(), paintingRound(), balloonRound()];
         }
 
         // General Fallback
-        return [countRound(5), shapeNameRound(), memoryRound(3), sightWordRound(), balloonRound()];
+        return [countRound(5), shapeNameRound(), ravenRound(), shadowRound(), balloonRound()];
     }
 
     return { generate };

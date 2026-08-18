@@ -7,7 +7,7 @@
         domainId: null,
         levelId: null,
         lessonId: null,
-        lessonsDone: {}, // lessonId -> { stars: number, done: boolean, domain: string, lastPlayed: number }
+        lessonsDone: {},
         totalStars: 0,
         sfxMuted: false,
         musicMuted: false,
@@ -177,13 +177,9 @@
             startAdventureLesson(nextNode);
         };
 
-        // 3. Render Tab 1: Adventure Map Trail
+        // 3. Render Tabs
         renderAdventureMap();
-
-        // 4. Render Tab 2: Curriculum 6 Domains
         renderCurriculumGrid();
-
-        // 5. Render Tab 3: Endless Arcade Games
         renderArcadeGrid();
     }
 
@@ -480,6 +476,7 @@
                     AudioEngine.play('star');
                     showMascotMood('celebrating', pickMsg(MESSAGES.correct));
                     Adaptive.record(state.domainId || 'reading', true);
+                    IQAssessment.recordTrial(state.domainId || round.type, true);
                     roundIdx++;
                     setTimeout(() => nextRound(), 1000);
                 },
@@ -487,6 +484,7 @@
                     AudioEngine.play('wrong');
                     showMascotMood('thinking', pickMsg(MESSAGES.wrong));
                     Adaptive.record(state.domainId || 'reading', false);
+                    IQAssessment.recordTrial(state.domainId || round.type, false);
                 }
             });
         }
@@ -566,6 +564,11 @@
             case 'order-size': return OrderingActivity;
             case 'painting': return PaintingActivity;
             case 'balloon-pop': return BalloonPopActivity;
+            case 'raven-matrix': return IQEngines.RavenMatrixActivity;
+            case 'shadow-match': return IQEngines.ShadowMatchActivity;
+            case 'simon-memory': return IQEngines.SimonSequenceActivity;
+            case 'disappeared-item': return IQEngines.DisappearedItemActivity;
+            case 'balance-scale': return IQEngines.BalanceScaleActivity;
             default: return QuizActivity;
         }
     }
@@ -651,7 +654,7 @@
         };
     }
 
-    // ===== PARENT DASHBOARD & CHILD GATE =====
+    // ===== PARENT DASHBOARD & IQ RADAR ANALYSIS =====
     const PARENT_PIN_KEY = 'parvaresh_parent_pin';
 
     async function renderParents() {
@@ -782,76 +785,73 @@
         const panel = document.createElement('div');
         panel.className = 'parent-panel';
 
-        // 1. Overview Summary Card
-        const completedCount = Object.values(state.lessonsDone).filter(x => x.done).length;
-        const totalLessonsCount = (state.curriculum.domains || []).reduce((acc, d) => {
-            return acc + lessonsOfDomain(d.id).length;
-        }, 0);
-        const overallPct = totalLessonsCount ? Math.round((100 * completedCount) / totalLessonsCount) : 0;
+        const iqReport = IQAssessment.getReport();
 
-        const overviewCard = document.createElement('div');
-        overviewCard.className = 'parent-card';
-        overviewCard.innerHTML = `
-            <h3>📊 گزارش جامع رشد و پیشرفت کودک</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
-                <div style="background:#FDFBF8; padding:12px; border-radius:var(--r-md); border:1px solid #EFE6DC; text-align:center;">
-                    <div style="font-size:26px; font-weight:900; color:#6C5CE7;">${toFa(state.totalStars || 0)}</div>
-                    <div style="font-size:12px; color:var(--ink2); font-weight:700;">ستاره‌های کسب‌شده</div>
+        // 1. Psychological Growth & Mental Age Milestone
+        const milestoneCard = document.createElement('div');
+        milestoneCard.className = 'milestone-iq-card';
+        milestoneCard.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div class="milestone-iq-number">${toFa(iqReport.overallIQ)}</div>
+                    <div class="milestone-iq-label">شاخص رشد شناختی (IQ Index)</div>
                 </div>
-                <div style="background:#FDFBF8; padding:12px; border-radius:var(--r-md); border:1px solid #EFE6DC; text-align:center;">
-                    <div style="font-size:26px; font-weight:900; color:var(--ok);">${toFa(completedCount)} / ${toFa(totalLessonsCount)}</div>
-                    <div style="font-size:12px; color:var(--ink2); font-weight:700;">درس‌های تکمیل‌شده (${toFa(overallPct)}٪)</div>
+                <div style="text-align:left;">
+                    <div style="font-size:18px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
+                    <div style="font-size:12px; opacity:0.9;">سن شناختی تخمینی</div>
                 </div>
             </div>
-            <p style="font-size:13px; color:var(--ink2); line-height:1.6;">
-                🔒 این اپلیکیشن کاملاً آفلاین بوده و داده‌های فرزند شما تنها بر روی حافظه همین دستگاه نگهداری می‌شود.
-            </p>
+            <div class="milestone-headline">💡 ${iqReport.headline}</div>
         `;
-        panel.appendChild(overviewCard);
+        panel.appendChild(milestoneCard);
 
-        // 2. Domain Detailed Radar/Stats Card
-        const domainCard = document.createElement('div');
-        domainCard.className = 'parent-card';
-        domainCard.innerHTML = `<h3>🎯 عملکرد در ۶ حوزه شناختی و مهارتی</h3>`;
+        // 2. Interactive 6-Axis Radar Spider Chart
+        const radarCard = document.createElement('div');
+        radarCard.className = 'parent-radar-container';
+        radarCard.innerHTML = `
+            <h3 style="font-size:18px; font-weight:900; margin-bottom:4px;">🕸️ نمودار راداری ۶ بعد هوش گاردنر و پیاژه</h3>
+            <p style="font-size:13px; color:var(--ink2); margin-bottom:12px;">تحلیل توزیع استعدادها و هماهنگی ابعاد شناختی کودک</p>
+            <canvas id="radar-chart" width="340" height="300" class="parent-radar-canvas"></canvas>
+        `;
+        panel.appendChild(radarCard);
 
-        const domainStats = document.createElement('div');
-        domainStats.className = 'domain-stats';
+        // 3. Dimension Detailed Analysis & Parenting Recommendations
+        const detailsCard = document.createElement('div');
+        detailsCard.className = 'parent-card';
+        detailsCard.innerHTML = `<h3>📋 تحلیل تخصصی ابعاد ۶ گانه و توصیه‌های والدگری</h3>`;
 
-        App.domains.forEach(d => {
-            const domainDef = (state.curriculum.domains || []).find(x => x.id === d.id);
-            const title = domainDef ? domainDef.title : d.title;
-            const s = Adaptive.stats(d.id);
-            const lessons = lessonsOfDomain(d.id);
-            const done = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
-            const pct = lessons.length ? Math.round((100 * done) / lessons.length) : 0;
-
+        iqReport.dimensions.forEach(dim => {
             const row = document.createElement('div');
-            row.className = 'ds-row';
+            row.className = 'dimension-report-card';
             row.innerHTML = `
-                <div class="ds-head">
-                    <span>${title}</span>
-                    <span class="ds-badge ${s.statusClass}">${s.statusLabel}</span>
+                <div class="dim-head">
+                    <span>${dim.icon} ${dim.title}</span>
+                    <span style="background:${dim.badgeColor}; color:#FFF; font-size:11.5px; padding:3px 10px; border-radius:12px; font-weight:800;">
+                        ${dim.status}
+                    </span>
                 </div>
-                <div class="ds-bar">
-                    <i style="width:${pct}%; background:${d.color}"></i>
+                <div class="dim-bar">
+                    <i style="width:${dim.score}%; background:${dim.color};"></i>
                 </div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--ink2); font-weight:700; margin-bottom:6px;">
-                    <span>پیشرفت: ${toFa(pct)}٪ (${toFa(done)} از ${toFa(lessons.length)})</span>
-                    <span>دقت: ${toFa(s.accuracy)}٪ (${toFa(s.correct)} از ${toFa(s.total)})</span>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--ink2); font-weight:700; margin-bottom:8px;">
+                    <span>امتیاز تسلط: ${toFa(dim.score)} از ۱۰۰</span>
+                    <span>سطح چالشی: ${toFa(dim.level)}</span>
                 </div>
-                <div class="ds-tip">💡 ${s.tip}</div>
+                <div class="dim-advice">💡 <b>توصیه روان‌شناختی:</b> ${dim.advice}</div>
             `;
-            domainStats.appendChild(row);
+            detailsCard.appendChild(row);
         });
 
-        domainCard.appendChild(domainStats);
-        panel.appendChild(domainCard);
+        panel.appendChild(detailsCard);
 
-        // 3. Settings & Data Management
+        // 4. Data Privacy & Reset
         const settingsCard = document.createElement('div');
         settingsCard.className = 'parent-card';
         settingsCard.innerHTML = `
             <h3>⚙️ مدیریت داده‌ها و حریم خصوصی</h3>
+            <p style="font-size:13px; color:var(--ink2); margin-bottom:12px; line-height:1.6;">
+                🔒 تمام اطلاعات به صورت ۱۰۰٪ آفلاین بر روی همین دستگاه نگهداری می‌شود و به هیچ سروری ارسال نمی‌گردد.
+            </p>
             <button class="action-pill-btn" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%; justify-content:center;">
                 <span>پاک کردن تمام داده‌ها و شروع مجدد</span>
             </button>
@@ -871,6 +871,12 @@
 
         panel.appendChild(settingsCard);
         content.appendChild(panel);
+
+        // Draw radar chart on next frame
+        setTimeout(() => {
+            const canvas = content.querySelector('#radar-chart');
+            if (canvas) IQAssessment.drawRadarChart(canvas);
+        }, 100);
     }
 
     // Launch App

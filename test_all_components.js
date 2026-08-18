@@ -1,4 +1,4 @@
-// Node.js Deep Verification of all components, arcade games, adventure path and 142 lessons
+// Comprehensive Node.js Test for "پرورش هوش کودک" (100% of 142 lessons + IQ engines + Arcade + Radar)
 const fs = require('fs');
 
 function createMockEl(tag) {
@@ -33,10 +33,12 @@ function createMockEl(tag) {
             stroke: () => {},
             fill: () => {},
             arc: () => {},
+            closePath: () => {},
             strokeRect: () => {},
             setLineDash: () => {},
             fillText: () => {},
-            strokeText: () => {}
+            strokeText: () => {},
+            createRadialGradient: () => ({ addColorStop: () => {} })
         }),
         getBoundingClientRect: () => ({ left: 0, top: 0, right: 300, bottom: 300, width: 300, height: 300 })
     };
@@ -71,15 +73,17 @@ require('./src/core/config.js');
 require('./src/core/audio.js');
 require('./src/core/storage.js');
 require('./src/core/adaptive.js');
+require('./src/core/iq-assessment.js');
 require('./src/core/mascot.js');
 require('./src/core/svg-art.js');
 require('./src/core/fx.js');
 require('./src/core/nav.js');
 
-// Load activities & adventure & arcade
+// Load activities & adventure & arcade & IQ engines
 require('./src/activities/generator.js');
 require('./src/activities/adventure-journey.js');
 require('./src/activities/arcade-games.js');
+require('./src/activities/iq-engines.js');
 require('./src/activities/quiz.js');
 require('./src/activities/memory.js');
 require('./src/activities/dragdrop.js');
@@ -91,8 +95,10 @@ require('./src/activities/balloon-pop.js');
 global.AudioEngine = window.AudioEngine;
 global.Mascot = window.Mascot;
 global.SvgArt = window.SvgArt;
+global.IQAssessment = window.IQAssessment;
 global.AdventureJourney = window.AdventureJourney;
 global.ArcadeGames = window.ArcadeGames;
+global.IQEngines = window.IQEngines;
 global.QuizActivity = window.QuizActivity;
 global.MemoryActivity = window.MemoryActivity;
 global.DragDropActivity = window.DragDropActivity;
@@ -102,6 +108,13 @@ global.PaintingActivity = window.PaintingActivity;
 global.BalloonPopActivity = window.BalloonPopActivity;
 
 console.log('All modules loaded without error!');
+
+// Test IQ Assessment & Radar Chart
+const iqReport = IQAssessment.getReport();
+console.log(`IQ Assessment: Overall Index ${iqReport.overallIQ}, Mental Age: ${iqReport.estimatedMentalAge}`);
+const canvasMock = createMockEl('canvas');
+IQAssessment.drawRadarChart(canvasMock);
+console.log('Radar chart canvas rendered without error!');
 
 // Test Adventure Journey
 const nodes = AdventureJourney.getNodes();
@@ -142,6 +155,11 @@ for (const item of manifest.items) {
                 case 'order-size': renderer = OrderingActivity; break;
                 case 'painting': renderer = PaintingActivity; break;
                 case 'balloon-pop': renderer = BalloonPopActivity; break;
+                case 'raven-matrix': renderer = IQEngines.RavenMatrixActivity; break;
+                case 'shadow-match': renderer = IQEngines.ShadowMatchActivity; break;
+                case 'simon-memory': renderer = IQEngines.SimonSequenceActivity; break;
+                case 'disappeared-item': renderer = IQEngines.DisappearedItemActivity; break;
+                case 'balance-scale': renderer = IQEngines.BalanceScaleActivity; break;
                 default: renderer = QuizActivity; break;
             }
 
@@ -170,6 +188,6 @@ if (errors.length > 0) {
     console.error('Errors:', errors);
     process.exit(1);
 } else {
-    console.log('\nSUCCESS: 100% of all lessons, adventure path, arcade games, and mascots verified!');
+    console.log('\nSUCCESS: 100% of all lessons, IQ engines, adventure path, arcade games, and mascots verified!');
     process.exit(0);
 }
