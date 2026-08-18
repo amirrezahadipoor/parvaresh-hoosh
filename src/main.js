@@ -1111,14 +1111,15 @@
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <div class="milestone-iq-number">${toFa(iqReport.overallIQ)}</div>
-                    <div class="milestone-iq-label">شاخص رشد شناختی کودک</div>
+                    <div class="milestone-iq-label">شاخص رشد بازی‌محور</div>
                 </div>
-                <div style="text-align:left;">
-                    <div style="font-size:16px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
-                    <div style="font-size:12px; opacity:0.9;">سن شناختی تخمینی</div>
+                <div style="text-align:left; max-width:45%;">
+                    <div style="font-size:14px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
+                    <div style="font-size:11px; opacity:0.9;">تفسیر آموزشی</div>
                 </div>
             </div>
-            <div class="milestone-headline">نکته روان‌شناختی: ${iqReport.headline}</div>
+            <div class="milestone-headline">${iqReport.headline}</div>
+            <div class="milestone-disclaimer">${iqReport.disclaimer}</div>
         `;
         scrollBody.appendChild(milestoneCard);
 
@@ -1152,8 +1153,8 @@
         const radarCard = document.createElement('div');
         radarCard.className = 'parent-radar-container';
         radarCard.innerHTML = `
-            <h3 style="font-size:16px; font-weight:900; margin-bottom:4px;">نمودار راداری ۶ بعد هوش گاردنر و پیاژه</h3>
-            <p style="font-size:12px; color:var(--ink2); margin-bottom:10px;">تحلیل توزیع استعدادها و ابعاد شناختی</p>
+            <h3 style="font-size:16px; font-weight:900; margin-bottom:4px;">نمودار مهارت‌های بازی‌محور</h3>
+            <p style="font-size:12px; color:var(--ink2); margin-bottom:10px;">نمایش روند تمرین در شش حوزه، نه تشخیص تخصصی</p>
             <canvas id="radar-chart" width="320" height="260" class="parent-radar-canvas"></canvas>
         `;
         scrollBody.appendChild(radarCard);

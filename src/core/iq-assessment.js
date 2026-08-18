@@ -167,24 +167,23 @@ window.IQAssessment = (function() {
         });
 
         const overallIQ = Math.round(totalScore / dimensions.length);
-
-        let estimatedMentalAge = '۵ الی ۵.۵ سال';
+        const totalAttempts = dimensions.reduce((sum, dimension) => sum + dimension.attempts, 0);
         let headline = 'روند رشد شناختی متعادل و فعال';
 
         if (overallIQ >= 85) {
-            estimatedMentalAge = '۶.۵ الی ۷ سال (پیشرفته‌تر از میانگین)';
-            headline = 'هوش سرشار و کنجکاوی فوق‌العاده در پردازش اطلاعات';
+            headline = 'عملکرد بازی‌محور قوی و کنجکاوی خوب در پردازش اطلاعات';
         } else if (overallIQ >= 72) {
-            estimatedMentalAge = '۵.۵ الی ۶ سال (کاملاً متناسب و پویا)';
-            headline = 'هوش و یادگیری فعال و روبه‌رشد در تمام حوزه‌ها';
+            headline = 'یادگیری فعال و روبه‌رشد در چند حوزهٔ شناختی';
         } else if (overallIQ >= 60) {
-            estimatedMentalAge = '۴.۵ الی ۵ سال (در حال شکل‌گیری پایه‌ها)';
-            headline = 'علاقه‌مند به بازی و نیازمند تکرار شیرین روزانه';
+            headline = 'با تمرین کوتاه و پیوسته، پایه‌های یادگیری قوی‌تر می‌شوند';
         }
 
         return {
             overallIQ,
-            estimatedMentalAge,
+            estimatedMentalAge: totalAttempts >= 5 ? 'نشانگر بازی‌محور؛ غیرتشخیصی' : 'دادهٔ کافی هنوز جمع نشده است',
+            hasEnoughData: totalAttempts >= 5,
+            totalAttempts,
+            disclaimer: 'این شاخص آموزشی و بازی‌محور است و جایگزین ارزیابی روان‌شناختی یا پزشکی نیست.',
             headline,
             dimensions
         };
