@@ -33,7 +33,7 @@
     --card-bg: #FFFFFF;
     --ink: #2D3436;
     --ink2: #636E72;
-    --ink-light: #A4B0BE;
+    --ink-light: #5E6A78;
     --ok: #00B894;
     --ok-bg: #E6FAF4;
     --err: #FF4757;
@@ -184,7 +184,7 @@ html, body {
     padding: 3px 10px;
     font-size: 15px;
     font-weight: 900;
-    color: #D35400;
+    color: #94430A;
     cursor: pointer;
     box-shadow: 0 3px 0 #F1C40F;
 }
@@ -766,6 +766,7 @@ html, body {
     background: #F4EDE4;
     cursor: pointer;
     margin-top: 6px;
+    min-height: 46px;
 }
 
 /* =========================================================
@@ -893,8 +894,10 @@ html, body {
 #domain-content, #level-content, #rewards-content, #parents-content, #arcade-container { min-height: 0; }
 .level-card, .lesson-card { display: flex; align-items: center; gap: 10px; width: 100%; flex: 0 0 auto; margin-bottom: 9px; padding: 12px; border: 2px solid #F0E6DA; border-radius: var(--r-md); background: #FFF; box-shadow: var(--sh-sm); font-family: inherit; color: var(--ink); text-align: right; cursor: pointer; }
 .level-card.done, .lesson-card.done { border-color: var(--ok); background: #F5FFFC; }
-.level-num, .lstate { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 38px; height: 38px; border-radius: var(--r-full); color: #FFF; font-size: 16px; font-weight: 900; background: var(--dcolor,var(--accent)); }
-.lstate { color: var(--accent); background: #EDEAFE; font-size: 13px; }
+.level-num, .lstate { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 38px; height: 38px; border-radius: var(--r-full); color: #FFF; font-size: 16px; font-weight: 900;
+    /* Mix 28% black into the domain colour so white numerals always clear WCAG AA. */
+    background: color-mix(in srgb, var(--dcolor, var(--accent)) 72%, #000); }
+.lstate { color: #4A3BB8; background: #EDEAFE; font-size: 13px; }
 .lesson-card.done .lstate { color: #FFF; background: var(--ok); }
 .level-info { flex: 1; min-width: 0; }
 .level-name, .ltitle { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 900; }
@@ -911,7 +914,7 @@ html, body {
 .arcade-hud { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #F4EDE4; }
 .arcade-score-badge, .arcade-combo-badge { padding: 5px 9px; border-radius: var(--r-full); font-size: 12px; font-weight: 900; white-space: nowrap; }
 .arcade-score-badge { color: var(--accent); background: #EDEAFE; }
-.arcade-combo-badge { color: #D35400; background: #FEF9E7; }
+.arcade-combo-badge { color: #A03E00; background: #FEF9E7; }
 .action-pill-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 8px 12px; border: 0; border-radius: var(--r-full); color: var(--ink); background: #EFE6DC; font-family: inherit; font-size: 12px; font-weight: 800; box-shadow: 0 3px 0 #D8C8B8; cursor: pointer; }
 .arcade-game-card { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 12px 8px; border: 2px solid #F0E6DA; border-top: 5px solid var(--gcolor,var(--accent)); border-radius: var(--r-lg); background: #FFF; font-family: inherit; text-align: center; cursor: pointer; box-shadow: var(--sh-sm); }
 .arcade-game-icon { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin-bottom: 7px; border-radius: var(--r-full); color: #FFF; background: var(--gcolor,var(--accent)); }
@@ -1089,7 +1092,7 @@ html, body {
 .lesson-progress-bar { flex: 1; min-width: 40px; height: 9px; overflow: hidden; border-radius: var(--r-full); background: #EFE6DC; }
 .lesson-progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#6C5CE7,#00D2D3); transition: width .35s ease; }
 .lesson-progress-text { flex: 0 0 auto; color: var(--ink2); font-size: 11px; font-weight: 800; white-space: nowrap; }
-.star-counter { display: flex; align-items: center; gap: 3px; flex: 0 0 auto; color: #D35400; font-size: 12px; font-weight: 900; white-space: nowrap; }
+.star-counter { display: flex; align-items: center; gap: 3px; flex: 0 0 auto; color: #A84300; font-size: 12px; font-weight: 900; white-space: nowrap; }
 .shadow-silhouette { display: flex; align-items: center; justify-content: center; max-width: 100%; max-height: 100%; }
 .shadow-silhouette svg { max-width: 70px; max-height: 70px; }
 
@@ -1262,9 +1265,9 @@ button:focus-visible, [role="button"]:focus-visible {
     background: #FFF;
     box-shadow: 0 4px 14px rgba(34,57,84,.05);
 }
-.home-stat-label { color: #7A8796; font-size: 11px; font-weight: 800; }
+.home-stat-label { color: #5A6675; font-size: 11px; font-weight: 800; }
 .home-stat-value { margin-top: 3px; color: #1F65B5; font-size: 24px; font-weight: 900; line-height: 1.1; }
-.home-stat-caption { margin-top: 4px; color: #8290A0; font-size: 10px; font-weight: 700; }
+.home-stat-caption { margin-top: 4px; color: #5F6B7A; font-size: 10px; font-weight: 700; }
 
 .adventure-hero-card {
     position: relative;
@@ -1302,7 +1305,7 @@ button:focus-visible, [role="button"]:focus-visible {
 
 .home-section-heading { display: flex; align-items: end; justify-content: space-between; padding: 2px 2px 0; }
 .home-section-heading h2 { color: #1F2A37; font-size: 18px; font-weight: 900; }
-.home-section-heading p { margin-top: 2px; color: #7B8998; font-size: 11px; font-weight: 700; }
+.home-section-heading p { margin-top: 2px; color: #5A6675; font-size: 11px; font-weight: 700; }
 
 .home-domains-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1342,18 +1345,18 @@ button:focus-visible, [role="button"]:focus-visible {
     font-weight: 900;
 }
 .domain-tile-title { width: 100%; overflow: hidden; font-size: 13px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
-.domain-tile-subtitle { width: 100%; min-height: 30px; margin-top: 3px; overflow: hidden; color: #6F7E8D; font-size: 10px; font-weight: 700; line-height: 1.45; }
-.domain-tile-progress { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: auto; color: #7B8998; font-size: 10px; font-weight: 800; }
+.domain-tile-subtitle { width: 100%; min-height: 30px; margin-top: 3px; overflow: hidden; color: #4E5A66; font-size: 10px; font-weight: 700; line-height: 1.45; }
+.domain-tile-progress { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: auto; color: #59646F; font-size: 10px; font-weight: 800; }
 .domain-tile-progress i { display: block; flex: 1; height: 5px; overflow: hidden; border-radius: 999px; background: #DCE5EE; }
 .domain-tile-progress i::after { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--tile-color, #64748B); content: ''; }
 .domain-tile-progress i { position: relative; }
 .domain-tile-progress i { --progress-width: 0%; }
 .domain-tile-progress i { width: var(--progress-width); }
 .domain-tile-progress i::after { width: var(--progress-width); }
-.domain-tile-progress b { min-width: 26px; color: #667687; font-size: 9px; text-align: left; }
+.domain-tile-progress b { min-width: 26px; color: #4E5A66; font-size: 9px; text-align: left; }
 .arcade-tile { --tile-color: #0F9F86; --tile-bg: #E8FAF5; }
 .arcade-tile .domain-tile-icon { width: auto; min-width: 40px; padding-inline: 8px; }
-.arcade-tile-action { justify-content: center; min-height: 28px; padding: 6px 9px; border-radius: 9px; color: #087A67; background: #C9F2E7; }
+.arcade-tile-action { justify-content: center; min-height: 28px; padding: 6px 9px; border-radius: 9px; color: #04624F; background: #C9F2E7; }
 .arcade-tile-action::before { display: none; }
 
 .home-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; padding-top: 2px; }
@@ -1495,7 +1498,7 @@ button:focus-visible, [role="button"]:focus-visible {
 }
 .profile-name-input:focus { border-color: #3182CE; box-shadow: 0 0 0 3px rgba(49,130,206,.14); }
 .age-choice-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
-.age-choice { min-height: 44px; padding: 5px 2px; border: 1px solid #D7E0EA; border-radius: 11px; color: #526173; background: #FFF; font-size: 11px; font-weight: 900; cursor: pointer; }
+.age-choice { min-width: 44px; min-height: 46px; padding: 5px 2px; border: 1px solid #D7E0EA; border-radius: 11px; color: #526173; background: #FFF; font-size: 11px; font-weight: 900; cursor: pointer; }
 .age-choice.selected { border-color: #2563EB; color: #1557A6; background: #EAF3FF; box-shadow: inset 0 0 0 1px #2563EB; }
 .profile-onboarding-actions { display: grid; grid-template-columns: .8fr 1.2fr; gap: 9px; margin-top: 20px; }
 .profile-skip-btn, .profile-start-btn { min-height: 50px; border-radius: 14px; font-family: inherit; font-size: 13px; font-weight: 900; cursor: pointer; }
@@ -1511,26 +1514,26 @@ button:focus-visible, [role="button"]:focus-visible {
 .engagement-parent-card { padding: 14px; }
 .engagement-parent-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .engagement-parent-head h3 { margin-bottom: 3px; }
-.engagement-parent-head p { color: #7B8998; font-size: 10px; font-weight: 700; }
+.engagement-parent-head p { color: #5A6675; font-size: 10px; font-weight: 700; }
 .engagement-parent-head strong { display: flex; align-items: center; justify-content: center; min-width: 54px; min-height: 42px; padding: 5px; border-radius: 13px; color: #1557A6; background: #EAF3FF; font-size: 13px; font-weight: 900; }
 .engagement-parent-progress { height: 8px; margin-top: 13px; overflow: hidden; border-radius: 999px; background: #E4EBF2; }
 .engagement-parent-progress i { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#2563EB,#06B6D4); }
-.engagement-parent-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 8px; margin-top: 7px; color: #748395; font-size: 10px; font-weight: 800; }
+.engagement-parent-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 8px; margin-top: 7px; color: #566373; font-size: 10px; font-weight: 800; }
 
 .lesson-card-main { flex: 1; min-width: 0; }
-.lesson-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; color: #8190A0; font-size: 10px; font-weight: 800; }
+.lesson-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; color: #5A6675; font-size: 10px; font-weight: 800; }
 .lesson-skill { padding: 3px 7px; border-radius: 999px; color: #23609D; background: #EAF3FF; }
-.lesson-open-mark { color: #8A98A8; font-size: 26px; font-weight: 300; line-height: 1; }
+.lesson-open-mark { color: #6B7885; font-size: 26px; font-weight: 300; line-height: 1; }
 
-.engagement-week-label { margin-top: 14px; color: #8190A0; font-size: 10px; font-weight: 900; }
+.engagement-week-label { margin-top: 14px; color: #5A6675; font-size: 10px; font-weight: 900; }
 .engagement-week-bars { display: flex; align-items: end; gap: 7px; height: 52px; margin-top: 6px; padding: 6px 8px 0; border-radius: 10px; background: #F5F8FC; }
 .engagement-day-bar { display: flex; align-items: end; flex: 1; height: 100%; overflow: hidden; border-radius: 5px 5px 2px 2px; background: #E1E9F2; }
 .engagement-day-bar i { display: block; width: 100%; min-height: 4px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg,#3B82F6,#06B6D4); }
 
 .milestone-disclaimer { margin-top: 7px; color: rgba(255,255,255,.86); font-size: 10px; font-weight: 700; line-height: 1.5; }
 
-.parent-legal-links { display: flex; gap: 12px; margin: -3px 0 10px; }
-.parent-legal-links a { color: #1557A6; font-size: 11px; font-weight: 900; text-decoration: none; }
+.parent-legal-links { display: flex; align-items: center; gap: 12px; margin: -3px 0 6px; }
+.parent-legal-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px; color: #1557A6; font-size: 12px; font-weight: 900; text-decoration: underline; }
 .parent-legal-links a:active { opacity: .7; }
 
 .daily-plan-card {
@@ -1542,7 +1545,7 @@ button:focus-visible, [role="button"]:focus-visible {
 }
 .daily-plan-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .daily-plan-head h2 { color: #1F2A37; font-size: 16px; font-weight: 900; }
-.daily-plan-head p { margin-top: 2px; color: #8491A0; font-size: 10px; font-weight: 700; }
+.daily-plan-head p { margin-top: 2px; color: #56636F; font-size: 10px; font-weight: 700; }
 .daily-plan-head strong { min-width: 45px; padding: 6px 8px; border-radius: 10px; color: #23609D; background: #EAF3FF; font-size: 12px; text-align: center; }
 .daily-plan-list { display: flex; flex-direction: column; gap: 7px; margin-top: 11px; }
 .daily-plan-item { display: flex; align-items: center; gap: 9px; min-height: 52px; padding: 7px 8px; border: 1px solid #E4EAF1; border-radius: 13px; color: #1F2A37; background: #F9FBFD; text-align: right; cursor: pointer; }
@@ -1550,8 +1553,8 @@ button:focus-visible, [role="button"]:focus-visible {
 .daily-plan-index { display: flex; align-items: center; justify-content: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9px; color: #FFF; background: #2563EB; font-size: 12px; font-weight: 900; }
 .daily-plan-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .daily-plan-copy b { overflow: hidden; font-size: 11px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
-.daily-plan-copy small { margin-top: 2px; color: #7A8998; font-size: 9px; font-weight: 800; }
-.daily-plan-arrow { color: #8A98A8; font-size: 23px; font-weight: 300; }
+.daily-plan-copy small { margin-top: 2px; color: #56636F; font-size: 9px; font-weight: 800; }
+.daily-plan-arrow { color: #55606C; font-size: 23px; font-weight: 300; }
 .daily-plan-complete { padding: 10px 4px 2px; color: #087A67; font-size: 12px; font-weight: 900; }
 
 .backup-warning { margin: 8px 0 2px; padding: 8px 10px; border-radius: 10px; color: #7A5A00; background: #FFF8E5; font-size: 10px; font-weight: 800; line-height: 1.5; }
@@ -1623,7 +1626,7 @@ button:focus-visible, [role="button"]:focus-visible {
 .adventure-map-card { padding: 14px; border: 1px solid #E1E8F0; border-radius: 20px; background: #FFF; box-shadow: 0 5px 16px rgba(34,57,84,.06); }
 .adventure-map-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .adventure-map-head h2 { color: #1F2A37; font-size: 16px; font-weight: 900; }
-.adventure-map-head p { margin-top: 2px; color: #8491A0; font-size: 10px; font-weight: 700; }
+.adventure-map-head p { margin-top: 2px; color: #56636F; font-size: 10px; font-weight: 700; }
 .adventure-map-head strong { padding: 6px 8px; border-radius: 10px; color: #087A67; background: #E8FAF5; font-size: 11px; }
 .adventure-map-track { display: flex; gap: 8px; overflow-x: auto; padding: 13px 2px 4px; scroll-snap-type: x proximity; scrollbar-width: thin; touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
 .adventure-map-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 70px; gap: 5px; padding: 3px; border: 0; color: #617184; background: transparent; scroll-snap-align: start; cursor: pointer; }
@@ -1653,8 +1656,8 @@ button:focus-visible, [role="button"]:focus-visible {
     .main-header, .sub-header { padding-inline: 8px; }
     .main-header { gap: 3px; }
     .main-header > div[style*="display:flex"] { gap: 3px !important; }
-    .main-header .icon-btn { width: 40px; height: 40px; min-width: 40px; min-height: 40px; border-radius: 12px; }
-    .main-header .star-badge-btn { min-width: 52px; min-height: 40px; padding-inline: 7px; }
+    .main-header .icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; }
+    .main-header .star-badge-btn { min-width: 52px; min-height: 44px; padding-inline: 7px; }
     .main-header > .header-title { margin-inline: 2px; font-size: 14px; }
     .star-badge-btn svg { width: 16px; height: 16px; }
     .home-stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }

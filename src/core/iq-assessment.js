@@ -140,13 +140,13 @@ window.IQAssessment = (function() {
             totalScore += score;
 
             let status = 'سطح پایه‌ای';
-            let badgeColor = '#95A5A6';
+            let badgeColor = '#5F6F70';
             let advice = 'با تمرین‌های روزانه ۵ دقیقه‌ای به رشد چشمگیر می‌رسد.';
 
             if (!rec.attempts) {
                 // No data yet: say so instead of inventing a level.
                 status = 'هنوز تمرینی انجام نشده';
-                badgeColor = '#95A5A6';
+                badgeColor = '#5F6F70';
                 advice = 'وقتی کودک چند بازی از این حوزه را انجام دهد، گزارش اینجا ساخته می‌شود.';
             } else if (score >= 85) {
                 status = 'استعداد درخشان';

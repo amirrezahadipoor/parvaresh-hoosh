@@ -753,7 +753,7 @@
             card.style.setProperty('--dcolor', d.color);
 
             card.innerHTML = `
-                <div class="level-num" style="background:${isCompleted ? 'var(--ok)' : d.color}">${toFa(idx + 1)}</div>
+                <div class="level-num" style="background:color-mix(in srgb, ${isCompleted ? 'var(--ok)' : d.color} 72%, #000)">${toFa(idx + 1)}</div>
                 <div class="level-info">
                     <div class="level-name">${lv.title}</div>
                     <div class="level-label">${lv.ageBand || ((lv.lessons || [])[0] && (lv.lessons || [])[0].ageBand) || 'مسیر آموزشی'}</div>
@@ -1694,7 +1694,7 @@
                 بازیابی پشتیبان
             </button>
             <input id="backup-file-input" type="file" accept="application/json,.json" hidden>
-            <button class="btn-secondary-action" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%;">
+            <button class="btn-secondary-action" id="btn-reset-data" style="background:#FFEAEA; color:#C1121F; width:100%;">
                 پاک کردن تمام داده‌ها و شروع مجدد
             </button>
         `;
