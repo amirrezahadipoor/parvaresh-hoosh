@@ -112,3 +112,5 @@ npm test
 نسخهٔ فعلی Capacitor 8 به **Node.js 24 یا بالاتر** و برای ساخت اندروید به **Java 21** نیاز دارد. ورک‌فلو GitHub Actions این نسخه‌ها را خودکار تنظیم می‌کند.
 
 برای ساخت APK در GitHub Actions، یک اجرای دستی از workflow با نام `Build Android APK` انجام دهید. فایل APK هم به‌عنوان Artifact و هم در Release ذخیره می‌شود.
+
+برای خروجی release امضاشده، این چهار Secret را در GitHub تنظیم کنید: `ANDROID_KEYSTORE_BASE64`، `ANDROID_KEYSTORE_PASSWORD`، `ANDROID_KEY_ALIAS` و `ANDROID_KEY_PASSWORD`. اگر این Secretها وجود نداشته باشند، workflow به‌صورت امن APK debug می‌سازد.
