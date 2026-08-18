@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v15-content-art';
+const CACHE_NAME = 'parvaresh-hoosh-v16-retention';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',

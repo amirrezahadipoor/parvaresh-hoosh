@@ -282,6 +282,55 @@
     }
 
     // ===== HOME SCREEN RENDERING (CAROUSEL WORLD) =====
+    const DAILY_CHALLENGES = [
+        { id: 'reading', icon: 'book', title: 'روز کلمه‌ها', desc: 'امروز ۲ درس از خواندن و الفبا را تمام کن', domain: 'reading', target: 2 },
+        { id: 'math', icon: 'numbers', title: 'روز اعداد', desc: 'امروز ۲ درس از ریاضی را تمام کن', domain: 'math', target: 2 },
+        { id: 'logic', icon: 'puzzle', title: 'روز کارآگاه', desc: 'امروز ۲ درس از منطق و پازل را تمام کن', domain: 'logic', target: 2 },
+        { id: 'science', icon: 'science', title: 'روز دانشمند', desc: 'امروز ۲ درس از علوم و طبیعت را تمام کن', domain: 'science', target: 2 },
+        { id: 'social', icon: 'heart', title: 'روز مهربانی', desc: 'امروز ۲ درس از مهارت اجتماعی را تمام کن', domain: 'socio-emotional', target: 2 },
+        { id: 'art', icon: 'art', title: 'روز هنرمند', desc: 'امروز ۲ درس از هنر و خلاقیت را تمام کن', domain: 'art', target: 2 },
+        { id: 'mixed', icon: 'star', title: 'روز رنگین‌کمان', desc: 'امروز از ۳ حوزهٔ مختلف درس بخوان', domain: null, target: 3 }
+    ];
+
+    function todayChallenge() {
+        // Deterministic per calendar day: same challenge all day, new one tomorrow.
+        const now = new Date();
+        const key = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        const dayNumber = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 86400000);
+        return { ...DAILY_CHALLENGES[dayNumber % DAILY_CHALLENGES.length], dateKey: key };
+    }
+
+    function createDailyChallenge(allLessons) {
+        const ch = todayChallenge();
+        const today = window.Engagement ? window.Engagement.getToday() : { lessonIds: [] };
+        const doneToday = new Set(today.lessonIds || []);
+        const byId = new Map((allLessons || []).map(l => [l.id, l]));
+
+        let progress;
+        if (ch.domain) {
+            progress = [...doneToday].filter(id => (byId.get(id) || {}).domainId === ch.domain).length;
+        } else {
+            progress = new Set([...doneToday].map(id => (byId.get(id) || {}).domainId).filter(Boolean)).size;
+        }
+        const complete = progress >= ch.target;
+        const pct = Math.min(100, Math.round((progress / ch.target) * 100));
+
+        const card = document.createElement('section');
+        card.className = 'daily-challenge-card' + (complete ? ' is-complete' : '');
+        card.innerHTML = `
+            <div class="challenge-head">
+                <span class="challenge-badge">${complete ? '✓' : '★'}</span>
+                <div class="challenge-copy">
+                    <b>چالش امروز · ${ch.title}</b>
+                    <small>${complete ? 'آفرین! چالش امروز را بردی.' : ch.desc}</small>
+                </div>
+            </div>
+            <div class="challenge-track"><div class="challenge-fill" style="width:${pct}%"></div></div>
+            <div class="challenge-count">${toFa(Math.min(progress, ch.target))} از ${toFa(ch.target)}</div>
+        `;
+        return card;
+    }
+
     function renderHome() {
         updateHeaderStars();
         updateAudioButtons();
@@ -391,6 +440,13 @@
             `;
         }
         dashboard.appendChild(adventure);
+
+        // ---- Daily challenge -------------------------------------------------
+        // Long-term retention was the weakest part of the app: nothing on the home
+        // screen changed from day to day. This card rotates deterministically by
+        // date, so every morning there is a different, nameable goal. Placed high
+        // on the page so the child actually sees it without scrolling.
+        dashboard.appendChild(createDailyChallenge(allLessons));
 
         const dailyPlan = document.createElement('section');
         dailyPlan.className = 'daily-plan-card';
@@ -1247,13 +1303,38 @@
         const list = document.createElement('div');
         list.className = 'achievement-list';
 
+        // Badges must reflect what the child actually did. Previously every badge
+        // keyed off totalStars alone, so "استاد الفبا و کلمات" unlocked at 15 stars
+        // even if the child had never opened a reading lesson — a fake award.
+        const doneByDomain = {};
+        ((state.curriculum && state.curriculum.domains) || []).forEach(domain => {
+            const lessons = (domain.levels || []).flatMap(level => level.lessons || []);
+            doneByDomain[domain.id] = {
+                done: lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length,
+                total: lessons.length
+            };
+        });
+        const dDone = id => (doneByDomain[id] && doneByDomain[id].done) || 0;
+        const streakNow = window.Engagement ? window.Engagement.getStreak() : { current: 0, best: 0 };
+        const totalDone = Object.values(doneByDomain).reduce((a, x) => a + x.done, 0);
+
         const achievements = [
-            { id: 'first', name: 'اولین ستاره درخشان', cond: state.totalStars >= 1 },
-            { id: 'ten', name: '۱۰ ستاره طلایی', cond: state.totalStars >= 10 },
-            { id: 'fifty', name: '۵۰ ستاره قهرمانی', cond: state.totalStars >= 50 },
-            { id: 'hundred', name: '۱۰۰ ستاره جادویی', cond: state.totalStars >= 100 },
-            { id: 'reader', name: 'استاد الفبا و کلمات', cond: (state.totalStars >= 15) },
-            { id: 'mathematician', name: 'نابغه ریاضی و هوش', cond: (state.totalStars >= 20) }
+            { id: 'first', name: 'اولین ستاره درخشان', need: 'اولین ستاره را بگیر', cond: state.totalStars >= 1 },
+            { id: 'ten', name: '۱۰ ستاره طلایی', need: '۱۰ ستاره جمع کن', cond: state.totalStars >= 10 },
+            { id: 'fifty', name: '۵۰ ستاره قهرمانی', need: '۵۰ ستاره جمع کن', cond: state.totalStars >= 50 },
+            { id: 'hundred', name: '۱۰۰ ستاره جادویی', need: '۱۰۰ ستاره جمع کن', cond: state.totalStars >= 100 },
+            { id: 'reader', name: 'استاد الفبا و کلمات', need: '۵ درس خواندن را تمام کن', cond: dDone('reading') >= 5 },
+            { id: 'reader-pro', name: 'قهرمان خواندن', need: '۱۵ درس خواندن را تمام کن', cond: dDone('reading') >= 15 },
+            { id: 'mathematician', name: 'نابغه ریاضی', need: '۵ درس ریاضی را تمام کن', cond: dDone('math') >= 5 },
+            { id: 'math-pro', name: 'استاد اعداد', need: '۱۵ درس ریاضی را تمام کن', cond: dDone('math') >= 15 },
+            { id: 'thinker', name: 'کارآگاه منطق', need: '۵ درس منطق را تمام کن', cond: dDone('logic') >= 5 },
+            { id: 'scientist', name: 'دانشمند کوچک', need: '۵ درس علوم را تمام کن', cond: dDone('science') >= 5 },
+            { id: 'kind', name: 'دل مهربان', need: '۵ درس مهارت اجتماعی را تمام کن', cond: dDone('socio-emotional') >= 5 },
+            { id: 'artist', name: 'هنرمند خلاق', need: '۵ درس هنر را تمام کن', cond: dDone('art') >= 5 },
+            { id: 'streak3', name: '۳ روز پیوسته', need: '۳ روز پشت سر هم تمرین کن', cond: (streakNow.best || 0) >= 3 },
+            { id: 'streak7', name: 'هفتهٔ کامل', need: '۷ روز پشت سر هم تمرین کن', cond: (streakNow.best || 0) >= 7 },
+            { id: 'explorer', name: 'کاشف شش حوزه', need: 'از هر شش حوزه حداقل یک درس', cond: Object.keys(doneByDomain).length > 0 && Object.values(doneByDomain).every(x => x.done >= 1) },
+            { id: 'marathon', name: 'ماجراجوی بزرگ', need: '۵۰ درس را تمام کن', cond: totalDone >= 50 }
         ];
 
         achievements.forEach(a => {
@@ -1262,7 +1343,7 @@
             el.innerHTML = `
                 <div class="a-name">${a.name}</div>
                 <span style="font-size:12px; color:${a.cond ? 'var(--ok)' : 'var(--ink-light)'}; font-weight:800; margin-top:4px; display:block;">
-                    ${a.cond ? 'کسب شده' : 'قفل'}
+                    ${a.cond ? 'کسب شده' : a.need}
                 </span>
             `;
             list.appendChild(el);

@@ -1882,3 +1882,15 @@ button:focus-visible, [role="button"]:focus-visible {
 .domain-progress-count { color: var(--ink2); font-size: 12px; font-weight: 800; }
 .domain-progress-track { height: 9px; border-radius: 999px; background: #EFE6DC; overflow: hidden; }
 .domain-progress-fill { height: 100%; border-radius: 999px; transition: width .5s ease; }
+
+/* Daily challenge — rotates by calendar day so the home screen changes daily. */
+.daily-challenge-card { margin-bottom: 12px; padding: 14px; border-radius: var(--r-lg); background: linear-gradient(135deg, #6C5CE7 0%, #8E7CFF 55%, #00B894 100%); box-shadow: var(--sh-sm); color: #FFF; }
+.daily-challenge-card.is-complete { background: linear-gradient(135deg, #00B894 0%, #26C065 60%, #2ED573 100%); }
+.challenge-head { display: flex; align-items: center; gap: 10px; }
+.challenge-badge { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 36px; height: 36px; border-radius: var(--r-full); background: rgba(255,255,255,.24); font-size: 17px; font-weight: 900; }
+.challenge-copy { min-width: 0; }
+.challenge-copy b { display: block; font-size: 14px; font-weight: 900; }
+.challenge-copy small { display: block; margin-top: 2px; font-size: 11px; font-weight: 700; opacity: .95; }
+.challenge-track { height: 8px; margin-top: 11px; border-radius: 999px; background: rgba(255,255,255,.28); overflow: hidden; }
+.challenge-fill { height: 100%; border-radius: 999px; background: #FFF; transition: width .5s ease; }
+.challenge-count { margin-top: 6px; font-size: 11px; font-weight: 900; text-align: left; opacity: .95; }
