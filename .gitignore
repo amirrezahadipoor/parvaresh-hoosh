@@ -1,9 +1,15 @@
 node_modules/
+www/
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/captures/
 .cache/
-.env
-*.local
 .DS_Store
 *.apk
 *.log
 package-lock.json
 capacitor.config.json
+.env
+*.local
