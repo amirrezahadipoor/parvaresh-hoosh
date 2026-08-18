@@ -1068,6 +1068,35 @@
         renderPad();
     }
 
+    function exportParentReport(iqReport) {
+        const report = {
+            app: window.App.name,
+            exportedAt: new Date().toISOString(),
+            profile: window.Engagement ? window.Engagement.getProfile() : {},
+            today: window.Engagement ? window.Engagement.getToday() : null,
+            streak: window.Engagement ? window.Engagement.getStreak() : null,
+            history: window.Engagement ? window.Engagement.getHistory() : [],
+            cognitiveReport: iqReport,
+            progress: {
+                totalStars: state.totalStars || 0,
+                lessonsDone: state.lessonsDone
+            }
+        };
+        try {
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'گزارش-پرورش-هوش-کودک.json';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (e) {
+            AudioEngine.speak('دانلود گزارش در این دستگاه در دسترس نیست');
+        }
+    }
+
     async function renderDashboard(content) {
         content.innerHTML = '';
         const scrollBody = document.createElement('div');
@@ -1096,6 +1125,15 @@
         const todayEngagement = window.Engagement ? window.Engagement.getToday() : { completed: 0, goal: 3, percent: 0 };
         const streakEngagement = window.Engagement ? window.Engagement.getStreak() : { current: 0, best: 0 };
         const childProfile = window.Engagement ? window.Engagement.getProfile() : { name: '', age: null };
+        const history = window.Engagement ? window.Engagement.getHistory() : [];
+        const historyByDate = new Map(history.map(item => [item.date, item.completed]));
+        const dayBars = Array.from({ length: 7 }, (_, index) => {
+            const date = new Date();
+            date.setDate(date.getDate() - (6 - index));
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            const value = Math.min(100, Math.round(((historyByDate.get(key) || 0) / todayEngagement.goal) * 100));
+            return `<span class="engagement-day-bar"><i style="height:${Math.max(8, value)}%;"></i></span>`;
+        }).join('');
         const engagementCard = document.createElement('div');
         engagementCard.className = 'parent-card engagement-parent-card';
         engagementCard.innerHTML = `
@@ -1105,6 +1143,8 @@
             </div>
             <div class="engagement-parent-progress"><i style="width:${todayEngagement.percent}%;"></i></div>
             <div class="engagement-parent-meta"><span>امروز: ${toFa(todayEngagement.completed)} از ${toFa(todayEngagement.goal)}</span><span>بهترین زنجیره: ${toFa(streakEngagement.best)} روز</span></div>
+            <div class="engagement-week-label">فعالیت هفت روز اخیر</div>
+            <div class="engagement-week-bars">${dayBars}</div>
         `;
         scrollBody.appendChild(engagementCard);
 
@@ -1158,6 +1198,9 @@
             <button class="btn-secondary-action" id="btn-change-pin" style="width:100%;">
                 ${'تنظیم یا تغییر رمز والدین'}
             </button>
+            <button class="btn-secondary-action" id="btn-export-report" style="width:100%;">
+                دانلود گزارش آفلاین کودک
+            </button>
             <button class="btn-secondary-action" id="btn-reset-data" style="background:#FFEAEA; color:var(--err); width:100%;">
                 پاک کردن تمام داده‌ها و شروع مجدد
             </button>
@@ -1166,6 +1209,11 @@
         settingsCard.querySelector('#btn-change-pin').addEventListener('click', () => {
             AudioEngine.play('click');
             renderPinSetup(content);
+        });
+
+        settingsCard.querySelector('#btn-export-report').addEventListener('click', () => {
+            AudioEngine.play('click');
+            exportParentReport(iqReport);
         });
 
         settingsCard.querySelector('#btn-reset-data').addEventListener('click', async () => {
