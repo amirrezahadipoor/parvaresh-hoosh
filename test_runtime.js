@@ -206,6 +206,40 @@ async function main() {
     window.PaintingActivity.render(paintingHost, {}, { onCorrect() {} });
     assert.equal(paintingHost.querySelectorAll('.paint-template-btn').length, 6, 'painting should expose six templates');
 
+    // Stress-render every generated round in a real DOM before testing the parent gate.
+    const curriculumForStress = JSON.parse(fs.readFileSync(path.join(root, 'content/curriculum.json'), 'utf8'));
+    const renderers = {
+        quiz: window.QuizActivity,
+        memory: window.MemoryActivity,
+        'drag-match': window.DragDropActivity,
+        tracing: window.TracingActivity,
+        'order-steps': window.OrderingActivity,
+        'order-size': window.OrderingActivity,
+        painting: window.PaintingActivity,
+        'balloon-pop': window.BalloonPopActivity,
+        'raven-matrix': window.IQEngines.RavenMatrixActivity,
+        'shadow-match': window.IQEngines.ShadowMatchActivity,
+        'simon-memory': window.IQEngines.SimonSequenceActivity,
+        'disappeared-item': window.IQEngines.DisappearedItemActivity,
+        'balance-scale': window.IQEngines.BalanceScaleActivity
+    };
+    let stressRounds = 0;
+    for (const domain of curriculumForStress.domains) {
+        for (const level of domain.levels) {
+            for (const lesson of level.lessons) {
+                const rounds = window.Generator.generate(lesson.id, { ...lesson, domain: domain.id, childAge: 6 });
+                for (const round of rounds) {
+                    assert.ok(renderers[round.type], `renderer missing for ${round.type}`);
+                    const stressHost = document.createElement('div');
+                    renderers[round.type].render(stressHost, round, { onCorrect() {}, onWrong() {} });
+                    assert.ok(stressHost.children.length > 0, `round did not render: ${lesson.id}/${round.type}`);
+                    stressRounds++;
+                }
+            }
+        }
+    }
+    assert.equal(stressRounds, 710, 'all 710 generated rounds should render in a real DOM');
+
     // A math-gate sum can be 13; ensure that answer key is present.
     document.querySelector('#btn-parent').click();
     await wait(20);
