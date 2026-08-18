@@ -1,8 +1,7 @@
 // Endless Replayable Arcade Educational Games for "پرورش هوش کودک"
-// Continuous Loops, High Replay Value, Score Multipliers & Joyful Mechanics - ZERO EMOJIS
+// Zero Emojis, Zero Gambling/Spin Wheels, 100% Pedagogical & Child-Friendly
 window.ArcadeGames = (function() {
 
-    // List of Arcade Games with clean text / SVG icons
     const GAMES = [
         {
             id: 'balloon-catcher',
@@ -43,14 +42,6 @@ window.ArcadeGames = (function() {
             iconHtml: `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
             color: '#2ED573',
             bg: '#E7F9F0'
-        },
-        {
-            id: 'lucky-wheel',
-            title: 'چرخونه شانس و جوایز روزانه',
-            subtitle: 'گرداندن چرخونه و دریافت ستاره‌ها و استیکرها',
-            iconHtml: SvgArt.shape('star', '#FFF', 34),
-            color: '#F368E0',
-            bg: '#FEE7FA'
         }
     ];
 
@@ -63,9 +54,7 @@ window.ArcadeGames = (function() {
         return String(n).replace(/[0-9]/g, w => map[+w]);
     }
 
-    // ==========================================
-    // 1. BALLOON CATCHER ARCADE (شکار بادکنک‌های جادویی)
-    // ==========================================
+    // 1. BALLOON CATCHER ARCADE
     function launchBalloonCatcher(container, onExit) {
         container.innerHTML = `
             <div class="arcade-card">
@@ -167,15 +156,12 @@ window.ArcadeGames = (function() {
         spawnBalloon();
     }
 
-    // ==========================================
-    // 2. FEED THE HUNGRY ANIMALS (غذا دادن به حیوانات)
-    // ==========================================
+    // 2. FEED THE HUNGRY ANIMALS
     function launchFeedAnimals(container, onExit) {
         const pairs = [
-            { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'هویج', foodSvg: SvgArt.object('apple', 50) },
+            { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
             { animal: 'dog', animalName: 'هاپو باوفا', food: 'استخوان', foodSvg: SvgArt.object('tooth', 50) },
             { animal: 'cat', animalName: 'پیشی ملوس', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) },
-            { animal: 'bear', animalName: 'خرس قهوه‌ای', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
             { animal: 'monkey', animalName: 'میمون زرنگ', food: 'موز', foodSvg: SvgArt.object('banana', 50) }
         ];
 
@@ -185,7 +171,7 @@ window.ArcadeGames = (function() {
         function renderRound() {
             const current = pairs[currentIdx % pairs.length];
             const foodOptions = [
-                { name: 'هویج', svg: SvgArt.object('apple', 44) },
+                { name: 'سیب', svg: SvgArt.object('apple', 44) },
                 { name: 'استخوان', svg: SvgArt.object('tooth', 44) },
                 { name: 'ماهی', svg: SvgArt.animal('fish', 44) },
                 { name: 'موز', svg: SvgArt.object('banana', 44) }
@@ -199,7 +185,7 @@ window.ArcadeGames = (function() {
                     </div>
                     <div class="feed-prompt-title">چه غذایی برای «${current.animalName}» ببریم؟</div>
                     <div class="feed-animal-stage" id="animal-stage">
-                        ${SvgArt.animal(current.animal, 140)}
+                        ${SvgArt.animal(current.animal, 130)}
                     </div>
                     <div class="feed-foods-row" id="foods-row"></div>
                 </div>
@@ -248,9 +234,7 @@ window.ArcadeGames = (function() {
         renderRound();
     }
 
-    // ==========================================
-    // 3. MUSICAL GLOCKENSPIEL & PIANO (بلز و پیانوی شاد)
-    // ==========================================
+    // 3. MUSICAL GLOCKENSPIEL & PIANO
     function launchMusicBells(container, onExit) {
         const notes = [
             { name: 'دو (C)', freq: 261.63, color: '#FF4757' },
@@ -301,9 +285,7 @@ window.ArcadeGames = (function() {
         }, 150);
     }
 
-    // ==========================================
-    // 4. MATH CARGO TRAIN (قطار بارگیری اعداد)
-    // ==========================================
+    // 4. MATH CARGO TRAIN
     function launchCargoTrain(container, onExit) {
         let score = 0;
 
@@ -372,77 +354,47 @@ window.ArcadeGames = (function() {
         nextTrain();
     }
 
-    // ==========================================
-    // 5. LUCKY SPIN WHEEL (چرخونه شانس و جوایز)
-    // ==========================================
-    function launchLuckyWheel(container, onExit) {
-        const prizes = [
-            { text: '۳ ستاره طلایی', stars: 3, color: '#FF4757' },
-            { text: '۵ ستاره طلایی', stars: 5, color: '#FFA502' },
-            { text: '۲ ستاره طلایی', stars: 2, color: '#2ED573' },
-            { text: '۱۰ ستاره قهرمانی', stars: 10, color: '#6C5CE7' },
-            { text: '۴ ستاره طلایی', stars: 4, color: '#00D2D3' },
-            { text: '۶ ستاره درخشان', stars: 6, color: '#F368E0' }
-        ];
-
-        container.innerHTML = `
-            <div class="arcade-card">
-                <div class="arcade-hud">
-                    <button class="action-pill-btn" id="wheel-exit-btn"><span>بازگشت</span></button>
-                    <div class="arcade-score-badge">چرخونه شانس روزانه</div>
-                </div>
-                <div class="feed-prompt-title">دکمه چرخش رو بزن و ستاره‌های جایزه بگیر!</div>
-                <div class="wheel-stage-wrap">
-                    <div class="wheel-pointer">▼</div>
-                    <div class="wheel-disc" id="wheel-disc">
-                        <div class="wheel-center-knob">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="#F1C40F"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        </div>
+    // 5. SPEED MEMORY CHALLENGE
+    function launchSpeedMemory(container, onExit) {
+        let score = 0;
+        function nextRound() {
+            container.innerHTML = `
+                <div class="arcade-card">
+                    <div class="arcade-hud">
+                        <button class="action-pill-btn" id="mem-exit-btn"><span>بازگشت</span></button>
+                        <div class="arcade-score-badge">رکورد حافظه: <span id="mem-score">${toFa(score)}</span></div>
                     </div>
+                    <div class="feed-prompt-title">جفت‌های مثل هم را با سرعت پیدا کن!</div>
+                    <div id="speed-mem-stage" style="flex:1;"></div>
                 </div>
-                <button class="big-action-btn primary" id="spin-btn" style="margin-top:16px;">
-                    <span>بچرخان!</span>
-                </button>
-            </div>
-        `;
+            `;
 
-        container.querySelector('#wheel-exit-btn').onclick = () => {
-            AudioEngine.play('click');
-            if (onExit) onExit();
-        };
+            container.querySelector('#mem-exit-btn').onclick = () => {
+                AudioEngine.play('click');
+                if (onExit) onExit();
+            };
 
-        const disc = container.querySelector('#wheel-disc');
-        const spinBtn = container.querySelector('#spin-btn');
-        let spinning = false;
+            const stage = container.querySelector('#speed-mem-stage');
+            const roundDef = {
+                cards: [
+                    { pair: 0, img: SvgArt.animal('cat', 50), label: 'گربه' },
+                    { pair: 0, img: SvgArt.animal('cat', 50), label: 'گربه' },
+                    { pair: 1, img: SvgArt.animal('rabbit', 50), label: 'خرگوش' },
+                    { pair: 1, img: SvgArt.animal('rabbit', 50), label: 'خرگوش' },
+                    { pair: 2, img: SvgArt.object('apple', 50), label: 'سیب' },
+                    { pair: 2, img: SvgArt.object('apple', 50), label: 'سیب' }
+                ].sort(() => Math.random() - 0.5)
+            };
 
-        spinBtn.onclick = () => {
-            if (spinning) return;
-            spinning = true;
-            AudioEngine.play('spin');
-            const prizeIdx = Math.floor(Math.random() * prizes.length);
-            const prize = prizes[prizeIdx];
-            const extraRounds = 5 + Math.floor(Math.random() * 3);
-            const deg = extraRounds * 360 + (prizeIdx * 60);
-
-            disc.style.transition = 'transform 3.5s cubic-bezier(0.2, 0.9, 0.3, 1)';
-            disc.style.transform = `rotate(${deg}deg)`;
-
-            setTimeout(() => {
-                spinning = false;
-                AudioEngine.play('win');
-                if (window.Fx) {
-                    Fx.confetti();
+            MemoryActivity.render(stage, roundDef, {
+                onCorrect: () => {
+                    score += 5;
+                    AudioEngine.play('win');
+                    setTimeout(nextRound, 1000);
                 }
-
-                if (window.Storage) {
-                    Storage.load('progress').then(p => {
-                        const prog = p || { totalStars: 0, lessonsDone: {} };
-                        prog.totalStars = (prog.totalStars || 0) + prize.stars;
-                        Storage.save('progress', prog);
-                    });
-                }
-            }, 3600);
-        };
+            });
+        }
+        nextRound();
     }
 
     function openGame(gameId, container, onExit) {
@@ -451,7 +403,7 @@ window.ArcadeGames = (function() {
             case 'feed-animals': launchFeedAnimals(container, onExit); break;
             case 'music-bells': launchMusicBells(container, onExit); break;
             case 'cargo-train': launchCargoTrain(container, onExit); break;
-            case 'lucky-wheel': launchLuckyWheel(container, onExit); break;
+            case 'speed-memory': launchSpeedMemory(container, onExit); break;
             default: launchBalloonCatcher(container, onExit); break;
         }
     }
