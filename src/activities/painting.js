@@ -62,6 +62,8 @@ window.PaintingActivity = (function() {
         let isEraser = false;
         let isRainbow = false;
         let currentStamp = null;
+        let currentTemplate = null;
+        const undoStack = [];
 
         const paletteBar = document.createElement('div');
         paletteBar.className = 'paint-palette-bar';
@@ -117,21 +119,76 @@ window.PaintingActivity = (function() {
             isRainbow = false;
         });
 
+        const eraserBtn = document.createElement('button');
+        eraserBtn.className = 'tool-btn';
+        eraserBtn.textContent = 'پاک‌کن';
+        eraserBtn.addEventListener('click', () => {
+            AudioEngine.play('click');
+            isEraser = true;
+            isRainbow = false;
+            currentStamp = null;
+            paletteBar.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('active'));
+        });
+
+        const brushBtn = document.createElement('button');
+        brushBtn.className = 'tool-btn';
+        brushBtn.textContent = 'قلم متوسط';
+        brushBtn.addEventListener('click', () => {
+            currentBrushSize = currentBrushSize >= 18 ? 10 : 18;
+            brushBtn.textContent = currentBrushSize >= 18 ? 'قلم ضخیم' : 'قلم متوسط';
+            isEraser = false;
+            AudioEngine.play('click');
+        });
+
+        const undoBtn = document.createElement('button');
+        undoBtn.className = 'tool-btn';
+        undoBtn.textContent = 'برگشت';
+        undoBtn.addEventListener('click', () => {
+            if (!ctx || !ctx.putImageData || !undoStack.length) return;
+            AudioEngine.play('click');
+            ctx.putImageData(undoStack.pop(), 0, 0);
+        });
+
         const clearBtn = document.createElement('button');
         clearBtn.className = 'tool-btn danger';
-        clearBtn.innerHTML = 'پاک کردن';
+        clearBtn.textContent = 'پاک کردن';
         clearBtn.addEventListener('click', () => {
             AudioEngine.play('click');
-            initCanvas();
+            undoStack.length = 0;
+            applyTemplate();
         });
 
         toolsBar.appendChild(rainbowBtn);
         toolsBar.appendChild(stampStar);
         toolsBar.appendChild(stampHeart);
+        toolsBar.appendChild(eraserBtn);
+        toolsBar.appendChild(brushBtn);
+        toolsBar.appendChild(undoBtn);
         toolsBar.appendChild(clearBtn);
+
+        const templateBar = document.createElement('div');
+        templateBar.className = 'paint-template-bar';
+        templateBar.setAttribute('aria-label', 'قالب نقاشی');
+        getTemplates().forEach(template => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'paint-template-btn';
+            button.title = template.name;
+            button.innerHTML = template.svg || '<span>آزاد</span>';
+            button.addEventListener('click', () => {
+                currentTemplate = template;
+                templateBar.querySelectorAll('.paint-template-btn').forEach(item => item.classList.remove('active'));
+                button.classList.add('active');
+                applyTemplate();
+                AudioEngine.play('bubble');
+            });
+            templateBar.appendChild(button);
+            if (template.id === 'free') button.classList.add('active');
+        });
 
         card.appendChild(paletteBar);
         card.appendChild(toolsBar);
+        card.appendChild(templateBar);
 
         // Canvas Area
         const canvasWrap = document.createElement('div');
@@ -151,8 +208,29 @@ window.PaintingActivity = (function() {
         ctx.scale(dpr, dpr);
 
         function initCanvas() {
+            ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, width, height);
+        }
+
+        function applyTemplate() {
+            initCanvas();
+            if (!currentTemplate || !currentTemplate.svg || !window.Image) return;
+            const image = new Image();
+            image.onload = () => {
+                ctx.globalAlpha = 0.24;
+                ctx.drawImage(image, width * 0.18, height * 0.08, width * 0.64, height * 0.78);
+                ctx.globalAlpha = 1;
+            };
+            image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(currentTemplate.svg)}`;
+        }
+
+        function saveSnapshot() {
+            if (!ctx.getImageData) return;
+            try {
+                undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                if (undoStack.length > 12) undoStack.shift();
+            } catch (e) {}
         }
 
         initCanvas();
@@ -173,6 +251,7 @@ window.PaintingActivity = (function() {
         function startPaint(e) {
             e.preventDefault();
             const pos = getPos(e);
+            saveSnapshot();
 
             if (currentStamp) {
                 ctx.fillStyle = currentColor;
