@@ -74,6 +74,7 @@ require('./src/data/lesson-packages.js');
 require('./src/core/config.js');
 require('./src/core/audio.js');
 require('./src/core/storage.js');
+require('./src/core/game-progress.js');
 require('./src/core/adaptive.js');
 require('./src/core/iq-assessment.js');
 require('./src/core/living-world.js');

@@ -88,7 +88,7 @@ async function main() {
     const scriptPaths = [
         'src/data/alphabet.js', 'src/data/words.js', 'src/data/math-data.js',
         'src/data/world-data.js', 'src/data/curriculum.js', 'src/data/lesson-guide.js',
-        'src/core/config.js', 'src/core/audio.js', 'src/core/storage.js', 'src/core/backup.js', 'src/core/engagement.js',
+        'src/core/config.js', 'src/core/audio.js', 'src/core/storage.js', 'src/core/backup.js', 'src/core/engagement.js', 'src/core/game-progress.js',
         'src/core/adaptive.js', 'src/core/iq-assessment.js', 'src/core/living-world.js',
         'src/core/mascot.js', 'src/core/svg-art.js', 'src/core/fx.js', 'src/core/nav.js',
         'src/activities/generator.js', 'src/activities/adventure-journey.js',

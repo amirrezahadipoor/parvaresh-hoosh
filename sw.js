@@ -20,6 +20,7 @@ const PRECACHE = [
     './src/core/storage.js',
     './src/core/backup.js',
     './src/core/engagement.js',
+    './src/core/game-progress.js',
     './src/core/adaptive.js',
     './src/core/iq-assessment.js',
     './src/core/living-world.js',

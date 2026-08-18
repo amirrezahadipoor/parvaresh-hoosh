@@ -42,6 +42,14 @@ window.ArcadeGames = (function() {
             iconHtml: `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
             color: '#2ED573',
             bg: '#E7F9F0'
+        },
+        {
+            id: 'turn-taking',
+            title: 'نوبت من و تو',
+            subtitle: 'بازی گفت‌وگویی کودک و والد',
+            iconHtml: `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H8l-4 4z"></path><path d="M8 9h8M8 12h5"></path></svg>`,
+            color: '#8B5CF6',
+            bg: '#F1ECFF'
         }
     ];
 
@@ -88,6 +96,7 @@ window.ArcadeGames = (function() {
             animations.clear();
             activeBalloons.forEach(balloon => balloon.remove());
             activeBalloons = [];
+            if (window.GameProgress) window.GameProgress.record('balloon-catcher', score, Math.max(1, score / 10));
             AudioEngine.play('click');
             if (onExit) onExit();
         };
@@ -209,6 +218,7 @@ window.ArcadeGames = (function() {
             container.querySelector('#feed-exit-btn').onclick = () => {
                 active = false;
                 if (nextTimer) clearTimeout(nextTimer);
+                if (window.GameProgress) window.GameProgress.record('feed-animals', score, currentIdx);
                 AudioEngine.play('click');
                 if (onExit) onExit();
             };
@@ -337,6 +347,7 @@ window.ArcadeGames = (function() {
             container.querySelector('#train-exit-btn').onclick = () => {
                 active = false;
                 if (nextTimer) clearTimeout(nextTimer);
+                if (window.GameProgress) window.GameProgress.record('cargo-train', score, score);
                 AudioEngine.play('click');
                 if (onExit) onExit();
             };
@@ -404,6 +415,7 @@ window.ArcadeGames = (function() {
             container.querySelector('#mem-exit-btn').onclick = () => {
                 active = false;
                 if (nextTimer) clearTimeout(nextTimer);
+                if (window.GameProgress) window.GameProgress.record('speed-memory', score, score);
                 AudioEngine.play('click');
                 if (onExit) onExit();
             };
@@ -435,6 +447,62 @@ window.ArcadeGames = (function() {
         nextRound();
     }
 
+    // 6. TURN-TAKING CO-PLAY FOR CHILD AND PARENT
+    function launchTurnTaking(container, onExit) {
+        const turns = [
+            { role: 'کودک', color: '#2563EB', prompt: 'یک رنگ در اتاق پیدا کن و اسمش را بگو.', action: 'پیدا کردم' },
+            { role: 'والد', color: '#8B5CF6', prompt: 'یک جملهٔ کوتاه و مشخص برای تشویق کودک بگو.', action: 'تشویق کردم' },
+            { role: 'کودک', color: '#2563EB', prompt: 'یک صدای حیوان را اجرا کن تا والد حدس بزند.', action: 'اجرا کردم' },
+            { role: 'والد', color: '#8B5CF6', prompt: 'از کودک بپرس امروز چه چیزی برایش جالب بود.', action: 'پرسیدم' },
+            { role: 'کودک', color: '#2563EB', prompt: 'با سه شیء کوچک یک الگو بساز.', action: 'الگو ساختم' },
+            { role: 'والد', color: '#8B5CF6', prompt: 'تلاش کودک را توصیف کن، نه فقط نتیجه را.', action: 'بازخورد دادم' }
+        ];
+        let index = 0;
+        let score = 0;
+        let active = true;
+
+        function renderTurn() {
+            if (!active) return;
+            const turn = turns[index];
+            container.innerHTML = `
+                <div class="arcade-card cooperative-card">
+                    <div class="arcade-hud">
+                        <button class="action-pill-btn" id="coop-exit-btn"><span>بازگشت</span></button>
+                        <div class="arcade-score-badge">نوبت ${toFa(index + 1)} از ${toFa(turns.length)}</div>
+                    </div>
+                    <div class="cooperative-role" style="--role-color:${turn.color}">${turn.role}</div>
+                    <div class="cooperative-prompt">${turn.prompt}</div>
+                    <div class="cooperative-note">این بازی جواب درست یا غلط ندارد؛ هدف، گفت‌وگو و توجه دوطرفه است.</div>
+                    <button class="big-action-btn primary" id="coop-next-btn">${turn.action}</button>
+                </div>
+            `;
+            container.querySelector('#coop-exit-btn').onclick = () => {
+                active = false;
+                if (window.GameProgress) window.GameProgress.record('turn-taking', score, index);
+                AudioEngine.play('click');
+                if (onExit) onExit();
+            };
+            container.querySelector('#coop-next-btn').onclick = () => {
+                if (!active) return;
+                score += 10;
+                AudioEngine.play('correct');
+                index++;
+                if (index >= turns.length) {
+                    if (window.GameProgress) window.GameProgress.record('turn-taking', score, turns.length);
+                    if (window.Fx) Fx.confetti();
+                    active = false;
+                    container.querySelector('.cooperative-prompt').textContent = 'آفرین! امروز با هم شش نوبت گفت‌وگوی خوب داشتید.';
+                    container.querySelector('#coop-next-btn').textContent = 'بازگشت به بازی‌ها';
+                    container.querySelector('#coop-next-btn').onclick = () => { if (onExit) onExit(); };
+                } else {
+                    renderTurn();
+                }
+            };
+            setTimeout(() => AudioEngine.speak(`${turn.role}. ${turn.prompt}`), 150);
+        }
+        renderTurn();
+    }
+
     function openGame(gameId, container, onExit) {
         switch (gameId) {
             case 'balloon-catcher': launchBalloonCatcher(container, onExit); break;
@@ -442,6 +510,7 @@ window.ArcadeGames = (function() {
             case 'music-bells': launchMusicBells(container, onExit); break;
             case 'cargo-train': launchCargoTrain(container, onExit); break;
             case 'speed-memory': launchSpeedMemory(container, onExit); break;
+            case 'turn-taking': launchTurnTaking(container, onExit); break;
             default: launchBalloonCatcher(container, onExit); break;
         }
     }

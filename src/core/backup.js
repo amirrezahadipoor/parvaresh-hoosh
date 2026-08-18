@@ -2,7 +2,7 @@
 window.BackupRestore = (function() {
     const FORMAT = 'parvaresh-hoosh-backup';
     const SCHEMA_VERSION = 1;
-    const EXTRA_KEYS = ['parvaresh_hoosh_adaptive_v2', 'parvaresh_hoosh_iq_v3'];
+    const EXTRA_KEYS = ['parvaresh_hoosh_adaptive_v2', 'parvaresh_hoosh_iq_v3', 'parvaresh_hoosh_game_progress_v1'];
 
     function getExtraLocalStorage() {
         const values = {};

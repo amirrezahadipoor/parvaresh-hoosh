@@ -1518,3 +1518,9 @@ button:focus-visible, [role="button"]:focus-visible {
 .lesson-context-kicker { color: #3980C5; font-size: 10px; font-weight: 900; }
 .lesson-context-story { color: #23415F; font-size: 13px; font-weight: 900; line-height: 1.5; }
 .lesson-context-objective { color: #718397; font-size: 10px; font-weight: 700; line-height: 1.5; }
+
+.arcade-game-record { margin-top: 6px; padding: 4px 7px; border-radius: 999px; color: #23609D; background: #EAF3FF; font-size: 9px; font-weight: 900; }
+.cooperative-card { text-align: center; }
+.cooperative-role { display: inline-flex; align-items: center; justify-content: center; min-width: 86px; min-height: 38px; margin: 10px auto 14px; padding: 7px 15px; border-radius: 999px; color: #FFF; background: var(--role-color, #2563EB); font-size: 16px; font-weight: 900; }
+.cooperative-prompt { min-height: 86px; color: #1F2A37; font-size: 20px; font-weight: 900; line-height: 1.65; }
+.cooperative-note { margin: 10px 0 15px; padding: 10px; border-radius: 12px; color: #718397; background: #F5F8FC; font-size: 11px; font-weight: 800; line-height: 1.5; }

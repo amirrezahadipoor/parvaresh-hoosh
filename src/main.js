@@ -824,10 +824,12 @@
             const card = document.createElement('button');
             card.className = 'arcade-game-card';
             card.style.setProperty('--gcolor', g.color);
+            const gameStats = window.GameProgress ? window.GameProgress.getStats(g.id) : { bestScore: 0, plays: 0 };
             card.innerHTML = `
                 <div class="arcade-game-icon" style="background:${g.color}">${g.iconHtml}</div>
                 <div class="arcade-game-title">${g.title}</div>
                 <div class="arcade-game-desc">${g.subtitle}</div>
+                <div class="arcade-game-record">${gameStats.plays ? `رکورد: ${toFa(gameStats.bestScore)}` : 'هنوز امتحان نکردی'}</div>
             `;
 
             card.addEventListener('click', () => {
@@ -1354,6 +1356,7 @@
                 Adaptive.reset();
                 if (IQAssessment.reset) IQAssessment.reset();
                 if (window.Engagement) await window.Engagement.reset();
+                if (window.GameProgress) window.GameProgress.reset();
                 state.lessonsDone = {};
                 state.totalStars = 0;
                 state.sfxMuted = false;
