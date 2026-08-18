@@ -1196,6 +1196,7 @@
             <p style="font-size:12px; color:var(--ink2); margin-bottom:10px;">
                 داده‌ها به صورت ۱۰۰٪ آفلاین روی حافظه دستگاه نگهداری می‌شوند.
             </p>
+            <div class="parent-legal-links"><a href="privacy.html">حریم خصوصی</a><a href="terms.html">شرایط استفاده</a></div>
             <button class="btn-secondary-action" id="btn-change-pin" style="width:100%;">
                 ${'تنظیم یا تغییر رمز والدین'}
             </button>

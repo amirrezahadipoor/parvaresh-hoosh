@@ -3,6 +3,8 @@ const PRECACHE = [
     './',
     './index.html',
     './manifest.webmanifest',
+    './privacy.html',
+    './terms.html',
     './src/styles/main.css',
     './src/data/alphabet.js',
     './src/data/words.js',
