@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.cache/
+.env
+*.local
+.DS_Store
+*.apk
+capacitor.config.json

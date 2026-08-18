@@ -1,0 +1,12 @@
+{
+  "name": "khanak-academy",
+  "version": "1.0.0",
+  "description": "اپلیکیشن آموزشی آفلاین فارسی برای کودکان ۵ تا ۸ سال",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Build step for Capacitor in later phases'"
+  },
+  "author": "Khanak Academy",
+  "license": "MIT"
+}
