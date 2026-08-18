@@ -37,13 +37,11 @@ jobs:
       - name: Run Quality & Curriculum Tests
         run: npm test
 
-      - name: Sync Web Assets to Android
+      - name: Build and Sync Web Assets to Android
         run: |
-          rm -rf android/app/src/main/assets/public
-          mkdir -p android/app/src/main/assets/public
-          cp index.html manifest.webmanifest sw.js privacy.html terms.html android/app/src/main/assets/public/
-          cp -r src assets content vendor android/app/src/main/assets/public/
+          npm run android:sync
           test -f android/app/src/main/assets/public/index.html
+          test -f android/app/src/main/assets/public/src/core/icons.js
           test -f android/app/src/main/assets/public/content/curriculum.json
 
       - name: Build Android APK

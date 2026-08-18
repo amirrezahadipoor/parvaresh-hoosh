@@ -1,6 +1,7 @@
 node_modules/
 .npm/
 www/
+android/app/src/main/assets/public/
 android/app/build/
 android/build/
 android/.gradle/

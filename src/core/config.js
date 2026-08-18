@@ -11,6 +11,7 @@ const App = {
             title: 'خواندن و الفبا',
             subtitle: 'الفبا، کلمات و جمله‌سازی',
             iconChar: 'الف',
+            iconId: 'reading',
             color: '#FF6B6B',
             bg: '#FFE8E8',
             accent: '#EE5253'
@@ -20,6 +21,7 @@ const App = {
             title: 'ریاضیات و اعداد',
             subtitle: 'شمارش، جمع، تفریق و اشکال',
             iconChar: '۱۲۳',
+            iconId: 'math',
             color: '#4ECDC4',
             bg: '#E0F7F5',
             accent: '#0ABDE3'
@@ -29,6 +31,7 @@ const App = {
             title: 'منطق و پازل',
             subtitle: 'حافظه، الگوها و تفکر',
             iconChar: 'منطق',
+            iconId: 'logic',
             color: '#A29BFE',
             bg: '#EDEAFE',
             accent: '#6C5CE7'
@@ -38,6 +41,7 @@ const App = {
             title: 'علوم و طبیعت',
             subtitle: 'حیوانات، حواس و جهان',
             iconChar: 'علوم',
+            iconId: 'science',
             color: '#F9CA24',
             bg: '#FEF5D3',
             accent: '#F39C12'
@@ -47,6 +51,7 @@ const App = {
             title: 'هوش هیجانی',
             subtitle: 'شناخت احساسات و آداب',
             iconChar: 'احساس',
+            iconId: 'socio-emotional',
             color: '#FF8A5C',
             bg: '#FFE5D6',
             accent: '#E55039'
@@ -56,6 +61,7 @@ const App = {
             title: 'هنر و خلاقیت',
             subtitle: 'رنگ‌آمیزی، نقاشی و بازی',
             iconChar: 'هنر',
+            iconId: 'art',
             color: '#F368E0',
             bg: '#FDE0F8',
             accent: '#EA2027'

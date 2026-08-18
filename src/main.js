@@ -309,7 +309,9 @@
                 <span class="domain-tile-subtitle"></span>
                 <span class="domain-tile-progress"><i></i><b></b></span>
             `;
-            tile.querySelector('.domain-tile-icon').textContent = domain.iconChar;
+            tile.querySelector('.domain-tile-icon').innerHTML = window.AppIcons
+                ? window.AppIcons.get(domain.iconId || domain.id, 25)
+                : domain.iconChar;
             tile.querySelector('.domain-tile-title').textContent = domain.title;
             tile.querySelector('.domain-tile-subtitle').textContent = domain.subtitle;
             const progress = lessons.length ? Math.round((done / lessons.length) * 100) : 0;
@@ -323,7 +325,7 @@
         arcadeTile.type = 'button';
         arcadeTile.className = 'domain-tile arcade-tile';
         arcadeTile.innerHTML = `
-            <span class="domain-tile-icon">بازی</span>
+            <span class="domain-tile-icon">${window.AppIcons ? window.AppIcons.get('arcade', 26) : 'بازی'}</span>
             <span class="domain-tile-title">شهربازی هوش</span>
             <span class="domain-tile-subtitle">بازی‌های کوتاه برای تمرین و شادی</span>
             <span class="domain-tile-progress arcade-tile-action">ورود به بازی‌ها</span>
@@ -455,7 +457,12 @@
             button.className = `adventure-map-node ${done ? 'done' : ''} ${index === activeIndex ? 'current' : ''} ${unlocked ? '' : 'locked'}`;
             button.style.setProperty('--node-color', node.color);
             button.innerHTML = `<span class="adventure-map-node-icon"></span><small></small>`;
-            button.querySelector('.adventure-map-node-icon').textContent = done ? '✓' : node.icon;
+            const nodeIcon = button.querySelector('.adventure-map-node-icon');
+            if (done) {
+                nodeIcon.textContent = '✓';
+            } else {
+                nodeIcon.innerHTML = window.AppIcons ? window.AppIcons.get(node.domain || 'play', 21) : node.icon;
+            }
             button.querySelector('small').textContent = node.title.replace(/^\d+\.\s*/, '');
             button.disabled = !unlocked;
             button.setAttribute('aria-label', `${node.title} ${done ? 'تکمیل شده' : unlocked ? 'باز' : 'قفل'}`);

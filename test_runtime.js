@@ -88,7 +88,7 @@ async function main() {
     const scriptPaths = [
         'src/data/alphabet.js', 'src/data/words.js', 'src/data/math-data.js',
         'src/data/world-data.js', 'src/data/curriculum.js', 'src/data/lesson-guide.js',
-        'src/core/config.js', 'src/core/audio.js', 'src/core/storage.js', 'src/core/backup.js', 'src/core/engagement.js', 'src/core/game-progress.js',
+        'src/core/config.js', 'src/core/icons.js', 'src/core/audio.js', 'src/core/storage.js', 'src/core/backup.js', 'src/core/engagement.js', 'src/core/game-progress.js',
         'src/core/adaptive.js', 'src/core/iq-assessment.js', 'src/core/living-world.js',
         'src/core/mascot.js', 'src/core/svg-art.js', 'src/core/fx.js', 'src/core/nav.js',
         'src/activities/generator.js', 'src/activities/adventure-journey.js',
@@ -105,6 +105,7 @@ async function main() {
     await wait(2100);
 
     assert.equal(document.querySelector('.screen.active').id, 'screen-home', 'app should leave splash and show home');
+    assert.ok(document.querySelectorAll('.domain-tile-icon .app-icon').length >= 6, 'home domain/game option icons should render as inline SVG');
     if (document.querySelector('.profile-onboarding-overlay')) {
         document.querySelector('.age-choice').click();
         document.querySelector('#profile-start').click();

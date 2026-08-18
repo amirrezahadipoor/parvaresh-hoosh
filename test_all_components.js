@@ -72,6 +72,7 @@ require('./src/data/lesson-packages.js');
 
 // Load core files
 require('./src/core/config.js');
+require('./src/core/icons.js');
 require('./src/core/audio.js');
 require('./src/core/storage.js');
 require('./src/core/game-progress.js');

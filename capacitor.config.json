@@ -1,6 +1,6 @@
 {
   "appId": "ir.parvareshhoosh.app",
   "appName": "پرورش هوش کودک",
-  "webDir": ".",
+  "webDir": "www",
   "bundledWebRuntime": false
 }

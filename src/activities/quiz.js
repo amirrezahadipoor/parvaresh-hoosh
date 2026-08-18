@@ -58,7 +58,7 @@ window.QuizActivity = (function() {
 
             if (opt.img) {
                 const imgWrap = document.createElement('span');
-                imgWrap.style.maxHeight = '48px';
+                imgWrap.className = 'game-option-art';
                 imgWrap.innerHTML = opt.img;
                 btn.appendChild(imgWrap);
             }

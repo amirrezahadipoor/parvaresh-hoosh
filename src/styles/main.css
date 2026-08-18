@@ -464,7 +464,7 @@ html, body {
     border-radius: var(--r-md);
     padding: 10px 6px;
     min-height: 58px;
-    max-height: 80px;
+    max-height: none;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -869,7 +869,11 @@ html, body {
 .action-pill-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 8px 12px; border: 0; border-radius: var(--r-full); color: var(--ink); background: #EFE6DC; font-family: inherit; font-size: 12px; font-weight: 800; box-shadow: 0 3px 0 #D8C8B8; cursor: pointer; }
 .arcade-game-card { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 12px 8px; border: 2px solid #F0E6DA; border-top: 5px solid var(--gcolor,var(--accent)); border-radius: var(--r-lg); background: #FFF; font-family: inherit; text-align: center; cursor: pointer; box-shadow: var(--sh-sm); }
 .arcade-game-icon { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin-bottom: 7px; border-radius: var(--r-full); color: #FFF; background: var(--gcolor,var(--accent)); }
-.arcade-game-icon svg { max-width: 40px; max-height: 40px; }
+.arcade-game-icon svg { display: block; width: 40px; height: 40px; max-width: 40px; max-height: 40px; }
+.app-icon { display: block; flex: 0 0 auto; overflow: visible; }
+.game-option-art { display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; overflow: visible; }
+.game-option-art svg { display: block; width: auto !important; height: auto !important; max-width: 52px; max-height: 48px; }
+.game-tap-choice-btn > span:last-child:not(.game-option-art) { line-height: 1.35; }
 .arcade-game-title { overflow: hidden; text-overflow: ellipsis; font-size: 13px; font-weight: 900; }
 .arcade-game-desc { margin-top: 3px; color: var(--ink2); font-size: 10px; line-height: 1.35; }
 .big-action-btn { width: 100%; padding: 12px; border: 0; border-radius: var(--r-md); color: #FFF; background: var(--accent); font-family: inherit; font-size: 16px; font-weight: 900; box-shadow: 0 4px 0 var(--accent-hover); cursor: pointer; }
@@ -1552,3 +1556,29 @@ button:focus-visible, [role="button"]:focus-visible {
 }
 .profile-onboarding-actions { grid-template-columns: 1fr; }
 .profile-start-btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+/* Final Android viewport guardrails: keep every header action visible on compact phones. */
+@media (max-width: 380px) {
+    .main-header, .sub-header { padding-inline: 8px; }
+    .main-header { gap: 3px; }
+    .main-header > div[style*="display:flex"] { gap: 3px !important; }
+    .main-header .icon-btn { width: 40px; height: 40px; min-width: 40px; min-height: 40px; border-radius: 12px; }
+    .main-header .star-badge-btn { min-width: 52px; min-height: 40px; padding-inline: 7px; }
+    .main-header > .header-title { margin-inline: 2px; font-size: 14px; }
+    .star-badge-btn svg { width: 16px; height: 16px; }
+    .home-stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 330px) {
+    .main-header > .header-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .main-header { justify-content: space-between; }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    .main-header, .sub-header { height: calc(52px + env(safe-area-inset-top)); min-height: calc(52px + env(safe-area-inset-top)); }
+    .main-content { padding-top: 9px; }
+    .home-welcome-card { min-height: 82px; }
+    .home-mascot-button { flex-basis: 62px; width: 62px; height: 62px; }
+    .home-mascot-button svg { width: 60px; height: 60px; }
+    .activity-visual-stage { min-height: 105px; }
+}

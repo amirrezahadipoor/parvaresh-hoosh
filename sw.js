@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v2-shell';
+const CACHE_NAME = 'parvaresh-hoosh-v2.1-android-ui';
 const PRECACHE = [
     './',
     './index.html',
@@ -16,6 +16,7 @@ const PRECACHE = [
     './content/curriculum.json',
     './content/content_manifest.json',
     './src/core/config.js',
+    './src/core/icons.js',
     './src/core/audio.js',
     './src/core/storage.js',
     './src/core/backup.js',
