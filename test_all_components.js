@@ -164,6 +164,14 @@ function validateRound(round, lessonId) {
         if (!Array.isArray(round.options) || round.options.length < 2 || !Number.isInteger(round.answer) || round.answer < 0 || round.answer >= round.options.length) {
             errors.push(`Lesson ${lessonId} has an invalid quiz answer/options pair.`);
         }
+        // Android-first UI invariants: every quiz round must have a center visual and
+        // every option must carry an icon (SVG) or a text label.
+        if (!round.img) errors.push(`Lesson ${lessonId} quiz round has an empty visual stage (no img).`);
+        (round.options || []).forEach((opt, idx) => {
+            if (!opt.img && !opt.label) errors.push(`Lesson ${lessonId} quiz option ${idx} has neither icon nor label.`);
+            if (opt.img && typeof opt.img !== 'string') errors.push(`Lesson ${lessonId} quiz option ${idx} has a non-string icon.`);
+            if (!opt.img && opt.label && !String(opt.label).trim()) errors.push(`Lesson ${lessonId} quiz option ${idx} has an empty label.`);
+        });
     } else if (round.type === 'memory') {
         const cards = round.cards || [];
         const pairs = new Set(cards.map(card => card.pair));

@@ -654,5 +654,68 @@ window.SvgArt = (function() {
         }
     }
 
-    return { shape, numberCard, animal, object };
+    // ==========================================
+    // 7. TILE HELPERS (حروف، اعداد و کلمات داخل کاشی رنگی)
+    // Kid-friendly tiles used as option icons & round visuals.
+    // ==========================================
+    function letterTile(letter, color, size) {
+        const c = color || '#6C5CE7';
+        size = size || 72;
+        return wrap(`
+            <rect x="6" y="6" width="88" height="88" rx="20" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+            <rect x="14" y="14" width="26" height="26" rx="8" fill="#FFF" opacity="0.35"/>
+            <text x="50" y="63" text-anchor="middle" font-size="52" font-weight="900" fill="#FFFFFF" font-family="Vazirmatn, Tahoma, sans-serif">${letter}</text>
+        `, size);
+    }
+
+    function numberTile(n, color, size) {
+        const c = color || '#00B894';
+        size = size || 72;
+        const faMap = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        const fa = String(n).replace(/[0-9]/g, w => faMap[Number(w)]);
+        return wrap(`
+            <rect x="6" y="6" width="88" height="88" rx="20" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+            <rect x="14" y="14" width="26" height="26" rx="8" fill="#FFF" opacity="0.35"/>
+            <text x="50" y="63" text-anchor="middle" font-size="48" font-weight="900" fill="#FFFFFF" font-family="Vazirmatn, Tahoma, sans-serif">${fa}</text>
+        `, size);
+    }
+
+    function wordTile(word, color, size) {
+        const c = color || '#1E90FF';
+        size = size || 72;
+        const text = String(word || '؟');
+        // Auto-shrink the font so long Persian words stay inside the tile.
+        const fontSize = Math.max(13, Math.min(30, 31 - (text.length - 2) * 2.1));
+        return wrap(`
+            <rect x="6" y="6" width="88" height="88" rx="20" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+            <rect x="14" y="14" width="26" height="26" rx="8" fill="#FFF" opacity="0.35"/>
+            <text x="50" y="57" text-anchor="middle" font-size="${fontSize}" font-weight="900" fill="#FFFFFF" font-family="Vazirmatn, Tahoma, sans-serif">${text}</text>
+        `, size);
+    }
+
+    function questionTile(color, size) {
+        const c = color || '#A4B0BE';
+        size = size || 72;
+        return wrap(`
+            <rect x="6" y="6" width="88" height="88" rx="20" fill="${c}" stroke="#2C3A47" stroke-width="3" stroke-dasharray="7 5"/>
+            <text x="50" y="66" text-anchor="middle" font-size="56" font-weight="900" fill="#2C3A47" font-family="Vazirmatn, Tahoma, sans-serif">؟</text>
+        `, size);
+    }
+
+    // Sound-wave banner used for listening questions (letter sounds, rhymes).
+    function soundVisual(size) {
+        size = size || 110;
+        return wrap(`
+            <circle cx="38" cy="50" r="26" fill="#6C5CE7"/>
+            <path d="M30 40 L22 40 L22 60 L30 60 Z" fill="#FFFFFF"/>
+            <path d="M36 36 Q44 50 36 64" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M46 30 Q58 50 46 70" stroke="#F9CA24" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M56 24 Q72 50 56 76" stroke="#FF8A5C" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <circle cx="78" cy="22" r="5" fill="#FF6B6B"/>
+            <circle cx="86" cy="42" r="3.5" fill="#00B894"/>
+            <circle cx="84" cy="70" r="4.5" fill="#A29BFE"/>
+        `, size);
+    }
+
+    return { shape, numberCard, animal, object, letterTile, numberTile, wordTile, questionTile, soundVisual };
 })();

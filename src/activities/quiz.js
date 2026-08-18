@@ -54,7 +54,9 @@ window.QuizActivity = (function() {
 
         round.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
-            btn.className = `game-tap-choice-btn ${opt.big ? 'big-font' : ''}`;
+            btn.className = `game-tap-choice-btn ${opt.big ? 'big-font' : ''} ${opt.tile ? 'tile-option' : ''}`;
+            if (opt.tileColor) btn.style.setProperty('--tile-color', opt.tileColor);
+            if (opt.label && !opt.img) btn.setAttribute('aria-label', opt.label);
 
             if (opt.img) {
                 const imgWrap = document.createElement('span');

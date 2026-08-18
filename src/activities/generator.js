@@ -729,26 +729,47 @@ window.Generator = (function() {
     // ==========================================
     // HELPERS
     // ==========================================
-    function imgForWord(word) {
-        const animalMap = {
-            'اسب': 'horse', 'گربه': 'cat', 'سگ': 'dog', 'خرگوش': 'rabbit',
-            'فیل': 'elephant', 'شیر': 'lion', 'خرس': 'bear', 'میمون': 'monkey',
-            'ماهی': 'fish', 'لاک‌پشت': 'turtle', 'پروانه': 'butterfly', 'زنبور': 'bee',
-            'جوجه': 'chick', 'مرغ': 'chicken', 'خروس': 'rooster', 'اردک': 'duck',
-            'قورباغه': 'frog', 'گوسفند': 'sheep', 'گاو': 'cow'
-        };
-        const objectMap = {
-            'سیب': 'apple', 'موز': 'banana', 'پرتقال': 'orange', 'هندوانه': 'watermelon',
-            'توپ': 'ball', 'بادکنک': 'balloon', 'خورشید': 'sun', 'ماه': 'moon',
-            'ستاره': 'star', 'گل': 'flower', 'درخت': 'tree', 'باران': 'rain',
-            'ابر': 'rain', 'ماشین': 'car', 'کتاب': 'book', 'خانه': 'house',
-            'چشم': 'eye', 'گوش': 'ear', 'بینی': 'nose', 'دست': 'hand',
-            'دندان': 'tooth', 'ساعت': 'clock', 'هدیه': 'gift', 'کیک': 'cake'
-        };
+    const ANIMAL_IMG = {
+        'اسب': 'horse', 'گربه': 'cat', 'سگ': 'dog', 'خرگوش': 'rabbit',
+        'فیل': 'elephant', 'شیر': 'lion', 'خرس': 'bear', 'میمون': 'monkey',
+        'ماهی': 'fish', 'لاک‌پشت': 'turtle', 'پروانه': 'butterfly', 'زنبور': 'bee',
+        'جوجه': 'chick', 'مرغ': 'chicken', 'خروس': 'rooster', 'اردک': 'duck',
+        'قورباغه': 'frog', 'گوسفند': 'sheep', 'گاو': 'cow', 'روباه': 'fox'
+    };
+    const OBJECT_IMG = {
+        'سیب': 'apple', 'موز': 'banana', 'پرتقال': 'orange', 'هندوانه': 'watermelon',
+        'توپ': 'ball', 'بادکنک': 'balloon', 'خورشید': 'sun', 'ماه': 'moon',
+        'ستاره': 'star', 'گل': 'flower', 'درخت': 'tree', 'باران': 'rain',
+        'ابر': 'rain', 'ماشین': 'car', 'کتاب': 'book', 'خانه': 'house',
+        'چشم': 'eye', 'گوش': 'ear', 'بینی': 'nose', 'دست': 'hand',
+        'زبان': 'tongue', 'پا': 'foot', 'دندان': 'tooth', 'مغز': 'brain',
+        'ساعت': 'clock', 'هدیه': 'gift', 'کیک': 'cake'
+    };
+    const SHAPE_IMG = {
+        'دایره': ['circle', '#FF6B6B'], 'مثلث': ['triangle', '#4ECDC4'],
+        'مربع': ['square', '#A29BFE'], 'مستطیل': ['rectangle', '#F9CA24'],
+        'بیضی': ['oval', '#FF8A5C'], 'لوزی': ['diamond', '#F368E0']
+    };
+    const SEASON_IMG = {
+        'بهار': 'flower', 'تابستان': 'sun', 'پاییز': 'tree', 'زمستان': 'rain'
+    };
 
-        if (animalMap[word]) return SvgArt.animal(animalMap[word], 85);
-        if (objectMap[word]) return SvgArt.object(objectMap[word], 85);
-        return SvgArt.object('book', 85);
+    function wordColor(word) {
+        const palette = ['#6C5CE7', '#00B894', '#1E90FF', '#FF8A5C', '#F368E0', '#00D2D3', '#FF6B6B', '#A29BFE'];
+        let hash = 0;
+        const text = String(word || '؟');
+        for (let i = 0; i < text.length; i++) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+        return palette[hash % palette.length];
+    }
+
+    function imgForWord(word) {
+        if (!word) return SvgArt.wordTile('؟', '#A4B0BE', 85);
+        if (ANIMAL_IMG[word]) return SvgArt.animal(ANIMAL_IMG[word], 85);
+        if (OBJECT_IMG[word]) return SvgArt.object(OBJECT_IMG[word], 85);
+        if (SHAPE_IMG[word]) return SvgArt.shape(SHAPE_IMG[word][0], SHAPE_IMG[word][1], 85);
+        if (SEASON_IMG[word]) return SvgArt.object(SEASON_IMG[word], 85);
+        // Honest fallback: a colored tile carrying the word itself (never a wrong picture).
+        return SvgArt.wordTile(word, wordColor(word), 85);
     }
 
     function pickOtherWords(excludeLetter, count, excludeList) {
@@ -1152,7 +1173,121 @@ window.Generator = (function() {
     // ==========================================
     // LEGACY FALLBACKS (kept for direct calls from old integrations)
     // ==========================================
-    function generate(lessonId, metadata) {
+    // ==========================================
+    // VISUAL & ICON ENRICHMENT (Android-first UI)
+    // Guarantees that every quiz option carries an icon and every quiz round has a
+    // non-empty center stage — previously many rounds rendered an empty white box.
+    // ==========================================
+    const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+
+    function isFaNumber(text) {
+        return /^[۰-۹0-9]+$/.test(String(text || '').trim());
+    }
+
+    function optionIcon(label) {
+        const text = String(label || '').trim();
+        if (!text) return '';
+        if (isFaNumber(text)) return SvgArt.numberTile(text, wordColor(text), 58);
+        if (text.length === 1) return SvgArt.letterTile(text, wordColor(text), 58);
+        return imgForWord(text);
+    }
+
+    function enrichRound(round) {
+        if (!round || typeof round !== 'object') return round;
+
+        // 1) Every option gets a visual identity:
+        //    - single letters & numbers become colorful tile buttons (the button IS the icon);
+        //    - words get an SVG icon (object/animal picture or a word tile).
+        (round.options || []).forEach(opt => {
+            if (!opt.img && opt.label) {
+                const text = String(opt.label).trim();
+                if (text.length === 1 || isFaNumber(text)) {
+                    opt.tile = true;
+                    opt.big = true;
+                    opt.tileColor = wordColor(text);
+                } else {
+                    opt.img = optionIcon(text);
+                }
+            }
+        });
+
+        // 2) Every quiz round gets a non-empty center stage.
+        if (round.type === 'quiz' && !round.img) {
+            round.img = visualForQuiz(round);
+        }
+        return round;
+    }
+
+    function visualForQuiz(round) {
+        const prompt = String(round.prompt || '');
+        const opts = round.options || [];
+        const answerOpt = opts[round.answer];
+
+        // Listening questions (letter sound / rhyme) get a neutral sound banner.
+        if (/صدای|هم‌قافیه|هم‌آهنگ|بشنو|بگو/i.test(prompt)) {
+            return SvgArt.soundVisual(110);
+        }
+
+        // «عدد بعدی» -> number card + arrow + question tile.
+        if (/عدد بعدی|بعدی کدام/i.test(prompt)) {
+            const faNums = prompt.match(/[۰-۹0-9]+/g) || [];
+            const nums = faNums.map(s => Number(s.replace(/[۰-۹]/g, d => String(FA_DIGITS.indexOf(d)))));
+            const a = nums.find(Number.isFinite);
+            if (Number.isFinite(a)) {
+                return `<div class="round-visual-flex">${SvgArt.numberCard(a, '#4ECDC4', 88)}<span style="font-size:30px;font-weight:900;color:#6C5CE7;user-select:none;">←</span>${SvgArt.questionTile('#A4B0BE', 88)}</div>`;
+            }
+        }
+
+        // «بزرگ‌تر / کوچک‌تر» -> the two number cards side by side.
+        if (/بزرگ‌تر|کوچک‌تر/i.test(prompt)) {
+            const cards = opts.map(o => o.img || optionIcon(o.label));
+            return `<div class="round-visual-flex">${cards.join('')}</div>`;
+        }
+
+        // Patterns -> three option tiles + question tile.
+        if (/الگو|علامت سوال/i.test(prompt)) {
+            const icons = opts.slice(0, 3).map(o => o.img || optionIcon(o.label));
+            return `<div class="round-visual-flex">${icons.join('')}${SvgArt.questionTile('#A4B0BE', 62)}</div>`;
+        }
+
+        // Sense organs -> the organ itself.
+        if (/حس|عضو/i.test(prompt)) {
+            const organ = answerOpt && answerOpt.label;
+            const key = OBJECT_IMG[organ];
+            if (key) return SvgArt.object(key, 110);
+        }
+
+        // Good behavior -> warm heart.
+        if (/رفتار|پسندیده|مفید/i.test(prompt)) {
+            return SvgArt.shape('heart', '#FF6B6B', 110);
+        }
+
+        // Antonyms -> prompt word tile + question tile (no answer reveal).
+        if (/متضاد|مخالف/i.test(prompt)) {
+            const quoted = prompt.match(/«([^»]+)»/);
+            if (quoted && quoted[1]) {
+                return `<div class="round-visual-flex">${SvgArt.wordTile(quoted[1], wordColor(quoted[1]), 90)}${SvgArt.questionTile('#A4B0BE', 90)}</div>`;
+            }
+        }
+
+        // Colors -> decorative palette (never reveals the target color).
+        if (/رنگ/i.test(prompt)) {
+            const swatches = ['#FF6B6B', '#4ECDC4', '#F9CA24', '#A29BFE', '#FF8A5C', '#2ED573']
+                .map(c => `<span style="display:inline-block;width:34px;height:34px;border-radius:50%;background:${c};border:3px solid #FFF;box-shadow:0 2px 0 rgba(0,0,0,.12);"></span>`).join('');
+            return `<div class="round-visual-flex"><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:230px;">${swatches}</span></div>`;
+        }
+
+        // Image-matching questions (which image starts with…, which word…, builds…)
+        // may safely show the answer image as the question content.
+        if (answerOpt && answerOpt.img && /شروع می‌شود|می‌سازند|نشانه|کدام کلمه|کدام گزینه|کدام تصویر/i.test(prompt)) {
+            return `<div class="round-visual-flex">${answerOpt.img}</div>`;
+        }
+
+        // Final fallback: a friendly decorative tile so the stage is never blank.
+        return SvgArt.object('star', '#F9CA24', 110);
+    }
+
+    function buildRounds(lessonId, metadata) {
         const metadataPlan = lessonPlan(lessonId, metadata);
         if (metadataPlan && metadataPlan.length) return metadataPlan;
 
@@ -1279,6 +1414,11 @@ window.Generator = (function() {
 
         // General Fallback
         return [countRound(5), shapeNameRound(), ravenRound(), shadowRound(), balloonRound()];
+    }
+
+    function generate(lessonId, metadata) {
+        const rounds = buildRounds(lessonId, metadata);
+        return (Array.isArray(rounds) ? rounds : []).map(enrichRound);
     }
 
     return { generate };

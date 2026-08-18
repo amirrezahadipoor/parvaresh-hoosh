@@ -26,6 +26,70 @@
         return arr[Math.floor(Math.random() * arr.length)];
     }
 
+    // ===== IN-APP DIALOGS =====
+    // window.confirm/alert are silent no-ops inside the Android Capacitor WebView,
+    // so every confirmation/notice must use this in-app modal instead.
+    function showDialog(options) {
+        const title = options.title || '';
+        const message = options.message || '';
+        const okLabel = options.okLabel || 'باشه';
+        const cancelLabel = options.cancelLabel || null;
+        const tone = options.tone || 'default'; // 'default' | 'danger'
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'app-dialog-overlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+
+            const card = document.createElement('div');
+            card.className = `app-dialog-card ${tone === 'danger' ? 'danger' : ''}`;
+
+            const titleEl = document.createElement('h3');
+            titleEl.className = 'app-dialog-title';
+            titleEl.textContent = title;
+
+            const messageEl = document.createElement('p');
+            messageEl.className = 'app-dialog-message';
+            messageEl.textContent = message;
+
+            const actions = document.createElement('div');
+            actions.className = 'app-dialog-actions';
+
+            const okBtn = document.createElement('button');
+            okBtn.type = 'button';
+            okBtn.className = 'btn-primary-action';
+            okBtn.textContent = okLabel;
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'btn-secondary-action';
+            cancelBtn.textContent = cancelLabel;
+
+            actions.appendChild(okBtn);
+            if (cancelLabel) actions.appendChild(cancelBtn);
+
+            card.appendChild(titleEl);
+            card.appendChild(messageEl);
+            card.appendChild(actions);
+            overlay.appendChild(card);
+
+            const close = result => {
+                overlay.remove();
+                resolve(result);
+            };
+
+            okBtn.addEventListener('click', () => close(true));
+            if (cancelLabel) cancelBtn.addEventListener('click', () => close(false));
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay && cancelLabel) close(false);
+            });
+
+            document.body.appendChild(overlay);
+            okBtn.focus();
+        });
+    }
+
     // World Carousel Definitions
     const WORLDS = [
         { id: 'reading', title: 'جزیره الفبا و کلمات', subtitle: 'شناخت حروف، صداکشی و جمله‌سازی', color: '#FF5252', mascot: 'dana', icon: 'الف' },
@@ -277,9 +341,6 @@
                 planList.appendChild(item);
             });
         }
-        dashboard.appendChild(dailyPlan);
-        dashboard.appendChild(createAdventureMap());
-
         const learningHeader = document.createElement('div');
         learningHeader.className = 'home-section-heading';
         learningHeader.innerHTML = `<div><h2>دنیای یادگیری</h2><p>پیشرفت کلی ${toFa(completion)}٪ · یک حوزه را انتخاب کن</p></div>`;
@@ -338,6 +399,11 @@
         });
         grid.appendChild(arcadeTile);
         dashboard.appendChild(grid);
+
+        // Daily plan & adventure map come after the domain grid: on Android the primary
+        // navigation (domain tiles) must be visible right away, not buried below the fold.
+        dashboard.appendChild(dailyPlan);
+        dashboard.appendChild(createAdventureMap());
 
         const quickActions = document.createElement('div');
         quickActions.className = 'home-quick-actions';
@@ -533,7 +599,7 @@
         $('#domain-progress-text').textContent = `${toFa(doneLessons)} از ${toFa(allLessons.length)} درس`;
 
         const scrollContainer = document.createElement('div');
-        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px;';
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; touch-action:pan-y; overscroll-behavior-y:contain;';
 
         levels.forEach((lv, idx) => {
             const lessons = lv.lessons || [];
@@ -627,7 +693,7 @@
         }
 
         const scrollContainer = document.createElement('div');
-        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px;';
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; touch-action:pan-y; overscroll-behavior-y:contain;';
 
         (level.lessons || []).forEach((lesson, i) => {
             const prog = state.lessonsDone[lesson.id];
@@ -859,7 +925,7 @@
         content.innerHTML = '';
 
         const scrollContainer = document.createElement('div');
-        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;';
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px; touch-action:pan-y; overscroll-behavior-y:contain;';
 
         const games = ArcadeGames.list();
         games.forEach(g => {
@@ -917,7 +983,7 @@
         content.innerHTML = '';
 
         const scrollContainer = document.createElement('div');
-        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:12px;';
+        scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:12px; touch-action:pan-y; overscroll-behavior-y:contain;';
 
         // 1. Stats Hero
         const hero = document.createElement('div');
@@ -1390,18 +1456,36 @@
             try {
                 const payload = JSON.parse(await file.text());
                 window.BackupRestore.validate(payload);
-                if (!window.confirm('اطلاعات فعلی با این پشتیبان جایگزین می‌شود. ادامه می‌دهید؟')) return;
+                const proceed = await showDialog({
+                    title: 'بازیابی پشتیبان',
+                    message: 'اطلاعات فعلی با این پشتیبان جایگزین می‌شود. ادامه می‌دهید؟',
+                    okLabel: 'بله، بازیابی کن',
+                    cancelLabel: 'انصراف',
+                    tone: 'danger'
+                });
+                if (!proceed) return;
                 await window.BackupRestore.restore(payload);
                 window.location.reload();
             } catch (error) {
-                window.alert(error.message || 'بازیابی پشتیبان انجام نشد');
+                showDialog({
+                    title: 'بازیابی انجام نشد',
+                    message: error && error.message ? error.message : 'فایل پشتیبان معتبر نیست یا خوانده نشد.',
+                    okLabel: 'باشه'
+                });
             } finally {
                 backupInput.value = '';
             }
         });
 
         settingsCard.querySelector('#btn-reset-data').addEventListener('click', async () => {
-            if (confirm('آیا مایلید تمام داده‌ها بازنشانی شوند؟')) {
+            const proceed = await showDialog({
+                title: 'پاک کردن همهٔ داده‌ها',
+                message: 'همهٔ پیشرفت، ستاره‌ها و تنظیمات پاک می‌شود و برنامه از نو شروع می‌شود. مطمئنی؟',
+                okLabel: 'بله، پاک کن',
+                cancelLabel: 'انصراف',
+                tone: 'danger'
+            });
+            if (proceed) {
                 await Storage.clearAll();
                 Adaptive.reset();
                 if (IQAssessment.reset) IQAssessment.reset();
