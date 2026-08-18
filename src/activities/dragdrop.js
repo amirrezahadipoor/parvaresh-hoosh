@@ -56,6 +56,12 @@ window.DragDropActivity = (function() {
             itemsHolder.style.cssText = 'display:flex; flex-wrap:wrap; gap:4px; justify-content:center;';
             targetEl.appendChild(itemsHolder);
 
+            targetEl.addEventListener('click', () => {
+                if (selectedItem && !selectedItem.classList.contains('placed')) {
+                    tryPlace(selectedItem, targetEl);
+                    selectedItem = null;
+                }
+            });
             targetsRow.appendChild(targetEl);
             targetElements[t.id] = targetEl;
         });
@@ -67,12 +73,44 @@ window.DragDropActivity = (function() {
         itemsPool.style.cssText = 'display:flex; gap:10px; justify-content:center; flex-wrap:wrap; padding:8px; background:#F4EDE4; border-radius:16px; flex-shrink:0;';
 
         let placedCount = 0;
+        let selectedItem = null;
+        let completed = false;
         const totalItems = (round.items || []).length;
+
+        function tryPlace(itemEl, hitZone) {
+            if (!itemEl || itemEl.classList.contains('placed') || !hitZone) return;
+            if (hitZone.dataset.targetId === itemEl.dataset.target) {
+                itemEl.classList.add('placed');
+                itemEl.classList.remove('selected');
+                itemEl.style.transform = 'none';
+                hitZone.querySelector('.drop-holder-items').appendChild(itemEl);
+                AudioEngine.play('drop');
+                if (window.Fx) Fx.pop(hitZone);
+                placedCount++;
+                if (placedCount >= totalItems && !completed) {
+                    completed = true;
+                    setTimeout(() => {
+                        AudioEngine.play('correct');
+                        if (cb && cb.onCorrect) cb.onCorrect(round);
+                    }, 450);
+                }
+            } else {
+                AudioEngine.play('wrong');
+                if (window.Fx) Fx.shake(itemEl);
+                itemEl.classList.add('selected');
+                itemEl.style.transition = 'transform 0.25s ease';
+                itemEl.style.transform = 'translate(0, 0)';
+                setTimeout(() => { itemEl.style.transition = ''; }, 300);
+            }
+        }
 
         (round.items || []).forEach(item => {
             const itemEl = document.createElement('div');
             itemEl.dataset.itemId = item.id;
             itemEl.dataset.target = item.target;
+            itemEl.setAttribute('role', 'button');
+            itemEl.setAttribute('tabindex', '0');
+            itemEl.setAttribute('aria-label', item.label || 'کارت قابل جابه‌جایی');
             itemEl.style.cssText = 'background:#FFFFFF; border-radius:12px; padding:6px 10px; box-shadow:0 3px 0 #E2D3C4; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:grab; touch-action:none; border:2px solid #EFE6DC;';
 
             if (item.img) {
@@ -91,11 +129,13 @@ window.DragDropActivity = (function() {
 
             // Pointer drag system
             let isDragging = false;
+            let wasDragged = false;
             let startX, startY;
 
             function onDown(e) {
                 if (itemEl.classList.contains('placed')) return;
                 isDragging = true;
+                wasDragged = false;
                 AudioEngine.play('drag');
                 startX = e.clientX;
                 startY = e.clientY;
@@ -111,6 +151,7 @@ window.DragDropActivity = (function() {
                 if (!isDragging) return;
                 const dx = e.clientX - startX;
                 const dy = e.clientY - startY;
+                if (Math.abs(dx) > 6 || Math.abs(dy) > 6) wasDragged = true;
                 itemEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.15)`;
             }
 
@@ -127,31 +168,25 @@ window.DragDropActivity = (function() {
                     }
                 });
 
-                if (hitZone && hitZone.dataset.targetId === item.target) {
-                    itemEl.classList.add('placed');
-                    itemEl.style.transform = 'none';
-                    hitZone.querySelector('.drop-holder-items').appendChild(itemEl);
-                    AudioEngine.play('drop');
-                    if (window.Fx) Fx.pop(hitZone);
-                    placedCount++;
-
-                    if (placedCount >= totalItems) {
-                        setTimeout(() => {
-                            AudioEngine.play('correct');
-                            if (cb && cb.onCorrect) cb.onCorrect(round);
-                        }, 450);
-                    }
-                } else {
-                    AudioEngine.play('wrong');
-                    if (window.Fx) Fx.shake(itemEl);
-                    itemEl.style.transition = 'transform 0.25s ease';
-                    itemEl.style.transform = 'translate(0, 0)';
-                    setTimeout(() => {
-                        itemEl.style.transition = '';
-                    }, 300);
-                }
+                tryPlace(itemEl, hitZone);
             }
 
+            itemEl.addEventListener('click', () => {
+                if (wasDragged || itemEl.classList.contains('placed')) {
+                    wasDragged = false;
+                    return;
+                }
+                if (selectedItem && selectedItem !== itemEl) selectedItem.classList.remove('selected');
+                selectedItem = itemEl;
+                itemEl.classList.add('selected');
+                AudioEngine.play('click');
+            });
+            itemEl.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    itemEl.click();
+                }
+            });
             itemEl.addEventListener('pointerdown', onDown);
             itemEl.addEventListener('pointermove', onMove);
             itemEl.addEventListener('pointerup', onUp);

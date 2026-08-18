@@ -1484,3 +1484,6 @@ button:focus-visible, [role="button"]:focus-visible {
 .order-actions { display: flex; justify-content: center; gap: 8px; width: 100%; }
 .order-helper-btn { min-height: 38px; padding: 7px 11px; border: 1px solid #D7E4F0; border-radius: 10px; color: #23609D; background: #EAF3FF; font-size: 10px; font-weight: 900; cursor: pointer; }
 .order-helper-btn:disabled { opacity: .45; cursor: default; }
+
+/* Drag/drop also supports select-then-tap for smaller fingers and keyboard users. */
+[role="button"].selected { border-color: #2563EB !important; background: #EAF3FF !important; box-shadow: 0 0 0 3px rgba(37,99,235,.14), 0 3px 0 #B8CFE8 !important; }
