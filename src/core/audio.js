@@ -397,7 +397,17 @@ window.AudioEngine = (function() {
         't2-24-month-season',
         't2-25-emotion-situation',
         't2-26-color-blue',
-        't2-27-plant-growth'
+        't2-27-plant-growth',
+        'topic-addition',
+        'topic-art',
+        'topic-counting',
+        'topic-emotions',
+        'topic-experiment',
+        'topic-logic',
+        'topic-reading',
+        'topic-seasons',
+        'topic-shapes',
+        'topic-words'
     ]);
 
     function hasClip(text) {

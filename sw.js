@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v35-alphabet-complete';
+const CACHE_NAME = 'parvaresh-hoosh-v36-topic-intros';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -72,7 +72,17 @@ const PRECACHE = [
     './assets/audio/kid/t2-24-month-season.mp3',
     './assets/audio/kid/t2-25-emotion-situation.mp3',
     './assets/audio/kid/t2-26-color-blue.mp3',
-    './assets/audio/kid/t2-27-plant-growth.mp3'
+    './assets/audio/kid/t2-27-plant-growth.mp3',
+    './assets/audio/kid/topic-addition.mp3',
+    './assets/audio/kid/topic-art.mp3',
+    './assets/audio/kid/topic-counting.mp3',
+    './assets/audio/kid/topic-emotions.mp3',
+    './assets/audio/kid/topic-experiment.mp3',
+    './assets/audio/kid/topic-logic.mp3',
+    './assets/audio/kid/topic-reading.mp3',
+    './assets/audio/kid/topic-seasons.mp3',
+    './assets/audio/kid/topic-shapes.mp3',
+    './assets/audio/kid/topic-words.mp3'
 ];
 
 self.addEventListener('install', event => {
