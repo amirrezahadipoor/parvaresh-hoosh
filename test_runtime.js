@@ -125,22 +125,20 @@ async function main() {
     assert.ok(document.querySelector('#home-content .home-dashboard'), 'home content should be populated');
     assert.equal(errors.length, 0, `browser smoke test errors: ${errors.map(String).join('\n')}`);
 
-    // Verify the main navigation path: home -> domain -> level -> lesson -> back.
+    // Verify the main navigation path: home -> subject -> difficulty -> lesson -> back.
+    // A subject no longer opens a list of levels and then a list of lessons: it
+    // offers three difficulty cards and each one drops the child straight into a
+    // playable lesson, so the old .level-card / screen-level hops are gone.
     document.querySelector('.domain-tile').click();
     assert.equal(document.querySelector('.screen.active').id, 'screen-domain');
-    assert.ok(document.querySelectorAll('#domain-content .level-card').length > 0, 'domain levels should render');
+    assert.ok(document.querySelectorAll('#domain-content .difficulty-card').length > 0, 'subject difficulties should render');
 
-    document.querySelector('#domain-content .level-card').click();
-    assert.equal(document.querySelector('.screen.active').id, 'screen-level');
-    assert.ok(document.querySelectorAll('#level-content .lesson-card').length > 0, 'lesson list should render');
-
-    document.querySelector('#level-content .lesson-card').click();
-    assert.equal(document.querySelector('.screen.active').id, 'screen-lesson');
+    document.querySelector('#domain-content .difficulty-card').click();
+    assert.equal(document.querySelector('.screen.active').id, 'screen-lesson', 'a difficulty should play immediately');
     assert.ok(document.querySelector('#lesson-body').children.length > 0, 'lesson activity should render');
 
+    // Exiting a lesson returns to the difficulty picker, not to a level list.
     document.querySelector('#btn-exit-lesson').click();
-    assert.equal(document.querySelector('.screen.active').id, 'screen-level');
-    document.querySelector('#btn-back-level').click();
     assert.equal(document.querySelector('.screen.active').id, 'screen-domain');
     document.querySelector('#btn-back-domain').click();
     assert.equal(document.querySelector('.screen.active').id, 'screen-home');
