@@ -403,15 +403,35 @@
         bigPlay.type = 'button';
         bigPlay.className = 'giant-play-btn';
         bigPlay.setAttribute('aria-label', 'شروع بازی و یادگیری');
+        // Side-by-side layout: the play disc sits beside the words instead of on top
+        // of them. Stacking them made the pulsing ring collide with the label and
+        // the whole hero read as a flat purple slab.
         bigPlay.innerHTML = `
             <span class="giant-play-glow" aria-hidden="true"></span>
-            <span class="giant-play-ring" aria-hidden="true"></span>
+            <span class="giant-play-sparkles" aria-hidden="true">
+                <i style="--sx:12%;--sy:26%;--sd:0s"></i>
+                <i style="--sx:26%;--sy:70%;--sd:.9s"></i>
+                <i style="--sx:78%;--sy:22%;--sd:1.7s"></i>
+                <i style="--sx:88%;--sy:64%;--sd:2.4s"></i>
+            </span>
             <span class="giant-play-core">
-                <span class="giant-play-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+                <span class="giant-play-disc" aria-hidden="true">
+                    <span class="giant-play-ring"></span>
+                    <span class="giant-play-ring giant-play-ring-2"></span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="gpArrow" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#7C6BFF"/>
+                                <stop offset="100%" stop-color="#00C2A8"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M8.6 5.4a1 1 0 0 1 1.53-.85l7.2 4.55a1.6 1.6 0 0 1 0 2.7l-7.2 4.55A1 1 0 0 1 8.6 15.5z" fill="url(#gpArrow)"/>
+                    </svg>
                 </span>
-                <span class="giant-play-label">بزن بریم!</span>
-                <span class="giant-play-sub">درس، سوال، بازی و نقاشی</span>
+                <span class="giant-play-text">
+                    <span class="giant-play-label">بزن بریم!</span>
+                    <span class="giant-play-sub">درس، بازی و نقاشی</span>
+                </span>
             </span>
         `;
         bigPlay.addEventListener('click', () => {

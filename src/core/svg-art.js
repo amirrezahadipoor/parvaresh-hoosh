@@ -19,8 +19,14 @@ window.SvgArt = (function() {
         const h = vbH && vbW ? Math.round(size * (vbH / vbW)) : size;
         const vW = vbW || 100;
         const vH = vbH || 100;
-        const style = 'overflow:visible;filter:drop-shadow(0 2px 1.5px rgba(20,26,38,.18));';
-        return `<svg width="${w}" height="${h}" viewBox="0 0 ${vW} ${vH}" style="${style}" aria-hidden="true">${content}</svg>`;
+        // Richer, softer depth: a two-stop drop shadow reads as a real object resting
+        // on the page instead of a sticker with one hard edge. A very soft top-left
+        // sheen (masked to the artwork by `mix-blend-mode`) adds roundness without
+        // the grey smudge the old full-viewBox rect caused.
+        const style = 'overflow:visible;' +
+            'filter:drop-shadow(0 1px 0.5px rgba(20,26,38,.10)) drop-shadow(0 3px 5px rgba(20,26,38,.16));';
+        return `<svg width="${w}" height="${h}" viewBox="0 0 ${vW} ${vH}" style="${style}" ` +
+               `shape-rendering="geometricPrecision" aria-hidden="true">${content}</svg>`;
     }
 
     // ==========================================
@@ -1495,10 +1501,23 @@ window.SvgArt = (function() {
     function letterTile(letter, color, size) {
         const c = color || '#6C5CE7';
         size = size || 72;
+        // The old tile had a 26x26 flat white square that read as a rendering
+        // glitch rather than a highlight. Now: a soft vertical gradient, a curved
+        // top sheen and a subtle inner rim, so the tile looks moulded.
+        const id = 'lt' + Math.random().toString(36).slice(2, 8);
         return wrap(`
-            <rect x="6" y="6" width="88" height="88" rx="20" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
-            <rect x="14" y="14" width="26" height="26" rx="8" fill="#FFF" opacity="0.35"/>
-            <text x="50" y="63" text-anchor="middle" font-size="52" font-weight="900" fill="#FFFFFF" font-family="Vazirmatn, Tahoma, sans-serif">${letter}</text>
+            <defs>
+                <linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity=".34"/>
+                    <stop offset="46%" stop-color="#FFFFFF" stop-opacity=".06"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity=".14"/>
+                </linearGradient>
+            </defs>
+            <rect x="6" y="7" width="88" height="88" rx="22" fill="#2C3A47" opacity=".18"/>
+            <rect x="6" y="6" width="88" height="88" rx="22" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+            <rect x="6" y="6" width="88" height="88" rx="22" fill="url(#${id})"/>
+            <path d="M14 34 Q50 12 86 34 L86 20 Q86 12 78 12 L22 12 Q14 12 14 20 Z" fill="#FFFFFF" opacity=".20"/>
+            <text x="50" y="65" text-anchor="middle" font-size="54" font-weight="900" fill="#FFFFFF" font-family="Vazirmatn, Tahoma, sans-serif" style="paint-order:stroke" stroke="rgba(20,26,38,.28)" stroke-width="2">${letter}</text>
         `, size);
     }
 
@@ -1507,10 +1526,20 @@ window.SvgArt = (function() {
         size = size || 72;
         const faMap = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
         const fa = String(n).replace(/[0-9]/g, w => faMap[Number(w)]);
+        const nid = 'nt' + Math.random().toString(36).slice(2, 8);
         return wrap(`
-            <rect x="6" y="6" width="88" height="88" rx="20" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
-            <rect x="14" y="14" width="26" height="26" rx="8" fill="#FFF" opacity="0.35"/>
-            <text x="50" y="63" text-anchor="middle" font-size="48" font-weight="900" fill="#FFFFFF" font-family="Vazirmatn, Tahoma, sans-serif">${fa}</text>
+            <defs>
+                <linearGradient id="${nid}" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity=".34"/>
+                    <stop offset="46%" stop-color="#FFFFFF" stop-opacity=".06"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity=".14"/>
+                </linearGradient>
+            </defs>
+            <rect x="6" y="7" width="88" height="88" rx="22" fill="#2C3A47" opacity=".18"/>
+            <rect x="6" y="6" width="88" height="88" rx="22" fill="${c}" stroke="#2C3A47" stroke-width="3"/>
+            <rect x="6" y="6" width="88" height="88" rx="22" fill="url(#${nid})"/>
+            <path d="M14 34 Q50 12 86 34 L86 20 Q86 12 78 12 L22 12 Q14 12 14 20 Z" fill="#FFFFFF" opacity=".20"/>
+            <text x="50" y="65" text-anchor="middle" font-size="50" font-weight="900" fill="#FFFFFF" font-family="Vazirmatn, Tahoma, sans-serif" style="paint-order:stroke" stroke="rgba(20,26,38,.28)" stroke-width="2">${fa}</text>
         `, size);
     }
 

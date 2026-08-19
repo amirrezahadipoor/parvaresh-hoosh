@@ -51,16 +51,16 @@ window.Generator = (function() {
         const secondShape = pick(shapeTypes.filter(s => s !== baseShape));
 
         const grid = [
-            SvgArt.shape(baseShape, colors[0], 70),
-            SvgArt.shape(baseShape, colors[1], 70),
-            SvgArt.shape(secondShape, colors[0], 70)
+            SvgArt.shape(baseShape, colors[0], 88),
+            SvgArt.shape(baseShape, colors[1], 88),
+            SvgArt.shape(secondShape, colors[0], 88)
         ];
 
-        const correctImg = SvgArt.shape(secondShape, colors[1], 70);
+        const correctImg = SvgArt.shape(secondShape, colors[1], 88);
         const distractors = [
-            SvgArt.shape(secondShape, colors[2], 70),
-            SvgArt.shape(baseShape, colors[1], 70),
-            SvgArt.shape(secondShape, colors[0], 70)
+            SvgArt.shape(secondShape, colors[2], 88),
+            SvgArt.shape(baseShape, colors[1], 88),
+            SvgArt.shape(secondShape, colors[0], 88)
         ];
 
         const allOpts = shuffle([{ img: correctImg, isCorrect: true }, ...distractors.map(d => ({ img: d, isCorrect: false }))]);
@@ -83,12 +83,12 @@ window.Generator = (function() {
         const targetKey = pick(pool);
         const isAnimal = ['cat', 'dog', 'rabbit', 'lion', 'elephant'].includes(targetKey);
 
-        const originalImg = isAnimal ? SvgArt.animal(targetKey, 95) : SvgArt.object(targetKey, 95);
+        const originalImg = isAnimal ? SvgArt.animal(targetKey, 112) : SvgArt.object(targetKey, 112);
         const correctShadow = originalImg;
 
         const otherKeys = shuffle(pool.filter(k => k !== targetKey)).slice(0, 2);
         const distractorShadows = otherKeys.map(k => {
-            return ['cat', 'dog', 'rabbit', 'lion', 'elephant'].includes(k) ? SvgArt.animal(k, 95) : SvgArt.object(k, 95);
+            return ['cat', 'dog', 'rabbit', 'lion', 'elephant'].includes(k) ? SvgArt.animal(k, 112) : SvgArt.object(k, 112);
         });
 
         const allShadows = shuffle([
@@ -499,7 +499,7 @@ window.Generator = (function() {
         const opts = shuffle([correct, ...others]);
         return mc(
             'این چه شکلی است؟',
-            SvgArt.shape(s.id, s.color, 110),
+            SvgArt.shape(s.id, s.color, 128),
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
             `این شکل چیست؟ ${correct}`
@@ -513,7 +513,7 @@ window.Generator = (function() {
         return mc(
             `شکل «${s.fa}» را پیدا کن:`,
             null,
-            opts.map(x => ({ img: SvgArt.shape(x.id, x.color, 75), label: '' })),
+            opts.map(x => ({ img: SvgArt.shape(x.id, x.color, 94), label: '' })),
             opts.indexOf(s),
             `شکل ${s.fa} را انتخاب کن`
         );
@@ -543,11 +543,11 @@ window.Generator = (function() {
             const correctColor = PATTERN_COLORS[p.answer];
             const others = shuffle(PATTERN_COLORS.filter(c => c !== correctColor)).slice(0, 2);
             const options = shuffle([correctColor, ...others]);
-            const strip = patternStrip(p.seq.map(i => i === null ? null : SvgArt.shape('circle', PATTERN_COLORS[i], 74)));
+            const strip = patternStrip(p.seq.map(i => i === null ? null : SvgArt.shape('circle', PATTERN_COLORS[i], 92)));
             return mc(
                 'کدام رنگ جای علامت سوال در الگو قرار می‌گیرد؟',
                 strip,
-                options.map(c => ({ img: SvgArt.shape('circle', c, 88), label: '' })),
+                options.map(c => ({ img: SvgArt.shape('circle', c, 106), label: '' })),
                 options.indexOf(correctColor),
                 'رنگ بعدی در الگو کدام است؟'
             );
@@ -555,11 +555,11 @@ window.Generator = (function() {
             const correctShape = p.answer;
             const others = shuffle(SHAPES.map(s => s.id).filter(x => x !== correctShape)).slice(0, 2);
             const options = shuffle([correctShape, ...others]);
-            const strip = patternStrip(p.seq.map(sid => sid === null ? null : SvgArt.shape(sid, '#6C5CE7', 74)));
+            const strip = patternStrip(p.seq.map(sid => sid === null ? null : SvgArt.shape(sid, '#6C5CE7', 92)));
             return mc(
                 'کدام شکل جای علامت سوال در الگو قرار می‌گیرد؟',
                 strip,
-                options.map(sid => ({ img: SvgArt.shape(sid, '#6C5CE7', 88), label: '' })),
+                options.map(sid => ({ img: SvgArt.shape(sid, '#6C5CE7', 106), label: '' })),
                 options.indexOf(correctShape),
                 'شکل بعدی در الگو کدام است؟'
             );
@@ -580,7 +580,7 @@ window.Generator = (function() {
 
             const all = shuffle([...threeGroup, singleOdd]);
             const names = { cat: 'گربه', dog: 'سگ', rabbit: 'خرگوش', lion: 'شیر', bear: 'خرس', fish: 'ماهی', turtle: 'لاک‌پشت', duck: 'اردک' };
-            const opts = all.map(a => ({ img: SvgArt.animal(a, 75), label: names[a] || a, id: a }));
+            const opts = all.map(a => ({ img: SvgArt.animal(a, 94), label: names[a] || a, id: a }));
 
             return mc(
                 'کدام گزینه با بقیه متفاوت است؟',
@@ -594,7 +594,7 @@ window.Generator = (function() {
             const base = pick(shapeIds);
             const oddShape = pick(shapeIds.filter(s => s !== base));
             const all = shuffle([base, base, base, oddShape]);
-            const opts = all.map(sid => ({ img: SvgArt.shape(sid, '#A29BFE', 75), label: '', id: sid }));
+            const opts = all.map(sid => ({ img: SvgArt.shape(sid, '#A29BFE', 94), label: '', id: sid }));
 
             return mc(
                 'کدام شکل با بقیه فرق دارد؟',
@@ -621,9 +621,9 @@ window.Generator = (function() {
 
     function plantGrowthRound() {
         const stages = [
-            { label: '۱. کاشت دانه', img: SvgArt.object('apple', 65), idx: 0 },
-            { label: '۲. رشد جوانه', img: SvgArt.object('tree', 65), idx: 1 },
-            { label: '۳. رویش گل و برگ', img: SvgArt.object('flower', 65), idx: 2 }
+            { label: '۱. کاشت دانه', img: SvgArt.object('apple', 82), idx: 0 },
+            { label: '۲. رشد جوانه', img: SvgArt.object('tree', 82), idx: 1 },
+            { label: '۳. رویش گل و برگ', img: SvgArt.object('flower', 82), idx: 2 }
         ];
         return {
             type: 'order-steps',
@@ -636,10 +636,10 @@ window.Generator = (function() {
 
     function storyOrderRound() {
         const steps = [
-            { label: '۱. بیدار شدن از خواب', img: SvgArt.object('sun', 65), idx: 0 },
-            { label: '۲. شستن دست و صورت', img: SvgArt.object('soap', 65), idx: 1 },
-            { label: '۳. خوردن صبحانه مقوی', img: SvgArt.object('apple', 65), idx: 2 },
-            { label: '۴. رفتن به مدرسه و بازی', img: SvgArt.object('car', 65), idx: 3 }
+            { label: '۱. بیدار شدن از خواب', img: SvgArt.object('sun', 82), idx: 0 },
+            { label: '۲. شستن دست و صورت', img: SvgArt.object('soap', 82), idx: 1 },
+            { label: '۳. خوردن صبحانه مقوی', img: SvgArt.object('apple', 82), idx: 2 },
+            { label: '۴. رفتن به مدرسه و بازی', img: SvgArt.object('car', 82), idx: 3 }
         ];
         return {
             type: 'order-steps',
@@ -652,10 +652,10 @@ window.Generator = (function() {
 
     function classifyRound() {
         const items = shuffle([
-            { id: 'گربه', label: 'گربه', img: SvgArt.animal('cat', 70), target: 'animals' },
-            { id: 'خرگوش', label: 'خرگوش', img: SvgArt.animal('rabbit', 70), target: 'animals' },
-            { id: 'سیب', label: 'سیب', img: SvgArt.object('apple', 70), target: 'fruits' },
-            { id: 'موز', label: 'موز', img: SvgArt.object('banana', 70), target: 'fruits' }
+            { id: 'گربه', label: 'گربه', img: SvgArt.animal('cat', 88), target: 'animals' },
+            { id: 'خرگوش', label: 'خرگوش', img: SvgArt.animal('rabbit', 88), target: 'animals' },
+            { id: 'سیب', label: 'سیب', img: SvgArt.object('apple', 88), target: 'fruits' },
+            { id: 'موز', label: 'موز', img: SvgArt.object('banana', 88), target: 'fruits' }
         ]);
 
         return {
@@ -679,7 +679,7 @@ window.Generator = (function() {
         const opts = shuffle([a.fa, ...others]);
         return mc(
             `صدای «${a.sound}» صدای کدام حیوان است؟`,
-            SvgArt.animal(a.key, 100),
+            SvgArt.animal(a.key, 118),
             opts.map(x => ({ label: x })),
             opts.indexOf(a.fa),
             `صدای ${a.sound} صدای کیست؟ ${a.fa}`
@@ -693,7 +693,7 @@ window.Generator = (function() {
         const opts = shuffle([correct, ...others]);
         return mc(
             `«${a.fa}» بیشتر در کجا زندگی می‌کند؟`,
-            SvgArt.animal(a.key, 100),
+            SvgArt.animal(a.key, 118),
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
             `${a.fa} در کجا زندگی می‌کند؟`
@@ -706,7 +706,7 @@ window.Generator = (function() {
         const opts = shuffle([b.fa, ...others]);
         return mc(
             `برای «${b.use}» از کدام عضو استفاده می‌کنیم؟`,
-            SvgArt.object(b.icon || 'eye', 95),
+            SvgArt.object(b.icon || 'eye', 112),
             opts.map(x => ({ label: x })),
             opts.indexOf(b.fa),
             b.use
@@ -732,7 +732,7 @@ window.Generator = (function() {
         const opts = shuffle([s.fa, ...others]);
         return mc(
             `«${s.weather}» نشانه کدام فصل زیباست؟`,
-            SvgArt.object(s.fa === 'زمستان' ? 'rain' : s.fa === 'بهار' ? 'flower' : s.fa === 'تابستان' ? 'sun' : 'tree', 95),
+            SvgArt.object(s.fa === 'زمستان' ? 'rain' : s.fa === 'بهار' ? 'flower' : s.fa === 'تابستان' ? 'sun' : 'tree', 112),
             opts.map(x => ({ label: x })),
             opts.indexOf(s.fa),
             s.weather
@@ -799,8 +799,8 @@ window.Generator = (function() {
         const opts = shuffle([f.fa, ...others]);
         return mc(
             `«${f.role}» — او در خانواده کیست؟`,
-            SvgArt.object('house', 95),
-            opts.map(x => ({ label: x, img: SvgArt.object(FAMILY_IMG[x] || 'mother', 78) })),
+            SvgArt.object('house', 112),
+            opts.map(x => ({ label: x, img: SvgArt.object(FAMILY_IMG[x] || 'mother', 96) })),
             opts.indexOf(f.fa),
             f.role
         );
@@ -811,16 +811,16 @@ window.Generator = (function() {
     // ==========================================
     function memoryRound(pairCount) {
         const pool = [
-            { img: SvgArt.animal('cat', 65), label: 'گربه' },
-            { img: SvgArt.animal('rabbit', 65), label: 'خرگوش' },
-            { img: SvgArt.animal('lion', 65), label: 'شیر' },
-            { img: SvgArt.animal('fish', 65), label: 'ماهی' },
-            { img: SvgArt.object('apple', 65), label: 'سیب' },
-            { img: SvgArt.object('banana', 65), label: 'موز' },
-            { img: SvgArt.object('sun', 65), label: 'خورشید' },
-            { img: SvgArt.object('star', 65), label: 'ستاره' },
-            { img: SvgArt.object('flower', 65), label: 'گل' },
-            { img: SvgArt.object('car', 65), label: 'ماشین' }
+            { img: SvgArt.animal('cat', 82), label: 'گربه' },
+            { img: SvgArt.animal('rabbit', 82), label: 'خرگوش' },
+            { img: SvgArt.animal('lion', 82), label: 'شیر' },
+            { img: SvgArt.animal('fish', 82), label: 'ماهی' },
+            { img: SvgArt.object('apple', 82), label: 'سیب' },
+            { img: SvgArt.object('banana', 82), label: 'موز' },
+            { img: SvgArt.object('sun', 82), label: 'خورشید' },
+            { img: SvgArt.object('star', 82), label: 'ستاره' },
+            { img: SvgArt.object('flower', 82), label: 'گل' },
+            { img: SvgArt.object('car', 82), label: 'ماشین' }
         ];
 
         const chosen = shuffle(pool).slice(0, pairCount || 3);
@@ -952,10 +952,10 @@ window.Generator = (function() {
 
     function imgForWord(word) {
         if (!word) return SvgArt.wordTile('؟', '#A4B0BE', 85);
-        if (ANIMAL_IMG[word]) return SvgArt.animal(ANIMAL_IMG[word], 85);
-        if (OBJECT_IMG[word]) return SvgArt.object(OBJECT_IMG[word], 85);
-        if (SHAPE_IMG[word]) return SvgArt.shape(SHAPE_IMG[word][0], SHAPE_IMG[word][1], 85);
-        if (SEASON_IMG[word]) return SvgArt.object(SEASON_IMG[word], 85);
+        if (ANIMAL_IMG[word]) return SvgArt.animal(ANIMAL_IMG[word], 104);
+        if (OBJECT_IMG[word]) return SvgArt.object(OBJECT_IMG[word], 104);
+        if (SHAPE_IMG[word]) return SvgArt.shape(SHAPE_IMG[word][0], SHAPE_IMG[word][1], 104);
+        if (SEASON_IMG[word]) return SvgArt.object(SEASON_IMG[word], 104);
         // Honest fallback: a colored tile carrying the word itself (never a wrong picture).
         return SvgArt.wordTile(word, wordColor(word), 85);
     }
@@ -1103,7 +1103,7 @@ window.Generator = (function() {
         return mc(
             `رنگ «${target.name}» را پیدا کن:`,
             null,
-            options.map(item => ({ img: SvgArt.shape('circle', item.value, 68), label: item.name })),
+            options.map(item => ({ img: SvgArt.shape('circle', item.value, 84), label: item.name })),
             options.indexOf(target),
             `رنگ ${target.name} را انتخاب کن`
         );
@@ -1114,7 +1114,7 @@ window.Generator = (function() {
         const options = shuffle([hour, ((hour + 2) % 12) + 1, ((hour + 5) % 12) + 1, ((hour + 8) % 12) + 1]);
         return mc(
             `عقربهٔ ساعت، ساعت ${toFaWord(hour)} را نشان می‌دهد؟`,
-            SvgArt.object('clock', 110),
+            SvgArt.object('clock', 128),
             options.map(value => ({ label: `${toFaDigit(value)}:۰۰`, big: true })),
             options.indexOf(hour),
             `ساعت ${toFaWord(hour)} را پیدا کن`
@@ -1301,7 +1301,7 @@ window.Generator = (function() {
             { name: 'زرد', value: '#F9CA24' }, { name: 'سبز', value: '#2ED573' }
         ];
         const picked = shuffle(colors).slice(0, 3);
-        const items = picked.map((c, idx) => ({ label: c.name, img: SvgArt.shape('circle', c.value, 60), idx }));
+        const items = picked.map((c, idx) => ({ label: c.name, img: SvgArt.shape('circle', c.value, 76), idx }));
         return {
             type: 'order-steps',
             prompt: 'رنگ‌ها را به همان ترتیبی که گفته شد بچین: ' + picked.map(c => c.name).join(' ← '),
@@ -2190,7 +2190,7 @@ window.Generator = (function() {
             const nums = faNums.map(s => Number(s.replace(/[۰-۹]/g, d => String(FA_DIGITS.indexOf(d)))));
             const a = nums.find(Number.isFinite);
             if (Number.isFinite(a)) {
-                return `<div class="round-visual-flex">${SvgArt.numberCard(a, '#4ECDC4', 88)}<span style="font-size:30px;font-weight:900;color:#6C5CE7;user-select:none;">←</span>${SvgArt.questionTile('#A4B0BE', 88)}</div>`;
+                return `<div class="round-visual-flex">${SvgArt.numberCard(a, '#4ECDC4', 106)}<span style="font-size:30px;font-weight:900;color:#6C5CE7;user-select:none;">←</span>${SvgArt.questionTile('#A4B0BE', 88)}</div>`;
             }
         }
 
@@ -2210,12 +2210,12 @@ window.Generator = (function() {
         if (/حس|عضو/i.test(prompt)) {
             const organ = answerOpt && answerOpt.label;
             const key = OBJECT_IMG[organ];
-            if (key) return SvgArt.object(key, 110);
+            if (key) return SvgArt.object(key, 128);
         }
 
         // Good behavior -> warm heart.
         if (/رفتار|پسندیده|مفید/i.test(prompt)) {
-            return SvgArt.shape('heart', '#FF6B6B', 110);
+            return SvgArt.shape('heart', '#FF6B6B', 128);
         }
 
         // Antonyms -> prompt word tile + question tile (no answer reveal).
@@ -2262,7 +2262,7 @@ window.Generator = (function() {
         // Shape questions -> the named shape.
         const shapeQ = prompt.match(/شکل «([^»]+)»/);
         if (shapeQ && shapeQ[1] && SHAPE_IMG[shapeQ[1]]) {
-            return SvgArt.shape(SHAPE_IMG[shapeQ[1]][0], SHAPE_IMG[shapeQ[1]][1], 130);
+            return SvgArt.shape(SHAPE_IMG[shapeQ[1]][0], SHAPE_IMG[shapeQ[1]][1], 150);
         }
 
         // Counting / number questions -> keep the numeric focus.
