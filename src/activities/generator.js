@@ -1373,7 +1373,7 @@ window.Generator = (function() {
         return track;
     }
 
-    function roleFactory(role, level, letterCursor) {
+    function roleFactory(role, level, letterCursor, metadata) {
         // `letterCursor` walks the letters this lesson is named after, so the
         // «اَ ب پ ت» lesson never asks about «گ». Falls back to the full alphabet.
         const nextLetter = letterCursor || (() => pick(ALPHABET));
@@ -1399,7 +1399,11 @@ window.Generator = (function() {
             subtract: () => arithRound('-', level <= 2 ? 5 : level <= 4 ? 10 : 20),
             balance: balanceRound,
             'shape-name': shapeNameRound,
-            'shape-match': shapeMatchRound,
+            // Same domain problem as 'matching' below: a reading lesson asking to
+            // pair a picture with its word must not drill geometric shapes.
+            'shape-match': () => (String((metadata && metadata.domain) || '') === 'reading'
+                ? sightWordRound()
+                : shapeMatchRound()),
             'order-size': orderSizeRound,
             pattern: patternRound,
             color: colorRound,
@@ -1407,7 +1411,13 @@ window.Generator = (function() {
             // never registered, so those lessons silently fell back to filler.
             'color-mix': colorMixRound,
             material: materialRound,
-            matching: shapeMatchRound,
+            // 'matching' used to mean shapeMatchRound, so «تصویر و کلمه: وصل کن»
+            // -- a reading lesson about matching a PICTURE to its WORD -- asked
+            // the child to pick shapes instead. Route it by domain: reading
+            // lessons match words to pictures, everything else matches shapes.
+            matching: () => (String((metadata && metadata.domain) || '') === 'reading'
+                ? sightWordRound()
+                : shapeMatchRound()),
             raven: ravenRound,
             shadow: shadowRound,
             classify: classifyRound,
@@ -1719,7 +1729,7 @@ window.Generator = (function() {
 
         let li = 0;
         const letterCursor = set ? () => set[li++ % set.length] : null;
-        const factories = authoredRoles.map(role => roleFactory(role, level, letterCursor));
+        const factories = authoredRoles.map(role => roleFactory(role, level, letterCursor, metadata));
         const rounds = plan(factories, { ...metadata, difficulty: level });
         return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
     }
@@ -1823,6 +1833,15 @@ window.Generator = (function() {
         const title = String((metadata && metadata.title) || '');
         if (!title) return null;
         const has = (...words) => words.some(w => title.includes(w));
+        // Title keywords were matched with no regard for the lesson's domain, so
+        // a READING lesson called «پاراگراف کوتاه: یک دوست تازه» was captured by
+        // the friendship rule and taught socio-emotional content instead of
+        // reading; «نوشتن یک پیام کوتاه برای دوست» likewise. Gate the
+        // domain-specific blocks so a keyword can only fire inside its own
+        // subject. `null` here means "no title rule applies", and the caller
+        // then falls through to the correct domain/type router.
+        const dom = (metadata && metadata.domain) || '';
+        const inDomain = (...allowed) => !dom || allowed.indexOf(dom) !== -1;
 
         // --- reading / phonics (most specific first) --------------------------
         if (has('صدای اول', 'صدای آغازین'))
@@ -1899,6 +1918,9 @@ window.Generator = (function() {
             return [animalSoundRound, animalSoundRound, animalHabitatRound, () => oddOneOutRound('animals')];
 
         // --- socio-emotional -------------------------------------------------
+        // Only for socio-emotional lessons: words like «دوست» and «خانه» appear
+        // in reading titles too, and used to steal those lessons.
+        if (!inDomain('socio-emotional')) return null;
         if (has('عذرخواهی', 'جبران'))
             return [() => socialStoryRound('عذرخواهی'), behaviourSortRound, () => emotionMatchRound('پشیمان|ناراحت'), habitRound];
         if (has('عصبانی', 'خشم', 'کنترل هیجان'))

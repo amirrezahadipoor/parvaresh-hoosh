@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v42-content-audit';
+const CACHE_NAME = 'parvaresh-hoosh-v43-topic-routing';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
