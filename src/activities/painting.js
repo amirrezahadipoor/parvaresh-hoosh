@@ -78,6 +78,8 @@ window.PaintingActivity = (function() {
                 isEraser = false;
                 isRainbow = false;
                 currentStamp = null;
+                if (typeof stampButtons !== 'undefined') stampButtons.forEach(x => x.classList.remove('active'));
+                if (typeof stampButtons !== 'undefined') stampButtons.forEach(x => x.classList.remove('active'));
                 paletteBar.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('active'));
                 swatch.classList.add('active');
             });
@@ -96,28 +98,38 @@ window.PaintingActivity = (function() {
             isRainbow = true;
             isEraser = false;
             currentStamp = null;
+            if (typeof stampButtons !== 'undefined') stampButtons.forEach(x => x.classList.remove('active'));
             paletteBar.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('active'));
         });
 
-        const stampStar = document.createElement('button');
-        stampStar.className = 'tool-btn';
-        stampStar.innerHTML = 'مهر ستاره';
-        stampStar.addEventListener('click', () => {
-            AudioEngine.play('pop');
-            currentStamp = 'star';
-            isEraser = false;
-            isRainbow = false;
-        });
-
-        const stampHeart = document.createElement('button');
-        stampHeart.className = 'tool-btn';
-        stampHeart.innerHTML = 'مهر قلب';
-        stampHeart.addEventListener('click', () => {
-            AudioEngine.play('pop');
-            currentStamp = 'heart';
-            isEraser = false;
-            isRainbow = false;
-        });
+        // Stamp buttons show the actual shape they stamp, and stay visibly selected.
+        const STAMP_ICONS = {
+            star: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg>',
+            heart: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.4" stroke-linejoin="round"><path d="M12 20.5S3.6 15 3.6 9.2A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 8.4 2.6C20.4 15 12 20.5 12 20.5z"/></svg>',
+            flower: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.3" stroke-linejoin="round"><circle cx="12" cy="6.4" r="3.5"/><circle cx="17" cy="9.7" r="3.5"/><circle cx="15.2" cy="15.6" r="3.5"/><circle cx="8.8" cy="15.6" r="3.5"/><circle cx="7" cy="9.7" r="3.5"/><circle cx="12" cy="11.8" r="2.6" fill="#FFD166"/></svg>'
+        };
+        const stampButtons = [];
+        function makeStampBtn(kind, label) {
+            const b = document.createElement('button');
+            b.className = 'tool-btn stamp-tool-btn';
+            b.type = 'button';
+            b.setAttribute('aria-label', label);
+            b.innerHTML = `<span class="stamp-ico">${STAMP_ICONS[kind]}</span><span>${label}</span>`;
+            b.addEventListener('click', () => {
+                AudioEngine.play('pop');
+                currentStamp = kind;
+                isEraser = false;
+                isRainbow = false;
+                // Without visible selection a child cannot tell a stamp is armed.
+                stampButtons.forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+            });
+            stampButtons.push(b);
+            return b;
+        }
+        const stampStar = makeStampBtn('star', 'ستاره');
+        const stampHeart = makeStampBtn('heart', 'قلب');
+        const stampFlower = makeStampBtn('flower', 'گل');
 
         const eraserBtn = document.createElement('button');
         eraserBtn.className = 'tool-btn';
@@ -127,6 +139,7 @@ window.PaintingActivity = (function() {
             isEraser = true;
             isRainbow = false;
             currentStamp = null;
+            if (typeof stampButtons !== 'undefined') stampButtons.forEach(x => x.classList.remove('active'));
             paletteBar.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('active'));
         });
 
@@ -166,6 +179,7 @@ window.PaintingActivity = (function() {
         toolsBar.appendChild(rainbowBtn);
         toolsBar.appendChild(stampStar);
         toolsBar.appendChild(stampHeart);
+        toolsBar.appendChild(stampFlower);
         toolsBar.appendChild(eraserBtn);
         toolsBar.appendChild(brushBtn);
         toolsBar.appendChild(undoBtn);
@@ -266,28 +280,82 @@ window.PaintingActivity = (function() {
             };
         }
 
+        // ---- real stamp artwork -------------------------------------------
+        const STAMP_SIZE = 46;
+
+        function stampPath(c, kind, x, y, r) {
+            c.beginPath();
+            if (kind === 'star') {
+                for (let i = 0; i < 5; i++) {
+                    const oa = (-90 + i * 72) * Math.PI / 180;
+                    const ia = (-90 + i * 72 + 36) * Math.PI / 180;
+                    const ox = x + Math.cos(oa) * r, oy = y + Math.sin(oa) * r;
+                    const ix = x + Math.cos(ia) * r * 0.42, iy = y + Math.sin(ia) * r * 0.42;
+                    if (i === 0) c.moveTo(ox, oy); else c.lineTo(ox, oy);
+                    c.lineTo(ix, iy);
+                }
+                c.closePath();
+            } else if (kind === 'heart') {
+                // A true heart: two lobes meeting at a point below.
+                const w = r * 1.05, h = r * 1.05;
+                c.moveTo(x, y + h * 0.72);
+                c.bezierCurveTo(x - w * 1.3, y - h * 0.28, x - w * 0.42, y - h * 1.06, x, y - h * 0.34);
+                c.bezierCurveTo(x + w * 0.42, y - h * 1.06, x + w * 1.3, y - h * 0.28, x, y + h * 0.72);
+                c.closePath();
+            } else if (kind === 'flower') {
+                for (let i = 0; i < 6; i++) {
+                    const a = (i * 60) * Math.PI / 180;
+                    const px = x + Math.cos(a) * r * 0.55, py = y + Math.sin(a) * r * 0.55;
+                    c.moveTo(px + r * 0.42, py);
+                    c.arc(px, py, r * 0.42, 0, Math.PI * 2);
+                }
+            } else if (kind === 'circle') {
+                c.arc(x, y, r, 0, Math.PI * 2);
+            }
+            return c;
+        }
+
+        function drawStamp(c, kind, x, y, size, color) {
+            const r = size / 2;
+            c.save();
+            c.lineJoin = 'round';
+            // Soft drop shadow so the stamp sits ON the page instead of staining it.
+            c.shadowColor = 'rgba(20,26,38,0.22)';
+            c.shadowBlur = 4;
+            c.shadowOffsetY = 2;
+            c.fillStyle = color;
+            stampPath(c, kind, x, y, r);
+            c.fill();
+            c.shadowColor = 'transparent';
+            c.shadowBlur = 0;
+            c.shadowOffsetY = 0;
+            // Dark outline keeps the shape readable on any background colour.
+            c.strokeStyle = 'rgba(45,52,54,0.85)';
+            c.lineWidth = 2.5;
+            stampPath(c, kind, x, y, r);
+            c.stroke();
+            if (kind === 'flower') {
+                c.fillStyle = '#FFD166';
+                c.beginPath();
+                c.arc(x, y, r * 0.32, 0, Math.PI * 2);
+                c.fill();
+                c.strokeStyle = 'rgba(45,52,54,0.85)';
+                c.lineWidth = 2;
+                c.stroke();
+            }
+            c.restore();
+        }
+
         function startPaint(e) {
             e.preventDefault();
             const pos = getPos(e);
             saveSnapshot();
 
             if (currentStamp) {
-                ctx.fillStyle = currentColor;
-                if (currentStamp === 'star') {
-                    // Draw Star
-                    ctx.beginPath();
-                    for (let i = 0; i < 5; i++) {
-                        ctx.lineTo(Math.cos((18 + i * 72) * 0.01745) * 16 + pos.x, -Math.sin((18 + i * 72) * 0.01745) * 16 + pos.y);
-                        ctx.lineTo(Math.cos((54 + i * 72) * 0.01745) * 8 + pos.x, -Math.sin((54 + i * 72) * 0.01745) * 8 + pos.y);
-                    }
-                    ctx.closePath();
-                    ctx.fill();
-                } else if (currentStamp === 'heart') {
-                    ctx.beginPath();
-                    ctx.arc(pos.x - 6, pos.y - 4, 8, 0, Math.PI * 2);
-                    ctx.arc(pos.x + 6, pos.y - 4, 8, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                // The old "heart" was literally two circles -- no heart shape at all --
+                // and both stamps were ~16px with no outline, so they read as smudges.
+                // Draw real, properly outlined shapes at a size a child can see.
+                drawStamp(ctx, currentStamp, pos.x, pos.y, STAMP_SIZE, currentColor);
                 AudioEngine.play('pop');
                 return;
             }

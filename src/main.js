@@ -300,7 +300,7 @@
         return { ...DAILY_CHALLENGES[dayNumber % DAILY_CHALLENGES.length], dateKey: key };
     }
 
-    function createDailyChallenge(allLessons) {
+    function createDailyChallenge(allLessons, todayNote) {
         const ch = todayChallenge();
         const today = window.Engagement ? window.Engagement.getToday() : { lessonIds: [] };
         const doneToday = new Set(today.lessonIds || []);
@@ -327,6 +327,7 @@
             </div>
             <div class="challenge-track"><div class="challenge-fill" style="width:${pct}%"></div></div>
             <div class="challenge-count">${toFa(Math.min(progress, ch.target))} از ${toFa(ch.target)}</div>
+            ${todayNote ? `<div class="challenge-today">${todayNote}</div>` : ''}
         `;
         return card;
     }
@@ -363,6 +364,13 @@
         welcomeText.textContent = pickMsg(window.MESSAGES.greeting);
         welcomeCopy.append(welcomeTitle, welcomeText);
         welcome.append(mascotButton, welcomeCopy);
+        // Stars live in the greeting row instead of their own card: the home screen
+        // was 1467px tall in an 851px viewport, so a child had to scroll past four
+        // status widgets to reach the lessons.
+        const inlineStars = document.createElement('div');
+        inlineStars.className = 'home-inline-stars';
+        inlineStars.innerHTML = `<strong>${toFa(state.totalStars || 0)}</strong><span>ستاره</span>`;
+        welcome.appendChild(inlineStars);
 
         const sayWelcome = () => {
             AudioEngine.play('bubble');
@@ -381,12 +389,9 @@
 
         const today = window.Engagement ? window.Engagement.getToday() : { completed: 0, goal: 3, percent: 0 };
         const streak = window.Engagement ? window.Engagement.getStreak() : { current: 0 };
-        const stats = document.createElement('section');
-        stats.className = 'home-stats-row';
-        stats.appendChild(createHomeStat('ستاره‌ها', toFa(state.totalStars || 0), 'امتیازهای تو'));
-        stats.appendChild(createHomeStat('امروز', `${toFa(today.completed)} / ${toFa(today.goal)}`, 'فعالیت روزانه'));
-        stats.appendChild(createHomeStat('زنجیره', `${toFa(streak.current)} روز`, 'تمرین پیوسته'));
-        dashboard.appendChild(stats);
+        // The 78px stats row duplicated numbers already shown elsewhere; its two
+        // useful figures are folded into the daily-challenge card below.
+        const todayLine = `${toFa(today.completed)} از ${toFa(today.goal)} فعالیت امروز · زنجیره ${toFa(streak.current)} روز`;
 
         // The single primary call to action is always the next unfinished milestone.
         const nextNode = AdventureJourney.getNextNode(state.lessonsDone);
@@ -420,7 +425,7 @@
         // screen changed from day to day. This card rotates deterministically by
         // date, so every morning there is a different, nameable goal. Placed high
         // on the page so the child actually sees it without scrolling.
-        dashboard.appendChild(createDailyChallenge(allLessons));
+        dashboard.appendChild(createDailyChallenge(allLessons, todayLine));
 
         const dailyPlan = document.createElement('section');
         dailyPlan.className = 'daily-plan-card';
@@ -528,7 +533,9 @@
 
         // Daily plan & adventure map come after the domain grid: on Android the primary
         // navigation (domain tiles) must be visible right away, not buried below the fold.
-        dashboard.appendChild(dailyPlan);
+        // The 194px «برنامهٔ امروز» card repeated what the challenge card and the
+        // giant play button already offer, and pushed the domains below the fold.
+        // dashboard.appendChild(dailyPlan);
 
         const quickActions = document.createElement('div');
         quickActions.className = 'home-quick-actions';

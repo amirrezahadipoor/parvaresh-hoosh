@@ -356,10 +356,16 @@ window.IQEngines = (function() {
             const heavier = leftCount > rightCount ? 'left' : leftCount < rightCount ? 'right' : 'equal';
             const leftTiltDeg = leftCount > rightCount ? 14 : leftCount < rightCount ? -14 : 0;
 
+            // The apples the child must COMPARE were locked at 28px whatever the
+            // count, so a level-8 round with 7 per pan rendered them at ~33px --
+            // too small to count at a glance, and the harder the level the worse
+            // it got. Size them to the pan instead: few apples => big apples.
+            const most = Math.max(leftCount, rightCount);
+            const appleSize = most <= 2 ? 62 : most <= 3 ? 54 : most <= 4 ? 48 : most <= 6 ? 42 : 38;
             let leftApples = '';
-            for (let i = 0; i < leftCount; i++) leftApples += SvgArt.object('apple', 28);
+            for (let i = 0; i < leftCount; i++) leftApples += SvgArt.object('apple', appleSize);
             let rightApples = '';
-            for (let i = 0; i < rightCount; i++) rightApples += SvgArt.object('apple', 28);
+            for (let i = 0; i < rightCount; i++) rightApples += SvgArt.object('apple', appleSize);
 
             card.innerHTML = `
                 <div class="activity-header-row">

@@ -117,7 +117,11 @@ async function main() {
     }
     assert.equal(window.Engagement.hasProfile(), true, 'onboarding should persist a selected age');
     assert.ok(document.querySelector('.domain-tile'), 'home learning tiles should render');
-    assert.ok(document.querySelector('.daily-plan-card'), 'daily plan should render');
+    // The separate «برنامهٔ امروز» card was removed: it repeated the challenge card
+    // and the giant play button, and pushed the subjects off a one-screen home.
+    // Today's progress now lives inside the daily-challenge card.
+    assert.ok(document.querySelector('.daily-challenge-card'), 'daily challenge should render');
+    assert.ok(document.querySelector('.challenge-today'), "today's progress line should render");
     assert.ok(document.querySelector('#home-content .home-dashboard'), 'home content should be populated');
     assert.equal(errors.length, 0, `browser smoke test errors: ${errors.map(String).join('\n')}`);
 

@@ -1000,12 +1000,18 @@ html, body {
 .disp-opt-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px; border: 3px solid #EFE6DC; border-radius: var(--r-md); background: #FFF; font-family: inherit; font-size: 10px; font-weight: 800; box-shadow: 0 3px 0 #E2D3C4; cursor: pointer; }
 
 /* Balance scale */
-.scale-visual-wrap { display: flex; align-items: center; justify-content: center; min-height: 150px; padding: 24px 8px; }
-.scale-beam { position: relative; display: flex; align-items: center; justify-content: space-between; width: min(280px,90%); height: 10px; border-radius: var(--r-full); background: #795548; transition: transform .6s cubic-bezier(.34,1.56,.64,1); }
+/* Pans hang from the beam via absolute positioning, so their height does NOT
+   grow the wrapper. With a fixed 150px min-height a pan holding 4+ apples spilled
+   out of the card and covered the answer buttons. Reserve room for the tallest
+   pan instead, and let the wrapper grow. */
+.scale-visual-wrap { position: relative; display: flex; align-items: flex-start; justify-content: center; min-height: 236px; padding: 26px 10px 10px; overflow: hidden; }
+.scale-beam { position: relative; display: flex; align-items: center; justify-content: space-between; width: min(232px,78%); height: 10px; border-radius: var(--r-full); background: #795548; transition: transform .6s cubic-bezier(.34,1.56,.64,1); }
 .scale-fulcrum { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); }
-.scale-pan { position: absolute; top: 10px; display: flex; align-items: center; justify-content: center; width: 78px; min-height: 48px; border: 3px solid #F39C12; border-radius: 0 0 20px 20px; background: #FFEAA7; }
-.left-pan { right: 0; } .right-pan { left: 0; }
-.pan-items { text-align: center; word-break: break-all; }
+.scale-pan { position: absolute; top: 10px; display: flex; align-items: center; justify-content: center; width: 104px; min-height: 48px; max-height: 168px; padding: 6px 4px; border: 3px solid #F39C12; border-radius: 0 0 20px 20px; background: #FFEAA7; box-sizing: border-box; }
+.left-pan { right: -14px; } .right-pan { left: -14px; }
+/* A pan holds a variable number of apples; lay them out as a wrapping grid so
+   they stay centred and never spill, instead of relying on text wrapping. */
+.pan-items { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; max-width: 96px; margin: 0 auto; }
 .balance-choices-row { display: flex; justify-content: center; gap: 8px; }
 .balance-choice-btn { flex: 1; max-width: 180px; padding: 10px 6px; border: 3px solid #EFE6DC; border-radius: var(--r-md); color: var(--ink); background: #FFF; font-family: inherit; font-size: 12px; font-weight: 900; box-shadow: 0 3px 0 #E2D3C4; cursor: pointer; }
 
@@ -1306,15 +1312,21 @@ button:focus-visible, [role="button"]:focus-visible {
 .adventure-hero-action { position: absolute; z-index: 2; left: 16px; bottom: 17px; padding: 8px 12px; border-radius: 999px; color: #173B74; background: #FFF; font-size: 12px; font-weight: 900; }
 
 .home-section-heading { display: flex; align-items: end; justify-content: space-between; padding: 2px 2px 0; }
-.home-section-heading h2 { color: #1F2A37; font-size: 18px; font-weight: 900; }
-.home-section-heading p { margin-top: 2px; color: #5A6675; font-size: 11px; font-weight: 700; }
+.home-section-heading h2 { color: #1F2A37; font-size: 16px; font-weight: 900; }
+.home-section-heading p { display: none; }
 
 .home-domains-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
     overflow: visible;
     padding: 0;
 }
+/* Six subjects in three columns: the two-column grid was 440px tall and pushed
+   everything below it off the screen, forcing the child to scroll. */
+.home-domains-grid .domain-tile { min-height: 96px; padding: 9px 8px; border-radius: 16px; }
+.home-domains-grid .domain-tile-title { font-size: 11.5px; white-space: normal; line-height: 1.25; }
+.home-domains-grid .domain-tile-subtitle { display: none; }
+.home-domains-grid .domain-tile-icon { width: 34px; height: 34px; }
 
 .domain-tile {
     display: flex;
@@ -1734,7 +1746,7 @@ button:focus-visible, [role="button"]:focus-visible {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 190px;
+    min-height: 150px;
     padding: 0;
     border: 0;
     border-radius: 30px;
@@ -1898,8 +1910,8 @@ button:focus-visible, [role="button"]:focus-visible {
 .challenge-count { margin-top: 6px; font-size: 11px; font-weight: 900; text-align: left; opacity: .95; }
 
 /* Play zone banner — keeps free-play games visually separate from lessons. */
-.arcade-banner { display: flex; align-items: center; gap: 11px; width: 100%; margin-bottom: 12px; padding: 14px; border: 0; border-radius: var(--r-lg); background: linear-gradient(135deg, #00B894 0%, #26C065 55%, #2ED573 100%); box-shadow: var(--sh-sm); color: #FFF; font-family: inherit; text-align: right; cursor: pointer; }
-.arcade-banner-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 46px; height: 46px; border-radius: var(--r-md); background: rgba(255,255,255,.22); color: #FFF; }
+.arcade-banner { display: flex; align-items: center; gap: 11px; width: 100%; margin-bottom: 8px; padding: 10px 12px; border: 0; border-radius: var(--r-lg); background: linear-gradient(135deg, #00B894 0%, #26C065 55%, #2ED573 100%); box-shadow: var(--sh-sm); color: #FFF; font-family: inherit; text-align: right; cursor: pointer; }
+.arcade-banner-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 38px; height: 38px; border-radius: var(--r-md); background: rgba(255,255,255,.22); color: #FFF; }
 .arcade-banner-copy { flex: 1; min-width: 0; }
 .arcade-banner-copy b { display: block; font-size: 15px; font-weight: 900; }
 .arcade-banner-copy small { display: block; margin-top: 2px; font-size: 11px; font-weight: 700; opacity: .95; }
@@ -1913,3 +1925,52 @@ button:focus-visible, [role="button"]:focus-visible {
     to   { transform: translateX(7px) scale(1.06); }
 }
 
+
+
+/* --- painting stamps -------------------------------------------------------
+   Stamp buttons preview the shape they place and show a clear selected state,
+   so a child can tell which stamp is armed before touching the page. */
+.stamp-tool-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: #6C5CE7; }
+.stamp-tool-btn .stamp-ico { display: inline-flex; align-items: center; justify-content: center; }
+.stamp-tool-btn.active { color: #FFFFFF; background: #6C5CE7; box-shadow: 0 3px 0 #4E3FC4; }
+.stamp-tool-btn.active .stamp-ico svg { stroke: #FFFFFF; }
+
+/* Greeting row now carries the star count, so the separate stats row is gone. */
+.home-inline-stars { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 56px; padding: 6px 10px; border-radius: 14px; background: #FFF4D6; }
+.home-inline-stars strong { font-size: 20px; font-weight: 900; color: #B7791F; line-height: 1; }
+.home-inline-stars span { font-size: 11px; font-weight: 700; color: #8C6D1F; }
+.challenge-today { margin-top: 6px; font-size: 12px; font-weight: 700; opacity: .9; }
+
+/* Home is a no-scroll screen: tighten the vertical rhythm between blocks. */
+.home-dashboard > * { margin-bottom: 8px; }
+.home-welcome-card { padding: 8px 12px; }
+.daily-challenge-card { padding: 10px 12px; }
+
+/* Last 75px: the greeting is the least critical block, and the quick actions
+   row sits at the very bottom. Compact both so nothing needs scrolling. */
+.home-welcome-card { padding: 6px 12px; gap: 8px; }
+.home-welcome-card .home-mascot-button svg { width: 56px; height: 56px; }
+.home-welcome-copy h1 { font-size: 17px; }
+.home-welcome-copy p { font-size: 11px; }
+.home-quick-actions { gap: 8px; }
+.home-quick-actions > * { min-height: 44px; padding: 8px 10px; font-size: 12px; }
+.giant-play-btn { min-height: 134px; }
+
+/* The dashboard sets both a 12px flex gap AND an 8px margin on every child, so
+   each of the 8 blocks cost 20px of blank space (160px total). Use the gap only. */
+.home-dashboard { gap: 9px; }
+.home-dashboard > * { margin-bottom: 0; }
+.main-content { padding-bottom: 12px; }
+
+/* The pulsing ring was sized 168px for a 190px button; after the height came
+   down to 150px it overlapped the label. Scale the internals to the new hero. */
+.giant-play-ring { width: 116px; height: 116px; border-width: 4px; }
+.giant-play-icon { width: 62px; height: 62px; margin-bottom: 2px; }
+.giant-play-icon svg { width: 34px; height: 34px; }
+.giant-play-label { font-size: 23px; }
+.giant-play-sub { font-size: 11.5px; }
+.giant-play-core { gap: 2px; padding: 6px 0; }
+
+/* Star chip in the greeting row needed breathing room. */
+.home-inline-stars { min-width: 62px; padding: 8px 10px; }
+.home-inline-stars strong { font-size: 18px; }
