@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v41-direct-play';
+const CACHE_NAME = 'parvaresh-hoosh-v42-content-audit';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',

@@ -502,7 +502,9 @@ window.Generator = (function() {
             SvgArt.shape(s.id, s.color, 128),
             opts.map(x => ({ label: x })),
             opts.indexOf(correct),
-            `این شکل چیست؟ ${correct}`
+            // The narration used to append the correct name ("این شکل چیست؟ مستطیل"),
+            // so a child who listened never had to look at the shape. Ask only.
+            'این چه شکلی است؟'
         );
     }
 
@@ -682,7 +684,9 @@ window.Generator = (function() {
             SvgArt.animal(a.key, 118),
             opts.map(x => ({ label: x })),
             opts.indexOf(a.fa),
-            `صدای ${a.sound} صدای کیست؟ ${a.fa}`
+            // Naming the animal here defeated the whole exercise: the child was
+            // told the answer in the same breath as the question.
+            `صدای ${a.sound} صدای کدام حیوان است؟`
         );
     }
 
@@ -1700,9 +1704,22 @@ window.Generator = (function() {
             return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
         }
 
+        // A roundPlan made only of generic roles carries no topic information: a
+        // plain "quiz" role pulls a random vocabulary word, so «عذرخواهی کردن»
+        // asked about clocks and butterflies, and «چرخه آب» asked about good
+        // manners. 29 authored lessons across science, socio-emotional, reading,
+        // logic and art shipped that way.
+        // The domain/type router below DOES have correct builders for these
+        // topics, so when the authored plan says nothing specific we defer to it
+        // instead of letting the placeholder win.
+        const GENERIC_ROLES = new Set(['quiz', 'memory', 'order-size', 'balloon', 'painting']);
+        const authoredRoles = pkg.roundPlan || [];
+        const allGeneric = authoredRoles.length > 0 && authoredRoles.every(r => GENERIC_ROLES.has(r));
+        if (allGeneric) return null;
+
         let li = 0;
         const letterCursor = set ? () => set[li++ % set.length] : null;
-        const factories = (pkg.roundPlan || []).map(role => roleFactory(role, level, letterCursor));
+        const factories = authoredRoles.map(role => roleFactory(role, level, letterCursor));
         const rounds = plan(factories, { ...metadata, difficulty: level });
         return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
     }
@@ -1952,7 +1969,11 @@ window.Generator = (function() {
 
     function lessonPlan(lessonId, metadata) {
         const pkg = window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId];
-        if (pkg) return authoredLessonPlan(lessonId, metadata, pkg);
+        if (pkg) {
+            const authored = authoredLessonPlan(lessonId, metadata, pkg);
+            // null means the package had nothing topic-specific to contribute.
+            if (authored) return authored;
+        }
         {
             const lvl = lessonLevel(lessonId, metadata);
             const tp = titlePlan(metadata, lvl);
