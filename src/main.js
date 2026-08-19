@@ -789,7 +789,26 @@
         // belongs next to the levels it actually describes.
         if (state.domainId === 'reading') scrollContainer.appendChild(createAdventureMap());
 
-        levels.forEach((lv, idx) => {
+        // A 6-year-old was shown all 12-13 levels of a domain at once, most of them
+        // for 5- or 8-year-olds. That is the "too many categories / cluttered"
+        // problem: the child scrolls past content they cannot use to reach theirs.
+        // Split the list into "for you now" and a collapsed "later / earlier".
+        const myAge = Number(window.Engagement ? (window.Engagement.getProfile().age) : 0) || 0;
+        const bandOf = lv => ageStart(lv.ageBand || (lv.lessons || [])[0]?.ageBand);
+        const forMe = myAge ? levels.filter(lv => { const a = bandOf(lv); return a <= myAge + 0.5 && a >= myAge - 1.5; }) : levels;
+        const others = myAge ? levels.filter(lv => forMe.indexOf(lv) === -1) : [];
+        const primary = forMe.length ? forMe : levels;
+        const secondary = forMe.length ? others : [];
+
+        const makeHeading = text => {
+            const h = document.createElement('div');
+            h.className = 'level-group-heading';
+            h.textContent = text;
+            h.style.cssText = 'margin:14px 6px 8px; font-weight:800; font-size:14px; color:var(--ink-soft,#6b6b6b);';
+            return h;
+        };
+
+        const renderLevelCard = (lv, idx) => {
             const lessons = sortLessonsForChild(lv.lessons || []);
             const doneInLevel = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
             const isCompleted = lessons.length > 0 && doneInLevel === lessons.length;
@@ -815,7 +834,33 @@
             });
 
             scrollContainer.appendChild(card);
-        });
+        };
+
+        if (myAge && secondary.length) scrollContainer.appendChild(makeHeading('برای تو'));
+        primary.forEach((lv, idx) => renderLevelCard(lv, idx));
+
+        if (secondary.length) {
+            const toggle = document.createElement('button');
+            toggle.className = 'level-more-toggle';
+            toggle.style.cssText = 'width:100%; margin:14px 0 4px; padding:12px; min-height:44px; border:0; border-radius:14px; background:#EFE6DC; color:var(--ink,#2d3436); font-family:inherit; font-weight:800; font-size:14px; cursor:pointer;';
+            toggle.textContent = `مرحله‌های دیگر (${toFa(secondary.length)})`;
+            const laterWrap = document.createElement('div');
+            laterWrap.style.display = 'none';
+            secondary.forEach((lv, idx) => {
+                const before = scrollContainer.childNodes.length;
+                renderLevelCard(lv, primary.length + idx);
+                // move the freshly appended card into the collapsed group
+                while (scrollContainer.childNodes.length > before) laterWrap.appendChild(scrollContainer.childNodes[before]);
+            });
+            toggle.addEventListener('click', () => {
+                AudioEngine.play('click');
+                const open = laterWrap.style.display !== 'none';
+                laterWrap.style.display = open ? 'none' : 'block';
+                toggle.textContent = open ? `مرحله‌های دیگر (${toFa(secondary.length)})` : 'بستن';
+            });
+            scrollContainer.appendChild(toggle);
+            scrollContainer.appendChild(laterWrap);
+        }
 
         content.appendChild(scrollContainer);
 
@@ -1170,7 +1215,10 @@
     }
 
     function ageStart(ageBand) {
-        const m = String(ageBand || '').match(/(\d+)\s*تا\s*(\d+)/);
+        // Bands are written with PERSIAN digits («۵ تا ۶ سال»), which /\d/ never
+        // matched, so every level scored 99 and age ordering/filtering was inert.
+        const norm = String(ageBand || '').replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
+        const m = norm.match(/(\d+)\s*تا\s*(\d+)/);
         return m ? Number(m[1]) : 99;
     }
 
