@@ -41,7 +41,7 @@ jobs:
         run: |
           npm run android:sync
           test -f android/app/src/main/assets/public/index.html
-          test -f android/app/src/main/assets/public/src/core/icons.js
+          test -f android/app/src/main/assets/public/src/app.bundle.js
           test -f android/app/src/main/assets/public/content/curriculum.json
 
       - name: Build Android APK
