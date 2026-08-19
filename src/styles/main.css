@@ -2091,3 +2091,39 @@ button:focus-visible, [role="button"]:focus-visible {
    viewport, which allowed a horizontal scroll on small phones. */
 .giant-play-glow { max-width: 100%; pointer-events: none; }
 body, .screen { overflow-x: hidden; }
+
+/* ---------------------------------------------------------------
+   PRE-READER UI: picture-first controls.
+   The painting workshop had 12 word-labelled pills in one wrapping
+   row. A child under 6 cannot read them, so every tool is now a
+   square SVG icon button; the Persian word survives as title/
+   aria-label for parents and assistive tech.
+   --------------------------------------------------------------- */
+.tool-btn.icon-tool {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 4px;
+    width: 52px; height: 52px; padding: 0;
+    border-radius: 16px;
+}
+.tool-btn.icon-tool .app-icon { width: 26px; height: 26px; }
+.tool-btn.icon-tool.danger { color: #C0392B; }
+.brush-size-dot {
+    display: inline-block; border-radius: 50%;
+    background: currentColor; margin-inline-start: 2px;
+}
+/* Stamp buttons lose their text label too, so they match the tool row. */
+.stamp-tool-btn {
+    width: 52px; height: 52px; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+.stamp-tool-btn .stamp-ico { display: inline-flex; }
+.stamp-tool-btn .stamp-ico svg { width: 28px; height: 28px; }
+/* Grouped rows read as "what to draw with" vs "what to do". */
+.paint-tool-group {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    align-items: center; justify-content: center;
+    padding: 6px 4px;
+}
+.paint-tool-group + .paint-tool-group {
+    border-top: 2px dashed #F0E2D4; margin-top: 4px;
+}

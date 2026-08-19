@@ -2561,11 +2561,23 @@ window.Generator = (function() {
         const rounds = buildRounds(lessonId, metadata);
         const list = (Array.isArray(rounds) ? rounds : []).map(enrichRound);
         // Give the opening round a spoken topic intro when one exists and the
-        // round does not already carry its own (letter) narration.
+        // round does not already carry its own narration.
+        //
+        // The guard used to be `!list[0].audioClip`, which only protected rounds
+        // that had a letter clip. Rounds whose *spoken line* has a recording were
+        // still overwritten, so 114 rounds announced the subject ("بیا با کلمه‌ها
+        // بازی کنیم") instead of the instruction the child needed to act on
+        // ("کارت‌ها را برگردان..."). The instruction always wins; the intro is
+        // only used when the opening round would otherwise be silent.
         const topic = topicClipFor(metadata);
         if (topic && list.length && !list[0].audioClip) {
-            list[0].audioClip = topic;
-            list[0].audioAutoPlay = true;
+            const opening = list[0];
+            const spoken = String(opening.speech || opening.prompt || '').trim();
+            const hasOwnVoice = !!(spoken && window.NARRATION_MAP && window.NARRATION_MAP[spoken]);
+            if (!hasOwnVoice) {
+                opening.audioClip = topic;
+                opening.audioAutoPlay = true;
+            }
         }
         return list;
     }

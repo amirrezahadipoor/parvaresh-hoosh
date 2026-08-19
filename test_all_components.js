@@ -69,6 +69,9 @@ require('./src/data/math-data.js');
 require('./src/data/world-data.js');
 require('./src/data/curriculum.js');
 require('./src/data/lesson-packages.js');
+// generator.js consults window.NARRATION_MAP to decide whether a round already
+// has its own voiced instruction, so the harness must load it like the page does.
+require('./src/data/narration-map.js');
 
 // Load core files
 require('./src/core/config.js');

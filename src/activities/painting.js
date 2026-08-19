@@ -98,8 +98,10 @@ window.PaintingActivity = (function() {
         toolsBar.className = 'paint-tools-bar';
 
         const rainbowBtn = document.createElement('button');
-        rainbowBtn.className = 'tool-btn';
-        rainbowBtn.innerHTML = 'قلم جادویی';
+        rainbowBtn.className = 'tool-btn icon-tool';
+        rainbowBtn.title = 'قلم جادویی';
+        rainbowBtn.setAttribute('aria-label', 'قلم جادویی');
+        rainbowBtn.innerHTML = window.AppIcons ? window.AppIcons.get('rainbow', 24) : 'قلم جادویی';
         rainbowBtn.addEventListener('click', () => {
             AudioEngine.play('bubble');
             isRainbow = true;
@@ -124,7 +126,11 @@ window.PaintingActivity = (function() {
             b.className = 'tool-btn stamp-tool-btn';
             b.type = 'button';
             b.setAttribute('aria-label', label);
-            b.innerHTML = `<span class="stamp-ico">${STAMP_ICONS[kind]}</span><span>${label}</span>`;
+            // Icon only: a 4-year-old cannot read «خرگوش», but recognises a rabbit.
+            // The word stays as the accessible name for screen readers and for
+            // parents using long-press tooltips.
+            b.title = label;
+            b.innerHTML = `<span class="stamp-ico">${STAMP_ICONS[kind]}</span>`;
             b.addEventListener('click', () => {
                 AudioEngine.play('pop');
                 currentStamp = kind;
@@ -139,17 +145,17 @@ window.PaintingActivity = (function() {
         }
         const stampStar = makeStampBtn('star', 'ستاره');
         const stampHeart = makeStampBtn('heart', 'قلب');
-        const stampFlower = makeStampBtn('flower', 'گل');
-        // Animal stamps: children ask for animals more than abstract shapes,
-        // and each one is drawn with a face so it is identifiable, not just an
-        // outline.
-        const stampCat = makeStampBtn('cat', 'گربه');
+        // Stamps deliberately exclude cat, fish and flower: those already exist
+        // as full colouring templates in the strip below, and offering the same
+        // animal twice with two different behaviours was confusing rather than
+        // generous. Rabbit has no template, so it stays.
         const stampRabbit = makeStampBtn('rabbit', 'خرگوش');
-        const stampFish = makeStampBtn('fish', 'ماهی');
 
         const eraserBtn = document.createElement('button');
-        eraserBtn.className = 'tool-btn';
-        eraserBtn.textContent = 'پاک‌کن';
+        eraserBtn.className = 'tool-btn icon-tool';
+        eraserBtn.title = 'پاک‌کن';
+        eraserBtn.setAttribute('aria-label', 'پاک‌کن');
+        eraserBtn.innerHTML = window.AppIcons ? window.AppIcons.get('eraser', 24) : 'پاک‌کن';
         eraserBtn.addEventListener('click', () => {
             AudioEngine.play('click');
             isEraser = true;
@@ -160,18 +166,34 @@ window.PaintingActivity = (function() {
         });
 
         const brushBtn = document.createElement('button');
-        brushBtn.className = 'tool-btn';
-        brushBtn.textContent = 'قلم متوسط';
+        brushBtn.className = 'tool-btn icon-tool';
+        function paintBrushIcon() {
+            // The label used to be the only cue for brush size. Show the icon and
+            // a dot whose size mirrors the actual stroke width, so the setting is
+            // readable without words.
+            const thick = currentBrushSize >= 18;
+            brushBtn.title = thick ? 'قلم ضخیم' : 'قلم متوسط';
+            brushBtn.setAttribute('aria-label', brushBtn.title);
+            const ico = window.AppIcons ? window.AppIcons.get(thick ? 'brush-thick' : 'brush', 24) : '';
+            brushBtn.innerHTML = `${ico}<i class="brush-size-dot" style="width:${thick ? 13 : 8}px;height:${thick ? 13 : 8}px"></i>`;
+            // classList.toggle's second argument is not universally available on
+            // stubbed elements; add/remove is the safer pair.
+            if (thick) brushBtn.classList.add('thick');
+            else brushBtn.classList.remove('thick');
+        }
+        paintBrushIcon();
         brushBtn.addEventListener('click', () => {
             currentBrushSize = currentBrushSize >= 18 ? 10 : 18;
-            brushBtn.textContent = currentBrushSize >= 18 ? 'قلم ضخیم' : 'قلم متوسط';
+            paintBrushIcon();
             isEraser = false;
             AudioEngine.play('click');
         });
 
         const undoBtn = document.createElement('button');
-        undoBtn.className = 'tool-btn';
-        undoBtn.textContent = 'برگشت';
+        undoBtn.className = 'tool-btn icon-tool';
+        undoBtn.title = 'برگشت';
+        undoBtn.setAttribute('aria-label', 'برگشت');
+        undoBtn.innerHTML = window.AppIcons ? window.AppIcons.get('undo', 24) : 'برگشت';
         undoBtn.addEventListener('click', () => {
             if (!ctx || !ctx.putImageData || !undoStack.length) return;
             AudioEngine.play('click');
@@ -184,25 +206,29 @@ window.PaintingActivity = (function() {
         });
 
         const clearBtn = document.createElement('button');
-        clearBtn.className = 'tool-btn danger';
-        clearBtn.textContent = 'پاک کردن';
+        clearBtn.className = 'tool-btn icon-tool danger';
+        clearBtn.title = 'پاک کردن';
+        clearBtn.setAttribute('aria-label', 'پاک کردن');
+        clearBtn.innerHTML = window.AppIcons ? window.AppIcons.get('trash', 24) : 'پاک کردن';
         clearBtn.addEventListener('click', () => {
             AudioEngine.play('click');
             undoStack.length = 0;
             applyTemplate();
         });
 
-        toolsBar.appendChild(rainbowBtn);
-        toolsBar.appendChild(stampStar);
-        toolsBar.appendChild(stampHeart);
-        toolsBar.appendChild(stampFlower);
-        toolsBar.appendChild(stampCat);
-        toolsBar.appendChild(stampRabbit);
-        toolsBar.appendChild(stampFish);
-        toolsBar.appendChild(eraserBtn);
-        toolsBar.appendChild(brushBtn);
-        toolsBar.appendChild(undoBtn);
-        toolsBar.appendChild(clearBtn);
+        // Two labelled-by-position groups instead of one 12-item run of pills:
+        // row 1 = what you draw with, row 2 = what you do to the drawing.
+        const drawGroup = document.createElement('div');
+        drawGroup.className = 'paint-tool-group';
+        [brushBtn, rainbowBtn, stampStar, stampHeart, stampRabbit]
+            .forEach(b => drawGroup.appendChild(b));
+
+        const actionGroup = document.createElement('div');
+        actionGroup.className = 'paint-tool-group';
+        [eraserBtn, undoBtn, clearBtn].forEach(b => actionGroup.appendChild(b));
+
+        toolsBar.appendChild(drawGroup);
+        toolsBar.appendChild(actionGroup);
 
         const templateBar = document.createElement('div');
         templateBar.className = 'paint-template-bar';
@@ -481,36 +507,49 @@ window.PaintingActivity = (function() {
         function paint(e) {
             if (!isDrawing) return;
             e.preventDefault();
-            const pos = getPos(e);
 
+            // Use the browser's coalesced samples when available. A finger moving
+            // fast generates many more positions than there are frames, and the
+            // discarded ones are exactly what made quick strokes look angular.
+            const evs = (e.getCoalescedEvents && e.getCoalescedEvents()) || [e];
+            for (const ev of evs) drawSegment(getPos(ev));
+        }
+
+        function drawSegment(pos) {
             // Ignore sub-pixel jitter so a resting finger does not pile up dots.
-            const dx = pos.x - lastX, dy = pos.y - lastY;
-            const dist = Math.hypot(dx, dy);
-            if (dist < 0.7) return;
+            const dist = Math.hypot(pos.x - lastX, pos.y - lastY);
+            if (dist < 0.5) return;
 
-            // Taper: quick strokes go thinner, slow ones thicker, like a real
-            // brush. Eased towards the target so the width never jumps.
+            // Smooth the incoming point before drawing. Raw touch coordinates are
+            // noisy, and that noise is visible as a wobbly edge on a thick stroke.
+            const sx = lastX + (pos.x - lastX) * 0.5;
+            const sy = lastY + (pos.y - lastY) * 0.5;
+
+            // Width easing. The previous version changed lineWidth on every
+            // segment while stroking each one separately, so the line showed
+            // steps and a seam at each joint. Keep the change per segment tiny
+            // and overlap the joints with round caps so they fuse.
             const base = isEraser ? 24 : currentBrushSize;
-            const target = isEraser ? base : Math.max(base * 0.45, base - dist * 0.35);
-            lastWidth += (target - lastWidth) * 0.3;
+            const target = isEraser ? base : Math.max(base * 0.6, base - dist * 0.18);
+            lastWidth += (target - lastWidth) * 0.15;
 
             if (isRainbow) {
-                strokeHue = (strokeHue + 7) % 360;
+                strokeHue = (strokeHue + 4) % 360;
                 ctx.strokeStyle = `hsl(${strokeHue}, 90%, 60%)`;
             }
 
-            // Curve through the midpoint of the last two samples: this is what
-            // turns a chain of straight facets into one continuous line.
-            const newMidX = (lastX + pos.x) / 2;
-            const newMidY = (lastY + pos.y) / 2;
+            const newMidX = (lastX + sx) / 2;
+            const newMidY = (lastY + sy) / 2;
+            ctx.lineWidth = lastWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             ctx.beginPath();
             ctx.moveTo(midX, midY);
             ctx.quadraticCurveTo(lastX, lastY, newMidX, newMidY);
-            ctx.lineWidth = lastWidth;
             ctx.stroke();
 
             midX = newMidX; midY = newMidY;
-            lastX = pos.x; lastY = pos.y;
+            lastX = sx; lastY = sy;
         }
 
         function stopPaint() {

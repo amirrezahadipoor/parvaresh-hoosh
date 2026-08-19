@@ -60,9 +60,27 @@ const PROMPTS = {
   'praise-great': ['آفرین!', 'عالی بود!', 'آفرین! عالی بود.'],
   'praise-retry': ['اشکالی ندارد، دوباره تلاش کن!'],
   'praise-lesson-done': ['درس تمام شد! آفرین به پشتکارت.'],
+  't3-30-syllables': ['این بخش‌ها چه کلمه‌ای می‌سازند؟'],
+  't3-31-friend-sad': ['وقتی دوستم ناراحت است:'],
+  't3-32-new-friend': ['مراحل دوست شدن با بچهٔ تازه‌وارد:'],
+  't3-33-sort-animals-fruit': ['حیوانات و میوه‌ها را جدا کن'],
+  't3-34-remember-bells': ['صدای زنگ‌ها را به خاطر بسپار!'],
+  't3-35-order-colors': ['رنگ‌ها را به ترتیب بچین'],
+  't3-36-remember-tray': ['تصاویر سینی را به خاطر بسپار!'],
+  't3-37-black-white-mix': ['سیاه و سفید با هم چه رنگی می‌سازند؟'],
+  't3-39-fill-blank': ['جای خالی را پر کن'],
+  // "چند تا شکل می‌بینی؟ سه تا" and friends differ only by the answer word, so
+  // one recording of the question serves every variant via the prefix rule below.
+  't3-38-how-many-shapes': ['چند تا شکل می‌بینی؟'],
 };
 
 const map = {};
+// Some generated prompts append the answer to a fixed question. Registering the
+// question alone is not enough because speak() looks up the exact string, so the
+// variants are expanded here from the same clip.
+const PREFIX_VARIANTS = {
+  'چند تا شکل می‌بینی؟': ['یک تا', 'دو تا', 'سه تا', 'چهار تا', 'پنج تا', 'شش تا', 'هفت تا', 'هشت تا', 'نه تا', 'ده تا']
+};
 for (const clip of clips) {
   if (clip.startsWith('letter-')) {
     const name = LETTER_NAMES[clip.slice(7)];
@@ -74,7 +92,11 @@ for (const clip of clips) {
     // removed: it made common words collide with letter clips.
     if (name) map[`صدای حرف ${name}`] = clip;
   } else if (PROMPTS[clip]) {
-    for (const text of PROMPTS[clip]) map[text] = clip;
+    for (const text of PROMPTS[clip]) {
+      map[text] = clip;
+      const variants = PREFIX_VARIANTS[text];
+      if (variants) for (const v of variants) map[`${text} ${v}`] = clip;
+    }
   }
 }
 

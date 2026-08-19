@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v39-perf';
+const CACHE_NAME = 'parvaresh-hoosh-v40-prereader';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -77,6 +77,16 @@ const PRECACHE = [
     './assets/audio/kid/t2-25-emotion-situation.mp3',
     './assets/audio/kid/t2-26-color-blue.mp3',
     './assets/audio/kid/t2-27-plant-growth.mp3',
+    './assets/audio/kid/t3-30-syllables.mp3',
+    './assets/audio/kid/t3-31-friend-sad.mp3',
+    './assets/audio/kid/t3-32-new-friend.mp3',
+    './assets/audio/kid/t3-33-sort-animals-fruit.mp3',
+    './assets/audio/kid/t3-34-remember-bells.mp3',
+    './assets/audio/kid/t3-35-order-colors.mp3',
+    './assets/audio/kid/t3-36-remember-tray.mp3',
+    './assets/audio/kid/t3-37-black-white-mix.mp3',
+    './assets/audio/kid/t3-38-how-many-shapes.mp3',
+    './assets/audio/kid/t3-39-fill-blank.mp3',
     './assets/audio/kid/topic-addition.mp3',
     './assets/audio/kid/topic-animals.mp3',
     './assets/audio/kid/topic-art.mp3',
