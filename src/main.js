@@ -686,8 +686,14 @@
             const nodeIcon = button.querySelector('.adventure-map-node-icon');
             if (done) {
                 nodeIcon.textContent = '✓';
-            } else {
+            } else if (index === activeIndex) {
                 nodeIcon.innerHTML = window.AppIcons ? window.AppIcons.get(node.domain || 'play', 21) : node.icon;
+            } else {
+                // Every node used the domain icon, so a whole subject's trail was
+                // the same glyph repeated and told the child nothing about where
+                // they were. Show the step number instead and keep the icon for
+                // the step they are actually on.
+                nodeIcon.textContent = toFa(index + 1);
             }
             button.querySelector('small').textContent = node.title.replace(/^\d+\.\s*/, '');
             button.disabled = !unlocked;

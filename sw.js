@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v37-topics-20';
+const CACHE_NAME = 'parvaresh-hoosh-v38-audio-complete';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -13,6 +13,7 @@ const PRECACHE = [
   './assets/fonts/Vazirmatn-Black.woff2',
   // Bundled Persian narration (Android WebView has no fa-IR speech voice).,
     './src/data/narration-map.js',
+    './assets/audio/kid/fixed-balloons.mp3',
     './assets/audio/kid/letter-alef.mp3',
     './assets/audio/kid/letter-be.mp3',
     './assets/audio/kid/letter-che.mp3',
@@ -45,6 +46,9 @@ const PRECACHE = [
     './assets/audio/kid/letter-zal.mp3',
     './assets/audio/kid/letter-ze.mp3',
     './assets/audio/kid/letter-zhe.mp3',
+    './assets/audio/kid/praise-great.mp3',
+    './assets/audio/kid/praise-lesson-done.mp3',
+    './assets/audio/kid/praise-retry.mp3',
     './assets/audio/kid/praise-set.mp3',
     './assets/audio/kid/t1-01-memory.mp3',
     './assets/audio/kid/t1-02-order-size.mp3',
@@ -76,20 +80,26 @@ const PRECACHE = [
     './assets/audio/kid/topic-addition.mp3',
     './assets/audio/kid/topic-animals.mp3',
     './assets/audio/kid/topic-art.mp3',
+    './assets/audio/kid/topic-classify.mp3',
     './assets/audio/kid/topic-counting.mp3',
     './assets/audio/kid/topic-create.mp3',
     './assets/audio/kid/topic-emotions.mp3',
+    './assets/audio/kid/topic-energy.mp3',
     './assets/audio/kid/topic-experiment.mp3',
     './assets/audio/kid/topic-logic.mp3',
     './assets/audio/kid/topic-matching.mp3',
+    './assets/audio/kid/topic-measure.mp3',
     './assets/audio/kid/topic-memory.mp3',
+    './assets/audio/kid/topic-music.mp3',
     './assets/audio/kid/topic-reading.mp3',
+    './assets/audio/kid/topic-recycle.mp3',
     './assets/audio/kid/topic-seasons.mp3',
     './assets/audio/kid/topic-senses.mp3',
     './assets/audio/kid/topic-sentence.mp3',
     './assets/audio/kid/topic-sequence.mp3',
     './assets/audio/kid/topic-shapes.mp3',
     './assets/audio/kid/topic-subtraction.mp3',
+    './assets/audio/kid/topic-time.mp3',
     './assets/audio/kid/topic-words.mp3'
 ];
 

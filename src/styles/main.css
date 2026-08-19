@@ -1640,12 +1640,12 @@ button:focus-visible, [role="button"]:focus-visible {
 .adventure-map-card { padding: 14px; border: 1px solid #E1E8F0; border-radius: 20px; background: #FFF; box-shadow: 0 5px 16px rgba(34,57,84,.06); }
 .adventure-map-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .adventure-map-head h2 { color: #1F2A37; font-size: 16px; font-weight: 900; }
-.adventure-map-head p { margin-top: 2px; color: #56636F; font-size: 10px; font-weight: 700; }
+.adventure-map-head p { margin-top: 2px; color: #56636F; font-size: 12px; font-weight: 700; }
 .adventure-map-head strong { padding: 6px 8px; border-radius: 10px; color: #087A67; background: #E8FAF5; font-size: 11px; }
 .adventure-map-track { display: flex; gap: 8px; overflow-x: auto; padding: 13px 2px 4px; scroll-snap-type: x proximity; scrollbar-width: thin; touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
-.adventure-map-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 70px; gap: 5px; padding: 3px; border: 0; color: #617184; background: transparent; scroll-snap-align: start; cursor: pointer; }
+.adventure-map-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 84px; gap: 5px; padding: 3px; border: 0; color: #617184; background: transparent; scroll-snap-align: start; cursor: pointer; }
 .adventure-map-node-icon { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 3px solid var(--node-color,#CBD5E1); border-radius: 15px; color: var(--node-color,#64748B); background: #F8FAFC; font-size: 11px; font-weight: 900; }
-.adventure-map-node small { width: 68px; overflow: hidden; font-size: 9px; font-weight: 800; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.adventure-map-node small { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; width: 76px; overflow: hidden; font-size: 11px; line-height: 1.35; font-weight: 800; text-align: center; }
 .adventure-map-node.done .adventure-map-node-icon { border-color: #00B894; color: #FFF; background: #00B894; }
 .adventure-map-node.current .adventure-map-node-icon { color: #FFF; background: var(--node-color,#2563EB); box-shadow: 0 0 0 4px rgba(37,99,235,.13); animation: mapNodePulse 1.8s ease-in-out infinite; }
 .adventure-map-node.locked { opacity: .4; cursor: default; }
@@ -2068,3 +2068,26 @@ button:focus-visible, [role="button"]:focus-visible {
 .level-card.group-card .level-label { font-size: 12px; }
 .group-track { width: 100%; height: 7px; margin-top: 8px; overflow: hidden; border-radius: 999px; background: #E6EAF0; }
 .group-track i { display: block; height: 100%; border-radius: 999px; transition: width .4s ease; }
+
+/* ---------------------------------------------------------------
+   Readability pass. Several labels were rendered at 9-10px, which is
+   below what a child (or a parent at arm's length) can comfortably read,
+   and some were ellipsised to the point of being meaningless.
+   --------------------------------------------------------------- */
+.level-card .level-label { font-size: 12.5px; }
+
+/* These were the real offenders, found by querying computed styles in the
+   running app rather than by guessing class names: 9-10px body text. */
+.domain-tile-subtitle { font-size: 12px; line-height: 1.5; }
+.domain-tile-progress b,
+.domain-tile b { font-size: 11.5px; font-weight: 900; }
+.level-progress { font-size: 12px; font-weight: 800; }
+.lesson-context-kicker { font-size: 11.5px; }
+.lesson-context-objective { font-size: 12.5px; line-height: 1.6; }
+.lesson-progress-text { font-size: 12px; }
+.challenge-count { font-size: 12px; }
+
+/* The home hero glow is decorative but was measured overflowing the
+   viewport, which allowed a horizontal scroll on small phones. */
+.giant-play-glow { max-width: 100%; pointer-events: none; }
+body, .screen { overflow-x: hidden; }

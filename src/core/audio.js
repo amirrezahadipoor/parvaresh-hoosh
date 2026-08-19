@@ -338,6 +338,7 @@ window.AudioEngine = (function() {
     // legacy names such as 'letter-alef'; without this guard those turn into
     // a 404 on every round instead of just staying silent.
     const AVAILABLE_CLIPS = new Set([
+        'fixed-balloons',
         'letter-alef',
         'letter-be',
         'letter-che',
@@ -370,6 +371,9 @@ window.AudioEngine = (function() {
         'letter-zal',
         'letter-ze',
         'letter-zhe',
+        'praise-great',
+        'praise-lesson-done',
+        'praise-retry',
         'praise-set',
         't1-01-memory',
         't1-02-order-size',
@@ -401,20 +405,26 @@ window.AudioEngine = (function() {
         'topic-addition',
         'topic-animals',
         'topic-art',
+        'topic-classify',
         'topic-counting',
         'topic-create',
         'topic-emotions',
+        'topic-energy',
         'topic-experiment',
         'topic-logic',
         'topic-matching',
+        'topic-measure',
         'topic-memory',
+        'topic-music',
         'topic-reading',
+        'topic-recycle',
         'topic-seasons',
         'topic-senses',
         'topic-sentence',
         'topic-sequence',
         'topic-shapes',
         'topic-subtraction',
+        'topic-time',
         'topic-words'
     ]);
 

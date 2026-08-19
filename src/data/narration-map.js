@@ -2,6 +2,7 @@
 // Spoken line -> recorded child-voice clip in assets/audio/kid/.
 // Clips are AI-generated speech, pitch +28% with formant shifting.
 window.NARRATION_MAP = {
+  "بادکنک‌ها را لمس کن تا بترکند!": "fixed-balloons",
   "صدای حرف الف": "letter-alef",
   "صدای حرف بِ": "letter-be",
   "صدای حرف چِه": "letter-che",
@@ -34,6 +35,11 @@ window.NARRATION_MAP = {
   "صدای حرف ذال": "letter-zal",
   "صدای حرف زِ": "letter-ze",
   "صدای حرف ژِ": "letter-zhe",
+  "آفرین!": "praise-great",
+  "عالی بود!": "praise-great",
+  "آفرین! عالی بود.": "praise-great",
+  "درس تمام شد! آفرین به پشتکارت.": "praise-lesson-done",
+  "اشکالی ندارد، دوباره تلاش کن!": "praise-retry",
   "کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن": "t1-01-memory",
   "کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن گل من!": "t1-01-memory",
   "تصاویر را از کوچک به بزرگ بچین": "t1-02-order-size",
