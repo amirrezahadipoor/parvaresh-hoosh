@@ -1399,6 +1399,11 @@ window.Generator = (function() {
             'order-size': orderSizeRound,
             pattern: patternRound,
             color: colorRound,
+            // These three roles are referenced by authored round plans but were
+            // never registered, so those lessons silently fell back to filler.
+            'color-mix': colorMixRound,
+            material: materialRound,
+            matching: shapeMatchRound,
             raven: ravenRound,
             shadow: shadowRound,
             classify: classifyRound,
@@ -1841,6 +1846,28 @@ window.Generator = (function() {
             return [() => arithRound('-', level <= 4 ? 10 : 20), () => countRound(level <= 4 ? 10 : 20), () => arithRound('-', level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
         if (has('جمع و تفریق', 'چالش ترکیبی'))
             return [() => arithRound('+', level <= 4 ? 10 : 20), () => arithRound('-', level <= 4 ? 10 : 20), () => arithRound('both', level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
+
+        // --- plants (science + logic sequencing both use these titles) ---------
+        if (has('بخش های یک گیاه', 'بخش‌های گیاه', 'بخش های گیاه', 'بخش‌های یک گیاه'))
+            return [plantGrowthRound, plantGrowthRound, materialRound, plantGrowthRound];
+        if (has('گیاه', 'دانه') && has('رشد', 'روند', 'ترتیب', 'مراحل'))
+            return [plantGrowthRound, plantGrowthRound, storyOrderRound, plantGrowthRound];
+        if (has('گل های رنگارنگ', 'گل‌های رنگارنگ'))
+            return [colorRound, colorMixRound, plantGrowthRound, colorRound];
+
+        // --- colour-led logic/math titles --------------------------------------
+        if (has('رنگ های مشابه', 'رنگ‌های مشابه'))
+            return [colorRound, colorRound, () => memoryRound(3), shapeMatchRound];
+        if (has('رنگ') && has('دسته‌بندی', 'دسته بندی', 'طبقه'))
+            return [colorRound, classifyRound, colorRound, shapeMatchRound];
+        if (has('رنگ') && has('ماتریس', 'الگو'))
+            return [colorRound, patternRound, ravenRound, colorMixRound];
+
+        // --- art: painting titles ----------------------------------------------
+        if (has('نقاشی با انگشت', 'انگشتی'))
+            return [paintingRound, paintingRound, colorRound, colorMixRound];
+        if (has('طراحی') && has('حیوان', 'گل'))
+            return [paintingRound, paintingRound, colorRound, shapeMatchRound];
 
         // --- science ----------------------------------------------------------
         if (has('رشد') && has('گیاه', 'دانه'))

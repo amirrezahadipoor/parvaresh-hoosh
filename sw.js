@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v27-full-voice';
+const CACHE_NAME = 'parvaresh-hoosh-v28-topic-complete';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
