@@ -101,6 +101,14 @@ TOPIC = {
     "topic-classify":    "بیا چیزها را دسته‌بندی کنیم و هرکدام را کنار هم‌گروهش بگذاریم.",
     "topic-create":      "وقت خلاقیت است! قصه و تصویر خودت را بساز.",
     "topic-music":       "بیا با ریتم و آهنگ بازی کنیم و گوش بدهیم.",
+    # 25 lessons had no spoken intro at all: measurement, volume, time, matching,
+    # recycling, energy, conservation and scientific reasoning had no topic clip.
+    "topic-measure":     "اندازه گرفتن یعنی بفهمیم چیزی چقدر بلند، کوتاه، سنگین یا سبک است.",
+    "topic-time":        "زمان را با ساعت و روزهای هفته می‌شناسیم؛ صبح، ظهر و شب.",
+    "topic-matching":    "جفت‌های مثل هم را پیدا کن و آن‌ها را کنار هم بگذار.",
+    "topic-recycle":     "بازیافت یعنی از چیزهای دورریختنی دوباره چیز تازه بسازیم و زمین را تمیز نگه داریم.",
+    "topic-energy":      "انرژی به ما نیرو می‌دهد؛ نور خورشید، باد و آب هم انرژی دارند.",
+    "topic-experiment":  "مثل دانشمندها فکر کن: نگاه کن، حدس بزن و بعد امتحان کن."
 }
 
 

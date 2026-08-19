@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v26-art-upgrade';
+const CACHE_NAME = 'parvaresh-hoosh-v27-full-voice';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -62,6 +62,12 @@ const PRECACHE = [
   './assets/audio/topic-logic.mp3',
   './assets/audio/topic-memory.mp3',
   './assets/audio/topic-music.mp3',
+  './assets/audio/topic-measure.mp3',
+  './assets/audio/topic-time.mp3',
+  './assets/audio/topic-matching.mp3',
+  './assets/audio/topic-recycle.mp3',
+  './assets/audio/topic-energy.mp3',
+  './assets/audio/topic-experiment.mp3',
   './assets/audio/topic-reading.mp3',
   './assets/audio/topic-seasons.mp3',
   './assets/audio/topic-senses.mp3',

@@ -1747,6 +1747,15 @@ window.Generator = (function() {
         'responsibility': 'topic-emotions', 'self-identity': 'topic-emotions',
         'conflict-resolution': 'topic-emotions', 'teamwork': 'topic-emotions',
         'diversity': 'topic-emotions',
+        // These 25 lessons opened in silence because their type had no clip:
+        // measurement, volume, time, matching, recycling, energy, conservation
+        // and scientific-reasoning. Each now has its own Persian narration.
+        'measurement': 'topic-measure', 'volume': 'topic-measure',
+        'time': 'topic-time',
+        'matching': 'topic-matching', 'pairing': 'topic-matching',
+        'recycling': 'topic-recycle', 'conservation': 'topic-recycle',
+        'energy': 'topic-energy',
+        'science': 'topic-experiment', 'scientific-reasoning': 'topic-experiment',
         // Remaining skill areas -> every lesson now opens with spoken guidance.
         'creative-art': 'topic-art', 'drawing': 'topic-art', 'colors': 'topic-art',
         'coloring': 'topic-art', 'finger-painting': 'topic-art',
