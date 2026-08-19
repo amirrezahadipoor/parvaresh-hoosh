@@ -54,6 +54,12 @@ const map = {};
 for (const clip of clips) {
   if (clip.startsWith('letter-')) {
     const name = LETTER_NAMES[clip.slice(7)];
+    // Rounds ask for a letter in more than one wording. Register every form
+    // that appears in the content so a clip is never missed on a phrasing
+    // difference; short clips are recorded once and reused for all of them.
+    // Every letter clip is recorded with the same wording the rounds use, so a
+    // single key is enough. Registering bare letter names as keys was tried and
+    // removed: it made common words collide with letter clips.
     if (name) map[`صدای حرف ${name}`] = clip;
   } else if (PROMPTS[clip]) {
     for (const text of PROMPTS[clip]) map[text] = clip;
