@@ -1,0 +1,28 @@
+// Spoken line -> recorded child-voice clip in assets/audio/kid/.
+// Generated set: AI voice, pitch +28%% with formant shifting.
+// Activities call AudioEngine.speak(text) unchanged; speak() looks the
+// text up here and plays a real recording when one exists.
+window.NARRATION_MAP = {
+  "کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن": "t1-01-memory",
+  "کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن گل من!": "t1-01-memory",
+  "تصاویر را از کوچک به بزرگ بچین": "t1-02-order-size",
+  "کدام رفتار خوب و درست است؟": "t1-03-good-behavior",
+  "داستان را از اول تا آخر مرتب کن": "t1-04-story-order",
+  "هر چی دوست داری با رنگ‌های شاد نقاشی کن!": "t1-05-painting",
+  "هر چی دوست داری با رنگ‌های شاد نقاشی کن گل من!": "t1-05-painting",
+  "رفتار خوب را از رفتار بد جدا کن": "t1-06-sort-behavior",
+  "رنگ بعدی در الگو کدام است؟": "t1-07-next-color",
+  "شکل بعدی در الگو کدام است؟": "t1-08-next-shape",
+  "شکل کامل‌کننده الگو را پیدا کن": "t1-09-complete-pattern",
+  "کلمه‌ها را مرتب کن": "t1-10-order-words",
+  "هر وسیله را به جنس خودش وصل کن": "t1-11-match-material",
+  "سایه دقیق این تصویر را پیدا کن!": "t1-12-shadow",
+  "کدام کفه ترازو سنگین‌تر است؟": "t2-13-balance",
+  "کدام کفه ترازو به سمت پایین رفته و سنگین‌تر است؟": "t2-13-balance",
+  "کلمات را به ترتیب درست بچین تا جمله ساخته شود": "t2-14-build-sentence",
+  "کدام عدد کوچک‌تر است؟": "t2-15-smaller-number",
+  "کدام عدد بزرگ‌تر است؟": "t2-16-bigger-number",
+  "کدام تصویر با بقیه فرق دارد؟": "t2-17-odd-one-out",
+  "رنگ بنفش را انتخاب کن": "t2-18-color-purple",
+  "کلمه‌ها را به متضادشان وصل کن": "t2-19-opposites"
+};

@@ -2061,9 +2061,6 @@ button:focus-visible, [role="button"]:focus-visible {
    play. Hide them rather than leaving buttons that do nothing when tapped.
    Removing this rule (and flipping NARRATION_ENABLED) restores them for real
    human recordings. */
-body.no-narration .activity-speaker-btn,
-body.no-narration .speaker-btn,
-body.no-narration #btn-sound-toggle { display: none !important; }
 
 /* Merged difficulty groups: three big cards replace 8-13 level rows. */
 .level-card.group-card { min-height: 84px; align-items: center; }

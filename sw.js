@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v30-no-machine-speech';
+const CACHE_NAME = 'parvaresh-hoosh-v31-child-voice';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -11,7 +11,28 @@ const PRECACHE = [
   './assets/fonts/Vazirmatn-Bold.woff2',
   './assets/fonts/Vazirmatn-ExtraBold.woff2',
   './assets/fonts/Vazirmatn-Black.woff2',
-  // Bundled Persian narration (Android WebView has no fa-IR speech voice).
+  // Bundled Persian narration (Android WebView has no fa-IR speech voice).,
+    './src/data/narration-map.js',
+    './assets/audio/kid/praise-set.mp3',
+    './assets/audio/kid/t1-01-memory.mp3',
+    './assets/audio/kid/t1-02-order-size.mp3',
+    './assets/audio/kid/t1-03-good-behavior.mp3',
+    './assets/audio/kid/t1-04-story-order.mp3',
+    './assets/audio/kid/t1-05-painting.mp3',
+    './assets/audio/kid/t1-06-sort-behavior.mp3',
+    './assets/audio/kid/t1-07-next-color.mp3',
+    './assets/audio/kid/t1-08-next-shape.mp3',
+    './assets/audio/kid/t1-09-complete-pattern.mp3',
+    './assets/audio/kid/t1-10-order-words.mp3',
+    './assets/audio/kid/t1-11-match-material.mp3',
+    './assets/audio/kid/t1-12-shadow.mp3',
+    './assets/audio/kid/t2-13-balance.mp3',
+    './assets/audio/kid/t2-14-build-sentence.mp3',
+    './assets/audio/kid/t2-15-smaller-number.mp3',
+    './assets/audio/kid/t2-16-bigger-number.mp3',
+    './assets/audio/kid/t2-17-odd-one-out.mp3',
+    './assets/audio/kid/t2-18-color-purple.mp3',
+    './assets/audio/kid/t2-19-opposites.mp3'
 ];
 
 self.addEventListener('install', event => {

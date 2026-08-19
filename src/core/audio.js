@@ -334,44 +334,80 @@ window.AudioEngine = (function() {
         }
     }
 
-    // Clips that actually ship in assets/audio. Asking for anything else used to
-    // fire a 404 on every lesson without narration.
+    // Clips that actually ship in assets/audio/kid. Activities still ask for
+    // legacy names such as 'letter-alef'; without this guard those turn into
+    // a 404 on every round instead of just staying silent.
     const AVAILABLE_CLIPS = new Set([
-        'lesson-R-L1-L01', 'lesson-R-L1-L02', 'lesson-R-L1-L03', 'lesson-R-L1-L04',
-        'lesson-R-L1-L05', 'lesson-R-L1-L06', 'lesson-R-L1-L07', 'lesson-R-L1-L08',
-        'letter-alef', 'letter-be', 'letter-pe', 'letter-te', 'letter-se', 'letter-jim',
-        'letter-che', 'letter-he', 'letter-khe', 'letter-dal', 'letter-zal', 'letter-re',
-        'letter-ze', 'letter-zhe', 'letter-sin', 'letter-shin', 'letter-sad', 'letter-zad',
-        'letter-ta', 'letter-za', 'letter-eyn', 'letter-gheyn', 'letter-fe', 'letter-ghaf',
-        'letter-kaf', 'letter-gaf', 'letter-lam', 'letter-mim', 'letter-nun', 'letter-vav',
-        'letter-heh', 'letter-ye',
-        'topic-counting', 'topic-addition', 'topic-subtraction', 'topic-shapes',
-        'topic-animals', 'topic-seasons', 'topic-senses', 'topic-emotions',
-        'topic-art', 'topic-reading', 'topic-logic', 'topic-words', 'topic-memory',
-        'topic-sequence', 'topic-sentence', 'topic-classify', 'topic-create', 'topic-music'
+        'praise-set',
+        't1-01-memory',
+        't1-02-order-size',
+        't1-03-good-behavior',
+        't1-04-story-order',
+        't1-05-painting',
+        't1-06-sort-behavior',
+        't1-07-next-color',
+        't1-08-next-shape',
+        't1-09-complete-pattern',
+        't1-10-order-words',
+        't1-11-match-material',
+        't1-12-shadow',
+        't2-13-balance',
+        't2-14-build-sentence',
+        't2-15-smaller-number',
+        't2-16-bigger-number',
+        't2-17-odd-one-out',
+        't2-18-color-purple',
+        't2-19-opposites'
     ]);
 
-    function hasClip(name) {
-        return !!name && AVAILABLE_CLIPS.has(String(name));
+    function hasClip(text) {
+        return !!clipFor(text);
     }
 
     // ------------------------------------------------------------------
-    // ALL MACHINE SPEECH REMOVED.
-    // Two engines used to talk to the child: pre-rendered neural-TTS mp3s and
-    // the browser's own speechSynthesis voice. Both are gone -- the mp3s are
-    // deleted and the Web Speech code below is no longer written at all, so
-    // nothing can synthesise a word even if a Persian system voice exists.
-    // These two functions stay only as inert stubs because ~35 activity call
-    // sites invoke them; they now do nothing and return "not played".
-    // To ship REAL HUMAN narration later, restore playClip()'s body, drop the
-    // recordings into assets/audio/ and re-add them to the sw.js precache.
-    // Game sound effects are untouched: they are oscillator tones, not speech.
+    // RECORDED CHILD-VOICE NARRATION (no TTS).
+    // There is no text-to-speech left in the app. Instead, a set of clips was
+    // pre-generated with an AI voice model and pitch-shifted +28% with formant
+    // shifting, giving the approved child timbre. speak(text) looks the text up
+    // in window.NARRATION_MAP; if a recording exists it plays, otherwise the
+    // call is silently ignored -- lines without a clip simply stay unvoiced
+    // instead of falling back to a robotic synthesiser.
+    // Game sound effects are separate (oscillator tones) and always on.
     // ------------------------------------------------------------------
-    var NARRATION_ENABLED = false;
+    var NARRATION_ENABLED = true;
 
-    function playClip() { return false; }
+    function clipFor(text) {
+        try {
+            const map = window.NARRATION_MAP;
+            if (!map || !text) return null;
+            return map[String(text).trim()] || null;
+        } catch (e) { return null; }
+    }
 
-    function speak() { /* machine speech removed on purpose */ }
+    // Play a recorded clip by file name (no extension) from assets/audio/kid/.
+    function playClip(name, onEnd) {
+        if (!NARRATION_ENABLED || sfxMuted || !name) return false;
+        if (!AVAILABLE_CLIPS.has(String(name))) return false;
+        try {
+            stopClip();
+            const audio = new Audio(`assets/audio/kid/${name}.mp3`);
+            audio.preload = 'auto';
+            currentClip = audio;
+            audio.onended = () => { currentClip = null; if (onEnd) onEnd(); };
+            audio.onerror = () => { currentClip = null; };
+            const p = audio.play();
+            if (p && p.catch) p.catch(() => { currentClip = null; });
+            return true;
+        } catch (e) { return false; }
+    }
+
+    // Speak a line by playing its recording. Never synthesises anything.
+    function speak(text) {
+        if (!NARRATION_ENABLED || sfxMuted || !text) return false;
+        const clip = clipFor(text);
+        if (!clip) return false;
+        return playClip(clip);
+    }
 
     function stopSpeak() {
         stopClip();

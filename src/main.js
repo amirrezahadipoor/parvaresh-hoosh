@@ -111,10 +111,10 @@
     }
 
     async function init() {
-        // With AI narration removed there is nothing for a «بشنو» button to play,
-        // so hide every speaker control instead of leaving dead buttons on screen.
-        // One body class covers all activity engines; it flips back automatically
-        // when real recordings are added and NARRATION_ENABLED becomes true.
+        // Speaker («بشنو») buttons are only useful while narration is available.
+        // Recorded child-voice clips now ship, so this normally leaves them
+        // visible; the class is kept so the whole UI still degrades cleanly if
+        // narration is ever switched off again.
         try {
             const narrationOn = !!(window.AudioEngine && window.AudioEngine.narrationEnabled && window.AudioEngine.narrationEnabled());
             document.body.classList.toggle('no-narration', !narrationOn);
