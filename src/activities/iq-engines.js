@@ -49,6 +49,9 @@ window.IQEngines = (function() {
                 const btn = document.createElement('button');
                 btn.className = 'raven-opt-btn';
                 btn.innerHTML = opt.img;
+                // Without this the guiding hand falls back to the FIRST option and
+                // can point the child at a wrong answer. Not exposed to a11y/visuals.
+                if (idx === round.answer) btn.dataset.correct = 'true';
 
                 btn.onclick = () => {
                     if (answered) return;
@@ -115,6 +118,7 @@ window.IQEngines = (function() {
                 const btn = document.createElement('button');
                 btn.className = 'shadow-opt-btn';
                 btn.innerHTML = `<div class="shadow-silhouette" style="filter: brightness(0) opacity(0.85);">${opt.img}</div>`;
+                if (idx === round.answer) btn.dataset.correct = 'true';
 
                 btn.onclick = () => {
                     if (answered) return;
@@ -310,6 +314,7 @@ window.IQEngines = (function() {
                         const btn = document.createElement('button');
                         btn.className = 'disp-opt-btn';
                         btn.innerHTML = `${opt.img}<span>${opt.label}</span>`;
+                        if (opt.id === missingItem.id) btn.dataset.correct = 'true';
 
                         btn.onclick = () => {
                             if (answered) return;
@@ -386,6 +391,7 @@ window.IQEngines = (function() {
 
             let answered = false;
             card.querySelectorAll('.balance-choice-btn').forEach(btn => {
+                if (btn.dataset.choice === heavier) btn.dataset.correct = 'true';
                 btn.onclick = () => {
                     if (answered) return;
                     const choice = btn.dataset.choice;

@@ -204,16 +204,34 @@ window.LivingWorld = (function() {
                 <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
             </svg>
         `;
-        // Sit OUTSIDE the option: to the left of it when there is room, otherwise to
-        // the right. Previously the hand was pinned under the button's centre, where
-        // it overlapped the option below and could look like it meant that one.
+        // Sit OUTSIDE every option. Placing the hand merely "beside the target"
+        // was not enough: when the correct option sits against the screen edge the
+        // hand flipped to its other side and landed on top of the NEIGHBOURING
+        // (wrong) option, pointing the child straight at a wrong answer.
+        // So: generate candidate spots and pick the first that overlaps no option.
         const vw = document.documentElement.clientWidth;
         const vh = document.documentElement.clientHeight;
         const size = 42;
-        const gap = 6;
-        let left = rect.left - size - gap;
-        if (left < 4) left = Math.min(rect.right + gap, vw - size - 4);
-        const top = Math.max(4, Math.min(rect.top + rect.height / 2 - size / 2, vh - size - 4));
+        const gap = 8;
+        const clampX = x => Math.max(4, Math.min(x, vw - size - 4));
+        const clampY = y => Math.max(4, Math.min(y, vh - size - 4));
+        const midY = clampY(rect.top + rect.height / 2 - size / 2);
+        const midX = clampX(rect.left + rect.width / 2 - size / 2);
+
+        // Above the option is the safest for a horizontal row of choices.
+        const candidates = [
+            { left: midX, top: clampY(rect.top - size - gap) },
+            { left: clampX(rect.left - size - gap), top: midY },
+            { left: clampX(rect.right + gap), top: midY },
+            { left: midX, top: clampY(rect.bottom + gap) }
+        ];
+
+        const others = all.filter(el => el !== target).map(el => el.getBoundingClientRect());
+        const hits = c => others.some(r =>
+            !(c.left + size <= r.left || c.left >= r.right || c.top + size <= r.top || c.top >= r.bottom));
+        const spot = candidates.find(c => !hits(c)) || candidates[0];
+        const left = spot.left;
+        const top = spot.top;
 
         hintFingerEl.style.cssText = `
             position: fixed;
