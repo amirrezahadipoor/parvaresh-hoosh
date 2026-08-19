@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v31-child-voice';
+const CACHE_NAME = 'parvaresh-hoosh-v32-alphabet-voice';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -13,6 +13,16 @@ const PRECACHE = [
   './assets/fonts/Vazirmatn-Black.woff2',
   // Bundled Persian narration (Android WebView has no fa-IR speech voice).,
     './src/data/narration-map.js',
+    './assets/audio/kid/letter-alef.mp3',
+    './assets/audio/kid/letter-be.mp3',
+    './assets/audio/kid/letter-dal.mp3',
+    './assets/audio/kid/letter-gaf.mp3',
+    './assets/audio/kid/letter-gheyn.mp3',
+    './assets/audio/kid/letter-jim.mp3',
+    './assets/audio/kid/letter-mim.mp3',
+    './assets/audio/kid/letter-vav.mp3',
+    './assets/audio/kid/letter-zad.mp3',
+    './assets/audio/kid/letter-zhe.mp3',
     './assets/audio/kid/praise-set.mp3',
     './assets/audio/kid/t1-01-memory.mp3',
     './assets/audio/kid/t1-02-order-size.mp3',

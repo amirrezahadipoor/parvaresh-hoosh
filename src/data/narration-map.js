@@ -1,5 +1,5 @@
 // Spoken line -> recorded child-voice clip in assets/audio/kid/.
-// Generated set: AI voice, pitch +28%% with formant shifting.
+// Generated set: AI voice, pitch +28% with formant shifting.
 // Activities call AudioEngine.speak(text) unchanged; speak() looks the
 // text up here and plays a real recording when one exists.
 window.NARRATION_MAP = {
@@ -24,5 +24,15 @@ window.NARRATION_MAP = {
   "کدام عدد بزرگ‌تر است؟": "t2-16-bigger-number",
   "کدام تصویر با بقیه فرق دارد؟": "t2-17-odd-one-out",
   "رنگ بنفش را انتخاب کن": "t2-18-color-purple",
-  "کلمه‌ها را به متضادشان وصل کن": "t2-19-opposites"
+  "کلمه‌ها را به متضادشان وصل کن": "t2-19-opposites",
+  "صدای حرف الف": "letter-alef",
+  "صدای حرف بِ": "letter-be",
+  "صدای حرف جیم": "letter-jim",
+  "صدای حرف دال": "letter-dal",
+  "صدای حرف ژِ": "letter-zhe",
+  "صدای حرف ضاد": "letter-zad",
+  "صدای حرف غین": "letter-gheyn",
+  "صدای حرف گاف": "letter-gaf",
+  "صدای حرف میم": "letter-mim",
+  "صدای حرف واو": "letter-vav"
 };
