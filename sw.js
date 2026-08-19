@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v21-child-logic';
+const CACHE_NAME = 'parvaresh-hoosh-v22-age-fit';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',

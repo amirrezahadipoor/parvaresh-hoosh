@@ -371,11 +371,22 @@ window.Generator = (function() {
     // ==========================================
     // 7. MATHEMATICS ROUNDS
     // ==========================================
+    // Candidate distractors for a numeric question, never exceeding the band the
+    // child is working in. Falls back to a small spread when the band is tiny.
+    function numberPool(max) {
+        const hi = Math.max(2, Math.floor(Number(max) || 10));
+        const pool = [];
+        for (let v = 1; v <= hi; v++) pool.push(v);
+        return pool;
+    }
+
     function countRound(max) {
         const n = rint(1, max);
         const img = countImage(n);
         const faDigit = toFaDigit(n);
-        const others = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15].filter(x => x !== n && x <= max + 2)).slice(0, 3);
+        // Distractors must stay inside the same band as the answer: "max + 2" pushed
+        // a 4-year-old (ceiling 3) up to 5, and a 5-year-old up to 7.
+        const others = shuffle(numberPool(max).filter(x => x !== n)).slice(0, 3);
         const opts = shuffle([n, ...others]);
         return mc(
             'چند تا شکل در تصویر می‌بینی؟',
@@ -388,7 +399,7 @@ window.Generator = (function() {
 
     function numberNameRound(max) {
         const n = rint(1, max);
-        const others = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(x => x !== n)).slice(0, 3);
+        const others = shuffle(numberPool(max).filter(x => x !== n)).slice(0, 3);
         const opts = shuffle([n, ...others]);
         return mc(
             `عدد «${toFaWord(n)}» کدام است؟`,
@@ -402,9 +413,10 @@ window.Generator = (function() {
     }
 
     function numberOrderRound(max) {
-        const a = rint(1, max - 1);
+        const hi = Math.max(2, Math.floor(Number(max) || 10));
+        const a = rint(1, Math.max(1, hi - 1));
         const missing = a + 1;
-        const others = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].filter(x => x !== missing)).slice(0, 3);
+        const others = shuffle(numberPool(max).filter(x => x !== missing)).slice(0, 3);
         const opts = shuffle([missing, ...others]);
         return mc(
             `عدد بعدی کدام است؟   ${toFaDigit(a)}  ←  ؟`,
@@ -416,8 +428,10 @@ window.Generator = (function() {
     }
 
     function compareRound(max) {
-        const a = rint(1, max - 2);
-        const b = a + rint(1, 4);
+        // `a + rint(1,4)` ignored the ceiling, so a toddler band of 3 produced 5.
+        const hi = Math.max(3, Math.floor(Number(max) || 10));
+        const a = rint(1, Math.max(1, hi - 1));
+        const b = Math.min(hi, a + rint(1, Math.max(1, Math.min(4, hi - a))));
         const isBigger = Math.random() < 0.5;
         const correct = isBigger ? b : a;
         const opts = shuffle([a, b]);
@@ -458,7 +472,16 @@ window.Generator = (function() {
         const sign = op === '+' ? '+' : '−';
         const expr = `${toFaDigit(a)} ${sign} ${toFaDigit(b)} = ؟`;
         const img = arithImage(sign, a, b);
-        const others = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(x => x !== answer)).slice(0, 3);
+        // Distractors were drawn from a fixed 0..20 list regardless of the band, so
+        // «۱ + ۲ = ؟» could offer ۱۳ to a five-year-old. Keep them near the answer
+        // and inside the band, which also makes them pedagogically meaningful.
+        const hi = Math.max(2, Math.floor(Number(max) || 10));
+        const near = [];
+        for (let d = 1; d <= hi; d++) {
+            if (answer - d >= 0) near.push(answer - d);
+            if (answer + d <= hi) near.push(answer + d);
+        }
+        const others = shuffle([...new Set(near)].filter(x => x !== answer)).slice(0, 3);
         const opts = shuffle([answer, ...others]);
         return mc(
             expr,
@@ -1397,11 +1420,17 @@ window.Generator = (function() {
             prefer: ['quiz', 'painting', 'balloon-pop', 'tracing', 'memory'],
             // A 4-year-old cannot read. Any question whose OPTIONS are long words or
             // whole sentences is unanswerable for them no matter how pretty it looks.
-            maxOptionChars: 8
+            maxOptionChars: 8,
+            // A 4-year-old cannot sit through a 68-character riddle either.
+            maxPromptChars: 46
         },
         preschool: {
             avoid: ['raven-matrix', 'balance-scale'],
-            prefer: ['quiz', 'memory', 'painting', 'balloon-pop', 'tracing', 'order-steps']
+            prefer: ['quiz', 'memory', 'painting', 'balloon-pop', 'tracing', 'order-steps'],
+            // A 5-year-old is still a pre-reader: word-only answers and long riddle
+            // prompts («قطره‌های آبی که از ابر روی زمین می‌ریزد») are unusable.
+            maxOptionChars: 8,
+            maxPromptChars: 52
         },
         early: { avoid: [], prefer: [] },
         // Oldest / gifted: drop the babyish fillers, favour reasoning.
@@ -1416,12 +1445,17 @@ window.Generator = (function() {
     // track does not collapse into wall-to-wall multiple choice.
     function simpleSubstitute() {
         return pick([
+            // Picture-answer shape round: the child hears/sees the name and taps the
+            // SHAPE. The word-answer variant (shapeNameRound) requires reading.
+            shapeMatchRound, shapeMatchRound,
             paintingRound, paintingRound,
             () => memoryRound(2), () => memoryRound(2),
             balloonRound, balloonRound,
             () => tracingRound(pick(ALPHABET).letter, 'letter'),
             () => tracingRound(toFaDigit(rint(1, 5)), 'number'),
-            colorRound, shapeNameRound, animalSoundRound, emotionRound
+            // shapeNameRound was in this pool, so the pre-reader gate sometimes swapped
+            // one word-answer round for another ("این چه شکلی است؟" -> «قلب»).
+            colorRound, animalSoundRound, emotionRound
         ])();
     }
     // Harder stand-ins used when a round is too babyish for the oldest track.
@@ -1430,13 +1464,25 @@ window.Generator = (function() {
     }
 
     // True when every option is a picture/tile, or short enough to recognise by shape.
-    function optionsReadableFor(round, maxChars) {
+    function optionsReadableFor(round, maxChars, maxPromptChars) {
+        // A pre-reader cannot read «کلید» any more than a long sentence: character
+        // count alone was the wrong test. Words with NO picture are unusable, and a
+        // long riddle prompt is unusable too even when the options are pictures.
         const opts = round && round.options;
+        if (Number.isFinite(maxPromptChars)) {
+            const prompt = String((round && round.prompt) || '').trim();
+            if (prompt.length > maxPromptChars) return false;
+        }
         if (!Array.isArray(opts) || !opts.length) return true;
         return opts.every(o => {
             if (o.img || o.tile) return true;
             const t = String(o.label || '').trim();
-            return t.length <= maxChars;
+            if (!t) return true;
+            // Digits and single glyphs (letters/numerals) are learnable symbols, not reading.
+            if (/^[۰-۹0-9]+$/.test(t)) return true;
+            if ([...t].length <= 1) return true;
+            // Any real word without a picture fails, regardless of length.
+            return false;
         });
     }
 
@@ -1445,10 +1491,28 @@ window.Generator = (function() {
         if (!rules || !round || !round.type) return round;
 
         // Swap out text-heavy questions for the youngest children.
-        if (rules.maxOptionChars && round.type === 'quiz' && !optionsReadableFor(round, rules.maxOptionChars)) {
+        const promptTooLong = Number.isFinite(rules.maxPromptChars) &&
+            String(round.prompt || '').trim().length > rules.maxPromptChars;
+        if (round.type === 'quiz' && (promptTooLong ||
+            (rules.maxOptionChars && !optionsReadableFor(round, rules.maxOptionChars, rules.maxPromptChars)))) {
             try {
-                const alt = simpleSubstitute();
-                if (alt && optionsReadableFor(alt, rules.maxOptionChars)) {
+                let alt = null;
+                for (let attempt = 0; attempt < 6; attempt++) {
+                    const cand = simpleSubstitute();
+                    if (!cand) continue;
+                    const candLong = Number.isFinite(rules.maxPromptChars) &&
+                        String(cand.prompt || '').trim().length > rules.maxPromptChars;
+                    if (!candLong && optionsReadableFor(cand, rules.maxOptionChars, rules.maxPromptChars)) { alt = cand; break; }
+                }
+                // Deterministic last resort: a shape round always has picture answers,
+                // so a pre-reader can never be left with a word-only question.
+                if (!alt) {
+                    try {
+                        const cand = shapeMatchRound();
+                        if (cand && optionsReadableFor(cand, rules.maxOptionChars, rules.maxPromptChars)) alt = cand;
+                    } catch (e) { /* keep null */ }
+                }
+                if (alt) {
                     return { ...alt, lessonId: round.lessonId, skillType: round.skillType, difficulty: round.difficulty };
                 }
             } catch (e) { /* keep the original */ }
@@ -1499,6 +1563,77 @@ window.Generator = (function() {
             tagged.shadowOptions = shuffle([correct, ...distractors]);
             tagged.answer = tagged.shadowOptions.indexOf(correct);
         }
+        // maxNumber was computed for every track but never enforced, so a 4-year-old
+        // (ceiling 3) could be asked to count 7 objects, solve ۱ + ۷, or pick between
+        // ۳ and ۷. Magnitude is a real developmental limit, so REGENERATE the round at
+        // the child's ceiling; rewriting the printed labels afterwards cannot fix an
+        // arithmetic round (the sum itself must change).
+        const ceiling = Number(track.maxNumber);
+        if (Number.isFinite(ceiling) && ceiling > 0 && Array.isArray(tagged.options) && tagged.options.length) {
+            const valueOf = opt => {
+                const raw = (opt && typeof opt === 'object') ? opt.label : opt;
+                if (raw == null) return null;
+                const t = String(raw).replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
+                return /^\s*-?\d+\s*$/.test(t) ? Number(t) : null;
+            };
+            const values = tagged.options.map(valueOf);
+            const allNumeric = values.length > 0 && values.every(v => v !== null);
+            const promptNums = String(tagged.prompt || '')
+                .replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+                .match(/\d+/g) || [];
+            const breaches = (allNumeric && values.some(v => Math.abs(v) > ceiling)) ||
+                             promptNums.some(n => Math.abs(Number(n)) > ceiling);
+
+            if (breaches) {
+                const prompt = String(tagged.prompt || '');
+                const safeMax = Math.max(2, ceiling);
+                let rebuilt = null;
+                try {
+                    if (/چند تا شکل/.test(prompt)) rebuilt = countRound(safeMax);
+                    else if (/عدد «/.test(prompt)) rebuilt = numberNameRound(safeMax);
+                    else if (/عدد بعدی/.test(prompt)) rebuilt = numberOrderRound(safeMax);
+                    else if (/بزرگ‌تر|کوچک‌تر/.test(prompt)) rebuilt = compareRound(safeMax);
+                    else if (/[+＋]/.test(prompt)) rebuilt = arithRound('+', safeMax);
+                    else if (/[-−]/.test(prompt)) rebuilt = arithRound('-', safeMax);
+                } catch (e) { rebuilt = null; }
+
+                if (rebuilt) {
+                    Object.assign(tagged, rebuilt);
+                    // The rebuild yields a fresh full-size option list; re-apply the cap.
+                    const cap = Number(track.optionCount);
+                    if (Number.isFinite(cap) && cap > 0 && Array.isArray(tagged.options) && cap < tagged.options.length) {
+                        const keep = tagged.options[tagged.answer];
+                        const others = tagged.options.filter((_, i) => i !== tagged.answer).slice(0, Math.max(1, cap - 1));
+                        tagged.options = shuffle([keep, ...others]);
+                        tagged.answer = tagged.options.indexOf(keep);
+                    }
+                } else if (allNumeric) {
+                    // Non-arithmetic numeric round: shrink oversized distractors only.
+                    const correctVal = values[tagged.answer];
+                    if (correctVal !== null && Math.abs(correctVal) <= ceiling) {
+                        const used = new Set([correctVal]);
+                        const pool = [];
+                        for (let v = 1; v <= ceiling; v++) if (!used.has(v)) pool.push(v);
+                        const repl = shuffle(pool);
+                        let r = 0;
+                        const fixed = tagged.options.map((opt, i) => {
+                            const v = values[i];
+                            if (i === tagged.answer || (v !== null && Math.abs(v) <= ceiling)) return opt;
+                            const nv = repl[r++];
+                            if (nv === undefined) return opt;
+                            return (opt && typeof opt === 'object') ? { ...opt, label: toFaDigit(nv) } : toFaDigit(nv);
+                        });
+                        const labels = fixed.map(o => (o && typeof o === 'object') ? o.label : o);
+                        if (new Set(labels).size === labels.length) {
+                            const keep = fixed[tagged.answer];
+                            tagged.options = shuffle(fixed);
+                            tagged.answer = tagged.options.indexOf(keep);
+                        }
+                    }
+                }
+            }
+        }
+
         if (tagged.type === 'memory' && Array.isArray(tagged.cards)) {
             const maxPairs = trackKey === 'preschool' ? 2 : trackKey === 'early' ? 3 : 4;
             const pairIds = [...new Set(tagged.cards.map(card => card.pair))].slice(0, maxPairs);
