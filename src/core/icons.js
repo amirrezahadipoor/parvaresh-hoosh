@@ -34,7 +34,12 @@ window.AppIcons = (function () {
         heart: '<path d="M12 20.5S3.6 15 3.6 9.2A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 8.4 2.6C20.4 15 12 20.5 12 20.5Z"/>',
         flower: '<circle cx="12" cy="6.4" r="3.2"/><circle cx="17" cy="9.8" r="3.2"/><circle cx="15.2" cy="15.6" r="3.2"/><circle cx="8.8" cy="15.6" r="3.2"/><circle cx="7" cy="9.8" r="3.2"/><circle cx="12" cy="11.8" r="2.3"/>',
         speaker: '<path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
-        check: '<path d="m5 13 4 4L19 7"/>'
+        check: '<path d="m5 13 4 4L19 7"/>',
+        // Difficulty symbols: a growing plant then a trophy. Chosen so the
+        // three levels read as a sequence at a glance, without any text.
+        seedling: '<path d="M12 21v-8"/><path d="M12 13c-4.2 0-6.5-2.6-6.5-6C10 7 12 9.3 12 13Z"/>',
+        sprout: '<path d="M12 21v-10"/><path d="M12 11C8.4 11 6.4 8.9 6.4 5.6 10 5.6 12 7.8 12 11Z"/><path d="M12 11c0-3.2 2-5.4 5.6-5.4C17.6 8.9 15.6 11 12 11Z"/><path d="M12 15.5c0-2.2 1.6-3.7 4.2-3.7 0 2.2-1.6 3.7-4.2 3.7Z"/>',
+        trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5.5a2.5 2.5 0 0 0 2.5 5"/><path d="M16 5h2.5a2.5 2.5 0 0 1-2.5 5"/><path d="M12 13v4M9 21h6l-1-4h-4Z"/>'
     };
 
     function get(name, size) {

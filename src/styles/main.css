@@ -2127,3 +2127,163 @@ body, .screen { overflow-x: hidden; }
 .paint-tool-group + .paint-tool-group {
     border-top: 2px dashed #F0E2D4; margin-top: 4px;
 }
+
+/* ---------------------------------------------------------------
+   DIFFICULTY PICKER.
+   One tap from subject to playing. Three big square targets rather
+   than a scrolling list of level rows, so the whole choice fits on
+   screen without scrolling and needs no reading.
+   --------------------------------------------------------------- */
+.difficulty-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 4px 2px 10px;
+}
+.difficulty-card {
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px;
+    min-height: 132px;
+    padding: 12px 6px 14px;
+    border: 3px solid var(--dcolor, #6C5CE7);
+    border-radius: 22px;
+    background: #FFF;
+    box-shadow: 0 6px 16px rgba(34, 57, 84, .09);
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.difficulty-card:active { transform: scale(.96); }
+.difficulty-card .difficulty-icon {
+    display: flex; align-items: center; justify-content: center;
+    width: 62px; height: 62px;
+    border-radius: 50%;
+    color: #FFF;
+    background: var(--dcolor, #6C5CE7);
+}
+.difficulty-card .difficulty-icon svg { width: 34px; height: 34px; }
+.difficulty-name {
+    font-size: 15px; font-weight: 900; color: var(--ink, #2B2B3A);
+}
+/* Dots repeat the difficulty as a countable quantity, which a
+   pre-reader can compare even if the word means nothing. */
+.difficulty-dots { display: flex; gap: 4px; }
+.difficulty-dots i {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #E1E8F0;
+}
+.difficulty-dots i.on { background: var(--dcolor, #6C5CE7); }
+.difficulty-track {
+    width: 76%; height: 6px; border-radius: 99px;
+    background: #EDF1F6; overflow: hidden;
+}
+.difficulty-track i {
+    display: block; height: 100%; border-radius: 99px;
+    background: var(--dcolor, #6C5CE7);
+}
+.difficulty-card.done { background: #F3FFF9; }
+
+/* ---------------------------------------------------------------
+   HOME MUST FIT ON ONE SCREEN.
+   Measured 858px of content in a 576px area on a 360x640 phone, so
+   a child had to scroll past three adult-facing status widgets to
+   reach the subjects. These rules reclaim that height without
+   removing any feature.
+   --------------------------------------------------------------- */
+.home-greeting-line { display: none; }          /* spoken, not printed */
+.home-section-heading {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 2px 2px 0;
+}
+.home-section-heading h2 { font-size: 15px; }
+.home-section-heading .heading-pct {
+    font-size: 12px; font-weight: 900; color: #087A67;
+    background: #E8FAF5; border-radius: 10px; padding: 3px 9px;
+}
+.home-welcome-card { padding: 8px 12px; }
+.home-mascot-button svg { width: 52px; height: 52px; }
+.giant-play-btn { min-height: 118px; }
+.giant-play-disc { width: 82px; height: 82px; }
+.daily-challenge-card { padding: 10px 12px; }
+.home-dashboard { gap: 8px; }
+
+/* Second pass: the greeting and challenge cards are parent-facing status.
+   Keep them, but stop them owning half the screen on a 640px phone. */
+.home-welcome-card { padding: 6px 12px; min-height: 0; }
+.home-welcome-copy h1 { font-size: 16px; line-height: 1.3; }
+.home-mascot-button { padding: 0; }
+.home-mascot-button svg { width: 44px; height: 44px; }
+.daily-challenge-card { padding: 8px 12px; }
+.daily-challenge-card .challenge-copy small { font-size: 11.5px; line-height: 1.45; }
+.daily-challenge-card .challenge-badge { width: 34px; height: 34px; }
+.challenge-foot, .daily-challenge-card .challenge-foot { font-size: 11.5px; }
+.arcade-banner { padding: 10px 12px; }
+.home-quick-actions { padding-bottom: 2px; }
+
+/* Earlier rules lost to more specific selectors defined above, so these are
+   scoped tightly enough to win. Verified against computed heights, not guessed. */
+.home-welcome-card .home-mascot-button,
+.home-welcome-card .home-mascot-button svg { width: 46px; height: 46px; }
+.home-welcome-card .home-inline-stars { padding: 4px 8px; }
+.daily-challenge-card .challenge-head { gap: 8px; }
+.daily-challenge-card .challenge-head .challenge-badge { width: 32px; height: 32px; font-size: 15px; }
+
+/* Challenge card as a single compact strip: badge + title on one row, the
+   progress bar and counter sharing the next. The removed sentence was adult
+   prose duplicated by the bar right beneath it. */
+.daily-challenge-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 10px;
+    padding: 8px 12px;
+}
+.daily-challenge-card .challenge-head { grid-column: 1 / -1; }
+.daily-challenge-card .challenge-track { grid-column: 1; margin: 0; }
+.daily-challenge-card .challenge-count { grid-column: 2; margin: 0; white-space: nowrap; }
+.daily-challenge-card .challenge-today { grid-column: 1 / -1; font-size: 11px; }
+
+/* Arcade entry as a single row. */
+.arcade-banner.compact {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; min-height: 0;
+}
+.arcade-banner.compact .arcade-banner-copy b { font-size: 14px; }
+.arcade-banner.compact .arcade-banner-icon { width: 34px; height: 34px; }
+
+/* Final fit. The giant play button and the challenge strip both answer
+   "what now?", so the hero shrinks and the strip tightens rather than either
+   being deleted; every feature stays reachable without scrolling. */
+.giant-play-btn { min-height: 96px; }
+.giant-play-disc { width: 68px; height: 68px; }
+.giant-play-core { transform: scale(.86); }
+.daily-challenge-card { padding: 6px 12px; row-gap: 2px; }
+.daily-challenge-card .challenge-head .challenge-badge { width: 28px; height: 28px; }
+.daily-challenge-card .challenge-copy b { font-size: 12.5px; }
+.home-domains-grid { gap: 8px; }
+.home-quick-actions { gap: 8px; }
+.main-content { padding-top: 6px; padding-bottom: 6px; }
+
+/* Short phones (<=670px tall) trim the decorative hero further. Taller phones
+   keep the roomier layout, so this only pays where the space is actually short. */
+@media (max-height: 670px) {
+    .giant-play-btn { min-height: 74px; }
+    .giant-play-disc { width: 52px; height: 52px; }
+    .arcade-banner.compact { padding: 7px 10px; }
+    .home-quick-actions { gap: 6px; }
+    .home-quick-actions .quick-action-btn { padding-top: 6px; padding-bottom: 6px; }
+    .home-section-heading h2 { font-size: 14px; }
+    .home-section-heading { padding-top: 0; }
+    .main-content { padding-top: 4px; padding-bottom: 4px; }
+    .daily-challenge-card .challenge-copy b { font-size: 12px; }
+    .home-domains-grid { gap: 6px; }
+    .domain-tile { padding-top: 8px; padding-bottom: 8px; }
+    .home-welcome-card { padding: 4px 10px; }
+    .home-welcome-card .home-mascot-button,
+    .home-welcome-card .home-mascot-button svg { width: 38px; height: 38px; }
+    .home-welcome-copy h1 { font-size: 14.5px; }
+    .daily-challenge-card { padding: 5px 10px; }
+    .home-domains-grid { gap: 7px; }
+    .home-dashboard { gap: 6px; }
+}

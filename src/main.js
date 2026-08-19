@@ -346,11 +346,10 @@
                 <span class="challenge-badge">${complete ? '✓' : '★'}</span>
                 <div class="challenge-copy">
                     <b>چالش امروز · ${ch.title}</b>
-                    <small>${complete ? 'آفرین! چالش امروز را بردی.' : ch.desc}</small>
                 </div>
             </div>
             <div class="challenge-track"><div class="challenge-fill" style="width:${pct}%"></div></div>
-            <div class="challenge-count">${toFa(Math.min(progress, ch.target))} از ${toFa(ch.target)}</div>
+            <div class="challenge-count">${toFa(Math.min(progress, ch.target))} / ${toFa(ch.target)}</div>
             ${todayNote ? `<div class="challenge-today">${todayNote}</div>` : ''}
         `;
         return card;
@@ -384,7 +383,11 @@
         welcomeCopy.className = 'home-welcome-copy';
         const welcomeTitle = document.createElement('h1');
         welcomeTitle.textContent = `سلام ${childName}`;
+        // The rotating greeting sentence is read by nobody under six and pushed
+        // the subject tiles below the fold; it is now spoken by the mascot button
+        // instead of occupying two permanent lines.
         const welcomeText = document.createElement('p');
+        welcomeText.className = 'home-greeting-line';
         welcomeText.textContent = pickMsg(window.MESSAGES.greeting);
         welcomeCopy.append(welcomeTitle, welcomeText);
         welcome.append(mascotButton, welcomeCopy);
@@ -506,7 +509,8 @@
         }
         const learningHeader = document.createElement('div');
         learningHeader.className = 'home-section-heading';
-        learningHeader.innerHTML = `<div><h2>دنیای یادگیری</h2><p>پیشرفت کلی ${toFa(completion)}٪ · یک حوزه را انتخاب کن</p></div>`;
+        // The sub-line was prose for adults; the tiles below already show progress.
+        learningHeader.innerHTML = `<div><h2>دنیای یادگیری</h2></div><strong class="heading-pct">${toFa(completion)}٪</strong>`;
         dashboard.appendChild(learningHeader);
 
         const grid = document.createElement('div');
@@ -551,21 +555,16 @@
         // The arcade used to be a 7th tile inside the "دنیای یادگیری" grid, so the
         // free-play games looked like another school subject. It is now its own
         // clearly separated section: lessons above, games below.
-        const playHeading = document.createElement('div');
-        playHeading.className = 'home-section-heading';
-        playHeading.innerHTML = '<div><h2>بازی و سرگرمی</h2><p>بدون درس؛ فقط بازی کن و تمرین کن</p></div>';
-        dashboard.appendChild(playHeading);
-
+        // The heading plus a three-line banner cost ~105px to say one thing:
+        // "games are over here". A single icon row says it in 56px, which is what
+        // let the whole home screen fit without scrolling.
         const arcadeBanner = document.createElement('button');
         arcadeBanner.type = 'button';
-        arcadeBanner.className = 'arcade-banner';
+        arcadeBanner.className = 'arcade-banner compact';
+        arcadeBanner.setAttribute('aria-label', 'شهربازی هوش');
         arcadeBanner.innerHTML = `
-            <span class="arcade-banner-icon">${window.AppIcons ? window.AppIcons.get('arcade', 30) : 'بازی'}</span>
-            <span class="arcade-banner-copy">
-                <b>شهربازی هوش</b>
-                <small>شکار بادکنک، پیانو، غذا به حیوانات و بازی‌های کوتاه</small>
-            </span>
-            <span class="arcade-banner-go">برو</span>
+            <span class="arcade-banner-icon">${window.AppIcons ? window.AppIcons.get('arcade', 26) : 'بازی'}</span>
+            <span class="arcade-banner-copy"><b>شهربازی هوش</b></span>
         `;
         arcadeBanner.addEventListener('click', () => {
             AudioEngine.play('click');
@@ -848,65 +847,80 @@
         // The adventure map lives here rather than on the home screen. Home had three
         // competing "what to do next" widgets stacked on top of each other; the map
         // belongs next to the levels it actually describes.
-        if (state.domainId === 'reading') scrollContainer.appendChild(createAdventureMap());
+        // The adventure map was the last place that still exposed the granular
+        // per-lesson list this screen is meant to replace: a strip of tiny
+        // numbered nodes with truncated labels, above the three difficulties.
+        // Difficulty cards already carry progress, so the map is redundant here.
+        // (createAdventureMap remains available for a future dedicated screen.)
 
-        // A 6-year-old was shown all 12-13 levels of a domain at once, most of them
-        // for 5- or 8-year-olds. That is the "too many categories / cluttered"
-        // problem: the child scrolls past content they cannot use to reach theirs.
-        // Split the list into "for you now" and a collapsed "later / earlier".
-        const myAge = Number(window.Engagement ? (window.Engagement.getProfile().age) : 0) || 0;
-        const bandOf = lv => ageStart(lv.ageBand || (lv.lessons || [])[0]?.ageBand);
-        const forMe = myAge ? levels.filter(lv => { const a = bandOf(lv); return a <= myAge + 0.5 && a >= myAge - 1.5; }) : levels;
-        const others = myAge ? levels.filter(lv => forMe.indexOf(lv) === -1) : [];
         // ---------------------------------------------------------------
-        // THREE MERGED GROUPS INSTEAD OF 8-13 SEPARATE LEVELS.
-        // Opening a subject used to list every level in the domain (up to 13),
-        // which is far too many choices for a child and for a parent scanning
-        // the screen. All levels are now merged into three plain-language steps
-        // ordered by difficulty, and tapping one starts its lessons directly.
+        // THREE DIFFICULTIES THAT PLAY IMMEDIATELY.
+        // Previously a subject showed 8-13 levels, then tapping one showed a
+        // list of its lessons, then tapping a lesson finally started playing.
+        // Three screens of reading before a 4-year-old could do anything.
+        // Now a subject offers exactly three difficulties; tapping one queues
+        // every lesson in that band and starts the first straight away, so the
+        // sub-level and lesson lists are gone entirely.
         // ---------------------------------------------------------------
         const ordered = levels.slice();   // already sorted by age then progression
         const GROUPS = [
-            { key: 'start',  title: 'تازه شروع کن', sub: 'آسان و آشنا',        color: '#2ED573' },
-            { key: 'mid',    title: 'یک پله بالاتر', sub: 'کمی سخت‌تر',        color: '#FFA502' },
-            { key: 'expert', title: 'چالش بزرگ',     sub: 'برای وقتی آماده‌ای', color: '#FF6B6B' }
+            { key: 'start',  title: 'آسان',  icon: 'seedling', color: '#2ED573' },
+            { key: 'mid',    title: 'معمولی', icon: 'sprout',  color: '#FFA502' },
+            { key: 'expert', title: 'سخت',   icon: 'trophy',   color: '#FF6B6B' }
         ];
         const per = Math.ceil(ordered.length / 3) || 1;
         const buckets = [ordered.slice(0, per), ordered.slice(per, per * 2), ordered.slice(per * 2)]
             .map(b => b.filter(Boolean));
 
+        const grid = document.createElement('div');
+        grid.className = 'difficulty-grid';
+
         buckets.forEach((bucketLevels, gi) => {
             if (!bucketLevels.length) return;
             const g = GROUPS[gi];
             const lessons = bucketLevels.flatMap(lv => sortLessonsForChild(lv.lessons || []));
+            if (!lessons.length) return;
             const doneCount = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
-            const isCompleted = lessons.length > 0 && doneCount === lessons.length;
-            const pct = lessons.length ? Math.round((doneCount / lessons.length) * 100) : 0;
+            const isCompleted = doneCount === lessons.length;
+            const pct = Math.round((doneCount / lessons.length) * 100);
 
             const card = document.createElement('button');
-            card.className = `level-card group-card ${isCompleted ? 'done' : ''}`;
+            card.type = 'button';
+            card.className = `difficulty-card ${isCompleted ? 'done' : ''}`;
             card.style.setProperty('--dcolor', g.color);
+            card.title = g.title;
+            card.setAttribute('aria-label', `${g.title} - ${toFa(doneCount)} از ${toFa(lessons.length)}`);
+            // Icon first and large: the picture carries the meaning for a child
+            // who cannot read the word underneath it.
             card.innerHTML = `
-                <div class="level-num" style="background:color-mix(in srgb, ${isCompleted ? 'var(--ok)' : g.color} 76%, #000)">${toFa(gi + 1)}</div>
-                <div class="level-info">
-                    <div class="level-name">${g.title}</div>
-                    <div class="level-label">${g.sub}</div>
-                    <div class="group-track"><i style="width:${pct}%; background:${g.color}"></i></div>
-                </div>
-                <div class="level-progress">${toFa(doneCount)} / ${toFa(lessons.length)}</div>
+                <span class="difficulty-icon">${window.AppIcons ? window.AppIcons.get(g.icon, 46) : ''}</span>
+                <span class="difficulty-name">${g.title}</span>
+                <span class="difficulty-dots" aria-hidden="true">${
+                    [0, 1, 2].map(i => `<i class="${i <= gi ? 'on' : ''}"></i>`).join('')
+                }</span>
+                <span class="difficulty-track"><i style="width:${pct}%"></i></span>
             `;
             card.addEventListener('click', () => {
                 AudioEngine.play('click');
-                // A merged group is a synthetic level: hand renderLevel the whole
-                // bucket so the child never sees the sub-level list at all.
+                // Resume where the child left off rather than replaying finished
+                // lessons; fall back to the whole band once it is complete.
+                const remaining = lessons.filter(l => !(state.lessonsDone[l.id] && state.lessonsDone[l.id].done));
+                const queue = (remaining.length ? remaining : lessons).slice();
+                const first = queue.shift();
+                if (!first) return;
                 state.levelId = bucketLevels[0] && bucketLevels[0].id;
                 state.groupLessons = lessons;
                 state.groupTitle = g.title;
-                Nav.push('level');
-                renderLevel();
+                // Reuse the existing chaining queue so finishing one lesson rolls
+                // straight into the next of the same difficulty.
+                state.mixedQueue = queue.map(l => ({ ...l, domain: state.domainId }));
+                state.lessonId = first.id;
+                Nav.push('lesson');
+                startLesson({ ...first, domain: state.domainId });
             });
-            scrollContainer.appendChild(card);
+            grid.appendChild(card);
         });
+        scrollContainer.appendChild(grid);
 
         content.appendChild(scrollContainer);
 
@@ -1037,6 +1051,17 @@
 
         $('#btn-exit-lesson').onclick = () => {
             AudioEngine.stopSpeak();
+            // Leaving mid-band abandons the rest of the queue, otherwise the next
+            // lesson would ambush the child the next time one finishes.
+            state.mixedQueue = [];
+            if (state.groupLessons && state.domainId) {
+                state.groupLessons = null;
+                state.groupTitle = null;
+                Nav.reset('home');
+                Nav.push('domain');
+                renderDomain();
+                return;
+            }
             Nav.back();
         };
 
@@ -1181,12 +1206,25 @@
             overlay.querySelector('#btn-continue-result').addEventListener('click', () => {
                 overlay.remove();
                 AudioEngine.play('click');
-                // Continue the mixed ladder if the big play button started one.
+                // Continue the queue, whether it came from the big play button or
+                // from picking a difficulty. This is what makes a difficulty run
+                // straight through without ever showing a list of lessons.
                 if (Array.isArray(state.mixedQueue) && state.mixedQueue.length) {
                     const next = state.mixedQueue.shift();
-                    state.domainId = next.domain;
+                    state.domainId = next.domain || state.domainId;
                     state.lessonId = next.id;
                     startLesson(next);
+                    return;
+                }
+                // Finished every lesson in the band: go back to the difficulty
+                // picker for this subject, not all the way home, so the child can
+                // immediately pick the next difficulty.
+                if (state.groupLessons && state.domainId) {
+                    state.groupLessons = null;
+                    state.groupTitle = null;
+                    Nav.reset('home');
+                    Nav.push('domain');
+                    renderDomain();
                     return;
                 }
                 Nav.reset('home');
