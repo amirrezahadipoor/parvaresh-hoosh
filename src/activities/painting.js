@@ -59,6 +59,13 @@ window.PaintingActivity = (function() {
         // Color Palette Toolbar
         let currentColor = PALETTE[0];
         let currentBrushSize = 10;
+        // Stroke smoothing state. Drawing straight lineTo segments between raw
+        // pointer samples is what made the pen feel stiff and angular: touch
+        // events arrive far apart, so a curve came out as visible facets. We
+        // keep the previous two points and join them with a quadratic curve
+        // through their midpoint, which is the standard fix for that.
+        let lastX = 0, lastY = 0, midX = 0, midY = 0;
+        let lastWidth = 10;
         let isEraser = false;
         let isRainbow = false;
         let currentStamp = null;
@@ -106,7 +113,10 @@ window.PaintingActivity = (function() {
         const STAMP_ICONS = {
             star: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg>',
             heart: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.4" stroke-linejoin="round"><path d="M12 20.5S3.6 15 3.6 9.2A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 8.4 2.6C20.4 15 12 20.5 12 20.5z"/></svg>',
-            flower: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.3" stroke-linejoin="round"><circle cx="12" cy="6.4" r="3.5"/><circle cx="17" cy="9.7" r="3.5"/><circle cx="15.2" cy="15.6" r="3.5"/><circle cx="8.8" cy="15.6" r="3.5"/><circle cx="7" cy="9.7" r="3.5"/><circle cx="12" cy="11.8" r="2.6" fill="#FFD166"/></svg>'
+            flower: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.3" stroke-linejoin="round"><circle cx="12" cy="6.4" r="3.5"/><circle cx="17" cy="9.7" r="3.5"/><circle cx="15.2" cy="15.6" r="3.5"/><circle cx="8.8" cy="15.6" r="3.5"/><circle cx="7" cy="9.7" r="3.5"/><circle cx="12" cy="11.8" r="2.6" fill="#FFD166"/></svg>',
+            cat: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.3" stroke-linejoin="round"><path d="M5.6 9.4 4.6 3.8l4.8 2.9a8.6 8.6 0 0 1 5.2 0l4.8-2.9-1 5.6a7.4 7.4 0 1 1-12.8 0z"/><circle cx="9.4" cy="12.6" r="1.1" fill="#2D3436" stroke="none"/><circle cx="14.6" cy="12.6" r="1.1" fill="#2D3436" stroke="none"/><path d="M12 15.2l-1 1.4h2z" fill="#FF9F80"/></svg>',
+            rabbit: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.3" stroke-linejoin="round"><ellipse cx="9" cy="6" rx="1.9" ry="4.4"/><ellipse cx="15" cy="6" rx="1.9" ry="4.4"/><circle cx="12" cy="15.6" r="6"/><circle cx="10" cy="14.8" r="1" fill="#2D3436" stroke="none"/><circle cx="14" cy="14.8" r="1" fill="#2D3436" stroke="none"/><path d="M12 17l-1 1.3h2z" fill="#FF7AA2"/></svg>',
+            fish: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="#2D3436" stroke-width="1.3" stroke-linejoin="round"><path d="M21 12c-3 4-7.4 4.6-11 2.6C7.6 13.4 6.4 12 6.4 12s1.2-1.4 3.6-2.6C13.6 7.4 18 8 21 12z"/><path d="M6.4 12 2.6 8.4 3.8 12l-1.2 3.6z"/><circle cx="16.6" cy="11.2" r="1.05" fill="#2D3436" stroke="none"/></svg>'
         };
         const stampButtons = [];
         function makeStampBtn(kind, label) {
@@ -130,6 +140,12 @@ window.PaintingActivity = (function() {
         const stampStar = makeStampBtn('star', 'ستاره');
         const stampHeart = makeStampBtn('heart', 'قلب');
         const stampFlower = makeStampBtn('flower', 'گل');
+        // Animal stamps: children ask for animals more than abstract shapes,
+        // and each one is drawn with a face so it is identifiable, not just an
+        // outline.
+        const stampCat = makeStampBtn('cat', 'گربه');
+        const stampRabbit = makeStampBtn('rabbit', 'خرگوش');
+        const stampFish = makeStampBtn('fish', 'ماهی');
 
         const eraserBtn = document.createElement('button');
         eraserBtn.className = 'tool-btn';
@@ -180,6 +196,9 @@ window.PaintingActivity = (function() {
         toolsBar.appendChild(stampStar);
         toolsBar.appendChild(stampHeart);
         toolsBar.appendChild(stampFlower);
+        toolsBar.appendChild(stampCat);
+        toolsBar.appendChild(stampRabbit);
+        toolsBar.appendChild(stampFish);
         toolsBar.appendChild(eraserBtn);
         toolsBar.appendChild(brushBtn);
         toolsBar.appendChild(undoBtn);
@@ -309,6 +328,41 @@ window.PaintingActivity = (function() {
                     c.moveTo(px + r * 0.42, py);
                     c.arc(px, py, r * 0.42, 0, Math.PI * 2);
                 }
+            } else if (kind === 'cat') {
+                // Two ear triangles plus a head circle, as three independent
+                // subpaths. Chaining arc() between lineTo() calls (the first
+                // attempt) collapsed into a dot, because arc() joins to the
+                // previous point and the winding cancelled the fill.
+                c.moveTo(x - r * 0.74, y - r * 1.02);
+                c.lineTo(x - r * 0.2, y - r * 0.72);
+                c.lineTo(x - r * 0.66, y - r * 0.3);
+                c.closePath();
+                c.moveTo(x + r * 0.74, y - r * 1.02);
+                c.lineTo(x + r * 0.2, y - r * 0.72);
+                c.lineTo(x + r * 0.66, y - r * 0.3);
+                c.closePath();
+                c.moveTo(x + r * 0.78, y);
+                c.arc(x, y, r * 0.78, 0, Math.PI * 2);
+            } else if (kind === 'rabbit') {
+                // Two long ears above a round head.
+                c.ellipse(x - r * 0.34, y - r * 0.86, r * 0.2, r * 0.52, -0.18, 0, Math.PI * 2);
+                c.closePath();
+                c.moveTo(x + r * 0.54, y - r * 0.86);
+                c.ellipse(x + r * 0.34, y - r * 0.86, r * 0.2, r * 0.52, 0.18, 0, Math.PI * 2);
+                c.closePath();
+                c.moveTo(x + r * 0.7, y + r * 0.16);
+                c.arc(x, y + r * 0.16, r * 0.7, 0, Math.PI * 2);
+            } else if (kind === 'fish') {
+                // Teardrop body with a forked tail.
+                c.moveTo(x + r * 0.86, y);
+                c.quadraticCurveTo(x + r * 0.1, y - r * 0.72, x - r * 0.42, y);
+                c.quadraticCurveTo(x + r * 0.1, y + r * 0.72, x + r * 0.86, y);
+                c.closePath();
+                c.moveTo(x - r * 0.42, y);
+                c.lineTo(x - r * 0.96, y - r * 0.52);
+                c.lineTo(x - r * 0.78, y);
+                c.lineTo(x - r * 0.96, y + r * 0.52);
+                c.closePath();
             } else if (kind === 'circle') {
                 c.arc(x, y, r, 0, Math.PI * 2);
             }
@@ -343,6 +397,55 @@ window.PaintingActivity = (function() {
                 c.lineWidth = 2;
                 c.stroke();
             }
+            // Animals need a face. Without eyes the shapes read as blobs, which
+            // is the whole complaint: only the outline was identifiable.
+            if (kind === 'cat' || kind === 'rabbit' || kind === 'fish') {
+                const ink = '#2D3436';
+                c.fillStyle = ink;
+                const eye = Math.max(1.6, r * 0.09);
+                if (kind === 'fish') {
+                    c.beginPath();
+                    c.arc(x + r * 0.42, y - r * 0.08, eye, 0, Math.PI * 2);
+                    c.fill();
+                    // gill line
+                    c.strokeStyle = 'rgba(45,52,54,0.55)';
+                    c.lineWidth = Math.max(1.2, r * 0.06);
+                    c.beginPath();
+                    c.moveTo(x + r * 0.12, y - r * 0.34);
+                    c.quadraticCurveTo(x + r * 0.02, y, x + r * 0.12, y + r * 0.34);
+                    c.stroke();
+                } else {
+                    const cy = kind === 'rabbit' ? y + r * 0.04 : y - r * 0.04;
+                    c.beginPath();
+                    c.arc(x - r * 0.24, cy, eye, 0, Math.PI * 2);
+                    c.arc(x + r * 0.24, cy, eye, 0, Math.PI * 2);
+                    c.fill();
+                    // little triangular nose
+                    c.beginPath();
+                    c.moveTo(x, cy + r * 0.2);
+                    c.lineTo(x - r * 0.1, cy + r * 0.34);
+                    c.lineTo(x + r * 0.1, cy + r * 0.34);
+                    c.closePath();
+                    c.fillStyle = kind === 'rabbit' ? '#FF7AA2' : '#FF9F80';
+                    c.fill();
+                    c.strokeStyle = 'rgba(45,52,54,0.7)';
+                    c.lineWidth = Math.max(1, r * 0.045);
+                    c.stroke();
+                    if (kind === 'cat') {
+                        // whiskers
+                        c.strokeStyle = 'rgba(45,52,54,0.6)';
+                        c.lineWidth = Math.max(1, r * 0.05);
+                        for (const dir of [-1, 1]) {
+                            for (const off of [-0.1, 0.08]) {
+                                c.beginPath();
+                                c.moveTo(x + dir * r * 0.2, cy + r * 0.28 + r * off);
+                                c.lineTo(x + dir * r * 0.78, cy + r * 0.2 + r * off * 2.2);
+                                c.stroke();
+                            }
+                        }
+                    }
+                }
+            }
             c.restore();
         }
 
@@ -361,12 +464,17 @@ window.PaintingActivity = (function() {
             }
 
             isDrawing = true;
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-            ctx.lineWidth = isEraser ? 24 : currentBrushSize;
+            lastX = midX = pos.x;
+            lastY = midY = pos.y;
+            lastWidth = isEraser ? 24 : currentBrushSize;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.strokeStyle = isEraser ? '#FFFFFF' : isRainbow ? `hsl(${strokeHue}, 90%, 60%)` : currentColor;
+            // A tap with no movement should still leave a mark.
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, lastWidth / 2, 0, Math.PI * 2);
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
             AudioEngine.play('paint');
         }
 
@@ -375,17 +483,34 @@ window.PaintingActivity = (function() {
             e.preventDefault();
             const pos = getPos(e);
 
+            // Ignore sub-pixel jitter so a resting finger does not pile up dots.
+            const dx = pos.x - lastX, dy = pos.y - lastY;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 0.7) return;
+
+            // Taper: quick strokes go thinner, slow ones thicker, like a real
+            // brush. Eased towards the target so the width never jumps.
+            const base = isEraser ? 24 : currentBrushSize;
+            const target = isEraser ? base : Math.max(base * 0.45, base - dist * 0.35);
+            lastWidth += (target - lastWidth) * 0.3;
+
             if (isRainbow) {
                 strokeHue = (strokeHue + 7) % 360;
                 ctx.strokeStyle = `hsl(${strokeHue}, 90%, 60%)`;
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-            } else {
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
             }
+
+            // Curve through the midpoint of the last two samples: this is what
+            // turns a chain of straight facets into one continuous line.
+            const newMidX = (lastX + pos.x) / 2;
+            const newMidY = (lastY + pos.y) / 2;
+            ctx.beginPath();
+            ctx.moveTo(midX, midY);
+            ctx.quadraticCurveTo(lastX, lastY, newMidX, newMidY);
+            ctx.lineWidth = lastWidth;
+            ctx.stroke();
+
+            midX = newMidX; midY = newMidY;
+            lastX = pos.x; lastY = pos.y;
         }
 
         function stopPaint() {

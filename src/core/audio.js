@@ -399,14 +399,22 @@ window.AudioEngine = (function() {
         't2-26-color-blue',
         't2-27-plant-growth',
         'topic-addition',
+        'topic-animals',
         'topic-art',
         'topic-counting',
+        'topic-create',
         'topic-emotions',
         'topic-experiment',
         'topic-logic',
+        'topic-matching',
+        'topic-memory',
         'topic-reading',
         'topic-seasons',
+        'topic-senses',
+        'topic-sentence',
+        'topic-sequence',
         'topic-shapes',
+        'topic-subtraction',
         'topic-words'
     ]);
 
