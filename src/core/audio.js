@@ -326,18 +326,6 @@ window.AudioEngine = (function() {
     // for locales that do happen to have a Persian voice installed.
     // ------------------------------------------------------------------
     let currentClip = null;
-    let faVoiceSupported = null;
-
-    function hasPersianVoice() {
-        if (faVoiceSupported !== null) return faVoiceSupported;
-        try {
-            if (!('speechSynthesis' in window)) return (faVoiceSupported = false);
-            const voices = window.speechSynthesis.getVoices() || [];
-            if (!voices.length) return false; // not loaded yet; don't cache
-            faVoiceSupported = voices.some(v => v.lang && v.lang.toLowerCase().startsWith('fa'));
-            return faVoiceSupported;
-        } catch (e) { return (faVoiceSupported = false); }
-    }
 
     function stopClip() {
         if (currentClip) {
@@ -367,59 +355,26 @@ window.AudioEngine = (function() {
         return !!name && AVAILABLE_CLIPS.has(String(name));
     }
 
-    // AI NARRATION REMOVED.
-    // Every spoken clip was machine generated (edge-tts neural voice). The user
-    // asked for all AI speech to go, so both narration paths are disabled here at
-    // the single choke point: the bundled MP3s and the browser speechSynthesis
-    // fallback. Game sound effects are NOT affected -- those are synthesised
-    // oscillator tones, not recorded speech.
-    // Set AudioEngine.NARRATION_ENABLED = true once real human recordings are
-    // dropped into assets/audio/ with the same file names.
+    // ------------------------------------------------------------------
+    // ALL MACHINE SPEECH REMOVED.
+    // Two engines used to talk to the child: pre-rendered neural-TTS mp3s and
+    // the browser's own speechSynthesis voice. Both are gone -- the mp3s are
+    // deleted and the Web Speech code below is no longer written at all, so
+    // nothing can synthesise a word even if a Persian system voice exists.
+    // These two functions stay only as inert stubs because ~35 activity call
+    // sites invoke them; they now do nothing and return "not played".
+    // To ship REAL HUMAN narration later, restore playClip()'s body, drop the
+    // recordings into assets/audio/ and re-add them to the sw.js precache.
+    // Game sound effects are untouched: they are oscillator tones, not speech.
+    // ------------------------------------------------------------------
     var NARRATION_ENABLED = false;
 
-    // Play a bundled narration clip by name (no extension), e.g. 'lesson-R-L1-L01'.
-    function playClip(name, onEnd) {
-        if (!NARRATION_ENABLED) return false;
-        if (sfxMuted || !name || !hasClip(name)) return false;
-        try {
-            stopClip();
-            const audio = new Audio(`assets/audio/${name}.mp3`);
-            audio.preload = 'auto';
-            currentClip = audio;
-            audio.onended = () => { currentClip = null; if (onEnd) onEnd(); };
-            audio.onerror = () => { currentClip = null; };
-            const p = audio.play();
-            if (p && p.catch) p.catch(() => { currentClip = null; });
-            return true;
-        } catch (e) { return false; }
-    }
+    function playClip() { return false; }
 
-    // Voice Narration: bundled clip first, Web Speech API as fallback
-    function speak(text, rate) {
-        if (!NARRATION_ENABLED) return;
-        if (sfxMuted || !text) return;
-        try {
-            if ('speechSynthesis' in window && hasPersianVoice()) {
-                window.speechSynthesis.cancel();
-                const Utterance = window.SpeechSynthesisUtterance || (typeof SpeechSynthesisUtterance !== 'undefined' ? SpeechSynthesisUtterance : null);
-                if (!Utterance) return;
-                const u = new Utterance(text);
-                u.lang = 'fa-IR';
-                u.rate = rate || 0.88;
-                u.pitch = 1.18;
-                const voices = window.speechSynthesis.getVoices();
-                const faVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('fa'));
-                if (faVoice) u.voice = faVoice;
-                window.speechSynthesis.speak(u);
-            }
-        } catch (e) {}
-    }
+    function speak() { /* machine speech removed on purpose */ }
 
     function stopSpeak() {
         stopClip();
-        try {
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        } catch (e) {}
     }
 
     function play(name, arg) {
@@ -446,7 +401,7 @@ window.AudioEngine = (function() {
         currentTrackTitle,
         playClip,
         hasClip,
-        hasPersianVoice,
+        hasPersianVoice: () => false,
         stopSpeak,
         startMusic,
         stopMusic,
