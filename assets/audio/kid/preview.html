@@ -3,28 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>پیش‌نمایش صدای کودک</title>
+<title>صداهای کودک — نوبت ۱ و ۲</title>
 <style>
   body{font-family:Tahoma,"Segoe UI",sans-serif;background:#FFF7EF;margin:0;padding:18px;color:#2B2B3A}
   h1{font-size:19px;margin:0 0 4px}
-  p.sub{margin:0 0 18px;color:#7A7A8C;font-size:13px}
-  .card{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:10px;
-        box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px}
-  .n{flex:0 0 34px;height:34px;border-radius:50%;background:#6C5CE7;color:#fff;
-     display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}
-  .txt{flex:1;font-size:14px;font-weight:700;line-height:1.6}
-  .hits{font-size:11px;color:#9A9AAB;font-weight:400;margin-top:3px}
-  audio{width:190px;height:34px}
-  .tag{display:inline-block;background:#2ED573;color:#fff;font-size:11px;
-       padding:2px 9px;border-radius:99px;margin-bottom:14px;font-weight:700}
+  h2{font-size:15px;margin:22px 0 10px;padding-bottom:6px;border-bottom:2px solid #FFD9C0}
+  p.sub{margin:0 0 14px;color:#7A7A8C;font-size:13px;line-height:1.8}
+  .card{background:#fff;border-radius:14px;padding:11px 13px;margin-bottom:9px;
+        box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;gap:11px}
+  .n{flex:0 0 30px;height:30px;border-radius:50%;background:#6C5CE7;color:#fff;
+     display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px}
+  .txt{flex:1;font-size:13.5px;font-weight:700;line-height:1.6}
+  .hits{font-size:11px;color:#9A9AAB;font-weight:400;margin-top:2px}
+  audio{width:185px;height:32px}
+  .bar{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;
+       box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .track{height:14px;border-radius:99px;background:#E9ECF2;overflow:hidden;margin:9px 0 6px}
+  .track i{display:block;height:100%;background:linear-gradient(90deg,#2ED573,#7BED9F);width:29%}
+  .small{font-size:12px;color:#7A7A8C}
+  b.pc{color:#2ED573;font-size:17px}
 </style>
 </head>
 <body>
-<h1>پیش‌نمایش صدای کودک (AI)</h1>
-<p class="sub">۱۰ کلیپ پرکاربردترین جمله‌های اپ — همان صدایی که انتخاب کردید.</p>
-<span class="tag">Tier 1 — ۳۱٪ کل شنیده‌های کودک</span>
+<h1>صداهای ساخته‌شده — کودکانه ‎+۲۸٪‎</h1>
+<p class="sub">صدای AI با جابه‌جایی زیر و بمی و فرمانت: ۲۴۲ → ۲۷۹ هرتز. طول کلیپ‌ها تغییر نکرده.</p>
 
-<div class="card"><div class="n">۱</div><div class="txt">کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن<div class="hits">۲۹۱۵ بار در اپ</div></div><audio controls src="t1-01-memory.mp3"></audio></div>
+<div class="bar">
+  <div class="small">پیشرفت پوشش صوتی اپ</div>
+  <div class="track"><i></i></div>
+  <div class="small"><b class="pc">۲۹٪</b> از کل چیزی که کودک می‌شنود، الان صدا دارد — با ۲۰ کلیپ از ۷۱۶.</div>
+</div>
+
+<h2>Tier 1 — دستور شروع بازی‌ها (کامل شد ✓)</h2>
+<div class="card"><div class="n">۱</div><div class="txt">کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن<div class="hits">۲۹۱۵ بار</div></div><audio controls src="t1-01-memory.mp3"></audio></div>
 <div class="card"><div class="n">۲</div><div class="txt">تصاویر را از کوچک به بزرگ بچین<div class="hits">۲۴۸۱ بار</div></div><audio controls src="t1-02-order-size.mp3"></audio></div>
 <div class="card"><div class="n">۳</div><div class="txt">کدام رفتار خوب و درست است؟<div class="hits">۲۱۲۰ بار</div></div><audio controls src="t1-03-good-behavior.mp3"></audio></div>
 <div class="card"><div class="n">۴</div><div class="txt">داستان را از اول تا آخر مرتب کن<div class="hits">۱۸۹۰ بار</div></div><audio controls src="t1-04-story-order.mp3"></audio></div>
@@ -33,7 +44,21 @@
 <div class="card"><div class="n">۷</div><div class="txt">رنگ بعدی در الگو کدام است؟<div class="hits">۱۲۱۷ بار</div></div><audio controls src="t1-07-next-color.mp3"></audio></div>
 <div class="card"><div class="n">۸</div><div class="txt">شکل بعدی در الگو کدام است؟<div class="hits">۱۱۹۲ بار</div></div><audio controls src="t1-08-next-shape.mp3"></audio></div>
 <div class="card"><div class="n">۹</div><div class="txt">شکل کامل‌کننده الگو را پیدا کن<div class="hits">۱۱۶۶ بار</div></div><audio controls src="t1-09-complete-pattern.mp3"></audio></div>
-<div class="card"><div class="n">★</div><div class="txt">آفرین! چه باهوشی!<div class="hits">جملهٔ تشویق — بعد از هر پاسخ درست</div></div><audio controls src="praise-set.mp3"></audio></div>
+<div class="card"><div class="n">۱۰</div><div class="txt">کلمه‌ها را مرتب کن<div class="hits">۹۶۰ بار</div></div><audio controls src="t1-10-order-words.mp3"></audio></div>
+<div class="card"><div class="n">۱۱</div><div class="txt">هر وسیله را به جنس خودش وصل کن<div class="hits">۹۵۳ بار</div></div><audio controls src="t1-11-match-material.mp3"></audio></div>
+<div class="card"><div class="n">۱۲</div><div class="txt">سایه دقیق این تصویر را پیدا کن!<div class="hits">۹۳۱ بار</div></div><audio controls src="t1-12-shadow.mp3"></audio></div>
+
+<h2>Tier 2 — ۷ تای اول</h2>
+<div class="card"><div class="n">۱۳</div><div class="txt">کدام کفه ترازو سنگین‌تر است؟<div class="hits">۹۲۰ بار</div></div><audio controls src="t2-13-balance.mp3"></audio></div>
+<div class="card"><div class="n">۱۴</div><div class="txt">کلمات را به ترتیب درست بچین تا جمله ساخته شود<div class="hits">۹۱۵ بار</div></div><audio controls src="t2-14-build-sentence.mp3"></audio></div>
+<div class="card"><div class="n">۱۵</div><div class="txt">کدام عدد کوچک‌تر است؟<div class="hits">۸۷۱ بار</div></div><audio controls src="t2-15-smaller-number.mp3"></audio></div>
+<div class="card"><div class="n">۱۶</div><div class="txt">کدام عدد بزرگ‌تر است؟<div class="hits">۸۴۸ بار</div></div><audio controls src="t2-16-bigger-number.mp3"></audio></div>
+<div class="card"><div class="n">۱۷</div><div class="txt">کدام تصویر با بقیه فرق دارد؟<div class="hits">۷۵۹ بار</div></div><audio controls src="t2-17-odd-one-out.mp3"></audio></div>
+<div class="card"><div class="n">۱۸</div><div class="txt">رنگ بنفش را انتخاب کن<div class="hits">۷۲۵ بار</div></div><audio controls src="t2-18-color-purple.mp3"></audio></div>
+<div class="card"><div class="n">۱۹</div><div class="txt">کلمه‌ها را به متضادشان وصل کن<div class="hits">۷۲۰ بار</div></div><audio controls src="t2-19-opposites.mp3"></audio></div>
+
+<h2>تشویق</h2>
+<div class="card"><div class="n">★</div><div class="txt">آفرین! چه باهوشی!<div class="hits">بعد از پاسخ درست</div></div><audio controls src="praise-set.mp3"></audio></div>
 
 </body>
 </html>
