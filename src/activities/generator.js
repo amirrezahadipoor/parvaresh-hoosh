@@ -1196,8 +1196,17 @@ window.Generator = (function() {
         { prompt: 'وقتی دوستم ناراحت است:', steps: ['۱. کنارش می‌نشینم', '۲. می‌پرسم چه شده', '۳. با دقت گوش می‌دهم', '۴. دلداری‌اش می‌دهم'] },
         { prompt: 'مراحل کمک به کارهای خانه:', steps: ['۱. می‌پرسم چه کمکی از من برمی‌آید', '۲. وسایل را جمع می‌کنم', '۳. میز را می‌چینم', '۴. دست‌هایم را می‌شویم'] }
     ];
-    function socialStoryRound() {
-        const story = pick(SOCIAL_STORIES);
+    // `topic` lets a lesson request the story that matches ITS title instead of a
+    // random one: 150 lessons had no authored pack and fell through to a generic
+    // default, so «عذرخواهی و جبران» could show the turn-taking story.
+    function socialStoryRound(topic) {
+        let bank = SOCIAL_STORIES;
+        if (topic) {
+            const re = new RegExp(topic);
+            const hit = SOCIAL_STORIES.filter(x => re.test(x.prompt));
+            if (hit.length) bank = hit;
+        }
+        const story = pick(bank);
         const items = story.steps.map((label, idx) => ({ label, idx }));
         return {
             type: 'order-steps',
@@ -1229,8 +1238,14 @@ window.Generator = (function() {
     }
 
     // --- socio-emotional: match a feeling to its situation (drag-match) ---
-    function emotionMatchRound() {
-        const bank = (window.EMOTIONS || []).slice();
+    function emotionMatchRound(topic) {
+        let bank = (window.EMOTIONS || []).slice();
+        if (topic) {
+            const re = new RegExp(topic);
+            const hit = bank.filter(e => re.test(e.fa) || re.test(e.situation || ''));
+            // Keep the focus emotion plus contrasting ones so the round stays solvable.
+            if (hit.length) bank = [...hit, ...shuffle(bank.filter(e => !hit.includes(e))).slice(0, 3)];
+        }
         if (bank.length < 3) return emotionRound();
         const chosen = shuffle(bank).slice(0, 3);
         return {
@@ -1486,7 +1501,7 @@ window.Generator = (function() {
         });
     }
 
-    function retypeRoundForTrack(round, trackKey) {
+    function retypeRoundForTrack(round, trackKey, domainHint) {
         const rules = TRACK_RULES[trackKey];
         if (!rules || !round || !round.type) return round;
 
@@ -1519,6 +1534,15 @@ window.Generator = (function() {
         }
 
         if (rules.avoid.indexOf(round.type) === -1) return round;
+        // The `school` track avoids painting/tracing/balloon as "babyish", but an ART
+        // lesson replaced by a raven matrix no longer teaches art at all: «رنگ گرم و
+        // سرد» became a shadow-matching drill. Keep the round when it IS the subject
+        // of the lesson, and only swap filler.
+        // An art lesson must stay art for every age: swapping its rounds for logic
+        // puzzles is exactly the "wrong category" problem. Same for the youngest
+        // track, whose `avoid` list must not strip a lesson's own subject.
+        const subject = String(domainHint || '');
+        if (subject === 'art') return round;
         try {
             const replacement = (trackKey === 'school') ? advancedSubstitute() : simpleSubstitute();
             if (replacement && replacement.type && rules.avoid.indexOf(replacement.type) === -1) {
@@ -1530,7 +1554,7 @@ window.Generator = (function() {
 
     function adaptRoundForAge(round, metadata, pkg) {
         const trackKey = resolveAgeTrack(metadata, pkg);
-        round = retypeRoundForTrack(round, trackKey);
+        round = retypeRoundForTrack(round, trackKey, (metadata && metadata.domain) || '');
         let track = (pkg.ageTracks && pkg.ageTracks[trackKey])
             || (trackKey === 'toddler' && pkg.ageTracks && pkg.ageTracks.preschool)
             || { optionCount: 4, hintDelay: 4500, maxNumber: 20, language: 'ساده' };
@@ -1755,9 +1779,149 @@ window.Generator = (function() {
         return (t && TOPIC_AUDIO[t]) || null;
     }
 
+    // ------------------------------------------------------------------
+    // TITLE-DRIVEN ROUTING
+    // 150 of 292 lessons have no authored package. Their `type` is a coarse
+    // bucket -- 15 lessons share "social-emotional", 15 share "creative-art",
+    // 10 share "reasoning" -- so they all collapsed into one `default:` branch
+    // and produced the same generic rounds no matter what their title promised.
+    // «عذرخواهی و جبران» and «گوش دادن فعال» taught identical content.
+    // The titles ARE specific, so use them: the first matching keyword wins.
+    // ------------------------------------------------------------------
+    function titlePlan(metadata, level) {
+        const title = String((metadata && metadata.title) || '');
+        if (!title) return null;
+        const has = (...words) => words.some(w => title.includes(w));
+
+        // --- reading / phonics (most specific first) --------------------------
+        if (has('صدای اول', 'صدای آغازین'))
+            return [firstSoundRound, () => letterExampleRound(pick(ALPHABET)), firstSoundRound, syllableRound];
+        if (has('صدای آخر', 'صدای مشترک'))
+            return [firstSoundRound, rhymeRound, firstSoundRound, syllableRound];
+        if (has('قافیه'))
+            return [rhymeRound, rhymeRound, syllableRound, firstSoundRound];
+        if (has('هجا', 'بخش بندی', 'بخش‌بندی'))
+            return [syllableRound, syllableRound, rhymeRound, firstSoundRound];
+        if (has('دوحرفی', 'سه حرفی', 'ترکیب حروف', 'کلمه سازی', 'کلمه‌سازی', 'واژه‌سازی'))
+            return [blendRound, blendRound, sightWordRound, () => memoryRound(3)];
+        if (has('متصل و منفصل'))
+            return [blendRound, () => letterSoundRound(pick(ALPHABET)), () => tracingRound(pick(ALPHABET).letter, 'letter'), blendRound];
+        if (has('واژه‌های روزمره', 'پرکاربرد', 'روان خوانی', 'روان‌خوانی'))
+            return [sightWordRound, sightWordRound, sentenceRound, wordMeaningRound];
+        if (has('متضاد', 'مخالف'))
+            return [oppositeRound, oppositeMatchRound, oppositeRound, wordMeaningRound];
+        if (has('هم‌معنی', 'هم معنی'))
+            return [wordMeaningRound, sightWordRound, oppositeRound, sentenceRound];
+        if (has('ترتیب واژه', 'مرتب کردن کلمات', 'جمله سازی', 'جمله‌سازی'))
+            return [sentenceOrderRound, sentenceRound, sentenceOrderRound, storyOrderRound];
+        if (has('نوشتن حروف', 'نوشتن کلمات') || (has('با انگشت') && !has('جمع', 'تفریق', 'عدد')))
+            return [() => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter'), blendRound, sightWordRound];
+
+        // --- math patterns / numbers ------------------------------------------
+        if (has('الگوی عددی'))
+            return [() => numberOrderRound(level <= 4 ? 10 : 20), patternRound, () => numberOrderRound(level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
+        if (has('الگوی رنگی'))
+            return [patternRound, colorRound, patternRound, patternOrderRound];
+        if (has('عدد گمشده', 'دنباله'))
+            return [() => numberOrderRound(level <= 4 ? 10 : 20), () => numberOrderRound(level <= 4 ? 10 : 20), patternRound, () => compareRound(level <= 4 ? 10 : 20)];
+        if (has('الگوی ترکیبی'))
+            return [patternRound, patternOrderRound, shapeMatchRound, colorRound];
+        if (has('جمع با', 'جمع تا', 'جمع کردن'))
+            return [() => arithRound('+', level <= 4 ? 10 : 20), () => countRound(level <= 4 ? 10 : 20), () => arithRound('+', level <= 4 ? 10 : 20), () => numberOrderRound(level <= 4 ? 10 : 20)];
+        if (has('تفریق'))
+            return [() => arithRound('-', level <= 4 ? 10 : 20), () => countRound(level <= 4 ? 10 : 20), () => arithRound('-', level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
+        if (has('جمع و تفریق', 'چالش ترکیبی'))
+            return [() => arithRound('+', level <= 4 ? 10 : 20), () => arithRound('-', level <= 4 ? 10 : 20), () => arithRound('both', level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
+
+        // --- science ----------------------------------------------------------
+        if (has('رشد') && has('گیاه', 'دانه'))
+            return [plantGrowthRound, plantGrowthRound, () => oddOneOutRound('shapes'), storyOrderRound];
+        if (has('بخش های یک گیاه', 'بخش‌های گیاه', 'بخش های گیاه'))
+            return [plantGrowthRound, plantGrowthRound, materialRound, plantGrowthRound];
+        if (has('گل های رنگارنگ', 'گل‌های رنگارنگ'))
+            return [colorRound, plantGrowthRound, colorRound, colorMixRound];
+        if (has('زیستگاه', 'سازگاری حیوان', 'ردپای حیوان', 'محافظت از حیوان'))
+            return [animalHabitatRound, animalSoundRound, animalHabitatRound, () => oddOneOutRound('animals')];
+        if (has('صدای حیوان'))
+            return [animalSoundRound, animalSoundRound, animalHabitatRound, () => oddOneOutRound('animals')];
+
+        // --- socio-emotional -------------------------------------------------
+        if (has('عذرخواهی', 'جبران'))
+            return [() => socialStoryRound('عذرخواهی'), behaviourSortRound, () => emotionMatchRound('پشیمان|ناراحت'), habitRound];
+        if (has('عصبانی', 'خشم', 'کنترل هیجان'))
+            return [() => socialStoryRound('عصبانی'), () => emotionMatchRound('عصبان|خشم|آرامش'), emotionRound, behaviourSortRound];
+        if (has('صبر', 'نوبت'))
+            return [() => socialStoryRound('نوبت'), behaviourSortRound, habitRound, emotionRound];
+        if (has('دوست', 'دوستی'))
+            return [() => socialStoryRound('دوست'), behaviourSortRound, emotionMatchRound, socialStoryRound];
+        if (has('ناراحت', 'همدلی', 'دلداری'))
+            return [() => socialStoryRound('ناراحت'), () => emotionMatchRound('ناراحت|غم|همدل'), emotionRound, behaviourSortRound];
+        if (has('کمک', 'مسئولیت', 'خانه'))
+            return [() => socialStoryRound('خانه|کمک'), habitRound, behaviourSortRound, familyRound];
+        if (has('کار گروهی', 'تقسیم', 'همکاری'))
+            return [behaviourSortRound, () => socialStoryRound('دوست|نوبت'), familyRound, habitRound];
+        if (has('گوش دادن', 'گفت‌وگو', 'محترمانه', 'نه گفتن'))
+            return [() => socialStoryRound('ناراحت|دوست'), behaviourSortRound, habitRound, emotionRound];
+        if (has('خودم را می‌شناسم', 'نقطه قوت', 'خودشناسی'))
+            return [emotionRound, () => emotionMatchRound('افتخار|اعتماد|شاد'), familyRound, habitRound];
+        if (has('متفاوت', 'ارزشمند', 'تفاوت'))
+            return [familyRound, behaviourSortRound, emotionRound, () => socialStoryRound('دوست')];
+        if (has('احساس', 'هیجان', 'حس'))
+            return [emotionRound, emotionMatchRound, () => socialStoryRound('ناراحت'), behaviourSortRound];
+
+        // --- art --------------------------------------------------------------
+        if (has('رنگ گرم', 'رنگ سرد', 'ترکیب رنگ', 'ترکیب دو رنگ', 'ترکیب سه رنگ'))
+            return [colorMixRound, colorRound, colorMixRound, paintingRound];
+        if (has('الگو') && has('نقطه', 'خط', 'تکرارشونده'))
+            return [patternRound, patternOrderRound, paintingRound, colorRound];
+        if (has('نقاشی', 'رنگ‌آمیزی', 'طراحی', 'کمیک', 'پوستر', 'کارت تبریک', 'شخصیت', 'قاب'))
+            return [paintingRound, paintingRound, colorRound, colorMixRound];
+        if (has('ریتم', 'موسیقی', 'آهنگ', 'دست زدن'))
+            return [balloonRound, patternOrderRound, paintingRound, colorRound];
+        if (has('شکل') && has('دایره', 'مربع', 'ساختن', 'تبدیل'))
+            return [shapeMatchRound, patternRound, paintingRound, orderSizeRound];
+
+        // --- logic --------------------------------------------------------------
+        if (has('حافظه') || /حافظه \d/.test(title))
+            return [() => memoryRound(Math.min(5, 3 + Math.floor(level / 3))), () => memoryRound(4), disappearedRound, simonRound];
+        if (has('جفت‌یابی', 'جفت یابی'))
+            return [() => memoryRound(4), () => memoryRound(3), shadowRound, disappearedRound];
+        if (has('شیء گمشده', 'شیء گم'))
+            return [disappearedRound, () => memoryRound(4), shadowRound, simonRound];
+        if (has('سایه'))
+            return [shadowRound, shadowRound, shapeMatchRound, () => memoryRound(3)];
+        if (has('ماتریس'))
+            return [ravenRound, ravenRound, patternRound, shapeMatchRound];
+        if (has('دنباله', 'الگوی پنهان', 'الگو'))
+            return [patternRound, patternOrderRound, ravenRound, orderSizeRound];
+        if (has('رنگ های مشابه', 'رنگ‌های مشابه'))
+            return [colorRound, () => memoryRound(3), colorRound, shapeMatchRound];
+        if (has('حیوانات') && has('دسته', 'میوه'))
+            return [classifyRound, () => oddOneOutRound('animals'), animalHabitatRound, classifyRound];
+        if (has('دسته‌بندی', 'دسته بندی', 'طبقه‌بندی', 'طبقه بندی'))
+            return [classifyRound, classifyRound, () => oddOneOutRound('shapes'), () => oddOneOutRound('animals')];
+        if (has('متفاوت است', 'کدام تصویر متفاوت'))
+            return [() => oddOneOutRound('animals'), () => oddOneOutRound('shapes'), shadowRound, classifyRound];
+        if (has('ترتیب') && has('رشد', 'گیاه'))
+            return [plantGrowthRound, storyOrderRound, orderSizeRound, plantGrowthRound];
+        if (has('اول اتفاق', 'ترتیب', 'مراحل'))
+            return [storyOrderRound, orderSizeRound, plantGrowthRound, socialStoryRound];
+        if (has('معما', 'سرنخ'))
+            return [wordMeaningRound, ravenRound, () => oddOneOutRound('animals'), shadowRound];
+        if (has('مسیر', 'پازل'))
+            return [ravenRound, patternRound, shadowRound, () => memoryRound(3)];
+
+        return null;
+    }
+
     function lessonPlan(lessonId, metadata) {
         const pkg = window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId];
         if (pkg) return authoredLessonPlan(lessonId, metadata, pkg);
+        {
+            const lvl = lessonLevel(lessonId, metadata);
+            const tp = titlePlan(metadata, lvl);
+            if (tp) return plan(tp, { ...metadata, difficulty: lvl });
+        }
         const domain = inferDomain(lessonId, metadata);
         const type = metadata && metadata.type || '';
         const level = lessonLevel(lessonId, metadata);
@@ -2211,6 +2375,22 @@ window.Generator = (function() {
     }
 
     function buildRounds(lessonId, metadata) {
+        // The lesson's own TITLE outranks the numeric variation sets. The
+        // progressive tiers (difficulty 9-12, 121 of 292 lessons) chose their
+        // rounds purely by `variation % 8`, so all 15 art lessons shared one
+        // painting/shadow/balloon rotation and «رنگ گرم و سرد» never taught
+        // colour, while every SE lesson from «گوش دادن فعال» to «تقسیم عادلانه»
+        // ran the same emotion/habit/family loop.
+        // An authored package is hand-written for that lesson, so it outranks
+        // keyword guessing; only unpackaged lessons fall to the title router.
+        if (!(window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId])) {
+            const lvl = lessonLevel(lessonId, metadata);
+            const titled = titlePlan(metadata, lvl);
+            if (titled) {
+                const built = plan(titled, { ...metadata, difficulty: lvl });
+                if (built && built.length) return adaptGeneric(built, metadata);
+            }
+        }
         const progressivePlan = progressiveExtraPlan(lessonId, metadata);
         if (progressivePlan && progressivePlan.length) return adaptGeneric(progressivePlan, metadata);
         const metadataPlan = lessonPlan(lessonId, metadata);
