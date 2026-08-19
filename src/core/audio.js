@@ -367,8 +367,19 @@ window.AudioEngine = (function() {
         return !!name && AVAILABLE_CLIPS.has(String(name));
     }
 
+    // AI NARRATION REMOVED.
+    // Every spoken clip was machine generated (edge-tts neural voice). The user
+    // asked for all AI speech to go, so both narration paths are disabled here at
+    // the single choke point: the bundled MP3s and the browser speechSynthesis
+    // fallback. Game sound effects are NOT affected -- those are synthesised
+    // oscillator tones, not recorded speech.
+    // Set AudioEngine.NARRATION_ENABLED = true once real human recordings are
+    // dropped into assets/audio/ with the same file names.
+    var NARRATION_ENABLED = false;
+
     // Play a bundled narration clip by name (no extension), e.g. 'lesson-R-L1-L01'.
     function playClip(name, onEnd) {
+        if (!NARRATION_ENABLED) return false;
         if (sfxMuted || !name || !hasClip(name)) return false;
         try {
             stopClip();
@@ -385,6 +396,7 @@ window.AudioEngine = (function() {
 
     // Voice Narration: bundled clip first, Web Speech API as fallback
     function speak(text, rate) {
+        if (!NARRATION_ENABLED) return;
         if (sfxMuted || !text) return;
         try {
             if ('speechSynthesis' in window && hasPersianVoice()) {
@@ -444,6 +456,6 @@ window.AudioEngine = (function() {
         isSfxMuted,
         setMusicMuted,
         sfx,
-        ensureCtx
-    };
+        ensureCtx,
+        narrationEnabled: () => NARRATION_ENABLED};
 })();

@@ -111,6 +111,14 @@
     }
 
     async function init() {
+        // With AI narration removed there is nothing for a «بشنو» button to play,
+        // so hide every speaker control instead of leaving dead buttons on screen.
+        // One body class covers all activity engines; it flips back automatically
+        // when real recordings are added and NARRATION_ENABLED becomes true.
+        try {
+            const narrationOn = !!(window.AudioEngine && window.AudioEngine.narrationEnabled && window.AudioEngine.narrationEnabled());
+            document.body.classList.toggle('no-narration', !narrationOn);
+        } catch (e) { document.body.classList.add('no-narration'); }
         registerOfflineShell();
         await Storage.init();
         if (window.Engagement) await window.Engagement.init();
@@ -795,6 +803,10 @@
 
     // ===== DOMAIN LEVELS SCREEN =====
     function renderDomain() {
+        // Drop any previous merged-group selection: without this, going back and
+        // into another subject would still show the old group's lessons.
+        state.groupLessons = null;
+        state.groupTitle = null;
         const d = window.App.domains.find(x => x.id === state.domainId) || { color: '#6C5CE7', title: 'حوزه' };
         const dom = (state.curriculum && state.curriculum.domains || []).find(x => x.id === state.domainId);
         $('#domain-title').textContent = dom ? dom.title : d.title;
@@ -824,70 +836,55 @@
         const bandOf = lv => ageStart(lv.ageBand || (lv.lessons || [])[0]?.ageBand);
         const forMe = myAge ? levels.filter(lv => { const a = bandOf(lv); return a <= myAge + 0.5 && a >= myAge - 1.5; }) : levels;
         const others = myAge ? levels.filter(lv => forMe.indexOf(lv) === -1) : [];
-        const primary = forMe.length ? forMe : levels;
-        const secondary = forMe.length ? others : [];
+        // ---------------------------------------------------------------
+        // THREE MERGED GROUPS INSTEAD OF 8-13 SEPARATE LEVELS.
+        // Opening a subject used to list every level in the domain (up to 13),
+        // which is far too many choices for a child and for a parent scanning
+        // the screen. All levels are now merged into three plain-language steps
+        // ordered by difficulty, and tapping one starts its lessons directly.
+        // ---------------------------------------------------------------
+        const ordered = levels.slice();   // already sorted by age then progression
+        const GROUPS = [
+            { key: 'start',  title: 'تازه شروع کن', sub: 'آسان و آشنا',        color: '#2ED573' },
+            { key: 'mid',    title: 'یک پله بالاتر', sub: 'کمی سخت‌تر',        color: '#FFA502' },
+            { key: 'expert', title: 'چالش بزرگ',     sub: 'برای وقتی آماده‌ای', color: '#FF6B6B' }
+        ];
+        const per = Math.ceil(ordered.length / 3) || 1;
+        const buckets = [ordered.slice(0, per), ordered.slice(per, per * 2), ordered.slice(per * 2)]
+            .map(b => b.filter(Boolean));
 
-        const makeHeading = text => {
-            const h = document.createElement('div');
-            h.className = 'level-group-heading';
-            h.textContent = text;
-            h.style.cssText = 'margin:14px 6px 8px; font-weight:800; font-size:14px; color:var(--ink-soft,#6b6b6b);';
-            return h;
-        };
-
-        const renderLevelCard = (lv, idx) => {
-            const lessons = sortLessonsForChild(lv.lessons || []);
-            const doneInLevel = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
-            const isCompleted = lessons.length > 0 && doneInLevel === lessons.length;
+        buckets.forEach((bucketLevels, gi) => {
+            if (!bucketLevels.length) return;
+            const g = GROUPS[gi];
+            const lessons = bucketLevels.flatMap(lv => sortLessonsForChild(lv.lessons || []));
+            const doneCount = lessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
+            const isCompleted = lessons.length > 0 && doneCount === lessons.length;
+            const pct = lessons.length ? Math.round((doneCount / lessons.length) * 100) : 0;
 
             const card = document.createElement('button');
-            card.className = `level-card ${isCompleted ? 'done' : ''}`;
-            card.style.setProperty('--dcolor', d.color);
-
+            card.className = `level-card group-card ${isCompleted ? 'done' : ''}`;
+            card.style.setProperty('--dcolor', g.color);
             card.innerHTML = `
-                <div class="level-num" style="background:color-mix(in srgb, ${isCompleted ? 'var(--ok)' : d.color} 72%, #000)">${toFa(idx + 1)}</div>
+                <div class="level-num" style="background:color-mix(in srgb, ${isCompleted ? 'var(--ok)' : g.color} 76%, #000)">${toFa(gi + 1)}</div>
                 <div class="level-info">
-                    <div class="level-name">${lv.title}</div>
-                    <div class="level-label">${lv.ageBand || ((lv.lessons || [])[0] && (lv.lessons || [])[0].ageBand) || 'مسیر آموزشی'}</div>
+                    <div class="level-name">${g.title}</div>
+                    <div class="level-label">${g.sub}</div>
+                    <div class="group-track"><i style="width:${pct}%; background:${g.color}"></i></div>
                 </div>
-                <div class="level-progress">${toFa(doneInLevel)} / ${toFa(lessons.length)}</div>
+                <div class="level-progress">${toFa(doneCount)} / ${toFa(lessons.length)}</div>
             `;
-
             card.addEventListener('click', () => {
                 AudioEngine.play('click');
-                state.levelId = lv.id;
+                // A merged group is a synthetic level: hand renderLevel the whole
+                // bucket so the child never sees the sub-level list at all.
+                state.levelId = bucketLevels[0] && bucketLevels[0].id;
+                state.groupLessons = lessons;
+                state.groupTitle = g.title;
                 Nav.push('level');
                 renderLevel();
             });
-
             scrollContainer.appendChild(card);
-        };
-
-        if (myAge && secondary.length) scrollContainer.appendChild(makeHeading('برای تو'));
-        primary.forEach((lv, idx) => renderLevelCard(lv, idx));
-
-        if (secondary.length) {
-            const toggle = document.createElement('button');
-            toggle.className = 'level-more-toggle';
-            toggle.style.cssText = 'width:100%; margin:14px 0 4px; padding:12px; min-height:44px; border:0; border-radius:14px; background:#EFE6DC; color:var(--ink,#2d3436); font-family:inherit; font-weight:800; font-size:14px; cursor:pointer;';
-            toggle.textContent = `مرحله‌های دیگر (${toFa(secondary.length)})`;
-            const laterWrap = document.createElement('div');
-            laterWrap.style.display = 'none';
-            secondary.forEach((lv, idx) => {
-                const before = scrollContainer.childNodes.length;
-                renderLevelCard(lv, primary.length + idx);
-                // move the freshly appended card into the collapsed group
-                while (scrollContainer.childNodes.length > before) laterWrap.appendChild(scrollContainer.childNodes[before]);
-            });
-            toggle.addEventListener('click', () => {
-                AudioEngine.play('click');
-                const open = laterWrap.style.display !== 'none';
-                laterWrap.style.display = open ? 'none' : 'block';
-                toggle.textContent = open ? `مرحله‌های دیگر (${toFa(secondary.length)})` : 'بستن';
-            });
-            scrollContainer.appendChild(toggle);
-            scrollContainer.appendChild(laterWrap);
-        }
+        });
 
         content.appendChild(scrollContainer);
 
@@ -940,11 +937,16 @@
     function renderLevel() {
         const dom = (state.curriculum && state.curriculum.domains || []).find(x => x.id === state.domainId);
         const level = dom && (dom.levels || []).find(l => l.id === state.levelId);
-        $('#level-title').textContent = level ? level.title : 'درس‌ها';
+        // A merged group carries its own combined lesson list and title.
+        const groupLessons = Array.isArray(state.groupLessons) && state.groupLessons.length
+            ? state.groupLessons : null;
+        $('#level-title').textContent = groupLessons
+            ? (state.groupTitle || 'درس‌ها')
+            : (level ? level.title : 'درس‌ها');
 
         const content = $('#level-content');
         content.innerHTML = '';
-        if (!level) {
+        if (!level && !groupLessons) {
             const empty = document.createElement('p');
             empty.textContent = 'این سطح در محتوای فعلی پیدا نشد.';
             empty.style.cssText = 'padding:20px; text-align:center; color:var(--ink2); font-weight:800;';
@@ -955,7 +957,7 @@
         const scrollContainer = document.createElement('div');
         scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; touch-action:pan-y; overscroll-behavior-y:contain;';
 
-        (level.lessons || []).forEach((lesson, i) => {
+        (groupLessons || (level && level.lessons) || []).forEach((lesson, i) => {
             const prog = state.lessonsDone[lesson.id];
             const isDone = prog && prog.done;
 
