@@ -15,9 +15,11 @@ window.NARRATION_MAP = {
   "صدای حرف هِ": "letter-heh",
   "صدای حرف جیم": "letter-jim",
   "صدای حرف کاف": "letter-kaf",
+  "صدای حرف خِ": "letter-khe",
   "صدای حرف لام": "letter-lam",
   "صدای حرف میم": "letter-mim",
   "صدای حرف نون": "letter-nun",
+  "صدای حرف پِ": "letter-pe",
   "صدای حرف رِ": "letter-re",
   "صدای حرف صاد": "letter-sad",
   "صدای حرف ثِ": "letter-se",
@@ -53,5 +55,13 @@ window.NARRATION_MAP = {
   "کدام عدد بزرگ‌تر است؟": "t2-16-bigger-number",
   "کدام تصویر با بقیه فرق دارد؟": "t2-17-odd-one-out",
   "رنگ بنفش را انتخاب کن": "t2-18-color-purple",
-  "کلمه‌ها را به متضادشان وصل کن": "t2-19-opposites"
+  "کلمه‌ها را به متضادشان وصل کن": "t2-19-opposites",
+  "رنگ سبز را انتخاب کن": "t2-20-color-green",
+  "رنگ قرمز را انتخاب کن": "t2-21-color-red",
+  "رنگ زرد را انتخاب کن": "t2-22-color-yellow",
+  "هر چیز را در جای درست بگذار": "t2-23-put-in-place",
+  "هر ماه مال کدام فصل است؟": "t2-24-month-season",
+  "هر احساس مال کدام موقعیت است؟": "t2-25-emotion-situation",
+  "رنگ آبی را انتخاب کن": "t2-26-color-blue",
+  "مراحل رشد گیاه را مرتب کن": "t2-27-plant-growth"
 };

@@ -351,9 +351,11 @@ window.AudioEngine = (function() {
         'letter-heh',
         'letter-jim',
         'letter-kaf',
+        'letter-khe',
         'letter-lam',
         'letter-mim',
         'letter-nun',
+        'letter-pe',
         'letter-re',
         'letter-sad',
         'letter-se',
@@ -387,7 +389,15 @@ window.AudioEngine = (function() {
         't2-16-bigger-number',
         't2-17-odd-one-out',
         't2-18-color-purple',
-        't2-19-opposites'
+        't2-19-opposites',
+        't2-20-color-green',
+        't2-21-color-red',
+        't2-22-color-yellow',
+        't2-23-put-in-place',
+        't2-24-month-season',
+        't2-25-emotion-situation',
+        't2-26-color-blue',
+        't2-27-plant-growth'
     ]);
 
     function hasClip(text) {

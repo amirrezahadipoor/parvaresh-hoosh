@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v34-alphabet-30';
+const CACHE_NAME = 'parvaresh-hoosh-v35-alphabet-complete';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -26,9 +26,11 @@ const PRECACHE = [
     './assets/audio/kid/letter-heh.mp3',
     './assets/audio/kid/letter-jim.mp3',
     './assets/audio/kid/letter-kaf.mp3',
+    './assets/audio/kid/letter-khe.mp3',
     './assets/audio/kid/letter-lam.mp3',
     './assets/audio/kid/letter-mim.mp3',
     './assets/audio/kid/letter-nun.mp3',
+    './assets/audio/kid/letter-pe.mp3',
     './assets/audio/kid/letter-re.mp3',
     './assets/audio/kid/letter-sad.mp3',
     './assets/audio/kid/letter-se.mp3',
@@ -62,7 +64,15 @@ const PRECACHE = [
     './assets/audio/kid/t2-16-bigger-number.mp3',
     './assets/audio/kid/t2-17-odd-one-out.mp3',
     './assets/audio/kid/t2-18-color-purple.mp3',
-    './assets/audio/kid/t2-19-opposites.mp3'
+    './assets/audio/kid/t2-19-opposites.mp3',
+    './assets/audio/kid/t2-20-color-green.mp3',
+    './assets/audio/kid/t2-21-color-red.mp3',
+    './assets/audio/kid/t2-22-color-yellow.mp3',
+    './assets/audio/kid/t2-23-put-in-place.mp3',
+    './assets/audio/kid/t2-24-month-season.mp3',
+    './assets/audio/kid/t2-25-emotion-situation.mp3',
+    './assets/audio/kid/t2-26-color-blue.mp3',
+    './assets/audio/kid/t2-27-plant-growth.mp3'
 ];
 
 self.addEventListener('install', event => {
