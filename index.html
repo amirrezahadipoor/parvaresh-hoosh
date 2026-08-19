@@ -13,6 +13,13 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self' blob:;">
     <title>پرورش هوش کودک</title>
 
+    <!-- Fonts are discovered only after CSS parses, so the two weights used by
+         the very first screen are preloaded to start their fetch immediately.
+         The remaining weights load normally; font-display:swap means text is
+         painted with a fallback rather than waiting. -->
+    <link rel="preload" href="assets/fonts/Vazirmatn-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/Vazirmatn-Bold.woff2" as="font" type="font/woff2" crossorigin>
+
     <!-- Bundled Offline Fonts (Vazirmatn) -->
     <style>
         @font-face {
@@ -226,48 +233,48 @@
     </div>
 
     <!-- Small optional animation helper; the app works without it. -->
-    <script src="vendor/gsap.min.js"></script>
+    <script defer src="vendor/gsap.min.js"></script>
 
     <!-- Data Collections (including an embedded curriculum fallback) -->
-    <script src="src/data/narration-map.js"></script>
-    <script src="src/data/alphabet.js"></script>
-    <script src="src/data/words.js"></script>
-    <script src="src/data/math-data.js"></script>
-    <script src="src/data/world-data.js"></script>
-    <script src="src/data/curriculum.js"></script>
-    <script src="src/data/lesson-guide.js"></script>
-    <script src="src/data/lesson-packages.js"></script>
+    <script defer src="src/data/narration-map.js"></script>
+    <script defer src="src/data/alphabet.js"></script>
+    <script defer src="src/data/words.js"></script>
+    <script defer src="src/data/math-data.js"></script>
+    <script defer src="src/data/world-data.js"></script>
+    <script defer src="src/data/curriculum.js"></script>
+    <script defer src="src/data/lesson-guide.js"></script>
+    <script defer src="src/data/lesson-packages.js"></script>
 
     <!-- Core Engines -->
-    <script src="src/core/config.js"></script>
-    <script src="src/core/icons.js"></script>
-    <script src="src/core/audio.js"></script>
-    <script src="src/core/storage.js"></script>
-    <script src="src/core/backup.js"></script>
-    <script src="src/core/engagement.js"></script>
-    <script src="src/core/game-progress.js"></script>
-    <script src="src/core/adaptive.js"></script>
-    <script src="src/core/iq-assessment.js"></script>
-    <script src="src/core/living-world.js"></script>
-    <script src="src/core/mascot.js"></script>
-    <script src="src/core/svg-art.js"></script>
-    <script src="src/core/fx.js"></script>
-    <script src="src/core/nav.js"></script>
+    <script defer src="src/core/config.js"></script>
+    <script defer src="src/core/icons.js"></script>
+    <script defer src="src/core/audio.js"></script>
+    <script defer src="src/core/storage.js"></script>
+    <script defer src="src/core/backup.js"></script>
+    <script defer src="src/core/engagement.js"></script>
+    <script defer src="src/core/game-progress.js"></script>
+    <script defer src="src/core/adaptive.js"></script>
+    <script defer src="src/core/iq-assessment.js"></script>
+    <script defer src="src/core/living-world.js"></script>
+    <script defer src="src/core/mascot.js"></script>
+    <script defer src="src/core/svg-art.js"></script>
+    <script defer src="src/core/fx.js"></script>
+    <script defer src="src/core/nav.js"></script>
 
     <!-- Interactive Activities & Arcade & IQ Engines -->
-    <script src="src/activities/generator.js"></script>
-    <script src="src/activities/adventure-journey.js"></script>
-    <script src="src/activities/arcade-games.js"></script>
-    <script src="src/activities/iq-engines.js"></script>
-    <script src="src/activities/quiz.js"></script>
-    <script src="src/activities/memory.js"></script>
-    <script src="src/activities/dragdrop.js"></script>
-    <script src="src/activities/tracing.js"></script>
-    <script src="src/activities/ordering.js"></script>
-    <script src="src/activities/painting.js"></script>
-    <script src="src/activities/balloon-pop.js"></script>
+    <script defer src="src/activities/generator.js"></script>
+    <script defer src="src/activities/adventure-journey.js"></script>
+    <script defer src="src/activities/arcade-games.js"></script>
+    <script defer src="src/activities/iq-engines.js"></script>
+    <script defer src="src/activities/quiz.js"></script>
+    <script defer src="src/activities/memory.js"></script>
+    <script defer src="src/activities/dragdrop.js"></script>
+    <script defer src="src/activities/tracing.js"></script>
+    <script defer src="src/activities/ordering.js"></script>
+    <script defer src="src/activities/painting.js"></script>
+    <script defer src="src/activities/balloon-pop.js"></script>
 
     <!-- Main Controller -->
-    <script src="src/main.js"></script>
+    <script defer src="src/main.js"></script>
 </body>
 </html>

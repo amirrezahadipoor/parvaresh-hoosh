@@ -127,18 +127,34 @@
         state.curriculum = window.CURRICULUM && Array.isArray(window.CURRICULUM.domains)
             ? window.CURRICULUM
             : { domains: window.App.domains };
-        try {
-            if (typeof window.fetch === 'function') {
-                const res = await window.fetch('content/curriculum.json', { cache: 'no-store' });
+        // The refresh used to be awaited with cache:'no-store', so every launch
+        // blocked on a 109KB download that bypassed both the HTTP cache and the
+        // service worker -- on a slow connection the child stared at a blank
+        // screen until it finished, and it re-downloaded even offline.
+        // The bundled curriculum is already loaded above, so this is only ever a
+        // refresh: let it run in the background and adopt the result when it
+        // arrives. Nothing downstream waits on it.
+        const refreshCurriculum = (async () => {
+            try {
+                if (typeof window.fetch !== 'function') return;
+                const res = await window.fetch('content/curriculum.json');
                 if (res && res.ok) {
                     const remote = await res.json();
-                    if (remote && Array.isArray(remote.domains)) state.curriculum = remote;
+                    if (remote && Array.isArray(remote.domains)) {
+                        state.curriculum = remote;
+                        // Re-render only if the child is still on a screen built
+                        // from curriculum data, so the update is never visible
+                        // as a flash mid-lesson.
+                        const active = document.querySelector('.screen.active');
+                        if (active && active.id === 'screen-home' && typeof renderHome === 'function') renderHome();
+                    }
                 }
+            } catch (e) {
+                // The embedded curriculum keeps file:// and offline launches functional.
+                console.warn('Curriculum refresh unavailable; using bundled copy.', e);
             }
-        } catch (e) {
-            // The embedded curriculum keeps file:// and offline launches functional.
-            console.warn('Curriculum refresh unavailable; using bundled copy.', e);
-        }
+        })();
+        if (refreshCurriculum && typeof refreshCurriculum.catch === 'function') refreshCurriculum.catch(() => {});
 
         // 2. Load Progress & Mascot
         const savedProgress = await Storage.load('progress');

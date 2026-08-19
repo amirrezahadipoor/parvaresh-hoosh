@@ -74,6 +74,8 @@ window.LivingWorld = (function() {
     }
 
     function addParticle(x, y) {
+        // Restart the render loop if it parked itself while idle.
+        if (animFrameId === null && stardustCtx && !document.hidden) startParticles();
         if (!stardustCtx) return;
         if (particles.length >= 60) particles.shift();
         const color = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
@@ -117,6 +119,8 @@ window.LivingWorld = (function() {
         });
     }
 
+    let needsFinalClear = false;
+
     function startParticles() {
         if (!stardustCtx || animFrameId !== null) return;
         animFrameId = raf(animateParticles);
@@ -132,6 +136,19 @@ window.LivingWorld = (function() {
     function animateParticles() {
         animFrameId = null;
         if (!stardustCtx || document.hidden) return;
+
+        // The loop used to reschedule itself forever, so an app sitting on a
+        // menu with zero particles still cleared the full-screen canvas 60x a
+        // second. That was the single largest JS cost in a startup profile.
+        // Park the loop when there is nothing to draw; addParticle() restarts it.
+        if (!particles.length) {
+            if (needsFinalClear) {
+                stardustCtx.clearRect(0, 0, window.innerWidth || 1, window.innerHeight || 1);
+                needsFinalClear = false;
+            }
+            return;
+        }
+        needsFinalClear = true;
 
         const width = window.innerWidth || 1;
         const height = window.innerHeight || 1;
