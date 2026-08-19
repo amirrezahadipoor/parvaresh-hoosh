@@ -891,6 +891,33 @@ window.SvgArt = (function() {
                     <circle cx="70" cy="66" r="2.4" fill="#FFF" opacity=".6"/>
                 `, size);
 
+            case 'lettuce':
+                return wrap(`
+                    <path d="M50 26 Q30 18 20 34 Q12 48 20 66 Q28 84 50 86 Q72 84 80 66 Q88 48 80 34 Q70 18 50 26 Z" fill="#2ED573" stroke="#2C3A47" stroke-width="2.6" stroke-linejoin="round"/>
+                    <path d="M50 30 Q36 30 30 44 Q26 58 32 72 Q40 82 50 82 Q60 82 68 72 Q74 58 70 44 Q64 30 50 30 Z" fill="#7BED9F" stroke="#2C3A47" stroke-width="2.2" stroke-linejoin="round"/>
+                    <path d="M50 34 V80 M38 42 Q34 58 40 74 M62 42 Q66 58 60 74" stroke="#26C065" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+                    <path d="M30 40 Q26 52 30 64" stroke="#FFF" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".45"/>
+                `, size);
+
+            case 'grass':
+                return wrap(`
+                    <path d="M22 82 Q22 56 12 40 Q28 46 32 66 Q34 76 34 82 Z" fill="#2ED573" stroke="#2C3A47" stroke-width="2.4" stroke-linejoin="round"/>
+                    <path d="M42 82 Q40 50 32 30 Q52 40 52 70 Q52 78 52 82 Z" fill="#7BED9F" stroke="#2C3A47" stroke-width="2.4" stroke-linejoin="round"/>
+                    <path d="M58 82 Q58 50 70 28 Q76 52 68 72 Q65 79 64 82 Z" fill="#2ED573" stroke="#2C3A47" stroke-width="2.4" stroke-linejoin="round"/>
+                    <path d="M74 82 Q76 60 88 46 Q88 68 82 78 Q80 81 80 82 Z" fill="#26C065" stroke="#2C3A47" stroke-width="2.4" stroke-linejoin="round"/>
+                    <path d="M12 82 H88" stroke="#2C3A47" stroke-width="2.8" stroke-linecap="round"/>
+                `, size);
+
+            case 'seeds':
+                return wrap(`
+                    <path d="M18 62 Q18 78 50 78 Q82 78 82 62 Q82 58 78 58 L22 58 Q18 58 18 62 Z" fill="#E8853B" stroke="#2C3A47" stroke-width="2.6" stroke-linejoin="round"/>
+                    <ellipse cx="50" cy="58" rx="32" ry="8" fill="#FFB142" stroke="#2C3A47" stroke-width="2.4"/>
+                    <ellipse cx="38" cy="46" rx="6" ry="8" transform="rotate(-18 38 46)" fill="#FFC048" stroke="#2C3A47" stroke-width="2.2"/>
+                    <ellipse cx="52" cy="40" rx="6" ry="8" transform="rotate(8 52 40)" fill="#FFD98E" stroke="#2C3A47" stroke-width="2.2"/>
+                    <ellipse cx="64" cy="48" rx="6" ry="8" transform="rotate(24 64 48)" fill="#FFC048" stroke="#2C3A47" stroke-width="2.2"/>
+                    <path d="M36 44 Q38 48 40 50 M50 38 Q52 42 53 45" stroke="#E8853B" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                `, size);
+
             case 'carrot':
                 return wrap(`
                     <path d="M44 26 Q38 12 30 12 Q34 22 40 28 Z" fill="#2ED573" stroke="#2C3A47" stroke-width="2.2" stroke-linejoin="round"/>

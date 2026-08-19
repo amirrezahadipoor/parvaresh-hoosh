@@ -65,6 +65,19 @@ const App = {
             color: '#F368E0',
             bg: '#FDE0F8',
             accent: '#EA2027'
+        },
+        {
+            // Gifted / entrance-exam track. Its levels are split by age band, so a
+            // 4-year-old gets visual comparison work and an 8-year-old gets Raven
+            // matrices and balance-scale reasoning.
+            id: 'gifted',
+            title: 'مدرسه تیزهوشان',
+            subtitle: 'ماتریس ریون، الگو، ترازو و معما',
+            iconChar: 'تیز',
+            iconId: 'brain',
+            color: '#6C5CE7',
+            bg: '#E8E4FF',
+            accent: '#4834D4'
         }
     ],
     adaptive: {

@@ -1022,6 +1022,8 @@ window.Generator = (function() {
         if (String(lessonId).startsWith('S-')) return 'science';
         if (String(lessonId).startsWith('SE-')) return 'socio-emotional';
         if (String(lessonId).startsWith('A-')) return 'art';
+        // Gifted / entrance-exam track.
+        if (String(lessonId).startsWith('G-')) return 'gifted';
         return 'general';
     }
 
@@ -1842,6 +1844,54 @@ window.Generator = (function() {
         // then falls through to the correct domain/type router.
         const dom = (metadata && metadata.domain) || '';
         const inDomain = (...allowed) => !dom || allowed.indexOf(dom) !== -1;
+
+        // --- gifted / entrance-exam track -------------------------------------
+        // Checked first and gated to the domain: these titles ("الگو", "معما",
+        // "حافظه") also appear in maths and logic lessons, and the gifted track
+        // must not steal them, nor be routed by them.
+        // Callers that pass a bare curriculum lesson (audit scripts, tests) have
+        // no `domain` field, so fall back to the G- id prefix.
+        const giftedId = /^G-/.test(String((metadata && metadata.id) || ''));
+        if (dom === 'gifted' || (!dom && giftedId)) {
+            if (has('ماتریس', 'ریون'))
+                return [ravenRound, ravenRound, ravenRound, patternRound];
+            if (has('ترازو', 'تعادل', 'سنگین'))
+                return [balanceRound, balanceRound, compareRound, balanceRound];
+            if (has('حافظه', 'توالی', 'ناپدید'))
+                return [simonRound, disappearedRound, simonRound, () => memoryRound(3)];
+            if (has('سایه'))
+                return [shadowRound, shadowRound, oddOneOutRound, shadowRound];
+            if (has('وصله ناجور', 'ناجور'))
+                return [oddOneOutRound, oddOneOutRound, classifyRound, oddOneOutRound];
+            if (has('تفاوت'))
+                return [shadowRound, oddOneOutRound, shadowRound, oddOneOutRound];
+            if (has('دسته بندی', 'طبقه بندی', 'دسته‌بندی', 'طبقه‌بندی'))
+                return [classifyRound, classifyRound, oddOneOutRound, classifyRound];
+            if (has('الگوی عددی', 'دنباله عددی'))
+                return [() => numberOrderRound(level <= 6 ? 10 : 20), patternRound, () => numberOrderRound(level <= 6 ? 10 : 20), patternRound];
+            if (has('الگو', 'دنباله'))
+                return [patternRound, patternOrderRound, patternRound, ravenRound];
+            if (has('مرتب', 'کوچک به بزرگ', 'مراحل'))
+                return [orderSizeRound, storyOrderRound, orderSizeRound, patternOrderRound];
+            if (has('محاسبه', 'جمع و تفریق', 'ذهنی')) {
+                const max = level <= 6 ? 10 : 20;
+                return [() => arithRound('+', max), () => arithRound('-', max), () => compareRound(max), () => arithRound('+', max)];
+            }
+            if (has('شمارش')) {
+                const cmax = level <= 3 ? 5 : 10;
+                return [() => countRound(cmax), () => countRound(cmax), () => compareRound(cmax), () => countRound(cmax)];
+            }
+            if (has('بزرگ‌تر', 'بیشتر', 'مقایسه'))
+                return [() => compareRound(level <= 4 ? 10 : 20), orderSizeRound, () => compareRound(level <= 4 ? 10 : 20), oddOneOutRound];
+            if (has('جفت'))
+                return [() => memoryRound(3), shadowRound, () => memoryRound(3), oddOneOutRound];
+            if (has('قیاس', 'رابطه', 'استنتاج', 'استدلال', 'منطقی', 'مسئله'))
+                return [ravenRound, oddOneOutRound, classifyRound, balanceRound];
+            if (has('معما', 'راز'))
+                return [oddOneOutRound, ravenRound, shadowRound, classifyRound];
+            // Any other gifted lesson still gets reasoning work, never filler.
+            return [ravenRound, oddOneOutRound, patternRound, shadowRound];
+        }
 
         // --- reading / phonics (most specific first) --------------------------
         if (has('صدای اول', 'صدای آغازین'))

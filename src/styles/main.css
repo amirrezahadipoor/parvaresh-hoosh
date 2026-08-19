@@ -1374,6 +1374,27 @@ button:focus-visible, [role="button"]:focus-visible {
 .arcade-tile-action::before { display: none; }
 
 .home-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; padding-top: 2px; }
+
+/* Guiding-finger setting row (home dashboard + parents dashboard).
+   A parent-facing control, so it is quieter than the child-facing cards. */
+.home-setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-top: 10px; padding: 12px 14px; border-radius: 16px;
+    background: rgba(255,255,255,.72); border: 2px solid rgba(108,92,231,.18); }
+.home-setting-row .setting-title { font-size: 14px; font-weight: 800; color: #2C3A47; }
+.home-setting-row .setting-desc { font-size: 11.5px; color: #5A6B7B; margin-top: 2px; line-height: 1.5; }
+.setting-switch { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;
+    background: none; border: 0; cursor: pointer; padding: 4px; min-height: 44px; }
+.setting-switch-track { position: relative; width: 52px; height: 30px; border-radius: 999px;
+    background: #C8D0D8; transition: background .18s ease; display: block; }
+.setting-switch-thumb { position: absolute; top: 3px; inset-inline-start: 3px; width: 24px; height: 24px;
+    border-radius: 50%; background: #FFF; box-shadow: 0 2px 5px rgba(0,0,0,.25);
+    transition: transform .18s ease; }
+.setting-switch.is-on .setting-switch-track { background: #2ED573; }
+.setting-switch.is-on .setting-switch-thumb { transform: translateX(-22px); }
+.setting-switch-state { font-size: 12px; font-weight: 800; color: #5A6B7B; min-width: 34px; }
+.setting-switch.is-on .setting-switch-state { color: #1E9E56; }
+/* LTR safety: the thumb travels the other way when direction is not RTL. */
+html[dir="ltr"] .setting-switch.is-on .setting-switch-thumb { transform: translateX(22px); }
 .home-quick-action {
     min-height: 48px;
     padding: 10px 8px;

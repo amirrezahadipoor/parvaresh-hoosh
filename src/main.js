@@ -11,6 +11,7 @@
         totalStars: 0,
         sfxMuted: false,
         musicMuted: false,
+        hintEnabled: true,
         activeWorldIdx: 0
     };
 
@@ -100,6 +101,8 @@
         { id: 'logic', title: 'قلعه منطق و پازل', subtitle: 'ماتریس‌های ریون، سایه‌شناسی و حافظه', color: '#6C5CE7', mascot: 'shiri', icon: 'منطق' },
         { id: 'science', title: 'جنگل شگفت‌انگیز علوم', subtitle: 'حیوانات، حواس پنج‌گانه و فصل‌ها', color: '#FFA502', mascot: 'fandogh', icon: 'علوم' },
         { id: 'art', title: 'کارگاه نقاشی و هنر', subtitle: 'رنگ‌آمیزی شاد و خلاقیت کودکانه', color: '#FD79A8', mascot: 'barfi', icon: 'هنر' },
+        // Gifted / entrance-exam track, split by age band inside the domain.
+        { id: 'gifted', title: 'مدرسه تیزهوشان', subtitle: 'ماتریس ریون، ترازو، الگو و معمای هوش', color: '#6C5CE7', mascot: 'shiri', icon: 'brain' },
         { id: 'arcade', title: 'شهربازی بازی‌های بی‌پایان', subtitle: 'شکار بادکنک، بلز موسیقی و غذا به حیوانات', color: '#00B894', mascot: 'dana', icon: 'بازی' }
     ];
 
@@ -173,10 +176,18 @@
         if (savedSettings) {
             state.sfxMuted = !!savedSettings.sfxMuted;
             state.musicMuted = !!savedSettings.musicMuted;
+            // Undefined means "never chosen" -> keep the finger on by default.
+            state.hintEnabled = savedSettings.hintEnabled !== false;
             AudioEngine.setSfxMuted(state.sfxMuted);
             if (AudioEngine.setMusicMuted) AudioEngine.setMusicMuted(state.musicMuted);
         } else if (AudioEngine.setMusicMuted) {
             AudioEngine.setMusicMuted(false);
+        }
+
+        // Push the stored preference into the engine before any lesson starts,
+        // otherwise the finger would appear once before the setting applied.
+        if (window.LivingWorld && LivingWorld.setHintEnabled) {
+            LivingWorld.setHintEnabled(state.hintEnabled !== false);
         }
 
         updateAudioButtons();
@@ -204,7 +215,14 @@
         }, 1800);
     }
 
+    // Guard against a double init (jsdom and some WebViews can deliver
+    // DOMContentLoaded after scripts already ran). Binding twice made every
+    // header button fire its handler twice, which silently cancelled toggles.
+    let headerBound = false;
+
     function bindHeader() {
+        if (headerBound) return;
+        headerBound = true;
         $('#btn-parent').addEventListener('click', () => {
             AudioEngine.play('click');
             Nav.push('parents');
@@ -226,10 +244,18 @@
         $('#btn-voice').addEventListener('click', async () => {
             state.sfxMuted = !state.sfxMuted;
             AudioEngine.setSfxMuted(state.sfxMuted);
-            await Storage.save('settings', { sfxMuted: state.sfxMuted, musicMuted: state.musicMuted });
+            await saveSettings();
             updateAudioButtons();
             AudioEngine.play('click');
         });
+
+        const hintBtn = $('#btn-hint');
+        if (hintBtn) {
+            hintBtn.addEventListener('click', async () => {
+                await setHintEnabled(!state.hintEnabled);
+                AudioEngine.play('click');
+            });
+        }
     }
 
     function showMusicPicker() {
@@ -291,11 +317,53 @@
         document.body.appendChild(overlay);
     }
 
+    // Every settings write goes through here so a new preference can never be
+    // dropped by a caller that forgot to include it in the object literal.
+    async function saveSettings() {
+        await Storage.save('settings', {
+            sfxMuted: state.sfxMuted,
+            musicMuted: state.musicMuted,
+            hintEnabled: state.hintEnabled
+        });
+    }
+
+    // Single place that turns the guiding finger on/off: updates state, the
+    // engine, every on-screen control, and storage.
+    async function setHintEnabled(on) {
+        state.hintEnabled = !!on;
+        if (window.LivingWorld && LivingWorld.setHintEnabled) {
+            LivingWorld.setHintEnabled(state.hintEnabled);
+        }
+        updateAudioButtons();
+        updateHintControls();
+        await saveSettings();
+    }
+
+    // Keep the header button and the dashboard switch showing the same value.
+    function updateHintControls() {
+        const on = state.hintEnabled !== false;
+        const btn = $('#btn-hint');
+        if (btn) {
+            btn.style.opacity = on ? '1' : '0.4';
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            btn.title = on ? 'انگشت راهنما روشن است' : 'انگشت راهنما خاموش است';
+            btn.setAttribute('aria-label', btn.title);
+        }
+        const sw = document.querySelector('#hint-switch');
+        if (sw) {
+            sw.classList.toggle('is-on', on);
+            sw.setAttribute('aria-checked', on ? 'true' : 'false');
+            const label = sw.querySelector('.setting-switch-state');
+            if (label) label.textContent = on ? 'روشن' : 'خاموش';
+        }
+    }
+
     function updateAudioButtons() {
         const musicBtn = $('#btn-music');
         const voiceBtn = $('#btn-voice');
         if (musicBtn) musicBtn.style.opacity = state.musicMuted ? '0.4' : '1';
         if (voiceBtn) voiceBtn.style.opacity = state.sfxMuted ? '0.4' : '1';
+        updateHintControls();
     }
 
     function updateHeaderStars() {
@@ -586,7 +654,33 @@
         quickActions.appendChild(createHomeAction('داشبورد والدین', 'parents', renderParents));
         dashboard.appendChild(quickActions);
 
+        dashboard.appendChild(createHintSetting());
+
         container.appendChild(dashboard);
+    }
+
+    // Guiding-finger switch shown on the home dashboard and in the parents
+    // dashboard. Rendered as one row so it reads as a setting, not a game.
+    function createHintSetting() {
+        const row = document.createElement('div');
+        row.className = 'home-setting-row';
+        const on = state.hintEnabled !== false;
+        row.innerHTML = `
+            <div class="setting-text">
+                <div class="setting-title">انگشت راهنما</div>
+                <div class="setting-desc">اگر کودک منتظر راهنمایی می‌ماند، آن را خاموش کنید.</div>
+            </div>
+            <button type="button" class="setting-switch${on ? ' is-on' : ''}" id="hint-switch"
+                    role="switch" aria-checked="${on ? 'true' : 'false'}" aria-label="انگشت راهنما">
+                <span class="setting-switch-track"><span class="setting-switch-thumb"></span></span>
+                <span class="setting-switch-state">${on ? 'روشن' : 'خاموش'}</span>
+            </button>
+        `;
+        row.querySelector('#hint-switch').addEventListener('click', async () => {
+            await setHintEnabled(!state.hintEnabled);
+            AudioEngine.play('click');
+        });
+        return row;
     }
 
     function showProfileOnboarding() {

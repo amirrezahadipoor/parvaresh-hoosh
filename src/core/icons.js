@@ -39,14 +39,66 @@ window.AppIcons = (function () {
         // three levels read as a sequence at a glance, without any text.
         seedling: '<path d="M12 21v-8"/><path d="M12 13c-4.2 0-6.5-2.6-6.5-6C10 7 12 9.3 12 13Z"/>',
         sprout: '<path d="M12 21v-10"/><path d="M12 11C8.4 11 6.4 8.9 6.4 5.6 10 5.6 12 7.8 12 11Z"/><path d="M12 11c0-3.2 2-5.4 5.6-5.4C17.6 8.9 15.6 11 12 11Z"/><path d="M12 15.5c0-2.2 1.6-3.7 4.2-3.7 0 2.2-1.6 3.7-4.2 3.7Z"/>',
-        trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5.5a2.5 2.5 0 0 0 2.5 5"/><path d="M16 5h2.5a2.5 2.5 0 0 1-2.5 5"/><path d="M12 13v4M9 21h6l-1-4h-4Z"/>'
+        trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5.5a2.5 2.5 0 0 0 2.5 5"/><path d="M16 5h2.5a2.5 2.5 0 0 1-2.5 5"/><path d="M12 13v4M9 21h6l-1-4h-4Z"/>',
+
+        // ------------------------------------------------------------------
+        // Subject tiles. These were previously referenced by their Persian
+        // label ('الف', '۱۲۳', ...) with no matching path, so all six home
+        // tiles silently fell back to the generic play circle and looked
+        // identical. Aliases keep the existing data files working.
+        // ------------------------------------------------------------------
+        book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z"/><path d="M8 7.5h7M8 11h5"/>',
+        numbers: '<path d="M7 8.5 9 7v10"/><path d="M13.5 8.2a2.4 2.4 0 1 1 3.6 3.1L13 17h5"/>',
+        puzzle: '<path d="M10 4h4v2.2a1.8 1.8 0 1 0 3.6 0V9H20v4h-2.2a1.8 1.8 0 1 0 0 3.6H20V20h-6v-2.2a1.8 1.8 0 1 0-3.6 0V20H4v-6h2.2a1.8 1.8 0 1 0 0-3.6H4V6h6V4Z"/>',
+        calculator: '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
+        flask: '<path d="M9 3h6M10 3v6l-5.5 9.2A1.8 1.8 0 0 0 6 21h12a1.8 1.8 0 0 0 1.5-2.8L14 9V3"/><path d="M7.5 16h9"/>',
+        palette: '<path d="M12 3a9 9 0 1 0 0 18h1.2a1.8 1.8 0 0 0 1.2-3.2 1.8 1.8 0 0 1 1.2-3.2H18a3 3 0 0 0 3-3C21 6.8 17 3 12 3Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.5" r="1"/><circle cx="14.5" cy="7.5" r="1"/>',
+
+        // Body parts used by the science/senses lessons.
+        eye: '<path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>',
+        ear: '<path d="M8 20c0-3-3-4-3-9a7 7 0 0 1 14 0c0 3.5-2.5 4.5-4 6s-1 3-3 3Z"/><path d="M9.5 9a2.6 2.6 0 0 1 5 .8c0 1.7-2 2-2 3.7"/>',
+        nose: '<path d="M12 4v7.5c0 1.6.8 2.3 1.8 3.1.9.7.6 2.2-.8 2.2H12"/><path d="M9 17a3.2 3.2 0 0 0 6 0"/>',
+        tongue: '<path d="M5 6h14v4a7 7 0 0 1-3 5.7c-1.6 1.1-2 2.3-2 3.3a2 2 0 0 1-4 0c0-1-.4-2.2-2-3.3A7 7 0 0 1 5 10V6Z"/><path d="M12 15v4"/>',
+        hand: '<path d="M9 12V5.5a1.5 1.5 0 0 1 3 0V11m0-1V4.5a1.5 1.5 0 0 1 3 0V11m0-.5V6.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.8a5 5 0 0 1-4-2L6 15.5a1.6 1.6 0 0 1 2.6-1.8L9 14"/>',
+        foot: '<path d="M7 4.5c2.6 0 4.5 2.4 4.5 6 0 2.4.7 3.4 1.6 4.6.9 1.2.4 3.4-2 3.9-3 .6-6.1-.7-6.1-4.5 0-2.3.5-3.3.5-5.2A4.6 4.6 0 0 1 7 4.5Z"/><circle cx="15.5" cy="6.5" r="1.6"/><circle cx="18" cy="9.5" r="1.4"/>',
+        tooth: '<path d="M6 4.5c2 0 2.4 1.2 6 1.2S16 4.5 18 4.5c1.6 0 2.4 1.4 2 3.6-.5 2.6-1.4 3-1.9 5.6-.4 2.2-.5 6.3-2.4 6.3-1.7 0-1.5-4.4-3.7-4.4s-2 4.4-3.7 4.4c-1.9 0-2-4.1-2.4-6.3C5.4 11.1 4.5 10.7 4 8.1 3.6 5.9 4.4 4.5 6 4.5Z"/>',
+        brain: '<path d="M12 5.5a3 3 0 0 0-5.7-1.3A2.8 2.8 0 0 0 4 9.2a3 3 0 0 0 .6 5.1A2.8 2.8 0 0 0 9 19a3 3 0 0 0 3-1.6"/><path d="M12 5.5a3 3 0 0 1 5.7-1.3A2.8 2.8 0 0 1 20 9.2a3 3 0 0 1-.6 5.1A2.8 2.8 0 0 1 15 19a3 3 0 0 1-3-1.6"/><path d="M12 5.5v11.9"/>',
+
+        // Emotion faces for the socio-emotional lessons.
+        happy: '<circle cx="12" cy="12" r="9"/><path d="M8.5 10h.01M15.5 10h.01"/><path d="M8 14.5c1.6 1.8 6.4 1.8 8 0"/>',
+        sad: '<circle cx="12" cy="12" r="9"/><path d="M8.5 10h.01M15.5 10h.01"/><path d="M8 16.5c1.6-1.8 6.4-1.8 8 0"/>',
+        surprised: '<circle cx="12" cy="12" r="9"/><path d="M8.5 9.5h.01M15.5 9.5h.01"/><ellipse cx="12" cy="15.5" rx="2.2" ry="2.8"/>',
+        calm: '<circle cx="12" cy="12" r="9"/><path d="M7.5 10.5c.8-1 2.2-1 3 0M13.5 10.5c.8-1 2.2-1 3 0"/><path d="M9 15h6"/>',
+        brave: '<path d="M12 3l7 3v5.5c0 4.3-2.9 8-7 9.5-4.1-1.5-7-5.2-7-9.5V6l7-3Z"/><path d="m9.5 11.5 1.8 1.8 3.4-3.6"/>',
+        thinking: '<circle cx="12" cy="12" r="9"/><path d="M8.5 10h.01M15.5 10h.01"/><path d="M9 15.5c1.2-.8 2.6-.8 3.8 0"/><path d="M17.5 4.5h.01M19.5 2.5h.01"/>'
+    };
+
+    // Persian labels used as icon keys in older data files. Mapping them here
+    // keeps content authoring in Persian while still resolving to real art.
+    const aliases = {
+        'الف': 'reading',
+        '۱۲۳': 'numbers',
+        'منطق': 'puzzle',
+        'علوم': 'flask',
+        'هنر': 'palette',
+        'بازی': 'arcade'
     };
 
     function get(name, size) {
-        const body = paths[name] || paths.play;
+        const key = aliases[name] || name;
+        // A missing icon used to render the play circle silently, which is how
+        // six identical subject tiles shipped unnoticed. Warn loudly in dev.
+        if (!paths[key] && typeof console !== 'undefined' && console.warn) {
+            console.warn('[AppIcons] unknown icon key:', name);
+        }
+        const body = paths[key] || paths.play;
         const px = Number(size) || 24;
         return `<svg class="app-icon" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${body}</svg>`;
     }
 
-    return { get, has: name => Boolean(paths[name]) };
+    return {
+        get,
+        has: name => Boolean(paths[aliases[name] || name]),
+        keys: () => Object.keys(paths).concat(Object.keys(aliases))
+    };
 })();

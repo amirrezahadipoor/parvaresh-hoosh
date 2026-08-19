@@ -74,6 +74,15 @@ const PROMPTS = {
   't3-38-how-many-shapes': ['چند تا شکل می‌بینی؟'],
 };
 
+// Clips generated in bulk by scripts/generate_missing_audio.py for lines that
+// the content generator produces dynamically (maths questions, colour mixing,
+// shape prompts, riddles...). Their text lives in a manifest next to the audio
+// so this script stays the single source of truth for the wiring.
+const AUTO_MANIFEST = path.join(KID, 'auto-manifest.json');
+const auto = fs.existsSync(AUTO_MANIFEST)
+  ? JSON.parse(fs.readFileSync(AUTO_MANIFEST, 'utf8'))
+  : {};
+
 const map = {};
 // Some generated prompts append the answer to a fixed question. Registering the
 // question alone is not enough because speak() looks up the exact string, so the
@@ -98,6 +107,17 @@ for (const clip of clips) {
       if (variants) for (const v of variants) map[`${text} ${v}`] = clip;
     }
   }
+}
+
+// Bulk-generated lines. Hand-authored PROMPTS win on conflict so a curated
+// recording is never replaced by an automatic one.
+const clipSet = new Set(clips);
+let autoAdded = 0, autoOrphan = 0;
+for (const [text, clip] of Object.entries(auto)) {
+  if (!clipSet.has(clip)) { autoOrphan++; continue; }
+  if (map[text]) continue;
+  map[text] = clip;
+  autoAdded++;
 }
 
 // 1) narration-map.js
@@ -126,4 +146,4 @@ sw = sw.replace(/(const PRECACHE\s*=\s*\[)([\s\S]*?)(\n\];)/, (_m, head, body, t
 fs.writeFileSync(swPath, sw, 'utf8');
 
 const letters = clips.filter(c => c.startsWith('letter-')).length;
-console.log(`clips: ${clips.length} | letters: ${letters}/32 | map entries: ${Object.keys(map).length}`);
+console.log(`clips: ${clips.length} | letters: ${letters}/32 | map entries: ${Object.keys(map).length} | auto: ${autoAdded}${autoOrphan ? ` (${autoOrphan} orphan)` : ''}`);

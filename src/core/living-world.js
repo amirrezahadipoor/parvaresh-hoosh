@@ -193,14 +193,30 @@ window.LivingWorld = (function() {
     let hintTimer = null;
     let hintFingerEl = null;
 
+    // The guiding finger can be switched off by a parent from the home header
+    // or the dashboard. Some children wait for the hand instead of thinking, so
+    // this is a real pedagogical setting, not a cosmetic one. Default: enabled.
+    let hintEnabled = true;
+
+    function setHintEnabled(on) {
+        hintEnabled = !!on;
+        if (!hintEnabled) clearHint();
+    }
+
+    function isHintEnabled() {
+        return hintEnabled;
+    }
+
     function resetHintTimer(targetSelector, delayMs) {
         clearHint();
+        if (!hintEnabled) return;
         const delay = Number.isFinite(Number(delayMs)) ? Math.max(1800, Number(delayMs)) : 4500;
         hintTimer = window.setTimeout(() => showFingerHint(targetSelector), delay);
     }
 
     function showFingerHint(targetSelector) {
         clearHint();
+        if (!hintEnabled) return;
         // Point at the CORRECT choice, not simply the first one on screen. The old
         // behaviour grabbed whichever element matched first, so the guiding hand
         // frequently pointed a child at a wrong answer.
@@ -277,6 +293,8 @@ window.LivingWorld = (function() {
         init,
         resetHintTimer,
         clearHint,
+        setHintEnabled,
+        isHintEnabled,
         stop: stopParticles
     };
 })();

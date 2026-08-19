@@ -1,6 +1,6 @@
 {
   "title": "پرورش هوش کودک - برنامه جامع آموزش و رشد مهارت‌ها",
-  "targetAge": "5 to 8 years",
+  "targetAge": "۴ تا ۸ سال",
   "language": "fa-IR",
   "lastUpdated": "2026-08-18",
   "version": "3.1-age-ordered",
@@ -3486,7 +3486,456 @@
           "progressionOrder": 8
         }
       ]
+    },
+    {
+      "id": "gifted",
+      "title": "تیزهوشان و آمادگی آزمون",
+      "icon": "brain",
+      "color": "#6C5CE7",
+      "description": "ماتریس ریون، الگو، استدلال، ترازو و معما - متناسب با هر سن",
+      "levels": [
+        {
+          "id": "G-L1",
+          "title": "تیزهوشان کوچک: دیدن و مقایسه",
+          "difficulty": 2,
+          "label": "آسان ۱",
+          "lessons": [
+            {
+              "id": "G-L1-L01",
+              "title": "وصله ناجور را پیدا کن",
+              "type": "odd-one-out",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 2,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L1-L02",
+              "title": "سایه درست را پیدا کن",
+              "type": "shadow-matching",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 2,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L1-L03",
+              "title": "دسته بندی رنگ و شکل",
+              "type": "classification",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 2,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L1-L04",
+              "title": "کدام بزرگ‌تر است؟",
+              "type": "comparison",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 2,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L1-L05",
+              "title": "جفت‌های مثل هم",
+              "type": "pairing",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 2,
+              "ageBand": "۴ تا ۵ سال"
+            }
+          ],
+          "ageBand": "۴ تا ۵ سال",
+          "progressionOrder": 1
+        },
+        {
+          "id": "G-L2",
+          "title": "تیزهوشان کوچک: الگو و ترتیب",
+          "difficulty": 3,
+          "label": "آسان ۲",
+          "lessons": [
+            {
+              "id": "G-L2-L01",
+              "title": "الگوی رنگی را ادامه بده",
+              "type": "patterns",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 3,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L2-L02",
+              "title": "از کوچک به بزرگ بچین",
+              "type": "ordering",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 3,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L2-L03",
+              "title": "چه چیزی ناپدید شد؟",
+              "type": "memory-logic",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 3,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L2-L04",
+              "title": "شمارش سریع تا پنج",
+              "type": "counting",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 3,
+              "ageBand": "۴ تا ۵ سال"
+            },
+            {
+              "id": "G-L2-L05",
+              "title": "کدام گروه بیشتر است؟",
+              "type": "comparison",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 3,
+              "ageBand": "۴ تا ۵ سال"
+            }
+          ],
+          "ageBand": "۴ تا ۵ سال",
+          "progressionOrder": 2
+        },
+        {
+          "id": "G-L3",
+          "title": "تیزهوشان: الگوهای پنهان",
+          "difficulty": 5,
+          "label": "متوسط ۱",
+          "lessons": [
+            {
+              "id": "G-L3-L01",
+              "title": "الگوی شکلی را کامل کن",
+              "type": "patterns",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 5,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L3-L02",
+              "title": "الگوی عددی ساده",
+              "type": "number-pattern",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 5,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L3-L03",
+              "title": "دنباله را ادامه بده",
+              "type": "patterns",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 5,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L3-L04",
+              "title": "تفاوت‌ها را پیدا کن",
+              "type": "spot-difference",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 5,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L3-L05",
+              "title": "دسته بندی جانداران",
+              "type": "classification",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 5,
+              "ageBand": "۵ تا ۶ سال"
+            }
+          ],
+          "ageBand": "۵ تا ۶ سال",
+          "progressionOrder": 3
+        },
+        {
+          "id": "G-L4",
+          "title": "تیزهوشان: استدلال تصویری",
+          "difficulty": 6,
+          "label": "متوسط ۲",
+          "lessons": [
+            {
+              "id": "G-L4-L01",
+              "title": "ماتریس تصویری: خانه خالی",
+              "type": "reasoning",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 6,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L4-L02",
+              "title": "رابطه‌ها را کشف کن",
+              "type": "association",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 6,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L4-L03",
+              "title": "معمای کوتاه تصویری",
+              "type": "riddle",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 6,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L4-L04",
+              "title": "حافظه توالی: زنگ‌ها",
+              "type": "memory-logic",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 6,
+              "ageBand": "۵ تا ۶ سال"
+            },
+            {
+              "id": "G-L4-L05",
+              "title": "مرتب کردن مراحل یک کار",
+              "type": "sequencing",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 6,
+              "ageBand": "۵ تا ۶ سال"
+            }
+          ],
+          "ageBand": "۵ تا ۶ سال",
+          "progressionOrder": 4
+        },
+        {
+          "id": "G-L5",
+          "title": "تیزهوشان: ماتریس ریون",
+          "difficulty": 8,
+          "label": "سخت ۱",
+          "lessons": [
+            {
+              "id": "G-L5-L01",
+              "title": "ماتریس ریون: سطح یک",
+              "type": "reasoning",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 8,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L5-L02",
+              "title": "ماتریس ریون: سطح دو",
+              "type": "reasoning",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 8,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L5-L03",
+              "title": "قیاس منطقی: مثل هم",
+              "type": "association",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 8,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L5-L04",
+              "title": "استنتاج از سرنخ‌ها",
+              "type": "deduction",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 8,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L5-L05",
+              "title": "طبقه بندی چندمرحله‌ای",
+              "type": "classification",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 8,
+              "ageBand": "۶ تا ۷ سال"
+            }
+          ],
+          "ageBand": "۶ تا ۷ سال",
+          "progressionOrder": 5
+        },
+        {
+          "id": "G-L6",
+          "title": "تیزهوشان: ترازو و تعادل",
+          "difficulty": 9,
+          "label": "سخت ۲",
+          "lessons": [
+            {
+              "id": "G-L6-L01",
+              "title": "ترازو: کدام سنگین‌تر است؟",
+              "type": "reasoning",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 9,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L6-L02",
+              "title": "تعادل با دو وزنه",
+              "type": "reasoning",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 9,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L6-L03",
+              "title": "مسئله چندمرحله‌ای",
+              "type": "problem-solving",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 9,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L6-L04",
+              "title": "جمع و تفریق ذهنی",
+              "type": "mixed-operations",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 9,
+              "ageBand": "۶ تا ۷ سال"
+            },
+            {
+              "id": "G-L6-L05",
+              "title": "معمای منطقی",
+              "type": "riddle",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 9,
+              "ageBand": "۶ تا ۷ سال"
+            }
+          ],
+          "ageBand": "۶ تا ۷ سال",
+          "progressionOrder": 6
+        },
+        {
+          "id": "G-L7",
+          "title": "تیزهوشان پیشرفته: آزمون ورودی",
+          "difficulty": 11,
+          "label": "چالش ۱",
+          "lessons": [
+            {
+              "id": "G-L7-L01",
+              "title": "ماتریس ریون: پیشرفته",
+              "type": "reasoning",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 11,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L7-L02",
+              "title": "دنباله عددی پیشرفته",
+              "type": "number-pattern",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 11,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L7-L03",
+              "title": "استدلال کلامی: متضادها",
+              "type": "reasoning",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 11,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L7-L04",
+              "title": "حل مسئله چند گامی",
+              "type": "problem-solving",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 11,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L7-L05",
+              "title": "استنتاج منطقی پیشرفته",
+              "type": "deduction",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 11,
+              "ageBand": "۷ تا ۸ سال"
+            }
+          ],
+          "ageBand": "۷ تا ۸ سال",
+          "progressionOrder": 7
+        },
+        {
+          "id": "G-L8",
+          "title": "تیزهوشان پیشرفته: سرعت و دقت",
+          "difficulty": 12,
+          "label": "چالش ۲",
+          "lessons": [
+            {
+              "id": "G-L8-L01",
+              "title": "حافظه فعال: توالی بلند",
+              "type": "memory-logic",
+              "status": "planned",
+              "order": 1,
+              "difficulty": 12,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L8-L02",
+              "title": "تشخیص سریع تفاوت",
+              "type": "spot-difference",
+              "status": "planned",
+              "order": 2,
+              "difficulty": 12,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L8-L03",
+              "title": "محاسبه ذهنی سریع",
+              "type": "arithmetic",
+              "status": "planned",
+              "order": 3,
+              "difficulty": 12,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L8-L04",
+              "title": "الگوی ترکیبی پیچیده",
+              "type": "patterns",
+              "status": "planned",
+              "order": 4,
+              "difficulty": 12,
+              "ageBand": "۷ تا ۸ سال"
+            },
+            {
+              "id": "G-L8-L05",
+              "title": "معمای پایانی تیزهوشان",
+              "type": "riddle",
+              "status": "planned",
+              "order": 5,
+              "difficulty": 12,
+              "ageBand": "۷ تا ۸ سال"
+            }
+          ],
+          "ageBand": "۷ تا ۸ سال",
+          "progressionOrder": 8
+        }
+      ]
     }
   ],
-  "totalLessons": 292
+  "totalLessons": 332
 }

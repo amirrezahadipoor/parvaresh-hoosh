@@ -202,18 +202,24 @@ window.ArcadeGames = (function() {
     // 2. FEED THE HUNGRY ANIMALS
     function launchFeedAnimals(container, onExit) {
         const pairs = [
-            { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
+            // Each animal must be paired with the food it really eats: this is a
+            // knowledge game, so a wrong pairing teaches the wrong fact. The
+            // rabbit ate an apple here, which is why children answered "carrot"
+            // and were marked wrong.
+            { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'هویج', foodSvg: SvgArt.object('carrot', 50) },
             { animal: 'dog', animalName: 'هاپو باوفا', food: 'استخوان', foodSvg: SvgArt.object('bone', 50) },
             { animal: 'cat', animalName: 'پیشی ملوس', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) },
             { animal: 'monkey', animalName: 'میمون زرنگ', food: 'موز', foodSvg: SvgArt.object('banana', 50) },
             { animal: 'elephant', animalName: 'فیل آرام', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
             { animal: 'bear', animalName: 'خرس مهربان', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
-            { animal: 'turtle', animalName: 'لاک‌پشت آرام', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
-            { animal: 'fox', animalName: 'روباه زرنگ', food: 'پرتقال', foodSvg: SvgArt.object('orange', 50) },
-            { animal: 'frog', animalName: 'قورباغه شاد', food: 'پرتقال', foodSvg: SvgArt.object('orange', 50) },
-            { animal: 'cow', animalName: 'گاو دوست‌داشتنی', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
-            { animal: 'sheep', animalName: 'گوسفند پشمالو', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
-            { animal: 'duck', animalName: 'اردک زرد', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) }
+            { animal: 'turtle', animalName: 'لاک‌پشت آرام', food: 'کاهو', foodSvg: SvgArt.object('lettuce', 50) },
+            { animal: 'fox', animalName: 'روباه زرنگ', food: 'انگور', foodSvg: SvgArt.object('grape', 50) },
+            // A frog eats insects, not citrus.
+            { animal: 'frog', animalName: 'قورباغه شاد', food: 'حشره', foodSvg: SvgArt.animal('bee', 50) },
+            { animal: 'cow', animalName: 'گاو دوست‌داشتنی', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
+            { animal: 'sheep', animalName: 'گوسفند پشمالو', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
+            // A duck eats grain, not fish.
+            { animal: 'duck', animalName: 'اردک زرد', food: 'دانه', foodSvg: SvgArt.object('seeds', 50) }
         ];
 
         let currentIdx = 0;
