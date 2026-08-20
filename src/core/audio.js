@@ -856,6 +856,56 @@ window.AudioEngine = (function() {
         'gifted-balance',
         'gifted-classify',
         'gifted-compare',
+        'gifted-g-l1-l01',
+        'gifted-g-l1-l02',
+        'gifted-g-l1-l03',
+        'gifted-g-l1-l04',
+        'gifted-g-l1-l05',
+        'gifted-g-l10-l01',
+        'gifted-g-l10-l02',
+        'gifted-g-l10-l03',
+        'gifted-g-l10-l04',
+        'gifted-g-l10-l05',
+        'gifted-g-l2-l01',
+        'gifted-g-l2-l02',
+        'gifted-g-l2-l03',
+        'gifted-g-l2-l04',
+        'gifted-g-l2-l05',
+        'gifted-g-l3-l01',
+        'gifted-g-l3-l02',
+        'gifted-g-l3-l03',
+        'gifted-g-l3-l04',
+        'gifted-g-l3-l05',
+        'gifted-g-l4-l01',
+        'gifted-g-l4-l02',
+        'gifted-g-l4-l03',
+        'gifted-g-l4-l04',
+        'gifted-g-l4-l05',
+        'gifted-g-l5-l01',
+        'gifted-g-l5-l02',
+        'gifted-g-l5-l03',
+        'gifted-g-l5-l04',
+        'gifted-g-l5-l05',
+        'gifted-g-l6-l01',
+        'gifted-g-l6-l02',
+        'gifted-g-l6-l03',
+        'gifted-g-l6-l04',
+        'gifted-g-l6-l05',
+        'gifted-g-l7-l01',
+        'gifted-g-l7-l02',
+        'gifted-g-l7-l03',
+        'gifted-g-l7-l04',
+        'gifted-g-l7-l05',
+        'gifted-g-l8-l01',
+        'gifted-g-l8-l02',
+        'gifted-g-l8-l03',
+        'gifted-g-l8-l04',
+        'gifted-g-l8-l05',
+        'gifted-g-l9-l01',
+        'gifted-g-l9-l02',
+        'gifted-g-l9-l03',
+        'gifted-g-l9-l04',
+        'gifted-g-l9-l05',
         'gifted-memory',
         'gifted-number',
         'gifted-odd',
@@ -969,6 +1019,13 @@ window.AudioEngine = (function() {
         return !!clipFor(text);
     }
 
+    // Does a recording with this FILE name exist and ship? (hasClip() above asks
+    // the different question "is this spoken TEXT recorded?".) Used by the
+    // generator to attach a lesson's own narration only when it was recorded.
+    function hasClipFile(name) {
+        return AVAILABLE_CLIPS.has(String(name));
+    }
+
     // ------------------------------------------------------------------
     // RECORDED CHILD-VOICE NARRATION (no TTS).
     //
@@ -1055,6 +1112,7 @@ window.AudioEngine = (function() {
         currentTrackTitle,
         playClip,
         hasClip,
+        hasClipFile,
         hasPersianVoice: () => false,
         stopSpeak,
         startMusic,

@@ -945,9 +945,9 @@
 
         $('#domain-progress-text').textContent = `${toFa(doneLessons)} از ${toFa(allLessons.length)} درس`;
 
-        // Spoken welcome for the gifted school. Every lesson's opening round
-        // already narrates its own instruction (that always wins), so the
-        // section intro is played here, once, when the child walks in.
+        // Spoken welcome when the child walks into the gifted school. Each
+        // lesson then plays its OWN recorded line (round.lessonIntro), so this
+        // fires only at the section door, not before every lesson.
         if (state.domainId === 'gifted' && AudioEngine.playClip) {
             setTimeout(() => AudioEngine.playClip('gifted-welcome'), 260);
         }
@@ -1220,10 +1220,23 @@
             // the child hears the exact letter being taught in this round; otherwise
             // fall back to the lesson-level intro clip on the first round.
             if (AudioEngine.playClip) {
+                // A gifted lesson has its own recorded teaching line. Play it once
+                // on the first round, then let the round's own instruction follow
+                // when the intro finishes, so the child hears both instead of the
+                // intro being suppressed by the instruction (or talking over it).
+                const intro = roundIdx === 0 ? round.lessonIntro : null;
+                if (intro) {
+                    const followUp = (round.audioClip && round.audioAutoPlay !== false)
+                        ? round.audioClip
+                        : null;
+                    AudioEngine.playClip(intro, followUp
+                        ? () => AudioEngine.playClip(followUp)
+                        : null);
+                }
                 // Only rounds that INTRODUCE a letter auto-play its narration. The
                 // follow-up picture/tracing rounds keep the clip on their speaker
                 // button so the same intro is not repeated two or three times.
-                if (round.audioClip && round.audioAutoPlay !== false) AudioEngine.playClip(round.audioClip);
+                else if (round.audioClip && round.audioAutoPlay !== false) AudioEngine.playClip(round.audioClip);
                 else if (roundIdx === 0 && !round.audioClip && AudioEngine.hasClip(`lesson-${lesson.id}`)) {
                     AudioEngine.playClip(`lesson-${lesson.id}`);
                 }

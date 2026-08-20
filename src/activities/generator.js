@@ -1835,10 +1835,27 @@ window.Generator = (function() {
         [/جفت|مقایسه|بزرگ‌تر|بیشتر/, 'gifted-compare']
     ];
 
+    // Every gifted lesson has its OWN recorded line, written for its age band:
+    // clip id is the lesson id lower-cased (G-L1-L01 -> gifted-g-l1-l01). These
+    // are produced by scripts/generate_gifted_audio.py with the same
+    // AI-voice + kidify (+28% pitch, formant shifted) pipeline as every other
+    // clip. The keyword table above stays as a fallback for any future gifted
+    // lesson added before its line is recorded.
+    function giftedLessonClip(metadata) {
+        const id = String((metadata && metadata.id) || '');
+        if (!/^G-/.test(id)) return null;
+        const clip = 'gifted-' + id.toLowerCase();
+        // Only claim the clip if it was actually recorded and shipped.
+        return (window.AudioEngine && window.AudioEngine.hasClipFile
+            && window.AudioEngine.hasClipFile(clip)) ? clip : null;
+    }
+
     function topicClipFor(metadata) {
         const isGifted = metadata && (metadata.domain === 'gifted'
             || /^G-/.test(String(metadata.id || '')));
         if (isGifted) {
+            const own = giftedLessonClip(metadata);
+            if (own) return own;
             const title = String((metadata && metadata.title) || '');
             for (const [re, clip] of GIFTED_TOPIC_AUDIO) if (re.test(title)) return clip;
             return 'gifted-welcome';
@@ -2735,6 +2752,16 @@ window.Generator = (function() {
                 opening.audioAutoPlay = true;
             }
         }
+
+        // Gifted lessons carry a purpose-written line of their own. It must not
+        // replace the round's instruction (that rule stands), so it is exposed
+        // separately as `lessonIntro`: main.js plays it once when the lesson
+        // opens, and the instruction follows. Without this the 50 recorded
+        // gifted lines were never reachable, because every opening round
+        // already has its own narration and always won the check above.
+        const own = giftedLessonClip(metadata);
+        if (own && list.length) list[0].lessonIntro = own;
+
         return list;
     }
 
