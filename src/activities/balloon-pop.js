@@ -31,6 +31,7 @@ window.BalloonPopActivity = (function() {
         `;
         speakerBtn.addEventListener('click', () => {
             AudioEngine.play('click');
+            if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
             AudioEngine.speak(round.speech || 'بادکنک‌ها را لمس کن تا بترکند!');
         });
 
@@ -43,10 +44,6 @@ window.BalloonPopActivity = (function() {
         targetHint.className = 'balloon-target-hint';
         targetHint.textContent = targetText ? `هدف: فقط «${targetText}»` : 'همهٔ بادکنک‌ها را لمس کن';
         card.appendChild(targetHint);
-
-        setTimeout(() => {
-            AudioEngine.speak(round.speech || 'بادکنک‌ها را لمس کن تا بترکند!');
-        }, 150);
 
         // Stage where balloons float
         const stage = document.createElement('div');

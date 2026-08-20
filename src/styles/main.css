@@ -2397,3 +2397,17 @@ body, .screen { overflow-x: hidden; }
     .home-domains-grid .domain-tile { min-height: 96px; padding: 8px 7px; }
     .home-domains-grid .domain-tile .domain-tile-icon svg { width: 36px; height: 36px; }
 }
+
+/* System-navigation clearance -------------------------------------------------
+   Android 15 can place the gesture/Home area over edge-to-edge content while
+   WebView reports env(safe-area-inset-bottom) as zero. Native MainActivity now
+   reserves the actual inset; this small CSS buffer also protects PWA/iOS and
+   intentionally leaves a blank strip below the last interactive control. */
+:root { --app-bottom-clearance: max(env(safe-area-inset-bottom, 0px), 10px); }
+.main-content,
+.parent-scroll-body,
+.arcade-card { padding-bottom: var(--app-bottom-clearance) !important; }
+.activity-fullscreen-stage {
+    padding-bottom: calc(var(--app-bottom-clearance) + 10px) !important;
+    scroll-padding-bottom: calc(var(--app-bottom-clearance) + 10px);
+}

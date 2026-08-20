@@ -3,7 +3,7 @@
   "targetAge": "۴ تا ۸ سال",
   "language": "fa-IR",
   "lastUpdated": "2026-08-20",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "domains": [
     {
       "id": "reading",
@@ -157,7 +157,7 @@
           "lessons": [
             {
               "id": "R-L3-L01",
-              "title": "کلمه های دوحرفی: آب - باب - مامان",
+              "title": "واژه‌های ساده: آب، بابا و مامان",
               "type": "blending",
               "status": "implemented",
               "order": 1,
@@ -166,7 +166,7 @@
             },
             {
               "id": "R-L3-L02",
-              "title": "کلمه های سه حرفی: کتاب - مدرسه",
+              "title": "واژه‌های آشنا: کتاب و مدرسه",
               "type": "blending",
               "status": "implemented",
               "order": 2,
@@ -770,7 +770,7 @@
           "lessons": [
             {
               "id": "M-L1-L01",
-              "title": "شمارش تا 3",
+              "title": "شمارش تا ۳",
               "type": "counting",
               "status": "implemented",
               "order": 1,
@@ -779,7 +779,7 @@
             },
             {
               "id": "M-L1-L02",
-              "title": "شمارش تا 5",
+              "title": "شمارش تا ۵",
               "type": "counting",
               "status": "implemented",
               "order": 2,
@@ -788,7 +788,7 @@
             },
             {
               "id": "M-L1-L03",
-              "title": "شمارش تا 10",
+              "title": "شمارش تا ۱۰",
               "type": "counting",
               "status": "implemented",
               "order": 3,
@@ -797,7 +797,7 @@
             },
             {
               "id": "M-L1-L04",
-              "title": "تشخیص عددها 1 تا 5",
+              "title": "تشخیص عددها ۱ تا ۵",
               "type": "number-recognition",
               "status": "implemented",
               "order": 4,
@@ -806,7 +806,7 @@
             },
             {
               "id": "M-L1-L05",
-              "title": "تشخیص عددها 1 تا 10",
+              "title": "تشخیص عددها ۱ تا ۱۰",
               "type": "number-recognition",
               "status": "implemented",
               "order": 5,
@@ -834,7 +834,7 @@
           "lessons": [
             {
               "id": "M-L2-L01",
-              "title": "شمارش 11 تا 20",
+              "title": "شمارش ۱۱ تا ۲۰",
               "type": "counting",
               "status": "implemented",
               "order": 1,
@@ -962,7 +962,7 @@
             },
             {
               "id": "M-L4-L03",
-              "title": "جمع تا 5",
+              "title": "جمع تا ۵",
               "type": "addition",
               "status": "implemented",
               "order": 3,
@@ -971,7 +971,7 @@
             },
             {
               "id": "M-L4-L04",
-              "title": "جمع تا 10",
+              "title": "جمع تا ۱۰",
               "type": "addition",
               "status": "implemented",
               "order": 4,
@@ -998,7 +998,7 @@
           "lessons": [
             {
               "id": "M-L10-L01",
-              "title": "جمع تا 20",
+              "title": "جمع تا ۲۰",
               "type": "arithmetic",
               "status": "implemented",
               "difficulty": 9,
@@ -1009,7 +1009,7 @@
             },
             {
               "id": "M-L10-L02",
-              "title": "تفریق تا 20",
+              "title": "تفریق تا ۲۰",
               "type": "arithmetic",
               "status": "implemented",
               "difficulty": 9,
@@ -1106,8 +1106,8 @@
             },
             {
               "id": "M-L11-L03",
-              "title": "عدد قبل و بعد تا 50",
-              "type": "patterns",
+              "title": "عدد قبل و بعد تا ۲۰",
+              "type": "number-order",
               "status": "implemented",
               "difficulty": 10,
               "ageBand": "۶ تا ۷ سال",
@@ -1117,8 +1117,8 @@
             },
             {
               "id": "M-L11-L04",
-              "title": "بزرگ‌تر و کوچک‌تر تا 50",
-              "type": "patterns",
+              "title": "بزرگ‌تر و کوچک‌تر تا ۲۰",
+              "type": "comparison",
               "status": "implemented",
               "difficulty": 10,
               "ageBand": "۶ تا ۷ سال",
@@ -1128,8 +1128,8 @@
             },
             {
               "id": "M-L11-L05",
-              "title": "اندازه‌گیری با خط‌کش",
-              "type": "patterns",
+              "title": "مقایسه و اندازه‌گیری طول",
+              "type": "measurement",
               "status": "implemented",
               "difficulty": 10,
               "ageBand": "۶ تا ۷ سال",
@@ -1139,8 +1139,8 @@
             },
             {
               "id": "M-L11-L06",
-              "title": "زمان‌های ساده ساعت و نیم ساعت",
-              "type": "patterns",
+              "title": "زمان‌های ساده: ساعت و نیم‌ساعت",
+              "type": "time",
               "status": "implemented",
               "difficulty": 10,
               "ageBand": "۶ تا ۷ سال",
@@ -1151,7 +1151,7 @@
             {
               "id": "M-L11-L07",
               "title": "پول و خرید ساده",
-              "type": "patterns",
+              "type": "money",
               "status": "implemented",
               "difficulty": 10,
               "ageBand": "۶ تا ۷ سال",
@@ -1180,7 +1180,7 @@
             },
             {
               "id": "M-L5-L02",
-              "title": "تفریق تا 5",
+              "title": "تفریق تا ۵",
               "type": "subtraction",
               "status": "implemented",
               "order": 2,
@@ -1189,7 +1189,7 @@
             },
             {
               "id": "M-L5-L03",
-              "title": "تفریق تا 10",
+              "title": "تفریق تا ۱۰",
               "type": "subtraction",
               "status": "implemented",
               "order": 3,
@@ -1281,7 +1281,7 @@
           "lessons": [
             {
               "id": "M-L7-L01",
-              "title": "جمع تا 20 بدون انتقال",
+              "title": "جمع تا ۲۰ بدون انتقال",
               "type": "addition",
               "status": "implemented",
               "order": 1,
@@ -1290,7 +1290,7 @@
             },
             {
               "id": "M-L7-L02",
-              "title": "تفریق تا 20 بدون انتقال",
+              "title": "تفریق تا ۲۰ بدون انتقال",
               "type": "subtraction",
               "status": "implemented",
               "order": 2,
@@ -1373,7 +1373,7 @@
           "lessons": [
             {
               "id": "M-L9-L01",
-              "title": "شمارش گروه‌های تا 20",
+              "title": "شمارش گروه‌های تا ۲۰",
               "type": "counting",
               "status": "implemented",
               "order": 1,
@@ -1400,7 +1400,7 @@
             },
             {
               "id": "M-L9-L04",
-              "title": "جمع با تصویر تا 20",
+              "title": "جمع با تصویر تا ۲۰",
               "type": "addition",
               "status": "implemented",
               "order": 4,
@@ -1409,7 +1409,7 @@
             },
             {
               "id": "M-L9-L05",
-              "title": "تفریق با تصویر تا 20",
+              "title": "تفریق با تصویر تا ۲۰",
               "type": "subtraction",
               "status": "implemented",
               "order": 5,
@@ -1603,7 +1603,7 @@
           "lessons": [
             {
               "id": "L-L2-L01",
-              "title": "چهار تفاوت را پیدا کن (ساده)",
+              "title": "گزینهٔ متفاوت را پیدا کن (ساده)",
               "type": "spot-difference",
               "status": "implemented",
               "order": 1,
@@ -1640,7 +1640,7 @@
           "lessons": [
             {
               "id": "L-L3-L01",
-              "title": "پازل 4 تکه",
+              "title": "پازل تصویری ساده",
               "type": "jigsaw",
               "status": "implemented",
               "order": 1,
@@ -1649,7 +1649,7 @@
             },
             {
               "id": "L-L3-L02",
-              "title": "پازل 6 تکه",
+              "title": "پازل تصویری مرحلهٔ بعد",
               "type": "jigsaw",
               "status": "implemented",
               "order": 2,
@@ -1824,7 +1824,7 @@
             },
             {
               "id": "L-L6-L02",
-              "title": "مسیر درست را پیدا کن",
+              "title": "الگوی مسیر درست را پیدا کن",
               "type": "maze",
               "status": "implemented",
               "order": 2,

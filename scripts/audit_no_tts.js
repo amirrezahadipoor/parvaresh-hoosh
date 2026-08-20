@@ -104,6 +104,7 @@ function readMp3Shape(buffer) {
 }
 
 const hashes = new Map();
+const observedHashes = new Map();
 for (const clip of clips) {
     const buffer = fs.readFileSync(path.join(kidDir, clip));
     const shape = readMp3Shape(buffer);
@@ -112,11 +113,55 @@ for (const clip of clips) {
         errors.push(`${clip}: expected mono 24 kHz, got ${shape.channels}ch ${shape.sampleRate}Hz`);
     }
     const hash = crypto.createHash('sha256').update(buffer).digest('hex');
+    observedHashes.set(clip.slice(0, -4), hash);
     if (hashes.has(hash)) errors.push(`${clip}: binary duplicate of ${hashes.get(hash)}`);
     else hashes.set(hash, clip);
 }
 
-// ------------------------------------------------ 4. guard list is in sync ----
+// ------------------------------ 4. transcript provenance and one-to-one map --
+const provenancePath = path.join(kidDir, 'narration-provenance.json');
+if (!fs.existsSync(provenancePath)) errors.push('narration-provenance.json is missing');
+const provenance = fs.existsSync(provenancePath)
+    ? JSON.parse(fs.readFileSync(provenancePath, 'utf8')) : { clips: {} };
+const ledgerIds = new Set(Object.keys(provenance.clips || {}));
+for (const clip of clips.map(file => file.slice(0, -4))) {
+    const record = provenance.clips && provenance.clips[clip];
+    if (!record) { errors.push(`${clip}: missing transcript provenance`); continue; }
+    if (!String(record.text || '').trim()) errors.push(`${clip}: empty canonical transcript`);
+    if (record.sha256 !== observedHashes.get(clip)) errors.push(`${clip}: file hash differs from transcript provenance`);
+}
+for (const clip of ledgerIds) if (!observedHashes.has(clip)) errors.push(`${clip}: provenance points to a missing file`);
+
+const autoManifest = JSON.parse(fs.readFileSync(path.join(kidDir, 'auto-manifest.json'), 'utf8'));
+for (const [text, clip] of Object.entries(autoManifest)) {
+    const expectedId = 'auto-' + crypto.createHash('sha256').update(text).digest('hex').slice(0, 12);
+    if (clip !== expectedId) errors.push(`${clip}: auto id does not match transcript hash`);
+    if (!provenance.clips[clip] || provenance.clips[clip].text !== text) errors.push(`${clip}: auto manifest/provenance transcript mismatch`);
+}
+
+const narrationSource = fs.readFileSync(path.join(root, 'src/data/narration-map.js'), 'utf8');
+const narrationMatch = narrationSource.match(/window\.NARRATION_MAP\s*=\s*([\s\S]*);\s*$/);
+const narrationMap = narrationMatch ? JSON.parse(narrationMatch[1]) : {};
+const runtimeClipIds = Object.values(narrationMap);
+for (const file of sourceFiles.filter(candidate => candidate.endsWith('.js'))) {
+    const code = fs.readFileSync(file, 'utf8');
+    for (const match of code.matchAll(/AudioEngine\.speak\(\s*(['"])(.*?)\1\s*\)/gs)) {
+        if (!narrationMap[match[2]]) errors.push(`${path.relative(root, file)}: static speak text has no exact clip: ${match[2]}`);
+    }
+}
+if (new Set(runtimeClipIds).size !== runtimeClipIds.length) {
+    errors.push('runtime narration map reuses a clip for multiple different texts');
+}
+for (const [text, clip] of Object.entries(narrationMap)) {
+    if (!observedHashes.has(clip)) errors.push(`${clip}: runtime text «${text}» has no file`);
+    if (!clip.startsWith('letter-') && (!provenance.clips[clip] || provenance.clips[clip].text !== text)) {
+        errors.push(`${clip}: runtime text does not equal generated transcript`);
+    }
+}
+const seText = provenance.clips['letter-se'] && provenance.clips['letter-se'].text || '';
+if (!seText.includes('سه‌نقطه') || !seText.includes('صدای «س»')) errors.push('letter-se transcript is not explicitly disambiguated from ف');
+
+// ------------------------------------------------ 5. guard list is in sync ----
 const declared = new Set(
     [...(audioSrc.match(/const AVAILABLE_CLIPS = new Set\(\[([\s\S]*?)\]\);/) || ['', ''])[1]
         .matchAll(/'([^']+)'/g)].map(m => m[1])
@@ -135,6 +180,9 @@ console.log(JSON.stringify({
     scannedFiles: sourceFiles.length,
     recordedClips: clips.length,
     availableClipsDeclared: declared.size,
+    provenanceClips: ledgerIds.size,
+    runtimeTexts: Object.keys(narrationMap).length,
+    oneTextPerRuntimeClip: new Set(runtimeClipIds).size === runtimeClipIds.length,
     audioShape: 'MP3 mono 24000 Hz',
     exactBinaryDuplicates: errors.filter(e => e.includes('binary duplicate')).length,
     bannedApisFound: errors.filter(e => e.includes('TTS is forbidden')).length,

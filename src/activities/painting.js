@@ -47,16 +47,13 @@ window.PaintingActivity = (function() {
         `;
         speakerBtn.addEventListener('click', () => {
             AudioEngine.play('click');
-            AudioEngine.speak('هر چی دوست داری با رنگ‌های شاد نقاشی کن گل من!');
+            if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
+            AudioEngine.speak(round.speech || 'هر چی دوست داری با رنگ‌های شاد نقاشی کن!');
         });
 
         headerRow.appendChild(promptTitle);
         headerRow.appendChild(speakerBtn);
         card.appendChild(headerRow);
-
-        setTimeout(() => {
-            AudioEngine.speak('هر چی دوست داری با رنگ‌های شاد نقاشی کن گل من!');
-        }, 150);
 
         // Color Palette Toolbar
         let currentColor = PALETTE[0];

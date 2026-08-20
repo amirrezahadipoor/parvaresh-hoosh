@@ -230,8 +230,9 @@ window.Generator = (function() {
             opts.findIndex(o => o.label === correctWord),
             `کدام کلمه با حرف ${letterObj.letter} شروع می‌شود؟`
         );
-        picRound.audioClip = LETTER_AUDIO[letterObj.letter] ? `letter-${LETTER_AUDIO[letterObj.letter]}` : null;
-        picRound.audioAutoPlay = false;   // speaker button only — avoids repeating the intro
+        // The picture question needs its own exact spoken instruction. Reusing
+        // letter-* here made the speaker say the letter lesson instead of asking
+        // which picture starts with that letter.
         picRound.letter = letterObj.letter;
         return picRound;
     }
@@ -250,6 +251,33 @@ window.Generator = (function() {
             opts.indexOf(correctWord),
             `کدام کلمه با صدای ${k} شروع می‌شود؟`
         );
+    }
+
+    function lastSoundRound() {
+        const words = FREQUENT_WORDS.filter(word => [...String(word)].length >= 2);
+        const word = pick(words);
+        const chars = [...String(word)];
+        const correct = chars[chars.length - 1];
+        const distractors = shuffle(ALPHABET.map(letter => letter.letter).filter(letter => letter !== correct)).slice(0, 3);
+        const options = shuffle([correct, ...distractors]);
+        return mc(
+            `کلمهٔ «${word}» با کدام حرف تمام می‌شود؟`,
+            hasRealArt(word) ? imgForWord(word) : SvgArt.wordTile(word, wordColor(word), 104),
+            options.map(label => ({ label, big: true })),
+            options.indexOf(correct),
+            'صدای آخر کلمه را پیدا کن'
+        );
+    }
+
+    function pictureWordMatchRound() {
+        const drawable = shuffle(FREQUENT_WORDS.filter(hasRealArt)).slice(0, 3);
+        return {
+            type: 'drag-match',
+            prompt: 'هر تصویر را به واژهٔ درست وصل کن:',
+            items: drawable.map(word => ({ id: `تصویر-${word}`, label: '', img: imgForWord(word), target: word })),
+            targets: shuffle(drawable.map(word => ({ id: word, label: word }))),
+            speech: 'هر تصویر را به واژهٔ درست وصل کن'
+        };
     }
 
     function rhymeRound() {
@@ -636,6 +664,87 @@ window.Generator = (function() {
         };
     }
 
+    function plantPartRound() {
+        const bank = [
+            { part: 'ریشه', job: 'آب و مواد غذایی را از خاک می‌گیرد' },
+            { part: 'ساقه', job: 'گیاه را نگه می‌دارد و آب را بالا می‌برد' },
+            { part: 'برگ', job: 'با نور خورشید برای گیاه غذا می‌سازد' },
+            { part: 'گل', job: 'به ساخته شدن دانه و میوه کمک می‌کند' }
+        ];
+        const item = pick(bank);
+        const options = shuffle(bank.map(entry => entry.part));
+        return mc(
+            `کدام بخش گیاه «${item.job}»؟`,
+            SvgArt.questionTile('#79B96B', 112),
+            options.map(label => ({ label })),
+            options.indexOf(item.part),
+            'هر بخش گیاه چه کاری دارد؟'
+        );
+    }
+
+    function waterCycleRound() {
+        const steps = [
+            { label: '۱. گرم شدن آب و تبخیر', img: SvgArt.object('sun', 78), idx: 0 },
+            { label: '۲. سرد شدن بخار و تشکیل ابر', img: SvgArt.object('rain', 78), idx: 1 },
+            { label: '۳. بارش باران یا برف', img: SvgArt.object('rain', 78), idx: 2 },
+            { label: '۴. جمع شدن آب روی زمین', img: SvgArt.object('water', 78), idx: 3 }
+        ];
+        return {
+            type: 'order-steps', prompt: 'مراحل چرخهٔ آب را به ترتیب بچین:',
+            items: shuffle(steps), answer: 'idx', speech: 'مراحل چرخهٔ آب را مرتب کن'
+        };
+    }
+
+    function recyclingRound() {
+        const items = [
+            { id: 'روزنامه', label: 'روزنامه', target: 'کاغذ' },
+            { id: 'بطری پلاستیکی', label: 'بطری پلاستیکی', target: 'پلاستیک' },
+            { id: 'شیشه مربا', label: 'شیشهٔ مربا', target: 'شیشه' }
+        ];
+        return {
+            type: 'drag-match', prompt: 'هر وسیله را در سطل بازیافت درست بگذار:',
+            items: shuffle(items),
+            targets: shuffle([
+                { id: 'کاغذ', label: 'کاغذ' }, { id: 'پلاستیک', label: 'پلاستیک' }, { id: 'شیشه', label: 'شیشه' }
+            ]),
+            speech: 'هر چیز را در سطل بازیافت درست بگذار'
+        };
+    }
+
+    function conservationRound() {
+        const bank = [
+            { prompt: 'برای صرفه‌جویی در آب کدام کار درست است؟', correct: 'هنگام مسواک شیر آب را می‌بندیم', wrong: ['شیر آب را باز می‌گذاریم', 'با آب تمیز بازی می‌کنیم'] },
+            { prompt: 'برای صرفه‌جویی در برق کدام کار درست است؟', correct: 'چراغ اتاق خالی را خاموش می‌کنیم', wrong: ['همهٔ چراغ‌ها را روشن می‌گذاریم', 'یخچال را باز نگه می‌داریم'] },
+            { prompt: 'برای تمیز ماندن طبیعت کدام کار درست است؟', correct: 'زباله را در سطل می‌اندازیم', wrong: ['زباله را روی زمین می‌ریزیم', 'شاخهٔ درخت را می‌شکنیم'] }
+        ];
+        const item = pick(bank);
+        const options = shuffle([item.correct, ...item.wrong]);
+        return mc(item.prompt, SvgArt.object('tree', 108), options.map(label => ({ label })), options.indexOf(item.correct), item.prompt);
+    }
+
+    function energyRound() {
+        const bank = [
+            { prompt: 'کدام وسیله نور خورشید را به برق تبدیل می‌کند؟', correct: 'صفحهٔ خورشیدی', wrong: ['قاشق', 'دفتر'] },
+            { prompt: 'کدام منبع انرژی با وزیدن هوا کار می‌کند؟', correct: 'باد', wrong: ['سنگ', 'خاک'] },
+            { prompt: 'کدام منبع انرژی پاک از حرکت آب استفاده می‌کند؟', correct: 'آب جاری', wrong: ['دود', 'زباله'] }
+        ];
+        const item = pick(bank);
+        const options = shuffle([item.correct, ...item.wrong]);
+        return mc(item.prompt, SvgArt.questionTile('#F9CA24', 112), options.map(label => ({ label })), options.indexOf(item.correct), item.prompt);
+    }
+
+    function scienceReasoningRound() {
+        const bank = [
+            { prompt: 'یخ در کدام حالت زودتر آب می‌شود؟', correct: 'جای گرم', wrong: ['فریزر', 'میان برف'] },
+            { prompt: 'دانه برای جوانه زدن بیشتر به چه نیاز دارد؟', correct: 'آب و گرمای مناسب', wrong: ['رنگ و مداد', 'نمک زیاد'] },
+            { prompt: 'سایه چگونه ساخته می‌شود؟', correct: 'وقتی جسم جلوی نور را می‌گیرد', wrong: ['وقتی صدا بلند است', 'وقتی آب می‌جوشد'] },
+            { prompt: 'باران بیشتر از کجا می‌بارد؟', correct: 'از ابرها', wrong: ['از خاک', 'از سنگ‌ها'] }
+        ];
+        const item = pick(bank);
+        const options = shuffle([item.correct, ...item.wrong]);
+        return mc(item.prompt, SvgArt.questionTile('#4ECDC4', 112), options.map(label => ({ label })), options.indexOf(item.correct), item.prompt);
+    }
+
     function storyOrderRound() {
         const steps = [
             { label: '۱. بیدار شدن از خواب', img: SvgArt.object('sun', 82), idx: 0 },
@@ -676,13 +785,18 @@ window.Generator = (function() {
     // 9. SCIENCE & NATURE ROUNDS
     // ==========================================
     function animalSoundRound() {
-        const a = pick(ANIMALS);
-        const others = shuffle(ANIMALS.map(x => x.fa).filter(x => x !== a.fa)).slice(0, 3);
+        const soundAnimals = ANIMALS.filter(animal => animal.soundQuiz !== false && animal.sound);
+        const a = pick(soundAnimals);
+        const others = shuffle(soundAnimals.map(x => x.fa).filter(x => x !== a.fa)).slice(0, 3);
         const opts = shuffle([a.fa, ...others]);
         return mc(
             `صدای «${a.sound}» صدای کدام حیوان است؟`,
-            SvgArt.animal(a.key, 118),
-            opts.map(x => ({ label: x })),
+            // Showing the animal here revealed the correct option before the child answered.
+            SvgArt.soundVisual(118),
+            opts.map(x => {
+                const animal = soundAnimals.find(candidate => candidate.fa === x);
+                return { label: x, img: animal ? SvgArt.animal(animal.key, 88) : undefined };
+            }),
             opts.indexOf(a.fa),
             // Naming the animal here defeated the whole exercise: the child was
             // told the answer in the same breath as the question.
@@ -710,7 +824,8 @@ window.Generator = (function() {
         const opts = shuffle([b.fa, ...others]);
         return mc(
             `برای «${b.use}» از کدام عضو استفاده می‌کنیم؟`,
-            SvgArt.object(b.icon || 'eye', 112),
+            // A drawing of the correct organ answered the question. Keep the stage neutral.
+            SvgArt.questionTile('#A4B0BE', 112),
             opts.map(x => ({ label: x })),
             opts.indexOf(b.fa),
             b.use
@@ -763,7 +878,9 @@ window.Generator = (function() {
         ];
         return mc(
             pick(emoPhrasings),
-            Mascot.svg(95, e.icon || 'happy'),
+            // For picture-recognition the face is the question. For situation-based
+            // questions a matching mascot face would reveal the answer.
+            short ? SvgArt.emotionFace(e.fa, 95) : SvgArt.questionTile('#A4B0BE', 95),
             // Pre-readers cannot pick «سرخوردگی» from text. Every feeling shows a face.
             opts.map(x => ({ label: x, img: SvgArt.emotionFace(x, 84) || undefined })),
             opts.indexOf(e.fa),
@@ -810,7 +927,7 @@ window.Generator = (function() {
         return mc(
             `«${f.role}» — او در خانواده کیست؟`,
             SvgArt.object('house', 112),
-            opts.map(x => ({ label: x, img: SvgArt.object(FAMILY_IMG[x] || 'mother', 96) })),
+            opts.map(x => ({ label: x, img: SvgArt.person(x, 96) })),
             opts.indexOf(f.fa),
             f.role
         );
@@ -855,8 +972,8 @@ window.Generator = (function() {
             speech: `با انگشت روی ${kind === 'number' ? 'عدد' : 'حرف'} ${char} بکش`
         };
         if (kind !== 'number' && LETTER_AUDIO[String(char)]) {
-            round.audioClip = `letter-${LETTER_AUDIO[String(char)]}`;
-            round.audioAutoPlay = false;  // speaker button only
+            // Keep metadata for validation, but let generate() attach the exact
+            // «با انگشت روی حرف ... بکش» clip rather than a letter introduction.
             round.letter = String(char);
         }
         return round;
@@ -901,14 +1018,6 @@ window.Generator = (function() {
         'جوجه': 'chick', 'مرغ': 'chicken', 'خروس': 'rooster', 'اردک': 'duck',
         'قورباغه': 'frog', 'گوسفند': 'sheep', 'گاو': 'cow', 'روباه': 'fox'
     };
-    // Family members drawn with existing art so the options are not text-only.
-    const FAMILY_IMG = {
-        'مادر': 'mother', 'مادربزرگ': 'mother', 'خاله': 'mother', 'عمه': 'mother',
-        'پدر': 'home', 'پدربزرگ': 'home', 'عمو': 'home', 'دایی': 'home',
-        'خواهر': 'doll', 'دخترخاله': 'doll', 'برادر': 'ball', 'پسرعمو': 'ball',
-        'نوه': 'doll', 'همسایه': 'home', 'دوست': 'ball', 'معلم': 'book'
-    };
-
     const OBJECT_IMG = {
         'سیب': 'apple', 'موز': 'banana', 'پرتقال': 'orange', 'هندوانه': 'watermelon',
         'توپ': 'ball', 'بادکنک': 'balloon', 'خورشید': 'sun', 'ماه': 'moon',
@@ -1124,13 +1233,35 @@ window.Generator = (function() {
     function clockRound() {
         const hour = rint(1, 12);
         const options = shuffle([hour, ((hour + 2) % 12) + 1, ((hour + 5) % 12) + 1, ((hour + 8) % 12) + 1]);
-        return mc(
-            `عقربهٔ ساعت، ساعت ${toFaWord(hour)} را نشان می‌دهد؟`,
-            SvgArt.object('clock', 128),
+        const round = mc(
+            'این ساعت چه زمانی را نشان می‌دهد؟',
+            SvgArt.clock(hour, 0, 128),
             options.map(value => ({ label: `${toFaDigit(value)}:۰۰`, big: true })),
             options.indexOf(hour),
-            `ساعت ${toFaWord(hour)} را پیدا کن`
+            'ساعت چند است؟'
         );
+        round.clockHour = hour;
+        return round;
+    }
+
+    function moneyRound() {
+        const values = [1, 2, 5, 10];
+        const a = pick(values);
+        const b = pick(values);
+        const total = a + b;
+        const pool = [];
+        for (let value = 1; value <= 20; value++) if (value !== total) pool.push(value);
+        const options = shuffle([total, ...shuffle(pool).slice(0, 3)]);
+        const coin = value => `<span style="display:inline-flex;width:84px;height:84px;border-radius:50%;align-items:center;justify-content:center;background:#F9CA24;border:4px solid #B7791F;color:#523A08;font-size:25px;font-weight:900;box-shadow:inset 0 0 0 5px #FFEAA7">${toFaDigit(value)}</span>`;
+        const round = mc(
+            'این دو سکه روی هم چند تومان می‌شوند؟',
+            `<div class="round-visual-flex">${coin(a)}<span style="font-size:30px;font-weight:900">+</span>${coin(b)}</div>`,
+            options.map(value => ({ label: `${toFaDigit(value)} تومان`, big: true })),
+            options.indexOf(total),
+            'سکه‌ها روی هم چند تومان می‌شوند؟'
+        );
+        round.moneyTotal = total;
+        return round;
     }
 
     // ==========================================
@@ -1495,24 +1626,57 @@ window.Generator = (function() {
     // Simpler stand-ins used when a round is too advanced for the youngest track.
     // Deliberately weighted toward hands-on, non-quiz activities so the youngest
     // track does not collapse into wall-to-wall multiple choice.
-    function simpleSubstitute() {
-        return pick([
-            // Picture-answer shape round: the child hears/sees the name and taps the
-            // SHAPE. The word-answer variant (shapeNameRound) requires reading.
-            shapeMatchRound, shapeMatchRound,
-            paintingRound, paintingRound,
-            () => memoryRound(2), () => memoryRound(2),
-            balloonRound, balloonRound,
-            () => tracingRound(pick(ALPHABET).letter, 'letter'),
-            () => tracingRound(toFaDigit(rint(1, 5)), 'number'),
-            // shapeNameRound was in this pool, so the pre-reader gate sometimes swapped
-            // one word-answer round for another ("این چه شکلی است؟" -> «قلب»).
-            colorRound, animalSoundRound, () => emotionRound(true)
-        ])();
+    function simpleSubstitute(domainHint) {
+        // A substitute must stay inside the subject the child explicitly chose.
+        // The old global pool could replace a reading question with animal sounds,
+        // a science question with painting, or a maths question with emotions.
+        const domain = String(domainHint || '');
+        const pools = {
+            reading: [
+                () => letterSoundRound(pick(ALPHABET)),
+                () => letterExampleRound(pick(ALPHABET)),
+                () => tracingRound(pick(ALPHABET).letter, 'letter')
+            ],
+            math: [
+                () => countRound(5), () => numberNameRound(5), () => compareRound(5),
+                () => tracingRound(toFaDigit(rint(1, 5)), 'number'), shapeMatchRound
+            ],
+            logic: [() => memoryRound(2), shapeMatchRound, () => oddOneOutRound('shapes')],
+            science: [animalSoundRound, animalSoundRound, seasonRound],
+            'socio-emotional': [() => emotionRound(true), () => emotionRound(true), familyRound],
+            art: [paintingRound, colorRound, paintingRound, patternRound],
+            gifted: [() => memoryRound(2), shapeMatchRound, () => oddOneOutRound('shapes'), patternRound]
+        };
+        const pool = pools[domain] || [shapeMatchRound];
+        return pick(pool)();
     }
+    function guaranteedPreReaderSubstitute(domainHint) {
+        switch (String(domainHint || '')) {
+            case 'reading': return letterSoundRound(pick(ALPHABET));
+            case 'math': return countRound(5);
+            case 'logic': return memoryRound(2);
+            case 'science': return animalSoundRound();
+            case 'socio-emotional': return emotionRound(true);
+            case 'art': return paintingRound();
+            case 'gifted': return memoryRound(2);
+            default: return shapeMatchRound();
+        }
+    }
+
     // Harder stand-ins used when a round is too babyish for the oldest track.
-    function advancedSubstitute() {
-        return pick([ravenRound, shadowRound, oppositeMatchRound, materialRound, socialStoryRound])();
+    function advancedSubstitute(domainHint) {
+        const domain = String(domainHint || '');
+        const pools = {
+            reading: [sentenceOrderRound, oppositeMatchRound, wordMeaningRound],
+            math: [() => arithRound('both', 20), () => compareRound(20), clockRound],
+            logic: [ravenRound, shadowRound, classifyRound],
+            science: [scienceReasoningRound, waterCycleRound, materialRound],
+            'socio-emotional': [socialStoryRound, emotionMatchRound, behaviourSortRound],
+            art: [paintingRound, patternRound, colorMixRound],
+            gifted: [ravenRound, shadowRound, balanceRound]
+        };
+        const pool = pools[domain] || [ravenRound];
+        return pick(pool)();
     }
 
     // True when every option is a picture/tile, or short enough to recognise by shape.
@@ -1577,26 +1741,12 @@ window.Generator = (function() {
         if (READ_HEAVY.indexOf(round.type) !== -1 && (promptTooLong ||
             (rules.maxOptionChars && !optionsReadableFor(round, rules.maxOptionChars, rules.maxPromptChars)))) {
             try {
-                let alt = null;
-                for (let attempt = 0; attempt < 12; attempt++) {
-                    const cand = simpleSubstitute();
-                    if (!cand) continue;
-                    const candLong = Number.isFinite(rules.maxPromptChars) &&
-                        String(cand.prompt || '').trim().length > rules.maxPromptChars;
-                    if (!candLong && optionsReadableFor(cand, rules.maxOptionChars, rules.maxPromptChars)) { alt = cand; break; }
-                }
-                // Deterministic last resort: a shape round always has picture answers,
-                // so a pre-reader can never be left with a word-only question.
-                if (!alt) {
-                    try {
-                        const cand = shapeMatchRound();
-                        if (cand && optionsReadableFor(cand, rules.maxOptionChars, rules.maxPromptChars)) alt = cand;
-                    } catch (e) { /* keep null */ }
-                }
-                if (alt) {
-                    return { ...alt, lessonId: round.lessonId, skillType: round.skillType, difficulty: round.difficulty };
-                }
-            } catch (e) { /* keep the original */ }
+                // Deterministic and domain-specific: retries over a mixed random
+                // pool occasionally exhausted and leaked the original unreadable
+                // round (or a foreign shape exercise) into direct subject mode.
+                const alt = guaranteedPreReaderSubstitute(domainHint);
+                if (alt) return { ...alt, lessonId: round.lessonId, skillType: round.skillType, difficulty: round.difficulty };
+            } catch (e) { /* keep the original only if construction itself fails */ }
         }
 
         if (rules.avoid.indexOf(round.type) === -1) return round;
@@ -1610,7 +1760,9 @@ window.Generator = (function() {
         const subject = String(domainHint || '');
         if (subject === 'art') return round;
         try {
-            const replacement = (trackKey === 'school') ? advancedSubstitute() : simpleSubstitute();
+            const replacement = (trackKey === 'school')
+                ? advancedSubstitute(domainHint)
+                : guaranteedPreReaderSubstitute(domainHint);
             if (replacement && replacement.type && rules.avoid.indexOf(replacement.type) === -1) {
                 return { ...replacement, lessonId: round.lessonId, skillType: round.skillType, difficulty: round.difficulty };
             }
@@ -1765,9 +1917,8 @@ window.Generator = (function() {
                 // Halfway through, hand the child something to DO rather than choose.
                 if (i === 1) factories.push(() => tracingRound(letterObj.letter, 'letter'));
             });
-            // Finish on a game, not another question. A 4-year-old will not sit
-            // through a 12-round lesson, so the set is capped at 10.
-            factories.push(() => balloonRound());
+            // Do not append a generic balloon/number round: a child who chose
+            // alphabet must see only the four letters named by this lesson.
             const rounds = plan(factories, { ...metadata, difficulty: level }, true);
             return rounds.map(round => adaptRoundForAge(round, metadata, pkg));
         }
@@ -1794,7 +1945,7 @@ window.Generator = (function() {
 
 
     // Fallback age tracks for lessons that have no authored package. Without this
-    // 150 of 292 lessons ignored the child's age completely: a 4-year-old and an
+    // 200 of 342 lessons ignored the child's age completely: a 4-year-old and an
     // 8-year-old saw the same number of options.
     const GENERIC_AGE_TRACKS = {
         toddler:   { label: '۴ سال', optionCount: 2, hintDelay: 2200, maxNumber: 3, language: 'خیلی کوتاه و تصویری' },
@@ -1841,7 +1992,7 @@ window.Generator = (function() {
         // measurement, volume, time, matching, recycling, energy, conservation
         // and scientific-reasoning. Each now has its own Persian narration.
         'measurement': 'topic-measure', 'volume': 'topic-measure',
-        'time': 'topic-time',
+        'time': 'topic-time', 'money': 'topic-addition',
         'matching': 'topic-matching', 'pairing': 'topic-matching',
         'recycling': 'topic-recycle', 'conservation': 'topic-recycle',
         'energy': 'topic-energy',
@@ -1922,7 +2073,7 @@ window.Generator = (function() {
 
     // ------------------------------------------------------------------
     // TITLE-DRIVEN ROUTING
-    // 150 of 292 lessons have no authored package. Their `type` is a coarse
+    // 200 of 342 lessons have no authored package. Their `type` is a coarse
     // bucket -- 15 lessons share "social-emotional", 15 share "creative-art",
     // 10 share "reasoning" -- so they all collapsed into one `default:` branch
     // and produced the same generic rounds no matter what their title promised.
@@ -1942,6 +2093,10 @@ window.Generator = (function() {
         // then falls through to the correct domain/type router.
         const dom = (metadata && metadata.domain) || '';
         const inDomain = (...allowed) => !dom || allowed.indexOf(dom) !== -1;
+        const normalizedTitle = title.replace(/[۰-۹]/g, digit => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)));
+        const declaredNumbers = (normalizedTitle.match(/\d+/g) || []).map(Number).filter(Number.isFinite);
+        const declaredMax = declaredNumbers.length ? Math.max(...declaredNumbers) : null;
+        const mathLimit = declaredMax || (level <= 4 ? 10 : 20);
 
         // --- gifted / entrance-exam track -------------------------------------
         // Checked first and gated to the domain: these titles ("الگو", "معما",
@@ -2030,146 +2185,155 @@ window.Generator = (function() {
         }
 
         // --- reading / phonics (most specific first) --------------------------
-        if (has('صدای اول', 'صدای آغازین'))
+        if (inDomain('reading') && (has('صدای اول', 'صدای آغازین')))
             return [firstSoundRound, () => letterExampleRound(pick(ALPHABET)), firstSoundRound, syllableRound];
-        if (has('صدای آخر', 'صدای مشترک'))
-            return [firstSoundRound, rhymeRound, firstSoundRound, syllableRound];
-        if (has('قافیه'))
+        if (inDomain('reading') && (has('صدای آخر')))
+            return [lastSoundRound, lastSoundRound, lastSoundRound, lastSoundRound];
+        if (inDomain('reading') && (has('صدای مشترک')))
+            return [firstSoundRound, firstSoundRound, rhymeRound, firstSoundRound];
+        if (inDomain('reading') && (has('قافیه')))
             return [rhymeRound, rhymeRound, syllableRound, firstSoundRound];
-        if (has('هجا', 'بخش بندی', 'بخش‌بندی'))
+        if (inDomain('reading') && (has('هجا', 'بخش بندی', 'بخش‌بندی')))
             return [syllableRound, syllableRound, rhymeRound, firstSoundRound];
-        if (has('دوحرفی', 'سه حرفی', 'ترکیب حروف', 'کلمه سازی', 'کلمه‌سازی', 'واژه‌سازی'))
-            return [blendRound, blendRound, sightWordRound, () => memoryRound(3)];
-        if (has('متصل و منفصل'))
+        if (inDomain('reading') && (has('دوحرفی', 'سه حرفی', 'واژه‌های ساده', 'واژه‌های آشنا', 'ترکیب حروف', 'کلمه سازی', 'کلمه‌سازی', 'واژه‌سازی')))
+            return [blendRound, syllableRound, blendRound, firstSoundRound];
+        if (inDomain('reading') && (has('متصل و منفصل')))
             return [blendRound, () => letterSoundRound(pick(ALPHABET)), () => tracingRound(pick(ALPHABET).letter, 'letter'), blendRound];
-        if (has('واژه‌های روزمره', 'پرکاربرد', 'روان خوانی', 'روان‌خوانی'))
+        if (inDomain('reading') && (has('واژه‌های روزمره', 'پرکاربرد', 'روان خوانی', 'روان‌خوانی')))
             return [sightWordRound, sightWordRound, sentenceRound, wordMeaningRound];
-        if (has('متضاد', 'مخالف'))
+        if (inDomain('reading') && (has('متضاد', 'مخالف')))
             return [oppositeRound, oppositeMatchRound, oppositeRound, wordMeaningRound];
-        if (has('هم‌معنی', 'هم معنی'))
+        if (inDomain('reading') && (has('هم‌معنی', 'هم معنی')))
             return [wordMeaningRound, sightWordRound, oppositeRound, sentenceRound];
-        if (has('ترتیب واژه', 'مرتب کردن کلمات', 'جمله سازی', 'جمله‌سازی'))
-            return [sentenceOrderRound, sentenceRound, sentenceOrderRound, storyOrderRound];
-        if (has('نوشتن حروف', 'نوشتن کلمات') || (has('با انگشت') && !has('جمع', 'تفریق', 'عدد')))
-            return [() => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter'), blendRound, sightWordRound];
+        if (inDomain('reading') && (has('تصویر و کلمه')))
+            return [pictureWordMatchRound, pictureWordMatchRound, sightWordRound, pictureWordMatchRound];
+        if (inDomain('reading') && (has('ترتیب واژه', 'مرتب کردن کلمات', 'جمله سازی', 'جمله‌سازی', 'جمله های دو', 'جمله های سه', 'جمله‌های دو', 'جمله‌های سه')))
+            return [sentenceOrderRound, sentenceRound, sentenceOrderRound, sentenceRound];
+        if (inDomain('reading') && (has('نوشتن حروف', 'نوشتن کلمات') || (has('با انگشت') && !has('جمع', 'تفریق', 'عدد'))))
+            return [() => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter'), () => letterExampleRound(pick(ALPHABET))];
 
         // --- math patterns / numbers ------------------------------------------
-        if (has('الگوی عددی'))
-            return [() => numberOrderRound(level <= 4 ? 10 : 20), patternRound, () => numberOrderRound(level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
-        if (has('الگوی رنگی'))
+        if (inDomain('math') && (has('پول', 'خرید')))
+            return [moneyRound, moneyRound, clockRound, () => arithRound('both', 20)];
+        if (inDomain('math') && (has('ساعت', 'زمان')))
+            return [clockRound, clockRound, clockRound, () => numberOrderRound(12)];
+        if (inDomain('math') && (has('اندازه‌گیری', 'طول', 'کوتاه و بلند')))
+            return [orderSizeRound, () => compareRound(mathLimit), orderSizeRound, balanceRound];
+        if (inDomain('math') && (has('الگوی عددی')))
+            return [() => numberOrderRound(mathLimit), patternRound, () => numberOrderRound(mathLimit), () => compareRound(mathLimit)];
+        if (inDomain('math') && (has('الگوی رنگی')))
             return [patternRound, colorRound, patternRound, patternOrderRound];
-        if (has('عدد گمشده', 'دنباله'))
-            return [() => numberOrderRound(level <= 4 ? 10 : 20), () => numberOrderRound(level <= 4 ? 10 : 20), patternRound, () => compareRound(level <= 4 ? 10 : 20)];
-        if (has('الگوی ترکیبی'))
+        if (inDomain('math') && (has('عدد گمشده', 'دنباله')))
+            return [() => numberOrderRound(mathLimit), () => numberOrderRound(mathLimit), patternRound, () => compareRound(mathLimit)];
+        if (inDomain('math') && (has('الگوی ترکیبی')))
             return [patternRound, patternOrderRound, shapeMatchRound, colorRound];
-        if (has('جمع با', 'جمع تا', 'جمع کردن'))
-            return [() => arithRound('+', level <= 4 ? 10 : 20), () => countRound(level <= 4 ? 10 : 20), () => arithRound('+', level <= 4 ? 10 : 20), () => numberOrderRound(level <= 4 ? 10 : 20)];
-        if (has('تفریق'))
-            return [() => arithRound('-', level <= 4 ? 10 : 20), () => countRound(level <= 4 ? 10 : 20), () => arithRound('-', level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
-        if (has('جمع و تفریق', 'چالش ترکیبی'))
-            return [() => arithRound('+', level <= 4 ? 10 : 20), () => arithRound('-', level <= 4 ? 10 : 20), () => arithRound('both', level <= 4 ? 10 : 20), () => compareRound(level <= 4 ? 10 : 20)];
+        if (inDomain('math') && (has('جمع و تفریق', 'چالش ترکیبی')))
+            return [() => arithRound('+', mathLimit), () => arithRound('-', mathLimit), () => arithRound('both', mathLimit), () => compareRound(mathLimit)];
+        if (inDomain('math') && (has('جمع با', 'جمع تا', 'جمع کردن', 'مفهوم جمع', 'ماشین جمع', 'جای خالی در جمع', 'مسئله تصویری جمع', 'جمع سه عدد')))
+            return [() => arithRound('+', mathLimit), () => countRound(mathLimit), () => arithRound('+', mathLimit), () => arithRound('+', mathLimit)];
+        if (inDomain('math') && (has('تفریق', 'جای خالی در تفریق', 'مسئله تصویری تفریق')))
+            return [() => arithRound('-', mathLimit), () => countRound(mathLimit), () => arithRound('-', mathLimit), () => compareRound(mathLimit)];
 
         // --- plants (science + logic sequencing both use these titles) ---------
-        if (has('بخش های یک گیاه', 'بخش‌های گیاه', 'بخش های گیاه', 'بخش‌های یک گیاه'))
-            return [plantGrowthRound, plantGrowthRound, materialRound, plantGrowthRound];
-        if (has('گیاه', 'دانه') && has('رشد', 'روند', 'ترتیب', 'مراحل'))
+        if (inDomain('science', 'logic') && (has('بخش های یک گیاه', 'بخش‌های گیاه', 'بخش های گیاه', 'بخش‌های یک گیاه')))
+            return [plantPartRound, plantPartRound, plantGrowthRound, plantPartRound];
+        if (inDomain('science', 'logic') && (has('گیاه', 'دانه') && has('رشد', 'روند', 'ترتیب', 'مراحل')))
             return [plantGrowthRound, plantGrowthRound, storyOrderRound, plantGrowthRound];
-        if (has('گل های رنگارنگ', 'گل‌های رنگارنگ'))
+        if (inDomain('science', 'logic') && (has('گل های رنگارنگ', 'گل‌های رنگارنگ')))
             return [colorRound, colorMixRound, plantGrowthRound, colorRound];
 
         // --- colour-led logic/math titles --------------------------------------
-        if (has('رنگ های مشابه', 'رنگ‌های مشابه'))
+        if (inDomain('logic', 'math') && (has('رنگ های مشابه', 'رنگ‌های مشابه')))
             return [colorRound, colorRound, () => memoryRound(3), shapeMatchRound];
-        if (has('رنگ') && has('دسته‌بندی', 'دسته بندی', 'طبقه'))
+        if (inDomain('logic', 'math') && (has('رنگ') && has('دسته‌بندی', 'دسته بندی', 'طبقه')))
             return [colorRound, classifyRound, colorRound, shapeMatchRound];
-        if (has('رنگ') && has('ماتریس', 'الگو'))
+        if (inDomain('logic', 'math') && (has('رنگ') && has('ماتریس', 'الگو')))
             return [colorRound, patternRound, ravenRound, colorMixRound];
 
         // --- art: painting titles ----------------------------------------------
-        if (has('نقاشی با انگشت', 'انگشتی'))
+        if (inDomain('art') && (has('نقاشی با انگشت', 'انگشتی')))
             return [paintingRound, paintingRound, colorRound, colorMixRound];
-        if (has('طراحی') && has('حیوان', 'گل'))
+        if (inDomain('art') && (has('طراحی') && has('حیوان', 'گل')))
             return [paintingRound, paintingRound, colorRound, shapeMatchRound];
 
         // --- science ----------------------------------------------------------
-        if (has('رشد') && has('گیاه', 'دانه'))
+        if (inDomain('science') && (has('رشد') && has('گیاه', 'دانه')))
             return [plantGrowthRound, plantGrowthRound, () => oddOneOutRound('shapes'), storyOrderRound];
-        if (has('بخش های یک گیاه', 'بخش‌های گیاه', 'بخش های گیاه'))
-            return [plantGrowthRound, plantGrowthRound, materialRound, plantGrowthRound];
-        if (has('گل های رنگارنگ', 'گل‌های رنگارنگ'))
+        if (inDomain('science') && (has('بخش های یک گیاه', 'بخش‌های گیاه', 'بخش های گیاه')))
+            return [plantPartRound, plantPartRound, plantGrowthRound, plantPartRound];
+        if (inDomain('science') && (has('گل های رنگارنگ', 'گل‌های رنگارنگ')))
             return [colorRound, plantGrowthRound, colorRound, colorMixRound];
-        if (has('زیستگاه', 'سازگاری حیوان', 'ردپای حیوان', 'محافظت از حیوان'))
+        if (inDomain('science') && (has('زیستگاه', 'سازگاری حیوان', 'ردپای حیوان', 'محافظت از حیوان')))
             return [animalHabitatRound, animalSoundRound, animalHabitatRound, () => oddOneOutRound('animals')];
-        if (has('صدای حیوان'))
+        if (inDomain('science') && (has('صدای حیوان')))
             return [animalSoundRound, animalSoundRound, animalHabitatRound, () => oddOneOutRound('animals')];
 
         // --- socio-emotional -------------------------------------------------
         // Only for socio-emotional lessons: words like «دوست» and «خانه» appear
         // in reading titles too, and used to steal those lessons.
-        if (!inDomain('socio-emotional')) return null;
-        if (has('عذرخواهی', 'جبران'))
+        if (inDomain('socio-emotional') && (has('عذرخواهی', 'جبران')))
             return [() => socialStoryRound('عذرخواهی'), behaviourSortRound, () => emotionMatchRound('پشیمان|ناراحت'), habitRound];
-        if (has('عصبانی', 'خشم', 'کنترل هیجان'))
+        if (inDomain('socio-emotional') && (has('عصبانی', 'خشم', 'کنترل هیجان')))
             return [() => socialStoryRound('عصبانی'), () => emotionMatchRound('عصبان|خشم|آرامش'), emotionRound, behaviourSortRound];
-        if (has('صبر', 'نوبت'))
+        if (inDomain('socio-emotional') && (has('صبر', 'نوبت')))
             return [() => socialStoryRound('نوبت'), behaviourSortRound, habitRound, emotionRound];
-        if (has('دوست', 'دوستی'))
+        if (inDomain('socio-emotional') && (has('دوست', 'دوستی')))
             return [() => socialStoryRound('دوست'), behaviourSortRound, emotionMatchRound, socialStoryRound];
-        if (has('ناراحت', 'همدلی', 'دلداری'))
+        if (inDomain('socio-emotional') && (has('ناراحت', 'همدلی', 'دلداری')))
             return [() => socialStoryRound('ناراحت'), () => emotionMatchRound('ناراحت|غم|همدل'), emotionRound, behaviourSortRound];
-        if (has('کمک', 'مسئولیت', 'خانه'))
+        if (inDomain('socio-emotional') && (has('کمک', 'مسئولیت', 'خانه')))
             return [() => socialStoryRound('خانه|کمک'), habitRound, behaviourSortRound, familyRound];
-        if (has('کار گروهی', 'تقسیم', 'همکاری'))
+        if (inDomain('socio-emotional') && (has('کار گروهی', 'تقسیم', 'همکاری')))
             return [behaviourSortRound, () => socialStoryRound('دوست|نوبت'), familyRound, habitRound];
-        if (has('گوش دادن', 'گفت‌وگو', 'محترمانه', 'نه گفتن'))
+        if (inDomain('socio-emotional') && (has('گوش دادن', 'گفت‌وگو', 'محترمانه', 'نه گفتن')))
             return [() => socialStoryRound('ناراحت|دوست'), behaviourSortRound, habitRound, emotionRound];
-        if (has('خودم را می‌شناسم', 'نقطه قوت', 'خودشناسی'))
+        if (inDomain('socio-emotional') && (has('خودم را می‌شناسم', 'نقطه قوت', 'خودشناسی')))
             return [emotionRound, () => emotionMatchRound('افتخار|اعتماد|شاد'), familyRound, habitRound];
-        if (has('متفاوت', 'ارزشمند', 'تفاوت'))
+        if (inDomain('socio-emotional') && (has('متفاوت', 'ارزشمند', 'تفاوت')))
             return [familyRound, behaviourSortRound, emotionRound, () => socialStoryRound('دوست')];
-        if (has('احساس', 'هیجان', 'حس'))
+        if (inDomain('socio-emotional') && (has('احساس', 'هیجان', 'حس')))
             return [emotionRound, emotionMatchRound, () => socialStoryRound('ناراحت'), behaviourSortRound];
 
         // --- art --------------------------------------------------------------
-        if (has('رنگ گرم', 'رنگ سرد', 'ترکیب رنگ', 'ترکیب دو رنگ', 'ترکیب سه رنگ'))
+        if (inDomain('art') && (has('رنگ گرم', 'رنگ سرد', 'ترکیب رنگ', 'ترکیب دو رنگ', 'ترکیب سه رنگ')))
             return [colorMixRound, colorRound, colorMixRound, paintingRound];
-        if (has('الگو') && has('نقطه', 'خط', 'تکرارشونده'))
+        if (inDomain('art') && (has('الگو') && has('نقطه', 'خط', 'تکرارشونده')))
             return [patternRound, patternOrderRound, paintingRound, colorRound];
-        if (has('نقاشی', 'رنگ‌آمیزی', 'طراحی', 'کمیک', 'پوستر', 'کارت تبریک', 'شخصیت', 'قاب'))
+        if (inDomain('art') && (has('نقاشی', 'رنگ‌آمیزی', 'طراحی', 'کمیک', 'پوستر', 'کارت تبریک', 'شخصیت', 'قاب')))
             return [paintingRound, paintingRound, colorRound, colorMixRound];
-        if (has('ریتم', 'موسیقی', 'آهنگ', 'دست زدن'))
-            return [balloonRound, patternOrderRound, paintingRound, colorRound];
-        if (has('شکل') && has('دایره', 'مربع', 'ساختن', 'تبدیل'))
+        if (inDomain('art') && (has('ریتم', 'موسیقی', 'آهنگ', 'دست زدن')))
+            return [() => simonRound(3), patternOrderRound, () => simonRound(4), patternRound];
+        if (inDomain('art') && (has('شکل') && has('دایره', 'مربع', 'ساختن', 'تبدیل')))
             return [shapeMatchRound, patternRound, paintingRound, orderSizeRound];
 
         // --- logic --------------------------------------------------------------
-        if (has('حافظه') || /حافظه \d/.test(title))
+        if (inDomain('logic') && (has('حافظه') || /حافظه \d/.test(title)))
             return [() => memoryRound(Math.min(5, 3 + Math.floor(level / 3))), () => memoryRound(4), disappearedRound, simonRound];
-        if (has('جفت‌یابی', 'جفت یابی'))
+        if (inDomain('logic') && (has('جفت‌یابی', 'جفت یابی')))
             return [() => memoryRound(4), () => memoryRound(3), shadowRound, disappearedRound];
-        if (has('شیء گمشده', 'شیء گم'))
+        if (inDomain('logic') && (has('شیء گمشده', 'شیء گم')))
             return [disappearedRound, () => memoryRound(4), shadowRound, simonRound];
-        if (has('سایه'))
+        if (inDomain('logic') && (has('سایه')))
             return [shadowRound, shadowRound, shapeMatchRound, () => memoryRound(3)];
-        if (has('ماتریس'))
+        if (inDomain('logic') && (has('ماتریس')))
             return [ravenRound, ravenRound, patternRound, shapeMatchRound];
-        if (has('دنباله', 'الگوی پنهان', 'الگو'))
+        if (inDomain('logic') && (has('دنباله', 'الگوی پنهان', 'الگو')))
             return [patternRound, patternOrderRound, ravenRound, orderSizeRound];
-        if (has('رنگ های مشابه', 'رنگ‌های مشابه'))
+        if (inDomain('logic') && (has('رنگ های مشابه', 'رنگ‌های مشابه')))
             return [colorRound, () => memoryRound(3), colorRound, shapeMatchRound];
-        if (has('حیوانات') && has('دسته', 'میوه'))
+        if (inDomain('logic') && (has('حیوانات') && has('دسته', 'میوه')))
             return [classifyRound, () => oddOneOutRound('animals'), animalHabitatRound, classifyRound];
-        if (has('دسته‌بندی', 'دسته بندی', 'طبقه‌بندی', 'طبقه بندی'))
+        if (inDomain('logic') && (has('دسته‌بندی', 'دسته بندی', 'طبقه‌بندی', 'طبقه بندی')))
             return [classifyRound, classifyRound, () => oddOneOutRound('shapes'), () => oddOneOutRound('animals')];
-        if (has('متفاوت است', 'کدام تصویر متفاوت'))
+        if (inDomain('logic') && (has('متفاوت است', 'کدام تصویر متفاوت')))
             return [() => oddOneOutRound('animals'), () => oddOneOutRound('shapes'), shadowRound, classifyRound];
-        if (has('ترتیب') && has('رشد', 'گیاه'))
+        if (inDomain('logic') && (has('ترتیب') && has('رشد', 'گیاه')))
             return [plantGrowthRound, storyOrderRound, orderSizeRound, plantGrowthRound];
-        if (has('اول اتفاق', 'ترتیب', 'مراحل'))
+        if (inDomain('logic') && (has('اول اتفاق', 'ترتیب', 'مراحل')))
             return [storyOrderRound, orderSizeRound, plantGrowthRound, socialStoryRound];
-        if (has('معما', 'سرنخ'))
+        if (inDomain('logic') && (has('معما', 'سرنخ')))
             return [wordMeaningRound, ravenRound, () => oddOneOutRound('animals'), shadowRound];
-        if (has('مسیر', 'پازل'))
+        if (inDomain('logic') && (has('مسیر', 'پازل')))
             return [ravenRound, patternRound, shadowRound, () => memoryRound(3)];
 
         return null;
@@ -2177,20 +2341,25 @@ window.Generator = (function() {
 
     function lessonPlan(lessonId, metadata) {
         const pkg = window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId];
-        if (pkg) {
-            const authored = authoredLessonPlan(lessonId, metadata, pkg);
-            // null means the package had nothing topic-specific to contribute.
-            if (authored) return authored;
-        }
         {
             const lvl = lessonLevel(lessonId, metadata);
             const tp = titlePlan(metadata, lvl);
             if (tp) return plan(tp, { ...metadata, difficulty: lvl });
         }
+        // Keep the one package feature that is truly lesson-specific: the exact
+        // four-letter alphabet sequence. Other historical package plans contain
+        // generic filler roles (balloon, memory, painting, order-size) and are not
+        // allowed to override the subject/type router.
+        if (pkg && /صدای الفبا/.test(pkg.title || metadata && metadata.title || '')) {
+            const authored = authoredLessonPlan(lessonId, metadata, pkg);
+            if (authored) return authored;
+        }
         const domain = inferDomain(lessonId, metadata);
         const type = metadata && metadata.type || '';
         const level = lessonLevel(lessonId, metadata);
-        const countMax = level <= 2 ? 5 : level <= 4 ? 10 : 20;
+        const lessonTitle = String(metadata && metadata.title || '').replace(/[۰-۹]/g, digit => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)));
+        const titleNumbers = (lessonTitle.match(/\d+/g) || []).map(Number).filter(Number.isFinite);
+        const countMax = titleNumbers.length ? Math.max(...titleNumbers) : (level <= 2 ? 5 : level <= 4 ? 10 : 20);
         const pairCount = Math.min(5, 2 + Math.floor(level / 2));
 
         if (domain === 'reading') {
@@ -2216,9 +2385,9 @@ window.Generator = (function() {
                 case 'blending':
                 case 'letter-connection':
                 case 'word-building':
-                    return plan([blendRound, blendRound, memoryRound.bind(null, 3)], metadata);
+                    return plan([blendRound, syllableRound, blendRound, firstSoundRound], metadata);
                 case 'tracing':
-                    return plan([() => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter'), paintingRound], metadata);
+                    return plan([() => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter'), () => tracingRound(pick(ALPHABET).letter, 'letter')], metadata);
                 case 'sentence-building':
                 case 'word-order':
                 case 'sequencing':
@@ -2229,12 +2398,13 @@ window.Generator = (function() {
                     return plan([sentenceOrderRound, storyOrderRound, sentenceRound, wordMeaningRound], metadata);
                 case 'opposites':
                     return plan([oppositeMatchRound, oppositeRound, oppositeMatchRound], metadata);
+                case 'matching':
+                    return plan([pictureWordMatchRound, pictureWordMatchRound, sightWordRound], metadata);
                 case 'vocabulary':
                 case 'sight-words':
                 case 'comprehension':
                 case 'character-analysis':
                 case 'fill-blank':
-                case 'matching':
                 case 'reading':
                 default:
                     return plan([sightWordRound, wordMeaningRound, oppositeMatchRound, sentenceOrderRound, oppositeRound, sentenceRound], metadata);
@@ -2272,7 +2442,9 @@ window.Generator = (function() {
                 case 'volume':
                     return plan([() => compareRound(countMax), orderSizeRound, balanceRound], metadata);
                 case 'time':
-                    return plan([clockRound, clockRound, () => numberNameRound(12)], metadata);
+                    return plan([clockRound, clockRound, clockRound], metadata);
+                case 'money':
+                    return plan([moneyRound, moneyRound, moneyRound], metadata);
                 case 'mixed-operations':
                 default:
                     return plan([() => arithRound('both', countMax), () => compareRound(countMax), () => countRound(countMax), balanceRound], metadata);
@@ -2324,19 +2496,26 @@ window.Generator = (function() {
                 case 'plant-growth':
                     return plan([plantGrowthRound, monthSeasonRound, seasonRound], metadata);
                 case 'plant-parts':
+                    return plan([plantPartRound, plantPartRound, plantGrowthRound, plantPartRound], metadata);
                 case 'flowers':
-                    return plan([shapeNameRound, plantGrowthRound, materialRound, colorRound], metadata);
+                    return plan([colorRound, plantPartRound, plantGrowthRound, colorRound], metadata);
                 case 'health':
                     return plan([habitRound, bodyUseRound, senseRound, bodyPartRound], metadata);
                 case 'materials':
-                    return plan([materialRound, floatSinkRound, classifyRound], metadata);
+                    return plan([materialRound, floatSinkRound, materialRound], metadata);
                 case 'water-cycle':
-                    return plan([floatSinkRound, storyOrderRound, materialRound, seasonRound], metadata);
+                    return plan([waterCycleRound, waterCycleRound, seasonRound, waterCycleRound], metadata);
                 case 'conservation':
+                    return plan([conservationRound, recyclingRound, conservationRound, materialRound], metadata);
                 case 'recycling':
+                    return plan([recyclingRound, conservationRound, recyclingRound, materialRound], metadata);
                 case 'energy':
+                    return plan([energyRound, energyRound, conservationRound, energyRound], metadata);
+                case 'earth-science':
+                case 'science':
+                case 'scientific-reasoning':
                 default:
-                    return plan([storyOrderRound, materialRound, floatSinkRound, habitRound, monthSeasonRound, classifyRound], metadata);
+                    return plan([scienceReasoningRound, scienceReasoningRound, waterCycleRound, materialRound], metadata);
             }
         }
 
@@ -2376,7 +2555,7 @@ window.Generator = (function() {
                 case 'comic':
                     return plan([paintingRound, colorMixRound, paintingRound, colorRound], metadata);
                 case 'music':
-                    return plan([balloonRound, patternOrderRound, colorRound, paintingRound], metadata);
+                    return plan([() => simonRound(3), patternOrderRound, () => simonRound(4), patternRound], metadata);
                 case 'craft':
                 case 'sculpture':
                 default:
@@ -2640,26 +2819,23 @@ window.Generator = (function() {
     }
 
     function buildRounds(lessonId, metadata) {
-        // The lesson's own TITLE outranks the numeric variation sets. The
-        // progressive tiers (difficulty 9-12, 121 of 292 lessons) chose their
-        // rounds purely by `variation % 8`, so all 15 art lessons shared one
-        // painting/shadow/balloon rotation and «رنگ گرم و سرد» never taught
-        // colour, while every SE lesson from «گوش دادن فعال» to «تقسیم عادلانه»
-        // ran the same emotion/habit/family loop.
-        // An authored package is hand-written for that lesson, so it outranks
-        // keyword guessing; only unpackaged lessons fall to the title router.
-        if (!(window.LESSON_PACKAGES && window.LESSON_PACKAGES[lessonId])) {
-            const lvl = lessonLevel(lessonId, metadata);
-            const titled = titlePlan(metadata, lvl);
-            if (titled) {
-                const built = plan(titled, { ...metadata, difficulty: lvl });
-                if (built && built.length) return adaptGeneric(built, metadata);
-            }
+        // Direct subject entry and adventure entry must resolve the SAME lesson
+        // plan. The old resolver skipped title routing for 142 packaged lessons
+        // and let generic progressive rotations outrank the lesson title. That is
+        // why opening a subject directly surfaced balloons, animals or manners in
+        // reading/maths. The explicit title is now authoritative for every path.
+        const lvl = lessonLevel(lessonId, metadata);
+        const titled = titlePlan(metadata, lvl);
+        if (titled) {
+            const built = plan(titled, { ...metadata, difficulty: lvl });
+            if (built && built.length) return adaptGeneric(built, metadata);
         }
-        const progressivePlan = progressiveExtraPlan(lessonId, metadata);
-        if (progressivePlan && progressivePlan.length) return adaptGeneric(progressivePlan, metadata);
         const metadataPlan = lessonPlan(lessonId, metadata);
         if (metadataPlan && metadataPlan.length) return adaptGeneric(metadataPlan, metadata);
+        // Progressive variation is a final fallback only; it may never override
+        // authored/title-specific content.
+        const progressivePlan = progressiveExtraPlan(lessonId, metadata);
+        if (progressivePlan && progressivePlan.length) return adaptGeneric(progressivePlan, metadata);
 
         // READING
         if (lessonId.startsWith('R-L1')) {
@@ -2799,24 +2975,26 @@ window.Generator = (function() {
         // ("کارت‌ها را برگردان..."). The instruction always wins; the intro is
         // only used when the opening round would otherwise be silent.
         const topic = topicClipFor(metadata);
-        if (topic && list.length && !list[0].audioClip) {
-            const opening = list[0];
-            const spoken = String(opening.speech || opening.prompt || '').trim();
-            const hasOwnVoice = !!(spoken && window.NARRATION_MAP && window.NARRATION_MAP[spoken]);
-            if (!hasOwnVoice) {
-                opening.audioClip = topic;
-                opening.audioAutoPlay = true;
-            }
-        }
+        if (topic && list.length) list[0].lessonIntro = topic;
 
-        // Gifted lessons carry a purpose-written line of their own. It must not
-        // replace the round's instruction (that rule stands), so it is exposed
-        // separately as `lessonIntro`: main.js plays it once when the lesson
-        // opens, and the instruction follows. Without this the 50 recorded
-        // gifted lines were never reachable, because every opening round
-        // already has its own narration and always won the check above.
+        // Gifted lessons carry a purpose-written line of their own. It replaces
+        // the generic topic intro, never the actionable round instruction.
         const own = giftedLessonClip(metadata);
         if (own && list.length) list[0].lessonIntro = own;
+
+        // Every instruction has its own exact file. Previously a topic clip was
+        // stored in audioClip, so tapping the speaker could say «بیایید دربارهٔ
+        // عددها یاد بگیریم» instead of reading the current question. Keep topic
+        // audio in lessonIntro and put only the exact instruction in audioClip.
+        list.forEach(round => {
+            if (round.audioClip) return; // stable, richer letter narration
+            const spoken = String(round.speech || round.prompt || '').trim();
+            const mapped = spoken && window.NARRATION_MAP && window.NARRATION_MAP[spoken];
+            if (mapped) {
+                round.audioClip = mapped;
+                round.audioAutoPlay = true;
+            }
+        });
 
         return list;
     }

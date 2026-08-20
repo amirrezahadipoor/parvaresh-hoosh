@@ -61,6 +61,22 @@ window.ArcadeGames = (function() {
         }
     ];
 
+    const FEED_PAIRS = [
+        { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'هویج', art: ['object', 'carrot'] },
+        { animal: 'dog', animalName: 'هاپو باوفا', food: 'استخوان', art: ['object', 'bone'] },
+        { animal: 'cat', animalName: 'پیشی ملوس', food: 'ماهی', art: ['animal', 'fish'] },
+        { animal: 'monkey', animalName: 'میمون زرنگ', food: 'موز', art: ['object', 'banana'] },
+        { animal: 'elephant', animalName: 'فیل آرام', food: 'هندوانه', art: ['object', 'watermelon'] },
+        { animal: 'bear', animalName: 'خرس مهربان', food: 'سیب', art: ['object', 'apple'] },
+        { animal: 'turtle', animalName: 'لاک‌پشت آرام', food: 'کاهو', art: ['object', 'lettuce'] },
+        { animal: 'fox', animalName: 'روباه زرنگ', food: 'انگور', art: ['object', 'grape'] },
+        { animal: 'frog', animalName: 'قورباغه شاد', food: 'حشره', art: ['animal', 'bee'] },
+        { animal: 'cow', animalName: 'گاو دوست‌داشتنی', food: 'علف', art: ['object', 'grass'] },
+        { animal: 'sheep', animalName: 'گوسفند پشمالو', food: 'علف', art: ['object', 'grass'] },
+        { animal: 'duck', animalName: 'اردک زرد', food: 'دانه', art: ['object', 'seeds'] }
+    ];
+    const FEED_FOODS = ['سیب', 'استخوان', 'ماهی', 'موز', 'هندوانه', 'کاهو', 'انگور', 'حشره', 'علف', 'دانه', 'هویج'];
+
     function list() {
         return GAMES;
     }
@@ -201,26 +217,12 @@ window.ArcadeGames = (function() {
 
     // 2. FEED THE HUNGRY ANIMALS
     function launchFeedAnimals(container, onExit) {
-        const pairs = [
-            // Each animal must be paired with the food it really eats: this is a
-            // knowledge game, so a wrong pairing teaches the wrong fact. The
-            // rabbit ate an apple here, which is why children answered "carrot"
-            // and were marked wrong.
-            { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'هویج', foodSvg: SvgArt.object('carrot', 50) },
-            { animal: 'dog', animalName: 'هاپو باوفا', food: 'استخوان', foodSvg: SvgArt.object('bone', 50) },
-            { animal: 'cat', animalName: 'پیشی ملوس', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) },
-            { animal: 'monkey', animalName: 'میمون زرنگ', food: 'موز', foodSvg: SvgArt.object('banana', 50) },
-            { animal: 'elephant', animalName: 'فیل آرام', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
-            { animal: 'bear', animalName: 'خرس مهربان', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
-            { animal: 'turtle', animalName: 'لاک‌پشت آرام', food: 'کاهو', foodSvg: SvgArt.object('lettuce', 50) },
-            { animal: 'fox', animalName: 'روباه زرنگ', food: 'انگور', foodSvg: SvgArt.object('grape', 50) },
-            // A frog eats insects, not citrus.
-            { animal: 'frog', animalName: 'قورباغه شاد', food: 'حشره', foodSvg: SvgArt.animal('bee', 50) },
-            { animal: 'cow', animalName: 'گاو دوست‌داشتنی', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
-            { animal: 'sheep', animalName: 'گوسفند پشمالو', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
-            // A duck eats grain, not fish.
-            { animal: 'duck', animalName: 'اردک زرد', food: 'دانه', foodSvg: SvgArt.object('seeds', 50) }
-        ];
+        const pairs = FEED_PAIRS.map(pair => ({
+            ...pair,
+            foodSvg: pair.art[0] === 'animal'
+                ? SvgArt.animal(pair.art[1], 50)
+                : SvgArt.object(pair.art[1], 50)
+        }));
 
         let currentIdx = 0;
         let score = 0;
@@ -230,14 +232,27 @@ window.ArcadeGames = (function() {
         function renderRound() {
             if (!active) return;
             const current = pairs[currentIdx % pairs.length];
-            const foodOptions = [
-                { name: 'سیب', svg: SvgArt.object('apple', 44) },
-                { name: 'استخوان', svg: SvgArt.object('bone', 44) },
-                { name: 'ماهی', svg: SvgArt.animal('fish', 44) },
-                { name: 'موز', svg: SvgArt.object('banana', 44) },
-                { name: 'پرتقال', svg: SvgArt.object('orange', 44) },
-                { name: 'هندوانه', svg: SvgArt.object('watermelon', 44) }
-            ].sort(() => Math.random() - 0.5);
+            const foodArt = {
+                'سیب': () => SvgArt.object('apple', 44),
+                'استخوان': () => SvgArt.object('bone', 44),
+                'ماهی': () => SvgArt.animal('fish', 44),
+                'موز': () => SvgArt.object('banana', 44),
+                'هندوانه': () => SvgArt.object('watermelon', 44),
+                'کاهو': () => SvgArt.object('lettuce', 44),
+                'انگور': () => SvgArt.object('grape', 44),
+                'حشره': () => SvgArt.animal('bee', 44),
+                'علف': () => SvgArt.object('grass', 44),
+                'دانه': () => SvgArt.object('seeds', 44),
+                'هویج': () => SvgArt.object('carrot', 44)
+            };
+            // Always include the animal's real food. The old fixed six-option
+            // list omitted lettuce, grapes, insects, grass, seed and carrot, so
+            // half the rounds had no correct button at all.
+            const distractors = Object.keys(foodArt).filter(name => name !== current.food)
+                .sort(() => Math.random() - 0.5).slice(0, 5);
+            const foodOptions = [current.food, ...distractors]
+                .sort(() => Math.random() - 0.5)
+                .map(name => ({ name, svg: foodArt[name]() }));
 
             container.innerHTML = `
                 <div class="arcade-card">
@@ -687,5 +702,14 @@ window.ArcadeGames = (function() {
         }
     }
 
-    return { list, openGame };
+    function auditContent() {
+        const errors = [];
+        if (new Set(GAMES.map(game => game.id)).size !== GAMES.length) errors.push('duplicate arcade game id');
+        for (const pair of FEED_PAIRS) {
+            if (!FEED_FOODS.includes(pair.food)) errors.push(`${pair.animalName}: correct food ${pair.food} is not selectable`);
+        }
+        return { games: GAMES.length, feedPairs: FEED_PAIRS.length, foods: FEED_FOODS.slice(), errors };
+    }
+
+    return { list, openGame, auditContent };
 })();

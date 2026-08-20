@@ -35,12 +35,9 @@ window.IQEngines = (function() {
             const speakBtn = card.querySelector('#raven-speak');
             speakBtn.onclick = () => {
                 AudioEngine.play('click');
-                AudioEngine.speak('الگو را ببین؛ کدام شکل جای علامت سوال قرار می‌گیرد؟');
+                if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
+                AudioEngine.speak(round.speech || 'شکل کامل‌کننده الگو را پیدا کن');
             };
-
-            setTimeout(() => {
-                AudioEngine.speak('الگو را ببین؛ کدام شکل جای علامت سوال قرار می‌گیرد؟');
-            }, 150);
 
             const optsRow = card.querySelector('#raven-opts');
             let answered = false;
@@ -104,12 +101,9 @@ window.IQEngines = (function() {
             const speakBtn = card.querySelector('#shadow-speak');
             speakBtn.onclick = () => {
                 AudioEngine.play('click');
-                AudioEngine.speak('سایه دقیق این تصویر را پیدا کن!');
+                if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
+                AudioEngine.speak(round.speech || 'سایه دقیق این تصویر را پیدا کن!');
             };
-
-            setTimeout(() => {
-                AudioEngine.speak('سایه دقیق این تصویر را پیدا کن!');
-            }, 150);
 
             const optsGrid = card.querySelector('#shadow-opts');
             let answered = false;
@@ -289,10 +283,6 @@ window.IQEngines = (function() {
             `;
 
             setTimeout(() => {
-                AudioEngine.speak('این وسایل را خوب نگاه کن و به خاطر بسپار!');
-            }, 150);
-
-            setTimeout(() => {
                 const curtain = card.querySelector('#magic-curtain');
                 const grid = card.querySelector('#tray-grid');
                 curtain.style.display = 'flex';
@@ -390,10 +380,6 @@ window.IQEngines = (function() {
                     <button class="balance-choice-btn" data-choice="right">کفه راست (سنگین‌تر)</button>
                 </div>
             `;
-
-            setTimeout(() => {
-                AudioEngine.speak('کدام کفه ترازو به سمت پایین رفته و سنگین‌تر است؟');
-            }, 150);
 
             let answered = false;
             card.querySelectorAll('.balance-choice-btn').forEach(btn => {

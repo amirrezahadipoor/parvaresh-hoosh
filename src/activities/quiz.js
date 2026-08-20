@@ -36,13 +36,6 @@ window.QuizActivity = (function() {
         promptBanner.appendChild(speakerBtn);
         stage.appendChild(promptBanner);
 
-        // Auto-play voice narration
-        setTimeout(() => {
-            // main.js already auto-plays the bundled clip for this round.
-            if (round.audioClip) return;
-            AudioEngine.speak(round.speech || round.prompt);
-        }, 150);
-
         // 2. Center Visual Stage
         const visualStage = document.createElement('div');
         visualStage.className = 'activity-visual-stage';

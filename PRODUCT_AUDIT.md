@@ -1,4 +1,4 @@
-# وضعیت کیفیت نسخهٔ ۳.۱.۰
+# وضعیت کیفیت نسخهٔ ۳.۲.۰
 
 این فایل ادعای امتیاز کامل یا اعتبار بالینی ندارد. معیارهای ماشینی با `npm test`
 اجرا می‌شوند و معیارهای انسانی در `docs/RELEASE_CHECKLIST_FA.md` ثبت شده‌اند.
@@ -8,7 +8,7 @@
 - ۳۴۲ درس در ۷ حوزه و ۷۲ سطح
 - ۳۴۲ شناسه و ۳۴۲ عنوان یکتا
 - همهٔ درس‌ها دارای generator plan و status برابر `implemented`
-- ۶۷۵ کلیپ گفتار محلی و بدون TTS زمان اجرا
+- ۱۰۹۵ کلیپ گفتار محلی و بدون TTS زمان اجرا
 - build وب و Android CI
 - metadata واحد در package، Android، curriculum، manifest و fallback
 - حریم خصوصی local-first و Android backup غیرفعال

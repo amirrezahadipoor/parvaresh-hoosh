@@ -27,16 +27,13 @@ window.DragDropActivity = (function() {
         `;
         speakerBtn.onclick = () => {
             AudioEngine.play('click');
+            if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
             AudioEngine.speak(round.speech || round.prompt);
         };
 
         promptBanner.appendChild(promptText);
         promptBanner.appendChild(speakerBtn);
         stage.appendChild(promptBanner);
-
-        setTimeout(() => {
-            AudioEngine.speak(round.speech || round.prompt);
-        }, 150);
 
         // 2. Drop Target Zones (Top Half)
         const targetsRow = document.createElement('div');

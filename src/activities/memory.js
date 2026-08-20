@@ -17,7 +17,8 @@ window.MemoryActivity = (function() {
         speakerBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
         speakerBtn.onclick = () => {
             AudioEngine.play('click');
-            AudioEngine.speak('کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن گل من!');
+            if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
+            AudioEngine.speak(round.speech || 'کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن');
         };
         promptBanner.appendChild(promptText);
         promptBanner.appendChild(speakerBtn);
@@ -165,7 +166,6 @@ window.MemoryActivity = (function() {
 
         stage.appendChild(grid);
         container.appendChild(stage);
-        setTimeout(() => AudioEngine.speak('کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن گل من!'), 150);
     }
 
     return { render };
