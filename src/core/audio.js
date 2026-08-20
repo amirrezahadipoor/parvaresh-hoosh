@@ -971,12 +971,25 @@ window.AudioEngine = (function() {
 
     // ------------------------------------------------------------------
     // RECORDED CHILD-VOICE NARRATION (no TTS).
-    // There is no text-to-speech left in the app. Instead, a set of clips was
-    // pre-generated with an AI voice model and pitch-shifted +28% with formant
-    // shifting, giving the approved child timbre. speak(text) looks the text up
-    // in window.NARRATION_MAP; if a recording exists it plays, otherwise the
-    // call is silently ignored -- lines without a clip simply stay unvoiced
-    // instead of falling back to a robotic synthesiser.
+    //
+    // ***  DO NOT ADD TEXT-TO-SPEECH HERE, EVER.  ***
+    // Not speechSynthesis, not a Capacitor TTS plugin, not "just as a fallback
+    // when a clip is missing". The product owner has ruled this out repeatedly:
+    // a synthesiser speaks with an adult voice, mispronounces Persian, and does
+    // not work offline. scripts/audit_no_tts.js fails the build if any speech
+    // API appears in src/, and `npm test` runs it.
+    //
+    // Every spoken line is a pre-recorded clip in assets/audio/kid/. Each clip
+    // was generated with an AI voice model (edge-tts fa-IR-DilaraNeural at -10%
+    // rate) and then pitch-shifted +28% with formant shifting via
+    // scripts/kidify.sh, which is what gives the approved child timbre.
+    // Measured: raw adult voice ~178 Hz, after kidify ~232-250 Hz.
+    //
+    // speak(text) looks the text up in window.NARRATION_MAP; if a recording
+    // exists it plays, otherwise the call returns false and the line simply
+    // stays unvoiced. To voice a new line, RECORD IT -- add the text to
+    // assets/audio/kid/auto-manifest.json, generate the clip with the pipeline
+    // above, then run `node scripts/sync_narration.js`.
     // Game sound effects are separate (oscillator tones) and always on.
     // ------------------------------------------------------------------
     var NARRATION_ENABLED = true;
