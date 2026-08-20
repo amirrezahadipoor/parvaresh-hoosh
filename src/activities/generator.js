@@ -746,11 +746,17 @@ window.Generator = (function() {
     // ==========================================
     // 10. SOCIO-EMOTIONAL ROUNDS
     // ==========================================
-    function emotionRound() {
+    // `short` asks for the pre-reader wording: the situation sentence is dropped
+    // and the mascot face carries the question, because «وقتی این اتفاق می‌افتد
+    // چه حسی پیدا می‌کنیم؟ «...»» is far past a 4-year-old's listening span.
+    function emotionRound(short) {
         const e = pick(EMOTIONS);
         const others = shuffle(EMOTIONS.map(x => x.fa).filter(x => x !== e.fa)).slice(0, 3);
         const opts = shuffle([e.fa, ...others]);
-        const emoPhrasings = [
+        const emoPhrasings = short ? [
+            'این چه حسی است؟',
+            'کدام حس درست است؟'
+        ] : [
             `«${e.situation}» چه حسی داریم؟`,
             `«${e.situation}» — این چه احساسی است؟`,
             `وقتی این اتفاق می‌افتد چه حسی پیدا می‌کنیم؟ «${e.situation}»`
@@ -1491,7 +1497,7 @@ window.Generator = (function() {
             () => tracingRound(toFaDigit(rint(1, 5)), 'number'),
             // shapeNameRound was in this pool, so the pre-reader gate sometimes swapped
             // one word-answer round for another ("این چه شکلی است؟" -> «قلب»).
-            colorRound, animalSoundRound, emotionRound
+            colorRound, animalSoundRound, () => emotionRound(true)
         ])();
     }
     // Harder stand-ins used when a round is too babyish for the oldest track.
@@ -1527,13 +1533,19 @@ window.Generator = (function() {
         if (!rules || !round || !round.type) return round;
 
         // Swap out text-heavy questions for the youngest children.
+        // The gate used to fire only for `quiz`, so an order-steps round could
+        // still open with «رنگ‌ها را به همان ترتیبی که گفته شد بچین: قرمز ← سبز ←
+        // زرد» - far past what a 4-year-old can hold. Any round the child has to
+        // READ is checked; picture-only activities (painting, tracing, balloon)
+        // carry no reading load and are left alone.
+        const READ_HEAVY = ['quiz', 'order-steps', 'order-size', 'drag-match'];
         const promptTooLong = Number.isFinite(rules.maxPromptChars) &&
             String(round.prompt || '').trim().length > rules.maxPromptChars;
-        if (round.type === 'quiz' && (promptTooLong ||
+        if (READ_HEAVY.indexOf(round.type) !== -1 && (promptTooLong ||
             (rules.maxOptionChars && !optionsReadableFor(round, rules.maxOptionChars, rules.maxPromptChars)))) {
             try {
                 let alt = null;
-                for (let attempt = 0; attempt < 6; attempt++) {
+                for (let attempt = 0; attempt < 12; attempt++) {
                     const cand = simpleSubstitute();
                     if (!cand) continue;
                     const candLong = Number.isFinite(rules.maxPromptChars) &&
@@ -1596,15 +1608,26 @@ window.Generator = (function() {
             reviewDays: pkg.reviewDays || [1, 3, 7]
         };
 
-        if (Array.isArray(tagged.options) && Number(track.optionCount) < tagged.options.length) {
+        // Some question FORMS collapse into nonsense when trimmed to two choices.
+        // "Which one is different?" with two pictures has no answer at all: each
+        // one differs from the other, so a 4-year-old was being shown an
+        // unanswerable round ~380 times per pass. Comparison questions ("which
+        // is bigger?") are perfectly valid with two, so only the genuinely
+        // set-based forms get a floor of three.
+        const promptText = String(tagged.prompt || tagged.speech || '');
+        const needsThreeChoices = /فرق دارد|متفاوت|ناجور|وصله|با بقیه/.test(promptText);
+        const optionFloor = needsThreeChoices ? 3 : 2;
+        const cap = Math.max(optionFloor, Number(track.optionCount) || 4);
+
+        if (Array.isArray(tagged.options) && cap < tagged.options.length) {
             const correct = tagged.options[tagged.answer];
-            const distractors = tagged.options.filter((_, index) => index !== tagged.answer).slice(0, Math.max(1, track.optionCount - 1));
+            const distractors = tagged.options.filter((_, index) => index !== tagged.answer).slice(0, Math.max(1, cap - 1));
             tagged.options = shuffle([correct, ...distractors]);
             tagged.answer = tagged.options.indexOf(correct);
         }
-        if (Array.isArray(tagged.shadowOptions) && Number(track.optionCount) < tagged.shadowOptions.length) {
+        if (Array.isArray(tagged.shadowOptions) && cap < tagged.shadowOptions.length) {
             const correct = tagged.shadowOptions[tagged.answer];
-            const distractors = tagged.shadowOptions.filter((_, index) => index !== tagged.answer).slice(0, Math.max(1, track.optionCount - 1));
+            const distractors = tagged.shadowOptions.filter((_, index) => index !== tagged.answer).slice(0, Math.max(1, cap - 1));
             tagged.shadowOptions = shuffle([correct, ...distractors]);
             tagged.answer = tagged.shadowOptions.indexOf(correct);
         }
@@ -1644,8 +1667,8 @@ window.Generator = (function() {
 
                 if (rebuilt) {
                     Object.assign(tagged, rebuilt);
-                    // The rebuild yields a fresh full-size option list; re-apply the cap.
-                    const cap = Number(track.optionCount);
+                    // The rebuild yields a fresh full-size option list; re-apply the
+                    // SAME cap computed above so the set-based floor is not bypassed.
                     if (Number.isFinite(cap) && cap > 0 && Array.isArray(tagged.options) && cap < tagged.options.length) {
                         const keep = tagged.options[tagged.answer];
                         const others = tagged.options.filter((_, i) => i !== tagged.answer).slice(0, Math.max(1, cap - 1));
