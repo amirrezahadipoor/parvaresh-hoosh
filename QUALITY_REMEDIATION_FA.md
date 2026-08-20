@@ -1,4 +1,4 @@
-# گزارش اصلاح سخت‌گیرانهٔ نسخهٔ ۳.۱.۰
+# گزارش اصلاح سخت‌گیرانهٔ نسخهٔ ۳.۱.۱
 
 تاریخ: ۲۰ اوت ۲۰۲۶
 
@@ -11,7 +11,7 @@
 
 ## اصلاحات اصلی
 
-- یکسان‌سازی نسخه روی `3.1.0` در package، lock، App، curriculum، manifest و Android
+- یکسان‌سازی نسخه روی `3.1.1` در package، lock، App، curriculum، manifest و Android
 - یکسان‌سازی آمار روی ۳۴۲ درس، ۷ حوزه، ۷۲ سطح و ۷ بازی
 - تبدیل ۱۹۲ status قدیمی `planned` به `implemented` پس از احراز generator mapping
 - یکتا کردن هر ۳۴۲ عنوان و شناسه
@@ -20,7 +20,7 @@
 - افزودن LICENSE، SECURITY، privacy/terms دقیق و checklist انتشار
 - حذف ادعاهای سنجش IQ/سن ذهنی از UI و تبدیل گزارش به شاخص تسلط داخل بازی
 - اصلاح توضیح منشأ صدا: AI فارسی ازپیش‌تولیدشده و پردازش‌شده، بدون TTS runtime
-- audit واقعی ساختار MP3 برای ۶۷۵ کلیپ: mono/24kHz، بدون duplicate و بدون فایل مفقود
+- audit واقعی ساختار MP3 برای ۶۹۱ کلیپ: mono/24kHz، بدون duplicate و بدون فایل مفقود
 - اثبات پوشش گفتار هر ۱۷۵۰ round تولیدشده در پاس deterministic
 - deterministic کردن generator auditها
 - رفع accessible name دکمه‌های صوتی و افزودن قرارداد accessibility به تست runtime
@@ -39,7 +39,7 @@
 - metadata: ۳۴۲/۳۴۲، عنوان و ID یکتا، خطا صفر
 - generator: ۳۴۲/۳۴۲، تعداد ۱۷۵۰ round و ۱۷۵۰ round دارای گفتار
 - age rules: تعداد ۳۵٬۰۰۰ نمونه، مشکل صفر
-- audio: تعداد ۶۷۵، duplicate صفر، TTS runtime صفر
+- audio: تعداد ۶۹۱، duplicate صفر، TTS runtime صفر
 - PWA: تعداد ۷۲۶ precache entry، reference مفقود صفر
 - dependency audit: آسیب‌پذیری صفر
 - JSDOM stress render: تعداد ۱۷۱۰ round

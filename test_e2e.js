@@ -10,6 +10,7 @@ const path = require('node:path');
 const { chromium } = require('playwright-core');
 
 const root = process.env.E2E_ROOT ? path.resolve(__dirname, process.env.E2E_ROOT) : __dirname;
+const appVersion = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')).version;
 const mime = {
     '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
     '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
@@ -86,6 +87,8 @@ async function main() {
 
         assert.equal(await page.locator('html').getAttribute('dir'), 'rtl');
         assert.ok(await page.locator('.domain-tile').count() >= 7, 'seven learning domains should render');
+        const homeBottomClearance = await page.locator('#home-content').evaluate(element => parseFloat(getComputedStyle(element).paddingBottom));
+        assert.ok(homeBottomClearance >= 10, `home needs a blank system-navigation strip, got ${homeBottomClearance}px`);
         await page.locator('.arcade-banner').click();
         await page.locator('#screen-arcade.active').waitFor();
         assert.equal(await page.locator('.arcade-game-card').count(), 7, 'seven arcade games should render');
@@ -103,21 +106,23 @@ async function main() {
         await page.locator('#domain-content .difficulty-card').first().click();
         await page.locator('#screen-lesson.active').waitFor();
         assert.ok(await page.locator('#lesson-body').locator(':scope > *').count() > 0, 'lesson body should render');
+        const lessonBottomClearance = await page.locator('.activity-fullscreen-stage').evaluate(element => parseFloat(getComputedStyle(element).paddingBottom));
+        assert.ok(lessonBottomClearance >= 20, `lesson options need system-navigation clearance, got ${lessonBottomClearance}px`);
         await page.locator('#btn-exit-lesson').click();
 
         // Wait until all 692 local files are installed, then prove cold navigation
         // works while Chromium itself is offline.
-        await page.evaluate(async () => {
+        await page.evaluate(async expectedVersion => {
             if (!('serviceWorker' in navigator)) throw new Error('service worker unavailable');
             await navigator.serviceWorker.ready;
             const deadline = Date.now() + 15000;
             while (Date.now() < deadline) {
                 const keys = await caches.keys();
-                if (keys.some(key => key.includes('v3.1.0'))) return;
+                if (keys.some(key => key.includes(`v${expectedVersion}`))) return;
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
-            throw new Error('versioned offline cache was not installed');
-        });
+            throw new Error(`versioned offline cache v${expectedVersion} was not installed`);
+        }, appVersion);
         offline = true;
         await context.setOffline(true);
         await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'domcontentloaded', timeout: 15000 });
