@@ -37,7 +37,7 @@ LETTERS = {
     "be":    ("ب",  "بِ",   "بادکنک"),
     "pe":    ("پ",  "پِ",   "پروانه"),
     "te":    ("ت",  "تِ",   "توپ"),
-    "se":    ("ث",  "ثِ",   "ثانیه"),
+    "se":    ("ث",  "ثِ سه‌نقطه", "ثانیه"),
     "jim":   ("ج",  "جِ",   "جوجه"),
     "che":   ("چ",  "چِ",   "چتر"),
     "he":    ("ح",  "حِ",   "حوض"),
@@ -68,6 +68,12 @@ LETTERS = {
 }
 
 def letter_script(letter, sound, example):
+    if letter == "ث":
+        # Standalone «ثِ» was once rendered unclearly and heard as «ف». Naming
+        # the three dots and the real Persian /s/ sound removes all ambiguity.
+        return "این حرف «ث» است؛ ثِ سه‌نقطه. در فارسی صدای «س» می‌دهد. کلمهٔ «ثانیه» با حرف «ث» شروع می‌شود."
+    if letter == "ف":
+        return "این حرف «ف» است؛ فِ تک‌نقطه. صدای «ف» می‌دهد. کلمهٔ «فیل» با حرف «ف» شروع می‌شود."
     return (f"این حرف «{letter}» است. صدایش «{sound}» است. "
             f"«{example}» با «{letter}» شروع می‌شود.")
 
@@ -123,7 +129,7 @@ async def synth(name, text):
         await edge_tts.Communicate(text, VOICE, rate=RATE).save(raw)
         subprocess.run([
             "ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", raw,
-            "-af", "rubberband=pitch=1.28:formant=shifted",
+            "-af", "rubberband=pitch=1.15:formant=shifted",
             "-codec:a", "libmp3lame", "-q:a", "4", "-ar", "24000", "-ac", "1", path
         ], check=True)
     finally:

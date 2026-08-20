@@ -1,13 +1,13 @@
 {
   "name": "parvaresh-hoosh",
-  "version": "3.1.0",
+  "version": "3.3.0",
   "description": "پرورش هوش کودک - اپلیکیشن آموزشی و بازی تعاملی کاملاً آفلاین فارسی برای کودکان ۵ تا ۸ سال",
   "main": "index.html",
   "scripts": {
     "start": "python3 -m http.server 8080 --bind 0.0.0.0",
     "audit": "node scripts/audit_curriculum.js",
     "audit:assets": "node scripts/audit_assets.js",
-    "test": "npm run audit:metadata && npm run audit && npm run audit:assets && npm run audit:voice && npm run audit:age && npm run audit:pwa && npm run check:syntax && node test_all_components.js && node test_runtime.js",
+    "test": "npm run audit:metadata && npm run audit && npm run audit:semantics && npm run audit:assets && npm run audit:voice && npm run audit:age && npm run audit:pwa && npm run check:syntax && node test_all_components.js && node test_runtime.js",
     "test:runtime": "node test_runtime.js",
     "build:web": "node scripts/prepare_web.js",
     "android:sync": "npm run build:web && cap sync android",
@@ -19,7 +19,8 @@
     "check:syntax": "find src scripts -name '*.js' -print0 | xargs -0 -n1 node --check",
     "audit:pwa": "node scripts/audit_pwa.js",
     "test:e2e": "node test_e2e.js",
-    "test:e2e:build": "npm run build:web && E2E_ROOT=www node test_e2e.js"
+    "test:e2e:build": "npm run build:web && E2E_ROOT=www node test_e2e.js",
+    "audit:semantics": "node scripts/audit_semantics.js"
   },
   "author": "پرورش هوش کودک",
   "license": "MIT",

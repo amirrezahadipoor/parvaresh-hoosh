@@ -597,6 +597,7 @@
             const tile = document.createElement('button');
             tile.type = 'button';
             tile.className = 'domain-tile';
+            tile.dataset.domainId = domain.id;
             tile.style.setProperty('--tile-color', domain.color);
             tile.style.setProperty('--tile-bg', domain.bg);
             tile.innerHTML = `

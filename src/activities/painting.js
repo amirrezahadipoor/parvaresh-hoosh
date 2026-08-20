@@ -54,10 +54,6 @@ window.PaintingActivity = (function() {
         headerRow.appendChild(speakerBtn);
         card.appendChild(headerRow);
 
-        setTimeout(() => {
-            AudioEngine.speak('هر چی دوست داری با رنگ‌های شاد نقاشی کن گل من!');
-        }, 150);
-
         // Color Palette Toolbar
         let currentColor = PALETTE[0];
         let currentBrushSize = 10;
