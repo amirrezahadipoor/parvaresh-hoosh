@@ -1326,7 +1326,45 @@ button:focus-visible, [role="button"]:focus-visible {
 .home-domains-grid .domain-tile { min-height: 96px; padding: 9px 8px; border-radius: 16px; }
 .home-domains-grid .domain-tile-title { font-size: 11.5px; white-space: normal; line-height: 1.25; }
 .home-domains-grid .domain-tile-subtitle { display: none; }
-.home-domains-grid .domain-tile-icon { width: 34px; height: 34px; }
+.home-domains-grid /* ---- Animated gifted tile ------------------------------------------
+   The «مدرسه تیزهوشان» tile advertises itself: the brain icon breathes,
+   two sparks orbit it and the tile edge glows. Pure CSS so it costs no
+   JS frame time, and it is fully disabled under prefers-reduced-motion. */
+.gifted-icon-anim { position: relative; overflow: visible; }
+.gifted-icon-anim > svg { animation: gifted-breathe 2.4s ease-in-out infinite; transform-origin: 50% 50%; }
+.gifted-spark { position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; margin: -2.5px;
+    border-radius: 50%; background: #FFE066; box-shadow: 0 0 6px 1px rgba(255,224,102,.9); pointer-events: none; }
+.gifted-spark-a { animation: gifted-orbit 3.1s linear infinite; }
+.gifted-spark-b { animation: gifted-orbit 3.1s linear infinite; animation-delay: -1.55s; background: #A29BFE;
+    box-shadow: 0 0 6px 1px rgba(162,155,254,.9); }
+/* The grid rule `.home-domains-grid .domain-tile` sets `animation: tileEnter`
+   and outranks a single class, so the glow has to be declared at the same or
+   higher specificity and must re-declare the entry animation to keep it. */
+.home-domains-grid .domain-tile.is-gifted-tile {
+    animation: tileEnter .45s cubic-bezier(.2,.8,.2,1) both,
+               gifted-glow 3s ease-in-out .45s infinite;
+}
+
+@keyframes gifted-breathe {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.16); }
+}
+@keyframes gifted-orbit {
+    from { transform: rotate(0deg) translateX(15px) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(15px) rotate(-360deg); }
+}
+@keyframes gifted-glow {
+    0%, 100% { box-shadow: var(--sh-sm); }
+    50%      { box-shadow: 0 6px 20px rgba(108,92,231,.38); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .gifted-icon-anim > svg,
+    .gifted-spark,
+    .is-gifted-tile { animation: none !important; }
+    .gifted-spark { opacity: .85; }
+}
+
+.domain-tile-icon { width: 34px; height: 34px; }
 
 .domain-tile {
     display: flex;
@@ -1610,6 +1648,15 @@ html[dir="ltr"] .setting-switch.is-on .setting-switch-thumb { transform: transla
 .paint-template-btn { display: flex; align-items: center; justify-content: center; flex: 0 0 58px; width: 58px; height: 52px; overflow: hidden; padding: 3px; border: 2px solid #E1E8F0; border-radius: 12px; color: #657487; background: #FFF; font-size: 10px; font-weight: 900; cursor: pointer; }
 .paint-template-btn svg { width: 46px; height: 46px; }
 .paint-template-btn.active { border-color: #2563EB; background: #EAF3FF; box-shadow: inset 0 0 0 1px #2563EB; }
+
+/* Tracing fill meter: shows how much of the letter the child has covered.
+   The bar is the real feedback for a pre-reader; it turns green at the
+   required threshold so "done" is obvious without reading anything. */
+.trace-progress-track { width: 100%; height: 14px; border-radius: var(--r-full); background: #EDF1F6;
+    border: 2px solid #E0E7EF; overflow: hidden; flex-shrink: 0; }
+.trace-progress-fill { display: block; height: 100%; width: 0%; border-radius: var(--r-full);
+    background: linear-gradient(90deg, #74B9FF, var(--accent)); transition: width .18s ease; }
+.trace-progress-fill.is-ready { background: linear-gradient(90deg, #55EFC4, var(--ok)); }
 
 .trace-status { width: 100%; min-height: 24px; padding: 4px 8px; border-radius: 9px; color: #6E7D8E; background: #F5F8FC; font-size: 10px; font-weight: 800; text-align: center; }
 

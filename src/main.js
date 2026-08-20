@@ -605,9 +605,19 @@
                 <span class="domain-tile-subtitle"></span>
                 <span class="domain-tile-progress"><i></i><b></b></span>
             `;
-            tile.querySelector('.domain-tile-icon').innerHTML = window.AppIcons
+            const iconHost = tile.querySelector('.domain-tile-icon');
+            iconHost.innerHTML = window.AppIcons
                 ? window.AppIcons.get(domain.iconId || domain.id, 25)
                 : domain.iconChar;
+            // The gifted tile is the flagship section, so its icon is alive: the
+            // brain breathes and two sparks orbit it. Marked with a class rather
+            // than inline styles so prefers-reduced-motion can switch it off.
+            if (domain.id === 'gifted') {
+                tile.classList.add('is-gifted-tile');
+                iconHost.classList.add('gifted-icon-anim');
+                iconHost.insertAdjacentHTML('beforeend',
+                    '<i class="gifted-spark gifted-spark-a"></i><i class="gifted-spark gifted-spark-b"></i>');
+            }
             tile.querySelector('.domain-tile-title').textContent = domain.title;
             tile.querySelector('.domain-tile-subtitle').textContent = domain.subtitle;
             const progress = lessons.length ? Math.round((done / lessons.length) * 100) : 0;
@@ -934,6 +944,13 @@
         const doneLessons = allLessons.filter(l => state.lessonsDone[l.id] && state.lessonsDone[l.id].done).length;
 
         $('#domain-progress-text').textContent = `${toFa(doneLessons)} از ${toFa(allLessons.length)} درس`;
+
+        // Spoken welcome for the gifted school. Every lesson's opening round
+        // already narrates its own instruction (that always wins), so the
+        // section intro is played here, once, when the child walks in.
+        if (state.domainId === 'gifted' && AudioEngine.playClip) {
+            setTimeout(() => AudioEngine.playClip('gifted-welcome'), 260);
+        }
 
         const scrollContainer = document.createElement('div');
         scrollContainer.style.cssText = 'flex:1; overflow-y:auto; padding:10px; touch-action:pan-y; overscroll-behavior-y:contain;';

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v45-voice-gifted-icon';
+const CACHE_NAME = 'parvaresh-hoosh-v46-tracing-gifted50';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',
@@ -528,6 +528,19 @@ const PRECACHE = [
     './assets/audio/kid/auto-ffc4669febb6.mp3',
     './assets/audio/kid/auto-ffd6e06bdf55.mp3',
     './assets/audio/kid/fixed-balloons.mp3',
+    './assets/audio/kid/gifted-balance.mp3',
+    './assets/audio/kid/gifted-classify.mp3',
+    './assets/audio/kid/gifted-compare.mp3',
+    './assets/audio/kid/gifted-memory.mp3',
+    './assets/audio/kid/gifted-number.mp3',
+    './assets/audio/kid/gifted-odd.mp3',
+    './assets/audio/kid/gifted-order.mp3',
+    './assets/audio/kid/gifted-pattern.mp3',
+    './assets/audio/kid/gifted-raven.mp3',
+    './assets/audio/kid/gifted-reason.mp3',
+    './assets/audio/kid/gifted-riddle.mp3',
+    './assets/audio/kid/gifted-shadow.mp3',
+    './assets/audio/kid/gifted-welcome.mp3',
     './assets/audio/kid/letter-alef.mp3',
     './assets/audio/kid/letter-be.mp3',
     './assets/audio/kid/letter-che.mp3',

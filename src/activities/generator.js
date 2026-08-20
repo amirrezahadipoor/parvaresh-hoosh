@@ -1817,7 +1817,32 @@ window.Generator = (function() {
         'music': 'topic-music'
     };
 
+    // Gifted lessons reuse generic skill types ('reasoning', 'patterns'...), so a
+    // type lookup would give them a maths or shapes intro. Route them by TITLE to
+    // their own recorded intros instead, and only fall back to the type table.
+    const GIFTED_TOPIC_AUDIO = [
+        [/ماتریس|ریون/, 'gifted-raven'],
+        [/ترازو|تعادل|سنگین/, 'gifted-balance'],
+        [/حافظه|توالی|زنگ|ناپدید|کم شد/, 'gifted-memory'],
+        [/سایه/, 'gifted-shadow'],
+        [/ناجور|تفاوت/, 'gifted-odd'],
+        [/دسته بندی|طبقه بندی|دسته‌بندی|طبقه‌بندی/, 'gifted-classify'],
+        [/الگو|دنباله|قرینه/, 'gifted-pattern'],
+        [/مرتب|ترتیب|اندازه|مراحل|داستان/, 'gifted-order'],
+        [/شمارش|محاسبه|جمع|تفریق|عددی/, 'gifted-number'],
+        [/معما|راز/, 'gifted-riddle'],
+        [/قیاس|رابطه|استنتاج|استدلال|منطقی|مسئله/, 'gifted-reason'],
+        [/جفت|مقایسه|بزرگ‌تر|بیشتر/, 'gifted-compare']
+    ];
+
     function topicClipFor(metadata) {
+        const isGifted = metadata && (metadata.domain === 'gifted'
+            || /^G-/.test(String(metadata.id || '')));
+        if (isGifted) {
+            const title = String((metadata && metadata.title) || '');
+            for (const [re, clip] of GIFTED_TOPIC_AUDIO) if (re.test(title)) return clip;
+            return 'gifted-welcome';
+        }
         const t = metadata && metadata.type;
         return (t && TOPIC_AUDIO[t]) || null;
     }
@@ -1853,44 +1878,82 @@ window.Generator = (function() {
         // no `domain` field, so fall back to the G- id prefix.
         const giftedId = /^G-/.test(String((metadata && metadata.id) || ''));
         if (dom === 'gifted' || (!dom && giftedId)) {
+            // Age gate: the youngest gifted band must never be handed an abstract
+            // Raven matrix or a balance scale, and the oldest must not be handed
+            // finger-painting. `level` carries the lesson difficulty (2..12).
+            const tiny = level <= 3;      // ۴ تا ۵ سال
+            const young = level <= 7;     // ۵ تا ۶ سال
+            const nmax = level <= 6 ? 10 : 20;
+
+            // Hands-on rounds keep a 4-year-old engaged between thinking rounds.
+            const playful = () => pick([
+                balloonRound,
+                () => tracingRound(toFaDigit(rint(1, tiny ? 5 : 9)), 'number'),
+                paintingRound
+            ])();
+
             if (has('ماتریس', 'ریون'))
-                return [ravenRound, ravenRound, ravenRound, patternRound];
+                return tiny
+                    ? [shadowRound, patternRound, oddOneOutRound, playful, patternRound]
+                    : [ravenRound, ravenRound, patternRound, ravenRound, oddOneOutRound];
             if (has('ترازو', 'تعادل', 'سنگین'))
-                return [balanceRound, balanceRound, compareRound, balanceRound];
-            if (has('حافظه', 'توالی', 'ناپدید'))
-                return [simonRound, disappearedRound, simonRound, () => memoryRound(3)];
+                return tiny
+                    ? [() => compareRound(10), orderSizeRound, playful, () => compareRound(10), oddOneOutRound]
+                    : [balanceRound, balanceRound, () => compareRound(nmax), balanceRound, orderSizeRound];
+            if (has('زنگ', 'توالی'))
+                return [simonRound, simonRound, () => memoryRound(tiny ? 2 : 3), disappearedRound, patternOrderRound];
+            if (has('ناپدید', 'کم شد'))
+                return [disappearedRound, disappearedRound, () => memoryRound(tiny ? 2 : 3), simonRound, oddOneOutRound];
+            if (has('حافظه'))
+                return [() => memoryRound(tiny ? 2 : 3), simonRound, disappearedRound, () => memoryRound(tiny ? 2 : 3), patternRound];
             if (has('سایه'))
-                return [shadowRound, shadowRound, oddOneOutRound, shadowRound];
+                return [shadowRound, shadowRound, oddOneOutRound, shadowRound, playful];
             if (has('وصله ناجور', 'ناجور'))
-                return [oddOneOutRound, oddOneOutRound, classifyRound, oddOneOutRound];
+                return [oddOneOutRound, oddOneOutRound, classifyRound, oddOneOutRound, tiny ? playful : ravenRound];
             if (has('تفاوت'))
-                return [shadowRound, oddOneOutRound, shadowRound, oddOneOutRound];
+                return [shadowRound, oddOneOutRound, shadowRound, oddOneOutRound, classifyRound];
             if (has('دسته بندی', 'طبقه بندی', 'دسته‌بندی', 'طبقه‌بندی'))
-                return [classifyRound, classifyRound, oddOneOutRound, classifyRound];
+                return [classifyRound, classifyRound, oddOneOutRound, classifyRound, tiny ? playful : ravenRound];
             if (has('الگوی عددی', 'دنباله عددی'))
-                return [() => numberOrderRound(level <= 6 ? 10 : 20), patternRound, () => numberOrderRound(level <= 6 ? 10 : 20), patternRound];
+                return [() => numberOrderRound(nmax), patternRound, () => numberOrderRound(nmax), () => compareRound(nmax), patternOrderRound];
+            if (has('قرینه', 'نقاشی'))
+                return [paintingRound, patternRound, shadowRound, paintingRound, patternOrderRound];
+            if (has('بادکنک'))
+                return [balloonRound, patternRound, balloonRound, oddOneOutRound, patternOrderRound];
             if (has('الگو', 'دنباله'))
-                return [patternRound, patternOrderRound, patternRound, ravenRound];
-            if (has('مرتب', 'کوچک به بزرگ', 'مراحل'))
-                return [orderSizeRound, storyOrderRound, orderSizeRound, patternOrderRound];
-            if (has('محاسبه', 'جمع و تفریق', 'ذهنی')) {
-                const max = level <= 6 ? 10 : 20;
-                return [() => arithRound('+', max), () => arithRound('-', max), () => compareRound(max), () => arithRound('+', max)];
-            }
+                return tiny
+                    ? [patternRound, patternOrderRound, playful, patternRound, shadowRound]
+                    : [patternRound, patternOrderRound, patternRound, ravenRound, patternOrderRound];
+            if (has('داستان'))
+                return [storyOrderRound, storyOrderRound, patternOrderRound, orderSizeRound, classifyRound];
+            if (has('مرتب', 'کوچک به بزرگ', 'مراحل', 'ترتیب اندازه'))
+                return [orderSizeRound, storyOrderRound, orderSizeRound, patternOrderRound, () => compareRound(nmax)];
+            if (has('محاسبه', 'جمع و تفریق', 'ذهنی'))
+                return [() => arithRound('+', nmax), () => arithRound('-', nmax), () => compareRound(nmax), () => arithRound('+', nmax), () => arithRound('-', nmax)];
             if (has('شمارش')) {
-                const cmax = level <= 3 ? 5 : 10;
-                return [() => countRound(cmax), () => countRound(cmax), () => compareRound(cmax), () => countRound(cmax)];
+                const cmax = tiny ? 5 : 10;
+                return [() => countRound(cmax), () => countRound(cmax), () => compareRound(cmax), () => countRound(cmax), playful];
             }
             if (has('بزرگ‌تر', 'بیشتر', 'مقایسه'))
-                return [() => compareRound(level <= 4 ? 10 : 20), orderSizeRound, () => compareRound(level <= 4 ? 10 : 20), oddOneOutRound];
+                return [() => compareRound(tiny ? 10 : nmax), orderSizeRound, () => compareRound(tiny ? 10 : nmax), oddOneOutRound, playful];
             if (has('جفت'))
-                return [() => memoryRound(3), shadowRound, () => memoryRound(3), oddOneOutRound];
-            if (has('قیاس', 'رابطه', 'استنتاج', 'استدلال', 'منطقی', 'مسئله'))
-                return [ravenRound, oddOneOutRound, classifyRound, balanceRound];
+                return [() => memoryRound(tiny ? 2 : 3), shadowRound, () => memoryRound(tiny ? 2 : 3), oddOneOutRound, classifyRound];
+            if (has('قیاس', 'رابطه'))
+                return young
+                    ? [classifyRound, oddOneOutRound, shadowRound, classifyRound, patternRound]
+                    : [ravenRound, classifyRound, oddOneOutRound, ravenRound, balanceRound];
+            if (has('استنتاج', 'استدلال', 'منطقی', 'مسئله'))
+                return young
+                    ? [oddOneOutRound, classifyRound, patternRound, orderSizeRound, shadowRound]
+                    : [ravenRound, oddOneOutRound, classifyRound, balanceRound, () => arithRound('+', nmax)];
             if (has('معما', 'راز'))
-                return [oddOneOutRound, ravenRound, shadowRound, classifyRound];
+                return young
+                    ? [oddOneOutRound, shadowRound, classifyRound, patternRound, playful]
+                    : [oddOneOutRound, ravenRound, shadowRound, classifyRound, balanceRound];
             // Any other gifted lesson still gets reasoning work, never filler.
-            return [ravenRound, oddOneOutRound, patternRound, shadowRound];
+            return tiny
+                ? [oddOneOutRound, patternRound, shadowRound, playful, classifyRound]
+                : [ravenRound, oddOneOutRound, patternRound, shadowRound, classifyRound];
         }
 
         // --- reading / phonics (most specific first) --------------------------

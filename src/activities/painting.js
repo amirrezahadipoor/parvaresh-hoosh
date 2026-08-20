@@ -558,11 +558,26 @@ window.PaintingActivity = (function() {
 
         canvas.addEventListener('mousedown', startPaint);
         canvas.addEventListener('mousemove', paint);
-        window.addEventListener('mouseup', stopPaint);
-
         canvas.addEventListener('touchstart', startPaint, { passive: false });
         canvas.addEventListener('touchmove', paint, { passive: false });
+
+        // Same leak the tracing engine had: these were attached to window on
+        // every render and never removed, so each painting round left two dead
+        // handlers behind, each pinning a full-size canvas (and its undo stack)
+        // in memory. Detach them when the canvas leaves the DOM.
+        window.addEventListener('mouseup', stopPaint);
         window.addEventListener('touchend', stopPaint);
+
+        if (typeof MutationObserver === 'function') {
+            const observer = new MutationObserver(() => {
+                if (!document.body.contains(canvas)) {
+                    window.removeEventListener('mouseup', stopPaint);
+                    window.removeEventListener('touchend', stopPaint);
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
 
         canvasWrap.appendChild(canvas);
         card.appendChild(canvasWrap);
