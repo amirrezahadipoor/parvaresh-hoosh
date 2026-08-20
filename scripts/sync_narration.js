@@ -135,14 +135,29 @@ const setLit = '    const AVAILABLE_CLIPS = new Set([\n' +
 audio = audio.replace(/ {4}const AVAILABLE_CLIPS = new Set\(\[[\s\S]*?\n {4}\]\);\n/, setLit);
 fs.writeFileSync(audioPath, audio, 'utf8');
 
-// 3) PRECACHE in sw.js
+// 3) PRECACHE in sw.js. Rebuild the list rather than editing a stale list in
+// place: every local index dependency must be present for a true cold offline
+// launch of the unbundled PWA. prepare_web.js later swaps these source scripts
+// for the production bundle in the shipped build.
 const swPath = path.join(ROOT, 'sw.js');
 let sw = fs.readFileSync(swPath, 'utf8');
-sw = sw.replace(/(const PRECACHE\s*=\s*\[)([\s\S]*?)(\n\];)/, (_m, head, body, tail) => {
-  body = body.replace(/\n\s*'\.\/assets\/audio\/kid\/[^']*',?/g, '');
-  if (!body.trim().endsWith(',')) body = body.replace(/\s*$/, ',');
-  return head + body + '\n' + clips.map(c => `    './assets/audio/kid/${c}.mp3',`).join('\n').replace(/,$/, '') + tail;
-});
+const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+const indexRefs = [...indexHtml.matchAll(/(?:src|href)="([^"#?]+)"/g)]
+  .map(match => match[1])
+  .filter(ref => !/^(?:https?:|data:|blob:)/.test(ref))
+  .map(ref => './' + ref.replace(/^\.\//, ''));
+const shell = [...new Set([
+  './', './index.html', './privacy.html', './terms.html',
+  './content/curriculum.json', './content/content_manifest.json',
+  './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
+  './assets/fonts/Vazirmatn-Regular.woff2', './assets/fonts/Vazirmatn-Medium.woff2',
+  './assets/fonts/Vazirmatn-Bold.woff2', './assets/fonts/Vazirmatn-ExtraBold.woff2',
+  './assets/fonts/Vazirmatn-Black.woff2',
+  ...indexRefs
+])];
+const precache = [...shell, ...clips.map(clip => `./assets/audio/kid/${clip}.mp3`)];
+const listLiteral = 'const PRECACHE = [\n' + precache.map(entry => `  '${entry}'`).join(',\n') + '\n];';
+sw = sw.replace(/const PRECACHE\s*=\s*\[[\s\S]*?\n\];/, listLiteral);
 fs.writeFileSync(swPath, sw, 'utf8');
 
 const letters = clips.filter(c => c.startsWith('letter-')).length;

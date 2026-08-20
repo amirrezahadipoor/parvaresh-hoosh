@@ -1,15 +1,15 @@
 // Guard: the app must NEVER speak with a text-to-speech engine.
 //
-// Every spoken line is a pre-recorded clip in assets/audio/kid/ that was made
-// with an AI voice and then pitch-shifted +28% with formant shifting
-// (scripts/kidify.sh) to get the approved child timbre. The device/browser
-// speech synthesiser must never be used as a source or a fallback: it speaks
-// with an adult voice, mispronounces Persian, and is unavailable offline.
+// Every spoken line is a pre-generated Persian clip in assets/audio/kid/.
+// The current production pipeline uses an AI voice and pitch/formant processing.
+// The device/browser speech synthesiser must never be used as a source or a
+// fallback: it is not reliably Persian-capable or offline.
 //
 // This check has been broken by accident before, so it now fails the build:
 //   node scripts/audit_no_tts.js
 const fs = require('fs');
 const path = require('path');
+const crypto = require('node:crypto');
 
 const root = path.join(__dirname, '..');
 const errors = [];
@@ -76,12 +76,45 @@ if (!/if \(!clip\) return false;/.test(speakBody)) {
     errors.push('speak() must return false for an unrecorded line, not fall back to synthesis');
 }
 
-// ------------------------------------------ 3. every clip is kidify-shaped ----
-// kidify.sh writes mono 24 kHz mp3. A file that differs was not produced by the
-// approved pipeline (e.g. it was dropped in from a TTS service directly).
+// ------------------------------------------ 3. every clip is production-shaped --
+// kidify.sh writes mono 24 kHz MP3. Read the first valid MPEG frame directly so
+// CI does not depend on ffprobe being installed.
 const kidDir = path.join(root, 'assets/audio/kid');
-const clips = fs.readdirSync(kidDir).filter(f => f.endsWith('.mp3'));
+const clips = fs.readdirSync(kidDir).filter(f => f.endsWith('.mp3')).sort();
 if (!clips.length) errors.push('assets/audio/kid contains no clips');
+
+function readMp3Shape(buffer) {
+    let offset = 0;
+    if (buffer.subarray(0, 3).toString('ascii') === 'ID3' && buffer.length >= 10) {
+        offset = 10 + ((buffer[6] & 0x7f) << 21) + ((buffer[7] & 0x7f) << 14) +
+            ((buffer[8] & 0x7f) << 7) + (buffer[9] & 0x7f);
+    }
+    for (let i = offset; i + 4 <= buffer.length; i++) {
+        if (buffer[i] !== 0xff || (buffer[i + 1] & 0xe0) !== 0xe0) continue;
+        const versionBits = (buffer[i + 1] >> 3) & 0x03;
+        const layerBits = (buffer[i + 1] >> 1) & 0x03;
+        const sampleIndex = (buffer[i + 2] >> 2) & 0x03;
+        if (versionBits === 1 || layerBits !== 1 || sampleIndex === 3) continue;
+        const base = [44100, 48000, 32000][sampleIndex];
+        const sampleRate = versionBits === 3 ? base : versionBits === 2 ? base / 2 : base / 4;
+        const channelMode = (buffer[i + 3] >> 6) & 0x03;
+        return { sampleRate, channels: channelMode === 3 ? 1 : 2 };
+    }
+    return null;
+}
+
+const hashes = new Map();
+for (const clip of clips) {
+    const buffer = fs.readFileSync(path.join(kidDir, clip));
+    const shape = readMp3Shape(buffer);
+    if (!shape) errors.push(`${clip}: no valid MP3 Layer III frame found`);
+    else if (shape.sampleRate !== 24000 || shape.channels !== 1) {
+        errors.push(`${clip}: expected mono 24 kHz, got ${shape.channels}ch ${shape.sampleRate}Hz`);
+    }
+    const hash = crypto.createHash('sha256').update(buffer).digest('hex');
+    if (hashes.has(hash)) errors.push(`${clip}: binary duplicate of ${hashes.get(hash)}`);
+    else hashes.set(hash, clip);
+}
 
 // ------------------------------------------------ 4. guard list is in sync ----
 const declared = new Set(
@@ -102,6 +135,8 @@ console.log(JSON.stringify({
     scannedFiles: sourceFiles.length,
     recordedClips: clips.length,
     availableClipsDeclared: declared.size,
+    audioShape: 'MP3 mono 24000 Hz',
+    exactBinaryDuplicates: errors.filter(e => e.includes('binary duplicate')).length,
     bannedApisFound: errors.filter(e => e.includes('TTS is forbidden')).length,
     errors
 }, null, 2));
@@ -110,4 +145,4 @@ if (errors.length) {
     console.error('\nFAIL: the no-TTS / recorded-voice contract is broken.');
     process.exit(1);
 }
-console.log('\nOK: no TTS anywhere; all speech comes from pitch-shifted recorded child-voice clips.');
+console.log('\nOK: no runtime TTS; all speech uses unique pre-generated mono 24 kHz Persian clips.');

@@ -20,6 +20,13 @@ function createElement() {
     };
 }
 
+// Reproducible generator coverage: the same commit must produce the same audit.
+let randomState = 0x3a1f27c5;
+Math.random = () => {
+    randomState = (Math.imul(randomState, 1664525) + 1013904223) >>> 0;
+    return randomState / 0x100000000;
+};
+
 global.window = global;
 global.window.addEventListener = () => {};
 global.window.removeEventListener = () => {};
@@ -38,7 +45,7 @@ global.localStorage = {
 
 [
     'src/data/alphabet.js', 'src/data/words.js', 'src/data/math-data.js',
-    'src/data/world-data.js', 'src/data/lesson-packages.js', 'src/core/config.js', 'src/core/mascot.js',
+    'src/data/world-data.js', 'src/data/lesson-packages.js', 'src/data/narration-map.js', 'src/core/config.js', 'src/core/mascot.js',
     'src/core/svg-art.js', 'src/activities/generator.js'
 ].forEach(file => require(path.join(root, file)));
 
@@ -48,7 +55,10 @@ const lessons = curriculum.domains.flatMap(domain => domain.levels.flatMap(level
 const ids = new Set(lessons.map(lesson => lesson.id));
 const roundTypes = new Map();
 const skillTypes = new Map();
+const clipIds = new Set(fs.readdirSync(path.join(root, 'assets/audio/kid'))
+    .filter(file => file.endsWith('.mp3')).map(file => file.slice(0, -4)));
 let mapped = 0;
+let voicedRounds = 0;
 
 for (const lesson of lessons) {
     const rounds = window.Generator.generate(lesson.id, lesson);
@@ -66,7 +76,20 @@ for (const lesson of lessons) {
     } else {
         mapped++;
     }
-    rounds.forEach(round => roundTypes.set(round.type, (roundTypes.get(round.type) || 0) + 1));
+    rounds.forEach((round, index) => {
+        roundTypes.set(round.type, (roundTypes.get(round.type) || 0) + 1);
+        const spoken = String(round.speech || round.prompt || '').trim();
+        const mappedClip = spoken && window.NARRATION_MAP ? window.NARRATION_MAP[spoken] : null;
+        const clip = round.audioClip || mappedClip;
+        if (clip && clipIds.has(clip)) voicedRounds++;
+        else errors.push(`${lesson.id}/${index + 1}: no bundled narration for "${spoken.slice(0, 80)}"`);
+        if (round.audioClip && !clipIds.has(round.audioClip)) {
+            errors.push(`${lesson.id}/${index + 1}: missing audioClip ${round.audioClip}`);
+        }
+        if (round.lessonIntro && !clipIds.has(round.lessonIntro)) {
+            errors.push(`${lesson.id}: missing lessonIntro ${round.lessonIntro}`);
+        }
+    });
     skillTypes.set(lesson.type, (skillTypes.get(lesson.type) || 0) + 1);
 }
 
@@ -86,6 +109,7 @@ console.log(JSON.stringify({
     lessons: lessons.length,
     uniqueLessonIds: ids.size,
     mappedLessons: mapped,
+    voicedRounds,
     skillTypes: Object.fromEntries([...skillTypes.entries()].sort()),
     generatedRoundTypes: Object.fromEntries([...roundTypes.entries()].sort()),
     warnings,

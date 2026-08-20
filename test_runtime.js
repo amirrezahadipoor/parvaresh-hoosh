@@ -65,6 +65,11 @@ async function main() {
     const { window } = dom;
     const { document } = window;
 
+    let randomState = 0x19b4e76d;
+    window.Math.random = () => {
+        randomState = (Math.imul(randomState, 1664525) + 1013904223) >>> 0;
+        return randomState / 0x100000000;
+    };
     window.innerWidth = 390;
     window.innerHeight = 844;
     window.devicePixelRatio = 1;
@@ -77,6 +82,8 @@ async function main() {
     window.confirm = () => false;
     window.fetch = async () => ({ ok: true, async json() { return curriculum; } });
 
+    window.HTMLMediaElement.prototype.play = function play() { return Promise.resolve(); };
+    window.HTMLMediaElement.prototype.pause = function pause() {};
     window.HTMLCanvasElement.prototype.getContext = function getContext() {
         return canvasContext();
     };
@@ -280,6 +287,23 @@ async function main() {
     assert.equal(backup.format, 'parvaresh-hoosh-backup');
     assert.ok(backup.records.progress || backup.records.engagement, 'backup should contain local app data');
     window.BackupRestore.validate(backup);
+
+    // Basic accessibility contract for the fully rendered application. This is
+    // deliberately strict about unnamed controls; TalkBack cannot infer intent
+    // from a decorative SVG alone.
+    const unnamedButtons = [...document.querySelectorAll('button')].filter(button =>
+        !button.textContent.trim() &&
+        !button.getAttribute('aria-label') &&
+        !button.getAttribute('aria-labelledby') &&
+        !button.getAttribute('title')
+    );
+    assert.deepEqual(unnamedButtons.map(button => button.id || button.className), [], 'every button needs an accessible name');
+    const invalidRoleButtons = [...document.querySelectorAll('[role="button"]')].filter(element =>
+        element.tagName !== 'BUTTON' && element.tabIndex < 0
+    );
+    assert.deepEqual(invalidRoleButtons.map(element => element.id || element.className), [], 'custom role=button controls must be keyboard focusable');
+    const imagesWithoutAlt = [...document.querySelectorAll('img:not([alt])')];
+    assert.equal(imagesWithoutAlt.length, 0, 'every image needs an alt attribute');
 
     assert.equal(errors.length, 0, `browser smoke test errors after navigation: ${errors.map(String).join('\n')}`);
     dom.window.close();

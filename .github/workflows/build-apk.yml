@@ -1,25 +1,38 @@
-name: Build Android APK (پرورش هوش کودک)
+name: Quality checks and Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-apk:
+  quality-and-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.android-build.outputs.version }}
+      artifact_name: ${{ steps.android-build.outputs.artifact_name }}
 
     steps:
-      - name: Checkout Source Code
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up Java 21 (Temurin)
+      - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '21'
 
       - name: Set up Android SDK
@@ -28,23 +41,40 @@ jobs:
       - name: Set up Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: '24'
           cache: npm
 
-      - name: Install NPM Dependencies
+      - name: Install locked dependencies
         run: npm ci
 
-      - name: Run Quality & Curriculum Tests
+      - name: Verify generated content is current
+        run: |
+          npm run sync:content
+          git diff --exit-code -- content/curriculum.json content/content_manifest.json src/data/curriculum.js
+
+      - name: Run all quality gates
         run: npm test
 
-      - name: Build and Sync Web Assets to Android
+      - name: Install Chromium for real-browser tests
+        run: npx playwright-core install --with-deps chromium
+
+      - name: Run real Chromium and offline E2E
+        run: npm run test:e2e
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      - name: Build and sync web assets
         run: |
           npm run android:sync
-          test -f android/app/src/main/assets/public/index.html
-          test -f android/app/src/main/assets/public/src/app.bundle.js
-          test -f android/app/src/main/assets/public/content/curriculum.json
+          test -s android/app/src/main/assets/public/index.html
+          test -s android/app/src/main/assets/public/src/app.bundle.js
+          test -s android/app/src/main/assets/public/content/curriculum.json
 
-      - name: Build Android APK
+      - name: Run E2E against production bundle
+        run: E2E_ROOT=www npm run test:e2e
+
+      - name: Build APK
         id: android-build
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -52,49 +82,68 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          set -euo pipefail
           chmod +x android/gradlew
-          if [ -n "$ANDROID_KEYSTORE_BASE64" ] && [ -n "$ANDROID_KEYSTORE_PASSWORD" ] && [ -n "$ANDROID_KEY_ALIAS" ] && [ -n "$ANDROID_KEY_PASSWORD" ]; then
-            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ] && [ -n "${ANDROID_KEYSTORE_PASSWORD:-}" ] && [ -n "${ANDROID_KEY_ALIAS:-}" ] && [ -n "${ANDROID_KEY_PASSWORD:-}" ]; then
+            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
             export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/release.keystore"
             (cd android && ./gradlew assembleRelease --stacktrace --no-daemon)
-            echo "apk_path=android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_OUTPUT"
-            echo "build_type=release" >> "$GITHUB_OUTPUT"
+            SOURCE="android/app/build/outputs/apk/release/app-release.apk"
+            TYPE="release-signed"
           else
             (cd android && ./gradlew assembleDebug --stacktrace --no-daemon)
-            echo "apk_path=android/app/build/outputs/apk/debug/app-debug.apk" >> "$GITHUB_OUTPUT"
-            echo "build_type=debug" >> "$GITHUB_OUTPUT"
+            SOURCE="android/app/build/outputs/apk/debug/app-debug.apk"
+            TYPE="debug"
           fi
-
-      - name: Prepare APK Deliverable
-        run: |
           mkdir -p build-output
-          cp "${{ steps.android-build.outputs.apk_path }}" build-output/parvaresh-hoosh-v2.0.apk
-          echo "Build type: ${{ steps.android-build.outputs.build_type }}" > build-output/build-info.txt
-          test -s build-output/parvaresh-hoosh-v2.0.apk
+          OUTPUT="build-output/parvaresh-hoosh-${VERSION}.apk"
+          cp "$SOURCE" "$OUTPUT"
+          test -s "$OUTPUT"
+          sha256sum "$OUTPUT" > "${OUTPUT}.sha256"
+          printf 'version=%s\nbuild_type=%s\ncommit=%s\n' "$VERSION" "$TYPE" "$GITHUB_SHA" > build-output/build-info.txt
+          ARTIFACT_NAME="parvaresh-hoosh-${VERSION}-${GITHUB_RUN_NUMBER}"
+          echo "apk_path=$OUTPUT" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Upload APK Artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: parvaresh-hoosh-apk
-          path: build-output/parvaresh-hoosh-v2.0.apk
+          name: ${{ steps.android-build.outputs.artifact_name }}
+          path: |
+            ${{ steps.android-build.outputs.apk_path }}
+            ${{ steps.android-build.outputs.apk_path }}.sha256
+            build-output/build-info.txt
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 14
 
-      - name: Create GitHub Release with APK
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/heads/main')
+
+  publish-release:
+    needs: quality-and-build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified APK artifact
+        uses: actions/download-artifact@v4
         with:
-          tag_name: v2.0.0-${{ github.run_number }}
-          name: "پرورش هوش کودک - نسخه ۲.۰ (ساخت رسمی)"
+          name: ${{ needs.quality-and-build.outputs.artifact_name }}
+          path: release
+
+      - name: Publish tagged release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release/*.apk
+            release/*.sha256
           body: |
-            ## اپلیکیشن پرورش هوش کودک (Parvaresh Hoosh) - نسخه نهایی و کامل
-            - ۱۴۲ درس در ۶ حوزه شناختی و مهارتی
-            - ۲۴ مرحله مسیر ماجراجویی هوشمند (از آسان به سخت)
-            - ۶ بازی بی‌پایان در شهربازی هوش
-            - ۵ کاراکتر مسکات متحرک (دانا، برفی، شیری، توتو، فندق)
-            - آزمون‌های شناختی ریون، سایه‌شناسی، حافظه سایمون و ترازوی فیزیکی
-            - کارنامه تخصصی راداری هوش کودک برای والدین
-            - ۱۰۰٪ آفلاین، بدون نیاز به اینترنت و بدون ایموجی
-          files: build-output/parvaresh-hoosh-v2.0.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            ## پرورش هوش کودک ${{ github.ref_name }}
+            - ۳۴۲ درس پیاده‌سازی‌شده در ۷ حوزه و ۷۲ سطح
+            - ۷ بازی آزاد و ۵ شخصیت همراه
+            - ۶۷۵ کلیپ گفتار فارسی محلی
+            - آفلاین، بدون تبلیغ و بدون TTS زمان اجرا
+
+            این برنامه ابزار تمرین آموزشی است و آزمون IQ یا ابزار تشخیصی نیست.

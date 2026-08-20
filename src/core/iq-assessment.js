@@ -1,16 +1,16 @@
-// Advanced Early Childhood Cognitive Assessment & Radar Intelligence Engine
-// Based on Gardner's Multiple Intelligences, Raven's Matrices, and Piagetian Early Stages - ZERO EMOJIS
+// Local game-performance summary and radar progress engine
+// Descriptive only: not a psychometric, diagnostic, IQ or mental-age assessment.
 window.IQAssessment = (function() {
     const STORAGE_KEY = 'parvaresh_hoosh_iq_v3';
 
-    // 6 Core Cognitive Dimensions (Clean text without emojis)
+    // Six practice dimensions shown to parents.
     const DOMAINS = {
         logic: { id: 'logic', title: 'استدلال منطقی و حل مسئله', short: 'منطق و الگو', color: '#A29BFE' },
-        spatial: { id: 'spatial', title: 'هوش فضایی و تجسم هندسی', short: 'تجسم فضایی', color: '#00D2D3' },
+        spatial: { id: 'spatial', title: 'تجسم فضایی و هندسه', short: 'تجسم فضایی', color: '#00D2D3' },
         memory: { id: 'memory', title: 'حافظه فعال و تمرکز شناختی', short: 'حافظه و تمرکز', color: '#FF763B' },
-        math: { id: 'math', title: 'هوش عددی و درک ریاضی', short: 'حس عدد و حساب', color: '#4ECDC4' },
-        verbal: { id: 'verbal', title: 'هوش کلامی و آواشناسی', short: 'زبان و الفبا', color: '#FF6B6B' },
-        science_socio: { id: 'science_socio', title: 'کشف محیط و هوش هیجانی', short: 'علوم و احساسات', color: '#F9CA24' }
+        math: { id: 'math', title: 'درک عددی و ریاضی', short: 'حس عدد و حساب', color: '#4ECDC4' },
+        verbal: { id: 'verbal', title: 'زبان و آواشناسی', short: 'زبان و الفبا', color: '#FF6B6B' },
+        science_socio: { id: 'science_socio', title: 'کشف محیط و مهارت هیجانی', short: 'علوم و احساسات', color: '#F9CA24' }
     };
 
     let state = {
@@ -149,9 +149,9 @@ window.IQAssessment = (function() {
                 badgeColor = '#5F6F70';
                 advice = 'وقتی کودک چند بازی از این حوزه را انجام دهد، گزارش اینجا ساخته می‌شود.';
             } else if (score >= 85) {
-                status = 'استعداد درخشان';
+                status = 'تسلط بالا در تمرین‌های انجام‌شده';
                 badgeColor = '#00B894';
-                advice = 'درک سریع و هوش سرشار در این زمینه؛ آماده برای پازل‌های پیچیده‌تر.';
+                advice = 'در تمرین‌های انجام‌شده پاسخ‌های دقیق ثبت شده است؛ می‌توان فعالیت‌های دشوارتر را امتحان کرد.';
             } else if (score >= 70) {
                 status = 'رشد عالی و متناسب';
                 badgeColor = '#0984E3';
@@ -186,7 +186,7 @@ window.IQAssessment = (function() {
         // false statement about their child; an unplayed area is missing data,
         // not a score of zero.
         const practised = dimensions.filter(dimension => dimension.attempts > 0);
-        const overallIQ = practised.length
+        const masteryIndex = practised.length
             ? Math.round(practised.reduce((sum, dimension) => sum + dimension.score, 0) / practised.length)
             : 0;
         const totalAttempts = dimensions.reduce((sum, dimension) => sum + dimension.attempts, 0);
@@ -194,19 +194,19 @@ window.IQAssessment = (function() {
 
         if (!totalAttempts) {
             headline = 'هنوز داده‌ای ثبت نشده؛ با اولین بازی گزارش ساخته می‌شود';
-        } else if (overallIQ >= 85) {
+        } else if (masteryIndex >= 85) {
             headline = 'عملکرد بازی‌محور قوی و کنجکاوی خوب در پردازش اطلاعات';
-        } else if (overallIQ >= 72) {
+        } else if (masteryIndex >= 72) {
             headline = 'یادگیری فعال و روبه‌رشد در چند حوزهٔ شناختی';
-        } else if (overallIQ >= 60) {
+        } else if (masteryIndex >= 60) {
             headline = 'با تمرین کوتاه و پیوسته، پایه‌های یادگیری قوی‌تر می‌شوند';
         }
 
         return {
-            overallIQ,
+            masteryIndex,
             // What the number actually rests on, so the parent can judge it.
             coverage: { practised: practised.length, total: dimensions.length },
-            estimatedMentalAge: totalAttempts >= 5 ? 'نشانگر بازی‌محور؛ غیرتشخیصی' : 'دادهٔ کافی هنوز جمع نشده است',
+            interpretation: totalAttempts >= 5 ? 'خلاصهٔ تمرین‌های انجام‌شده' : 'دادهٔ کافی هنوز جمع نشده است',
             hasEnoughData: totalAttempts >= 5,
             totalAttempts,
             disclaimer: 'این شاخص آموزشی و بازی‌محور است و جایگزین ارزیابی روان‌شناختی یا پزشکی نیست.',

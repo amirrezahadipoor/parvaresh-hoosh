@@ -19,6 +19,8 @@ window.BalloonPopActivity = (function() {
 
         const speakerBtn = document.createElement('button');
         speakerBtn.className = 'speaker-btn';
+        speakerBtn.type = 'button';
+        speakerBtn.setAttribute('aria-label', 'شنیدن راهنمای بازی بادکنک');
         speakerBtn.innerHTML = `
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>

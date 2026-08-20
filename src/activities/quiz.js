@@ -17,6 +17,8 @@ window.QuizActivity = (function() {
 
         const speakerBtn = document.createElement('button');
         speakerBtn.className = 'activity-speaker-btn';
+        speakerBtn.type = 'button';
+        speakerBtn.setAttribute('aria-label', 'شنیدن پرسش');
         speakerBtn.innerHTML = `
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>

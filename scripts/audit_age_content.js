@@ -53,6 +53,13 @@ function boot() {
     };
     win.window = win; win.self = win; win.globalThis = win;
     const ctx = vm.createContext(win);
+    vm.runInContext(`
+        let __randomState = 0x51a7e123;
+        Math.random = () => {
+            __randomState = (Math.imul(__randomState, 1664525) + 1013904223) >>> 0;
+            return __randomState / 0x100000000;
+        };
+    `, ctx);
     for (const file of order) {
         try { vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), ctx, { filename: file }); }
         catch (err) { console.error('load error', file, err.message.slice(0, 80)); }
@@ -161,4 +168,4 @@ if (unique.length) {
     if (unique.length > 25) console.error(`  ... and ${unique.length - 25} more`);
     process.exit(1);
 }
-console.log('\nOK: every round is answerable and age-appropriate for ages 4-8.');
+console.log('\nOK: sampled rounds passed the project\'s answerability and age-band rules for ages 4-8.');

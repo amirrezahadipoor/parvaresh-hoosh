@@ -1,6 +1,12 @@
 // Deterministic data, generator and renderer smoke tests; DOM behavior is covered by test_runtime.js
 const fs = require('fs');
 
+let randomState = 0x7c29d4a1;
+Math.random = () => {
+    randomState = (Math.imul(randomState, 1664525) + 1013904223) >>> 0;
+    return randomState / 0x100000000;
+};
+
 function createMockEl(tag) {
     const el = {
         tagName: (tag || 'DIV').toUpperCase(),
@@ -119,7 +125,7 @@ console.log('All modules loaded without error!');
 
 // Test IQ Assessment & Radar Chart
 const iqReport = IQAssessment.getReport();
-console.log(`IQ Assessment: Overall Index ${iqReport.overallIQ}, Mental Age: ${iqReport.estimatedMentalAge}`);
+console.log(`Progress summary: Mastery Index ${iqReport.masteryIndex}, Interpretation: ${iqReport.interpretation}`);
 const canvasMock = createMockEl('canvas');
 IQAssessment.drawRadarChart(canvasMock);
 console.log('Radar chart canvas rendered without error!');

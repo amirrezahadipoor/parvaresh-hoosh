@@ -17,7 +17,9 @@ clips reproduced exactly. Run:  python3 scripts/generate_audio.py
 """
 import asyncio
 import os
+import subprocess
 import sys
+import tempfile
 
 try:
     import edge_tts
@@ -26,7 +28,7 @@ except ImportError:
 
 VOICE = "fa-IR-DilaraNeural"
 RATE = "-10%"          # a little slower than default for 4-8 year olds
-OUT = os.path.join(os.path.dirname(__file__), "..", "assets", "audio")
+OUT = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "kid")
 
 # ---------------------------------------------------------------- letters ----
 # name -> (letter, spoken sound, example word)
@@ -114,8 +116,19 @@ TOPIC = {
 
 async def synth(name, text):
     path = os.path.abspath(os.path.join(OUT, name + ".mp3"))
-    c = edge_tts.Communicate(text, VOICE, rate=RATE)
-    await c.save(path)
+    os.makedirs(OUT, exist_ok=True)
+    fd, raw = tempfile.mkstemp(prefix="parvaresh-raw-", suffix=".mp3")
+    os.close(fd)
+    try:
+        await edge_tts.Communicate(text, VOICE, rate=RATE).save(raw)
+        subprocess.run([
+            "ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", raw,
+            "-af", "rubberband=pitch=1.28:formant=shifted",
+            "-codec:a", "libmp3lame", "-q:a", "4", "-ar", "24000", "-ac", "1", path
+        ], check=True)
+    finally:
+        if os.path.exists(raw):
+            os.remove(raw)
     return name, os.path.getsize(path)
 
 

@@ -2,7 +2,17 @@
 window.BackupRestore = (function() {
     const FORMAT = 'parvaresh-hoosh-backup';
     const SCHEMA_VERSION = 1;
-    const EXTRA_KEYS = ['parvaresh_hoosh_adaptive_v2', 'parvaresh_hoosh_iq_v3', 'parvaresh_hoosh_game_progress_v1'];
+    const MAX_SERIALIZED_BYTES = 20 * 1024 * 1024;
+    const ALLOWED_RECORD_KEYS = new Set([
+        'settings', 'progress', 'engagement', 'selected_mascot', 'parvaresh_parent_pin'
+    ]);
+    const EXTRA_KEYS = [
+        'parvaresh_hoosh_adaptive_v2',
+        'parvaresh_hoosh_iq_v3',
+        'parvaresh_hoosh_game_progress_v1',
+        'parvaresh_hoosh_engagement_v1',
+        'ph_gallery'
+    ];
 
     function getExtraLocalStorage() {
         const values = {};
@@ -47,6 +57,18 @@ window.BackupRestore = (function() {
         if (payload.schemaVersion !== SCHEMA_VERSION) throw new Error('نسخهٔ فایل پشتیبان پشتیبانی نمی‌شود');
         if (!payload.records || typeof payload.records !== 'object' || Array.isArray(payload.records)) throw new Error('داده‌های فایل ناقص است');
         if (payload.localStorage && (typeof payload.localStorage !== 'object' || Array.isArray(payload.localStorage))) throw new Error('تنظیمات فایل ناقص است');
+
+        let serialized;
+        try { serialized = JSON.stringify(payload); } catch (error) { throw new Error('فایل پشتیبان قابل خواندن نیست'); }
+        if (new Blob([serialized]).size > MAX_SERIALIZED_BYTES) throw new Error('حجم فایل پشتیبان بیش از حد مجاز است');
+
+        for (const key of Object.keys(payload.records)) {
+            if (!ALLOWED_RECORD_KEYS.has(key)) throw new Error(`کلید ناشناخته در پشتیبان: ${key}`);
+        }
+        for (const [key, value] of Object.entries(payload.localStorage || {})) {
+            if (!EXTRA_KEYS.includes(key) || typeof value !== 'string') throw new Error('تنظیمات فایل معتبر نیست');
+            if (value.length > MAX_SERIALIZED_BYTES) throw new Error('یکی از بخش‌های پشتیبان بیش از حد بزرگ است');
+        }
         return payload;
     }
 

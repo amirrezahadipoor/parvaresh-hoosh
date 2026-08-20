@@ -1,1 +1,0 @@
-SKIP: jsdom is not installed; browser-level runtime smoke test was not executed.

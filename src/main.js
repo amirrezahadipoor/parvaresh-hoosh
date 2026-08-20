@@ -102,7 +102,7 @@
         { id: 'science', title: 'جنگل شگفت‌انگیز علوم', subtitle: 'حیوانات، حواس پنج‌گانه و فصل‌ها', color: '#FFA502', mascot: 'fandogh', icon: 'علوم' },
         { id: 'art', title: 'کارگاه نقاشی و هنر', subtitle: 'رنگ‌آمیزی شاد و خلاقیت کودکانه', color: '#FD79A8', mascot: 'barfi', icon: 'هنر' },
         // Gifted / entrance-exam track, split by age band inside the domain.
-        { id: 'gifted', title: 'مدرسه تیزهوشان', subtitle: 'ماتریس ریون، ترازو، الگو و معمای هوش', color: '#6C5CE7', mascot: 'shiri', icon: 'brain' },
+        { id: 'gifted', title: 'مدرسه تیزهوشان', subtitle: 'ماتریس تصویری، ترازو، الگو و معمای فکری', color: '#6C5CE7', mascot: 'shiri', icon: 'brain' },
         { id: 'arcade', title: 'شهربازی بازی‌های بی‌پایان', subtitle: 'شکار بادکنک، بلز موسیقی و غذا به حیوانات', color: '#00B894', mascot: 'dana', icon: 'بازی' }
     ];
 
@@ -1480,7 +1480,12 @@
 
         // 0. Painting gallery — the child's saved artwork, shown large.
         let gallery = [];
-        try { gallery = JSON.parse(localStorage.getItem('ph_gallery') || '[]'); } catch (e) { gallery = []; }
+        try {
+            const parsedGallery = JSON.parse(localStorage.getItem('ph_gallery') || '[]');
+            gallery = Array.isArray(parsedGallery)
+                ? parsedGallery.filter(item => item && typeof item.img === 'string' && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(item.img)).slice(0, 12)
+                : [];
+        } catch (e) { gallery = []; }
         if (gallery.length) {
             const galleryCard = document.createElement('section');
             galleryCard.className = 'gallery-card';
@@ -1499,9 +1504,19 @@
                     AudioEngine.play('click');
                     const viewer = document.createElement('div');
                     viewer.className = 'gallery-viewer';
-                    viewer.innerHTML = `<div class="gallery-viewer-inner"><img src="${item.img}" alt=""><button class="big-action-btn" id="gallery-close">بستن</button></div>`;
+                    const viewerInner = document.createElement('div');
+                    viewerInner.className = 'gallery-viewer-inner';
+                    const viewerImage = document.createElement('img');
+                    viewerImage.src = item.img;
+                    viewerImage.alt = 'نقاشی ذخیره‌شدهٔ کودک';
+                    const closeButton = document.createElement('button');
+                    closeButton.type = 'button';
+                    closeButton.className = 'big-action-btn';
+                    closeButton.textContent = 'بستن';
+                    viewerInner.append(viewerImage, closeButton);
+                    viewer.appendChild(viewerInner);
                     viewer.addEventListener('click', ev => { if (ev.target === viewer) viewer.remove(); });
-                    viewer.querySelector('#gallery-close').addEventListener('click', () => viewer.remove());
+                    closeButton.addEventListener('click', () => viewer.remove());
                     document.body.appendChild(viewer);
                 });
                 grid.appendChild(fig);
@@ -1866,17 +1881,17 @@
 
         const iqReport = IQAssessment.getReport();
 
-        // 1. Milestone IQ
+        // 1. Game-practice summary
         const milestoneCard = document.createElement('div');
         milestoneCard.className = 'milestone-iq-card';
         milestoneCard.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div class="milestone-iq-number">${toFa(iqReport.overallIQ)}</div>
+                    <div class="milestone-iq-number">${toFa(iqReport.masteryIndex)}</div>
                     <div class="milestone-iq-label">شاخص رشد بازی‌محور</div>
                 </div>
                 <div style="text-align:left; max-width:45%;">
-                    <div style="font-size:14px; font-weight:900;">${iqReport.estimatedMentalAge}</div>
+                    <div style="font-size:14px; font-weight:900;">${iqReport.interpretation}</div>
                     <div style="font-size:11px; opacity:0.9;">تفسیر آموزشی</div>
                 </div>
             </div>
@@ -1926,7 +1941,7 @@
         // 3. Detailed Dimensions
         const detailsCard = document.createElement('div');
         detailsCard.className = 'parent-card';
-        detailsCard.innerHTML = `<h3>تحلیل تخصصی ابعاد ۶ گانه</h3>`;
+        detailsCard.innerHTML = `<h3>جزئیات شش حوزهٔ تمرینی</h3>`;
 
         iqReport.dimensions.forEach(dim => {
             const row = document.createElement('div');
@@ -2087,6 +2102,7 @@
             const file = backupInput.files && backupInput.files[0];
             if (!file) return;
             try {
+                if (file.size > 20 * 1024 * 1024) throw new Error('حجم فایل پشتیبان بیش از حد مجاز است.');
                 const payload = JSON.parse(await file.text());
                 window.BackupRestore.validate(payload);
                 const proceed = await showDialog({
