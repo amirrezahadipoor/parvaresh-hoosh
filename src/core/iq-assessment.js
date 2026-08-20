@@ -180,7 +180,15 @@ window.IQAssessment = (function() {
             });
         });
 
-        const overallIQ = Math.round(totalScore / dimensions.length);
+        // Only average the areas the child has ACTUALLY practised. Dividing by all
+        // six counted untouched areas as zeros, so a child who played nothing but
+        // logic - perfectly - was reported to their parent as 17/100. That is a
+        // false statement about their child; an unplayed area is missing data,
+        // not a score of zero.
+        const practised = dimensions.filter(dimension => dimension.attempts > 0);
+        const overallIQ = practised.length
+            ? Math.round(practised.reduce((sum, dimension) => sum + dimension.score, 0) / practised.length)
+            : 0;
         const totalAttempts = dimensions.reduce((sum, dimension) => sum + dimension.attempts, 0);
         let headline = 'روند رشد شناختی متعادل و فعال';
 
@@ -196,6 +204,8 @@ window.IQAssessment = (function() {
 
         return {
             overallIQ,
+            // What the number actually rests on, so the parent can judge it.
+            coverage: { practised: practised.length, total: dimensions.length },
             estimatedMentalAge: totalAttempts >= 5 ? 'نشانگر بازی‌محور؛ غیرتشخیصی' : 'دادهٔ کافی هنوز جمع نشده است',
             hasEnoughData: totalAttempts >= 5,
             totalAttempts,

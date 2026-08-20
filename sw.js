@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v48-age-content-fix';
+const CACHE_NAME = 'parvaresh-hoosh-v49-gifted-access-layout';
 const PRECACHE = [
   './', './index.html', './manifest.webmanifest', './privacy.html', './terms.html',
   './content/curriculum.json', './content/content_manifest.json',

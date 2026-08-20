@@ -1374,10 +1374,20 @@ window.Generator = (function() {
         if (Number.isFinite(adaptive)) {
             const ladder = ['toddler', 'preschool', 'early', 'school'];
             let idx = ladder.indexOf(track);
-            if (adaptive >= 4 && idx < ladder.length - 1) idx++;   // mastering -> harder
-            else if (adaptive <= 1 && idx > 0) idx--;              // struggling -> gentler
+            // A single +1 step capped a brilliant 5-year-old below the richest
+            // material however well they did. Sustained mastery now climbs
+            // further, so a gifted child always has somewhere left to go.
+            if (adaptive >= 8) idx += 3;
+            else if (adaptive >= 6) idx += 2;
+            else if (adaptive >= 4) idx += 1;
+            else if (adaptive <= 1) idx -= 1;                      // struggling -> gentler
+            idx = Math.max(0, Math.min(ladder.length - 1, idx));
             track = ladder[idx];
         }
+        // Clever is not the same as literate: a promoted pre-reader must not be
+        // handed school-length text. The reading budget is capped by real age in
+        // retypeRoundForTrack(), and the track itself stops short of 'school'.
+        if (Number.isFinite(age) && age <= 5 && track === 'school') track = 'early';
         return track;
     }
 
@@ -1528,8 +1538,31 @@ window.Generator = (function() {
         });
     }
 
-    function retypeRoundForTrack(round, trackKey, domainHint) {
-        const rules = TRACK_RULES[trackKey];
+    // Reading ability follows the child's AGE, not the difficulty track. A gifted
+    // 4-year-old promoted upward can reason like a 7-year-old but still cannot
+    // read a sentence, so the text budget stays tied to real age.
+    function readingLimitsForAge(age) {
+        const a = Number(age);
+        if (!Number.isFinite(a)) return null;
+        if (a <= 4) return { maxOptionChars: 8, maxPromptChars: 46 };
+        if (a <= 5) return { maxOptionChars: 12, maxPromptChars: 52 };
+        return null;
+    }
+
+    function retypeRoundForTrack(round, trackKey, domainHint, childAge) {
+        const trackRules = TRACK_RULES[trackKey];
+        const ageRules = readingLimitsForAge(childAge);
+        // Merge stricter-wins so promotion can raise difficulty but never the
+        // amount of text a pre-reader is asked to decode.
+        let rules = trackRules;
+        if (ageRules) {
+            rules = Object.assign({}, trackRules || {});
+            ['maxOptionChars', 'maxPromptChars'].forEach(k => {
+                const cur = Number(rules[k]);
+                const lim = Number(ageRules[k]);
+                rules[k] = Number.isFinite(cur) ? Math.min(cur, lim) : lim;
+            });
+        }
         if (!rules || !round || !round.type) return round;
 
         // Swap out text-heavy questions for the youngest children.
@@ -1587,7 +1620,7 @@ window.Generator = (function() {
 
     function adaptRoundForAge(round, metadata, pkg) {
         const trackKey = resolveAgeTrack(metadata, pkg);
-        round = retypeRoundForTrack(round, trackKey, (metadata && metadata.domain) || '');
+        round = retypeRoundForTrack(round, trackKey, (metadata && metadata.domain) || '', metadata && metadata.childAge);
         let track = (pkg.ageTracks && pkg.ageTracks[trackKey])
             || (trackKey === 'toddler' && pkg.ageTracks && pkg.ageTracks.preschool)
             || { optionCount: 4, hintDelay: 4500, maxNumber: 20, language: 'ساده' };

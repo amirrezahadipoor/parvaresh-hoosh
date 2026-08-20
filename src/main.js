@@ -659,12 +659,12 @@
         // dashboard.appendChild(dailyPlan);
 
         const quickActions = document.createElement('div');
-        quickActions.className = 'home-quick-actions';
+        // One action only: the header shield already opens the parents dashboard,
+        // and the guiding-finger switch is a parent setting, so it now lives in
+        // the parents dashboard. That buys back ~135px for bigger subject tiles.
+        quickActions.className = 'home-quick-actions single';
         quickActions.appendChild(createHomeAction('ستاره‌ها و همبازی', 'rewards', renderRewards));
-        quickActions.appendChild(createHomeAction('داشبورد والدین', 'parents', renderParents));
         dashboard.appendChild(quickActions);
-
-        dashboard.appendChild(createHintSetting());
 
         container.appendChild(dashboard);
     }
@@ -1846,6 +1846,19 @@
         }
     }
 
+    // State plainly what the headline number is based on. A score computed from
+    // 6 answers in one area must not look as authoritative as one from 200
+    // answers across six.
+    function describeEvidence(report) {
+        const cov = (report && report.coverage) || { practised: 0, total: 6 };
+        const n = Number(report && report.totalAttempts) || 0;
+        if (!n) return 'هنوز پاسخی ثبت نشده است';
+        let confidence = 'برآورد اولیه — هنوز داده کم است';
+        if (n >= 60) confidence = 'برآورد قابل اتکا';
+        else if (n >= 20) confidence = 'برآورد نسبی';
+        return `بر پایهٔ ${toFa(n)} پاسخ در ${toFa(cov.practised)} حوزه از ${toFa(cov.total)} حوزه · ${confidence}`;
+    }
+
     async function renderDashboard(content) {
         content.innerHTML = '';
         const scrollBody = document.createElement('div');
@@ -1868,6 +1881,7 @@
                 </div>
             </div>
             <div class="milestone-headline">${iqReport.headline}</div>
+            <div class="milestone-evidence">${describeEvidence(iqReport)}</div>
             <div class="milestone-disclaimer">${iqReport.disclaimer}</div>
         `;
         scrollBody.appendChild(milestoneCard);
@@ -1928,8 +1942,8 @@
                     <i style="width:${dim.score}%; background:${dim.color};"></i>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink2); font-weight:700; margin-bottom:6px;">
-                    <span>امتیاز تسلط: ${toFa(dim.score)} / ۱۰۰</span>
-                    <span>سطح: ${toFa(dim.level)}</span>
+                    <span>${dim.attempts ? `امتیاز تسلط: ${toFa(dim.score)} / ۱۰۰` : 'بدون داده'}</span>
+                    <span>${dim.attempts ? `${toFa(dim.attempts)} پاسخ` : '—'}</span>
                 </div>
                 <div class="dim-advice">${dim.advice}</div>
             `;
@@ -1971,6 +1985,14 @@
             </div>
         `;
         scrollBody.appendChild(progressCard);
+
+        // The guiding-finger switch moved off the child's home (it is a parent
+        // decision, and the home needed the space for bigger tiles).
+        const hintCard = document.createElement('div');
+        hintCard.className = 'parent-card';
+        hintCard.innerHTML = '<h3>راهنمای حین بازی</h3>';
+        hintCard.appendChild(createHintSetting());
+        scrollBody.appendChild(hintCard);
 
         // 4. Data Privacy
         // Dedicated, prominent child-profile card so raising the age is easy to find
