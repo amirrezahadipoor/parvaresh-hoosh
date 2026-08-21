@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-08-21",
+  "checkpoint": {
+    "acceptedClips": 79,
+    "commit": "68d99a1"
+  },
+  "coverage": {
+    "roundsSampled": 700000,
+    "passesPerAge": 80,
+    "ages": [
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "queueTotal": 1016,
+    "requiredGenerated": 76,
+    "friendlyReservedGenerated": 3,
+    "requiredPendingAfterContentFixes": 791,
+    "deadPending": 146,
+    "runtimeNotQueued": 0
+  },
+  "requiredPendingCategories": {
+    "arithmetic": 380,
+    "firstSound": 32,
+    "findPicture": 60,
+    "opposite": 30,
+    "countShapes": 1,
+    "selectNumber": 20,
+    "nextNumber": 19,
+    "animalHabitat": 18,
+    "trace": 16,
+    "syllableCount": 15,
+    "rhyme": 12,
+    "balloonTarget": 7,
+    "selectColor": 5,
+    "animalSound": 14,
+    "authoredOrFixedInstruction": 162
+  },
+  "approvedSafeOptimizations": [
+    {
+      "name": "remove-dead-manifest-lines",
+      "oldCalls": 146,
+      "newCalls": 0,
+      "savedCalls": 146,
+      "note": "Not reachable after resolving explicit audioClip precedence and 700000 generated rounds."
+    },
+    {
+      "name": "count-question-no-answer-leak",
+      "oldCalls": 20,
+      "newCalls": 1,
+      "savedCalls": 19,
+      "note": "All 1..20 variants now say only «چند تا شکل می‌بینی؟»; the old narration revealed the answer."
+    },
+    {
+      "name": "reuse-letter-explanation-for-non-drawable-letter",
+      "oldCalls": 1,
+      "newCalls": 0,
+      "savedCalls": 1,
+      "note": "The ث word round reuses letter-se, preserving explicit «ث سه‌نقطه / صدای س» disambiguation."
+    }
+  ],
+  "pilotRequiredOptimization": {
+    "name": "offline-arithmetic-assembly",
+    "fullRuntimeEquations": 380,
+    "aiSourceRecordings": 57,
+    "savedAiCalls": 323,
+    "runtimeTts": false,
+    "runtimeFilesRemainFullEquations": true,
+    "prefixRecordings": 38,
+    "suffixRecordings": 19,
+    "processing": "AI-recorded fragments + formant-preserving pitch + offline crossfade/concatenation",
+    "gate": "Do not scale until A/B listening and Persian ASR show no seam/prosody regression."
+  },
+  "recommendedForecast": {
+    "pendingAiCallsWithoutArithmeticAssembly": 791,
+    "pendingAiCallsAfterArithmeticPilotPasses": 468,
+    "previousNaivePending": 937,
+    "callsAvoidedBeforeArithmetic": 146,
+    "callsAvoidedIncludingArithmetic": 469,
+    "finalRequiredRuntimeClips": 867,
+    "friendlyReservedClips": 3,
+    "finalFilesIfReservedFeedbackKept": 870
+  },
+  "mustRemainSpecific": [
+    "findPicture",
+    "opposite",
+    "selectNumber",
+    "nextNumber",
+    "animalHabitat",
+    "trace",
+    "syllableCount",
+    "rhyme",
+    "balloonTarget",
+    "selectColor",
+    "animalSound",
+    "authoredOrFixedInstruction"
+  ],
+  "rejectedAggressiveIdea": "One generic prompt for target-bearing questions would remove the spoken letter, number, word, animal or equation and harm pre-reader accessibility and learning value."
+}

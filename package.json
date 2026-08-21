@@ -21,7 +21,8 @@
     "test:e2e": "node test_e2e.js",
     "test:e2e:build": "npm run build:web && E2E_ROOT=www node test_e2e.js",
     "audit:semantics": "node scripts/audit_semantics.js",
-    "audit:pronunciation": "node scripts/audit_pronunciation.js"
+    "audit:pronunciation": "node scripts/audit_pronunciation.js",
+    "audit:narration-reuse": "node scripts/analyze_narration_reuse.js"
   },
   "author": "پرورش هوش کودک",
   "license": "MIT",

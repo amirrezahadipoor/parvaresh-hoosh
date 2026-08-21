@@ -209,13 +209,21 @@ window.Generator = (function() {
         // rather than showing text tiles under a prompt that promises pictures.
         if (!drawable) {
             const opts = shuffle([correctWord, ...others].map(w => ({ label: w })));
-            return mc(
+            const wordRound = mc(
                 `کدام کلمه با حرف «${letterObj.letter}» شروع می‌شود؟`,
                 null,
                 opts,
                 opts.findIndex(o => o.label === correctWord),
                 `کدام کلمه با حرف ${letterObj.letter} شروع می‌شود؟`
             );
+            // Reuse the already-authored letter explanation instead of producing
+            // a second prompt recording. This is especially important for «ث»:
+            // its clip explicitly says «ثِ سه‌نقطه» and distinguishes its /س/
+            // sound, so the child never hears an ambiguous bare letter name.
+            wordRound.audioClip = LETTER_AUDIO[letterObj.letter] ? `letter-${LETTER_AUDIO[letterObj.letter]}` : null;
+            wordRound.audioAutoPlay = false;
+            wordRound.letter = letterObj.letter;
+            return wordRound;
         }
 
         const correctImg = imgForWord(correctWord);
@@ -485,7 +493,10 @@ window.Generator = (function() {
             img,
             opts.map(x => ({ label: toFaDigit(x), big: true })),
             opts.indexOf(n),
-            `چند تا شکل می‌بینی؟ ${toFaWord(n)} تا`
+            // Never read the answer aloud. The previous line appended «سه تا»،
+            // «ده تا»… to the question and solved the exercise for the child.
+            // One neutral recording now covers every count from 1 to 20.
+            'چند تا شکل می‌بینی؟'
         );
     }
 
