@@ -3,7 +3,7 @@
 
 NO TEXT-TO-SPEECH RUNS IN THE APP. This script runs on a developer machine at
 BUILD time only: it renders each line with an AI voice, then pitch-shifts it
-+28% with formant shifting (identical to scripts/kidify.sh) to produce the
++15% with formant shifting (identical to scripts/kidify.sh) to produce the
 approved child timbre. The resulting mp3 is what ships; the app only ever plays
 files from assets/audio/kid/.
 
@@ -31,6 +31,7 @@ except ImportError:
 
 VOICE = "fa-IR-DilaraNeural"
 RATE = "-10%"
+EDGE_PITCH = "+8Hz"
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUT = os.path.join(ROOT, "assets", "audio", "kid")
 
@@ -130,7 +131,7 @@ async def render(name, text, sem):
     async with sem:
         for attempt in range(3):
             try:
-                await edge_tts.Communicate(text, VOICE, rate=RATE).save(raw)
+                await edge_tts.Communicate(text, VOICE, rate=RATE, pitch=EDGE_PITCH).save(raw)
                 break
             except Exception as exc:                       # network flake
                 if attempt == 2:
@@ -141,7 +142,6 @@ async def render(name, text, sem):
         # Identical to scripts/kidify.sh: the ONE approved transformation.
         subprocess.run(
             ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", raw,
-             "-af", "rubberband=pitch=1.28:formant=shifted",
              "-codec:a", "libmp3lame", "-q:a", "4", "-ar", "24000", "-ac", "1",
              final],
             check=True)
@@ -173,4 +173,5 @@ async def main():
         json.dump(mapping, handle, ensure_ascii=False, indent=1, sort_keys=True)
     print("wrote gifted-lesson-clips.json with", len(mapping), "entries")
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

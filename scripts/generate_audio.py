@@ -27,7 +27,8 @@ except ImportError:
     sys.exit("pip install edge-tts")
 
 VOICE = "fa-IR-DilaraNeural"
-RATE = "-10%"          # a little slower than default for 4-8 year olds
+RATE = "-10%"
+EDGE_PITCH = "+8Hz"          # a little slower than default for 4-8 year olds
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "kid")
 
 # ---------------------------------------------------------------- letters ----
@@ -37,7 +38,7 @@ LETTERS = {
     "be":    ("ب",  "بِ",   "بادکنک"),
     "pe":    ("پ",  "پِ",   "پروانه"),
     "te":    ("ت",  "تِ",   "توپ"),
-    "se":    ("ث",  "ثِ",   "ثانیه"),
+    "se":    ("ث",  "ثِ سه‌نقطه", "ثانیه"),
     "jim":   ("ج",  "جِ",   "جوجه"),
     "che":   ("چ",  "چِ",   "چتر"),
     "he":    ("ح",  "حِ",   "حوض"),
@@ -68,8 +69,28 @@ LETTERS = {
 }
 
 def letter_script(letter, sound, example):
+    # Persian spelling has several letters that share one modern phoneme. Saying
+    # «صِ» or «ذِ» as if it were the sound is pedagogically wrong; name the letter
+    # and then state the sound actually heard in Persian.
+    shared_phonemes = {
+        "ث": ("ثِ سه‌نقطه", "س"),
+        "ح": ("حِ جیمی", "ه"),
+        "ذ": ("ذال", "ز"),
+        "ص": ("صاد", "س"),
+        "ض": ("ضاد", "ز"),
+        "ط": ("طا", "ت"),
+        "ظ": ("ظا", "ز"),
+    }
+    if letter in shared_phonemes:
+        name, phoneme = shared_phonemes[letter]
+        return (f"این حرف «{letter}» است؛ {name}. در فارسی صدای «{phoneme}» می‌دهد. "
+                f"کلمهٔ «{example}» با حرف «{letter}» شروع می‌شود.")
+    if letter == "ف":
+        return "این حرف «ف» است؛ فِ تک‌نقطه. صدای «ف» می‌دهد. کلمهٔ «فیل» با حرف «ف» شروع می‌شود."
+    if letter == "ه":
+        return "این حرف «ه» است؛ هِ دوچشم. صدای «ه» می‌دهد. کلمهٔ «هندوانه» با حرف «ه» شروع می‌شود."
     return (f"این حرف «{letter}» است. صدایش «{sound}» است. "
-            f"«{example}» با «{letter}» شروع می‌شود.")
+            f"کلمهٔ «{example}» با حرف «{letter}» شروع می‌شود.")
 
 # ------------------------------------------------------------ lesson intros --
 LESSON = {
@@ -120,10 +141,9 @@ async def synth(name, text):
     fd, raw = tempfile.mkstemp(prefix="parvaresh-raw-", suffix=".mp3")
     os.close(fd)
     try:
-        await edge_tts.Communicate(text, VOICE, rate=RATE).save(raw)
+        await edge_tts.Communicate(text, VOICE, rate=RATE, pitch=EDGE_PITCH).save(raw)
         subprocess.run([
             "ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", raw,
-            "-af", "rubberband=pitch=1.28:formant=shifted",
             "-codec:a", "libmp3lame", "-q:a", "4", "-ar", "24000", "-ac", "1", path
         ], check=True)
     finally:

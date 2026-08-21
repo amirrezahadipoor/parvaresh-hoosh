@@ -34,10 +34,6 @@ window.DragDropActivity = (function() {
         promptBanner.appendChild(speakerBtn);
         stage.appendChild(promptBanner);
 
-        setTimeout(() => {
-            AudioEngine.speak(round.speech || round.prompt);
-        }, 150);
-
         // 2. Drop Target Zones (Top Half)
         const targetsRow = document.createElement('div');
         // Previously flex:1 with a 120px max-height, which parked the whole puzzle in

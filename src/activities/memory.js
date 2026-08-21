@@ -165,7 +165,6 @@ window.MemoryActivity = (function() {
 
         stage.appendChild(grid);
         container.appendChild(stage);
-        setTimeout(() => AudioEngine.speak('کارت‌ها را برگردان و جفت‌های مثل هم را پیدا کن گل من!'), 150);
     }
 
     return { render };

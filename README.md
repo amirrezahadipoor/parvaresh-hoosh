@@ -4,14 +4,14 @@
 
 > این برنامه ابزار آموزش و تمرین است؛ آزمون IQ، تشخیص پزشکی/روان‌شناختی یا جایگزین ارزیابی متخصص نیست.
 
-## وضعیت نسخهٔ ۳.۱.۰
+## وضعیت نسخهٔ ۳.۳.۲
 
 - **۳۴۲ درس پیاده‌سازی‌شده** با شناسهٔ یکتا
 - **۷ حوزهٔ آموزشی** و ۷۲ سطح
 - ۱۰۶ نوع مهارت و ۱۲ موتور/قالب فعالیت
 - ۷ بازی آزاد در شهربازی
 - ۵ شخصیت همراه
-- ۶۷۵ کلیپ گفتار فارسی ازپیش‌تولیدشده
+- ۱۱۰۳ کلیپ گفتار فارسی ازپیش‌تولیدشده
 - PWA و بسته‌بندی Android با Capacitor
 - ذخیره‌سازی محلی، گزارش والد و پشتیبان‌گیری آفلاین
 
@@ -75,7 +75,7 @@ npm run android:sync
 npm run android:debug
 ```
 
-خروجی وب در `www/` ساخته می‌شود و در Git نگهداری نمی‌شود. Release رسمی باید فقط با tag معنایی (`v3.1.0`) یا اجرای دستی workflow ساخته شود؛ push عادی فقط تست و build را اجرا می‌کند.
+خروجی وب در `www/` ساخته می‌شود و در Git نگهداری نمی‌شود. Release رسمی باید فقط با tag معنایی (`v3.3.2`) یا اجرای دستی workflow ساخته شود؛ push عادی فقط تست و build را اجرا می‌کند.
 
 ## تست‌ها و quality gates
 
@@ -85,14 +85,17 @@ npm run android:debug
 - یکتایی شناسه و عنوان و کامل بودن فیلدهای درس‌ها
 - mapping و تعداد round تمام ۳۴۲ درس
 - دارایی‌های SVG و icon
-- ممنوع بودن TTS در runtime و وجود ۶۷۵ فایل گفتار
-- ۳۵٬۰۰۰ نمونهٔ تولیدی در چهار سن و پاسخ‌پذیری فعالیت‌ها
+- ممنوع بودن TTS در runtime و وجود ۱۱۰۳ فایل گفتار
+- ۳۵٬۰۰۰ نمونهٔ age-rule و پاسخ‌پذیری فعالیت‌ها
+- ۶۹٬۶۸۰ نمونهٔ semantic برای درستی گزینه‌ها، حروف، محاسبات، ساعت، matching و ordering
+- ممنوعیت محتوای cross-domain در ورود مستقیم به هر موضوع
+- تطابق یک‌به‌یک ۱۰۱۶ متن runtime با فایل صوتی و ledger ‏SHA-256
 - syntax همهٔ فایل‌های JavaScript
 - render ساختاری همهٔ componentها و smoke test در JSDOM
 
 CI علاوه بر این موارد، Chromium واقعی را نصب می‌کند و `npm run test:e2e` را برای startup، RTL، onboarding، هفت حوزه، هفت بازی، اجرای درس، نام دسترس‌پذیر کنترل‌ها و cold reload کاملاً آفلاین اجرا می‌کند. برای اجرای محلی ابتدا `npx playwright-core install --with-deps chromium` را اجرا کنید.
 
-تست Chromium هنوز جای TalkBack یا دستگاه Android واقعی را نمی‌گیرد. checklist انتشار در [`docs/RELEASE_CHECKLIST_FA.md`](docs/RELEASE_CHECKLIST_FA.md) ثبت شده است.
+تست Chromium هنوز جای TalkBack یا دستگاه Android واقعی را نمی‌گیرد. checklist انتشار در [`docs/RELEASE_CHECKLIST_FA.md`](docs/RELEASE_CHECKLIST_FA.md)، نگاشت منابع در [`docs/EVIDENCE_AND_COMPLIANCE_FA.md`](docs/EVIDENCE_AND_COMPLIANCE_FA.md) و تصمیم‌های کیفیت تلفظ در [`docs/TTS_QUALITY_FA.md`](docs/TTS_QUALITY_FA.md) ثبت شده است.
 
 ## ساختار
 

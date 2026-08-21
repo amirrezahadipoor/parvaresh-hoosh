@@ -35,12 +35,9 @@ window.IQEngines = (function() {
             const speakBtn = card.querySelector('#raven-speak');
             speakBtn.onclick = () => {
                 AudioEngine.play('click');
-                AudioEngine.speak('الگو را ببین؛ کدام شکل جای علامت سوال قرار می‌گیرد؟');
+                if (round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip)) return;
+                AudioEngine.speak(round.speech || 'شکل کامل‌کننده الگو را پیدا کن');
             };
-
-            setTimeout(() => {
-                AudioEngine.speak('الگو را ببین؛ کدام شکل جای علامت سوال قرار می‌گیرد؟');
-            }, 150);
 
             const optsRow = card.querySelector('#raven-opts');
             let answered = false;
@@ -287,10 +284,6 @@ window.IQEngines = (function() {
                 </div>
                 <div class="disappeared-options-pool" id="disp-opts" style="display:none;"></div>
             `;
-
-            setTimeout(() => {
-                AudioEngine.speak('این وسایل را خوب نگاه کن و به خاطر بسپار!');
-            }, 150);
 
             setTimeout(() => {
                 const curtain = card.querySelector('#magic-curtain');

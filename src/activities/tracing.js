@@ -35,10 +35,6 @@ window.TracingActivity = (function() {
         promptBanner.appendChild(speakerBtn);
         stage.appendChild(promptBanner);
 
-        setTimeout(() => {
-            if (!(round.audioClip && AudioEngine.playClip && AudioEngine.playClip(round.audioClip))) AudioEngine.speak(round.speech || `با انگشت روی ${isLetter ? 'حرف' : 'عدد'} ${round.char} بکش گل من!`);
-        }, 150);
-
         // 2. Fullscreen Canvas Stage
         const canvasWrap = document.createElement('div');
         canvasWrap.className = 'fullscreen-canvas-wrap';
