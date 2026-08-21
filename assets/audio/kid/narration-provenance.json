@@ -362,6 +362,66 @@
       "text": "با انگشت روی حرف و بکش",
       "sha256": "3d2652194acfa93b7b59d9bf2eb3229151d11111829ae0c36b28c7bbb204b710",
       "batch": 7
+    },
+    "auto-d861f3efcae7": {
+      "text": "با انگشت روی حرف پ بکش",
+      "sha256": "9c8afd06636b55dd9bf1e6c5fbba7eaad55bdcc441cd0fac91496fb470a85fa1",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-9b114ff9463a": {
+      "text": "با انگشت روی حرف چ بکش",
+      "sha256": "9e5fb6047787de79946eeb5f02306e932e473d75c784e2d69b9a727dc840cb21",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-3d2dedc237df": {
+      "text": "با انگشت روی حرف ژ بکش",
+      "sha256": "81fa168e95ae43b2fe09ed2e2507d7de5cbcdb39e68a1ee0e4be6e97d44dd0e7",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-46a5b7c2b0a3": {
+      "text": "با انگشت روی حرف ک بکش",
+      "sha256": "091ea0fa27087a430493e8da62d376043e64fe9e00d9492c59fad3d15c44c28c",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-a111e01d0a8a": {
+      "text": "با انگشت روی حرف گ بکش",
+      "sha256": "9cdd9c691c2a78f91496870e84794e8a7e75f211cdedbd15cd8dda50499419d6",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-f89e01f4478a": {
+      "text": "با انگشت روی حرف ی بکش",
+      "sha256": "4ce4d0fd2293f7bbbac6891349ffa45ff342864e2117a47975ef41f05dec7998",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-0ac59bf754fc": {
+      "text": "با انگشت روی عدد ۱ بکش",
+      "sha256": "93bcd4ebdea914eb344b5809d1cc7a353f9e37822aac19d47e88370efb59ca35",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-86ce48e10e17": {
+      "text": "با انگشت روی عدد ۱۰ بکش",
+      "sha256": "da0bcc0a89f48ad89e17b660d01ad27cbe81b13a60287a40a65e4693c33c4e47",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-0b18da6c6e88": {
+      "text": "با انگشت روی عدد ۱۱ بکش",
+      "sha256": "cfc6f3b996d6653d0e16b0dd62a44094ef5097853cc138f1904c230c12120a43",
+      "batch": 8,
+      "delivery": "gentle-clear"
+    },
+    "auto-66f7107cce5a": {
+      "text": "با انگشت روی عدد ۱۲ بکش",
+      "sha256": "db775ad6f438589ef35b02e68d6749495d3a0f89b16f24e1db7f58a9357ccf99",
+      "batch": 8,
+      "delivery": "gentle-clear"
     }
   },
   "rejected": [
@@ -461,6 +521,28 @@
         "auto-81443ccd8837",
         "auto-4ff411c3ed49"
       ]
+    },
+    {
+      "batch": 8,
+      "accepted": [
+        "auto-d861f3efcae7",
+        "auto-9b114ff9463a",
+        "auto-3d2dedc237df",
+        "auto-46a5b7c2b0a3",
+        "auto-a111e01d0a8a",
+        "auto-f89e01f4478a",
+        "auto-0ac59bf754fc",
+        "auto-86ce48e10e17",
+        "auto-0b18da6c6e88",
+        "auto-66f7107cce5a"
+      ],
+      "delivery": "gentle-clear"
     }
-  ]
+  ],
+  "deliveryPolicy": {
+    "instruction": "gentle-clear",
+    "praise": "warm-enthusiastic",
+    "retry": "reassuring",
+    "lessonFacts": "calm-precise"
+  }
 }

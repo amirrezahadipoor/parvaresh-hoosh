@@ -3,8 +3,8 @@
   "createdAt": "2026-08-21",
   "batchSize": 10,
   "totalTexts": 1016,
-  "generatedTexts": 69,
-  "pendingTexts": 947,
+  "generatedTexts": 79,
+  "pendingTexts": 937,
   "items": [
     {
       "text": "صدای حرف الف",
@@ -354,52 +354,52 @@
     {
       "text": "با انگشت روی حرف پ بکش",
       "clip": "auto-d861f3efcae7",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف چ بکش",
       "clip": "auto-9b114ff9463a",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ژ بکش",
       "clip": "auto-3d2dedc237df",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ک بکش",
       "clip": "auto-46a5b7c2b0a3",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف گ بکش",
       "clip": "auto-a111e01d0a8a",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ی بکش",
       "clip": "auto-f89e01f4478a",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی عدد ۱ بکش",
       "clip": "auto-0ac59bf754fc",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی عدد ۱۰ بکش",
       "clip": "auto-86ce48e10e17",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی عدد ۱۱ بکش",
       "clip": "auto-0b18da6c6e88",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی عدد ۱۲ بکش",
       "clip": "auto-66f7107cce5a",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی عدد ۱۳ بکش",
