@@ -312,6 +312,56 @@
       "text": "با انگشت روی حرف ط بکش",
       "sha256": "897068b2bb930a091d3f287117cf62a857c8a01620582c6a5ccab4e4d56865c8",
       "batch": 6
+    },
+    "auto-1dd95c00f4a1": {
+      "text": "با انگشت روی حرف ظ بکش",
+      "sha256": "86b74f907a04527193ad95f4ac883999027dc76604917b4d07bb008db1612059",
+      "batch": 7
+    },
+    "auto-14c7211aa7df": {
+      "text": "با انگشت روی حرف ع بکش",
+      "sha256": "46ace81e0a8c440548e2c85c793f50a13ae37fae4894923e9ca993fe37684371",
+      "batch": 7
+    },
+    "auto-52aa748990bc": {
+      "text": "با انگشت روی حرف غ بکش",
+      "sha256": "57acf296943be58f608cd7842f55978cb08d9512e3d06d10107dc3a1b8e62ea7",
+      "batch": 7
+    },
+    "auto-dc00ce8e55b9": {
+      "text": "با انگشت روی حرف ف بکش",
+      "sha256": "868df5928f0268c02dad7fec56862b1dc3a2710c017514f28cf0a62cabafda80",
+      "batch": 7
+    },
+    "auto-5669bdd33ab7": {
+      "text": "با انگشت روی حرف ق بکش",
+      "sha256": "d4611680004622ec08477c417e3cd12a7ca5a4997786f20791863ff63c39b3c6",
+      "batch": 7
+    },
+    "auto-578eba986af6": {
+      "text": "با انگشت روی حرف ل بکش",
+      "sha256": "7f12c63bc624aa8a94d21705f46e75146cc17818091eddf70fd152a811e65244",
+      "batch": 7
+    },
+    "auto-f31dafd0d4dd": {
+      "text": "با انگشت روی حرف م بکش",
+      "sha256": "7ef050a2b98c5cdc347bf78d03137e20ec0e47d07110b08655e7b7c5be2c8017",
+      "batch": 7
+    },
+    "auto-5808f9e81939": {
+      "text": "با انگشت روی حرف ن بکش",
+      "sha256": "747428e8010e018fbe9714a7917609f5b09883276cbecb09ef2330cb94630f8a",
+      "batch": 7
+    },
+    "auto-81443ccd8837": {
+      "text": "با انگشت روی حرف ه بکش",
+      "sha256": "ec7b811c0f0fe33af61e4f7ee53a000989ab7b6088abca4fff74e7a41f16a565",
+      "batch": 7
+    },
+    "auto-4ff411c3ed49": {
+      "text": "با انگشت روی حرف و بکش",
+      "sha256": "3d2652194acfa93b7b59d9bf2eb3229151d11111829ae0c36b28c7bbb204b710",
+      "batch": 7
     }
   },
   "rejected": [
@@ -395,6 +445,21 @@
         "auto-f3a152182c34",
         "auto-70bc6a3264e1",
         "auto-7d7d7502c143"
+      ]
+    },
+    {
+      "batch": 7,
+      "accepted": [
+        "auto-1dd95c00f4a1",
+        "auto-14c7211aa7df",
+        "auto-52aa748990bc",
+        "auto-dc00ce8e55b9",
+        "auto-5669bdd33ab7",
+        "auto-578eba986af6",
+        "auto-f31dafd0d4dd",
+        "auto-5808f9e81939",
+        "auto-81443ccd8837",
+        "auto-4ff411c3ed49"
       ]
     }
   ]
