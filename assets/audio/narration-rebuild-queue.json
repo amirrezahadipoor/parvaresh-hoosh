@@ -3,8 +3,8 @@
   "createdAt": "2026-08-21",
   "batchSize": 10,
   "totalTexts": 1016,
-  "generatedTexts": 49,
-  "pendingTexts": 967,
+  "generatedTexts": 59,
+  "pendingTexts": 957,
   "items": [
     {
       "text": "صدای حرف الف",
@@ -254,52 +254,52 @@
     {
       "text": "با انگشت روی حرف خ بکش",
       "clip": "auto-618162c2130a",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف د بکش",
       "clip": "auto-0c899b4086ca",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ذ بکش",
       "clip": "auto-3ef4304b5adf",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ر بکش",
       "clip": "auto-48aa4331f5a3",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ز بکش",
       "clip": "auto-7a3c6b4c352f",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف س بکش",
       "clip": "auto-062d5dea8e93",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ش بکش",
       "clip": "auto-dff497ae3233",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ص بکش",
       "clip": "auto-f3a152182c34",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ض بکش",
       "clip": "auto-70bc6a3264e1",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ط بکش",
       "clip": "auto-7d7d7502c143",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ظ بکش",
