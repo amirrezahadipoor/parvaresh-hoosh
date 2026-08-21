@@ -51,6 +51,13 @@ const PRECACHE = [
   './src/activities/painting.js',
   './src/activities/balloon-pop.js',
   './src/main.js',
+  './assets/audio/kid/auto-146b31d0a8b7.mp3',
+  './assets/audio/kid/auto-4f3909faac27.mp3',
+  './assets/audio/kid/auto-9a7de2d1a16e.mp3',
+  './assets/audio/kid/auto-ca976e4a13db.mp3',
+  './assets/audio/kid/auto-e17c5c9d03e3.mp3',
+  './assets/audio/kid/auto-f0cc197ea7cb.mp3',
+  './assets/audio/kid/auto-f7125af3d856.mp3',
   './assets/audio/kid/letter-alef.mp3',
   './assets/audio/kid/letter-be.mp3',
   './assets/audio/kid/letter-che.mp3',
@@ -79,7 +86,10 @@ const PRECACHE = [
   './assets/audio/kid/letter-vav.mp3',
   './assets/audio/kid/letter-ye.mp3',
   './assets/audio/kid/letter-za.mp3',
-  './assets/audio/kid/letter-zad.mp3'
+  './assets/audio/kid/letter-zad.mp3',
+  './assets/audio/kid/letter-zal.mp3',
+  './assets/audio/kid/letter-ze.mp3',
+  './assets/audio/kid/letter-zhe.mp3'
 ];
 
 self.addEventListener('install', event => {

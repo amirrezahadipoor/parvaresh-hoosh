@@ -3,8 +3,8 @@
   "createdAt": "2026-08-21",
   "batchSize": 10,
   "totalTexts": 1016,
-  "generatedTexts": 29,
-  "pendingTexts": 987,
+  "generatedTexts": 39,
+  "pendingTexts": 977,
   "items": [
     {
       "text": "صدای حرف الف",
@@ -154,52 +154,52 @@
     {
       "text": "صدای حرف ذال",
       "clip": "letter-zal",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "صدای حرف زِ",
       "clip": "letter-ze",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "صدای حرف ژِ",
       "clip": "letter-zhe",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "آبی و زرد با هم چه رنگی می‌سازند؟",
       "clip": "auto-f0cc197ea7cb",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "آغوش گرم و پرمهر خانواده با دستپخت عالی",
       "clip": "auto-146b31d0a8b7",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "آفتاب درخشان، روزهای گرم و رسیدن میوه‌ها",
       "clip": "auto-4f3909faac27",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "آفرین!",
       "clip": "auto-e17c5c9d03e3",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "آفرین! عالی بود.",
       "clip": "auto-f7125af3d856",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "ابزاری برای تمیز و درخشان نگه داشتن دندان‌ها",
       "clip": "auto-ca976e4a13db",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "اردک در کجا زندگی می‌کند؟",
       "clip": "auto-9a7de2d1a16e",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "استشمام بوی گل یاس و نان گرم",

@@ -162,6 +162,56 @@
       "text": "این حرف «ض» است؛ ضاد. در فارسی صدای «ز» می‌دهد.",
       "sha256": "d0ba25b344a07dca30c619fbc7cfdcfd37a78d87e4714812bab6af5958909ea2",
       "batch": 3
+    },
+    "letter-zal": {
+      "text": "این حرف «ذ» است؛ ذال. در فارسی صدای «ز» می‌دهد.",
+      "sha256": "13c4f8c2eb05ef202387b0bea3c01b79b2597be46ef5671314e98feba0b04971",
+      "batch": 4
+    },
+    "letter-ze": {
+      "text": "این حرف «ز» است؛ زِ. صدای «ز» می‌دهد.",
+      "sha256": "ecc21534a9435af07695ceea8c25ea0037a09bebd6464525fcb26899ea66a018",
+      "batch": 4
+    },
+    "letter-zhe": {
+      "text": "این حرف «ژ» است؛ ژِ. صدای «ژ» می‌دهد.",
+      "sha256": "a10a880a973d84527de5887c1339e304e55f2ff1791406f3e5f23b58e6eda0fc",
+      "batch": 4
+    },
+    "auto-f0cc197ea7cb": {
+      "text": "آبی و زرد با هم چه رنگی می‌سازند؟",
+      "sha256": "00093b20e3465423ce28fc3ff12113e7b1207df3e319bad5861470d77d9489f0",
+      "batch": 4
+    },
+    "auto-146b31d0a8b7": {
+      "text": "آغوش گرم و پرمهر خانواده با دستپخت عالی",
+      "sha256": "12b8f17485e076cc33da1a869f0d8e972db8bd0d894a479fe4320484f296036c",
+      "batch": 4
+    },
+    "auto-4f3909faac27": {
+      "text": "آفتاب درخشان، روزهای گرم و رسیدن میوه‌ها",
+      "sha256": "a67acfbe227421e2cc6d53d8a9d296a31ff99b50f28bdc813995d50231b20d79",
+      "batch": 4
+    },
+    "auto-e17c5c9d03e3": {
+      "text": "آفرین!",
+      "sha256": "40a274904d318ec4167b86e9a4a8c7a09e695a726532ddb40255be0e9c191578",
+      "batch": 4
+    },
+    "auto-f7125af3d856": {
+      "text": "آفرین! عالی بود.",
+      "sha256": "fed2f5d6cab08c7fc69e76150f51100bba5fecb359675b440e1bb6543f919445",
+      "batch": 4
+    },
+    "auto-ca976e4a13db": {
+      "text": "ابزاری برای تمیز و درخشان نگه داشتن دندان‌ها",
+      "sha256": "63dffe58643f44afd8c37282f9b5af7c31c2a15497a9e88b060c92494e3490b6",
+      "batch": 4
+    },
+    "auto-9a7de2d1a16e": {
+      "text": "اردک در کجا زندگی می‌کند؟",
+      "sha256": "2ae57b929ffbf83c46f9506af9e9ab8b5b7b3b4af3576e15717969f4fbe4e0dc",
+      "batch": 4
     }
   },
   "rejected": [
@@ -200,6 +250,21 @@
         "letter-ye",
         "letter-za",
         "letter-zad"
+      ]
+    },
+    {
+      "batch": 4,
+      "accepted": [
+        "letter-zal",
+        "letter-ze",
+        "letter-zhe",
+        "auto-f0cc197ea7cb",
+        "auto-146b31d0a8b7",
+        "auto-4f3909faac27",
+        "auto-e17c5c9d03e3",
+        "auto-f7125af3d856",
+        "auto-ca976e4a13db",
+        "auto-9a7de2d1a16e"
       ]
     }
   ]
