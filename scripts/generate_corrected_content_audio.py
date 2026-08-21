@@ -19,7 +19,7 @@ OUT = os.path.join(ROOT, 'assets', 'audio', 'kid')
 MANIFEST = os.path.join(OUT, 'auto-manifest.json')
 VOICE = 'fa-IR-DilaraNeural'
 RATE = '-10%'
-EDGE_PITCH = '+8Hz'
+EDGE_PITCH = '+0Hz'
 
 LINES = [
     'هر بخش گیاه چه کاری دارد؟',

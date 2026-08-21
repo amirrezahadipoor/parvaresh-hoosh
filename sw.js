@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parvaresh-hoosh-v3.3.2';
+const CACHE_NAME = 'parvaresh-hoosh-v3.3.3';
 const PRECACHE = [
   './',
   './index.html',

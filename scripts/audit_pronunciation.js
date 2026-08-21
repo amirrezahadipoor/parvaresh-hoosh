@@ -10,7 +10,7 @@ const ledger = JSON.parse(fs.readFileSync(path.join(root, 'assets/audio/kid/narr
 const records = Object.entries(ledger.clips || {});
 const errors = [];
 if (ledger.postPitch !== '1.00') errors.push('post-synthesis pitch shifting is forbidden because it reduces consonant clarity');
-if (!/^\+[0-9]+Hz$/.test(String(ledger.edgePitch || ''))) errors.push('native Edge pitch setting is missing');
+if (ledger.edgePitch !== '+0Hz') errors.push('native neural voice must use its unshifted default pitch for maximum pronunciation clarity');
 const forbidden = [
     [/[A-Za-z]/, 'Latin letters'], [/[0-9]/, 'ASCII digits'], [/[يك]/, 'Arabic yeh/kaf'],
     [/\uFFFD/, 'replacement character'], [/ـ/, 'tatweel'], [/ {2,}/, 'double spaces'],

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Normalize a developer-generated Persian neural clip for the app bundle.
-# Pitch must be controlled inside the neural synthesizer (currently +8Hz), not
+# Pitch remains at the neural voice's native setting (+0Hz), not
 # with a post-processing transform that can blur Persian consonants.
 set -euo pipefail
 ffmpeg -hide_banner -loglevel error -y -i "$1" \

@@ -31,7 +31,7 @@ except ImportError:
 
 VOICE = "fa-IR-DilaraNeural"
 RATE = "-10%"
-EDGE_PITCH = "+8Hz"
+EDGE_PITCH = "+0Hz"
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUT = os.path.join(ROOT, "assets", "audio", "kid")
 

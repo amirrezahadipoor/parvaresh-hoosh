@@ -28,7 +28,7 @@ except ImportError:
 
 VOICE = "fa-IR-DilaraNeural"
 RATE = "-10%"
-EDGE_PITCH = "+8Hz"          # a little slower than default for 4-8 year olds
+EDGE_PITCH = "+0Hz"          # a little slower than default for 4-8 year olds
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "kid")
 
 # ---------------------------------------------------------------- letters ----

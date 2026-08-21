@@ -22,7 +22,7 @@ AUTO_MANIFEST = os.path.join(OUT, 'auto-manifest.json')
 PROVENANCE = os.path.join(OUT, 'narration-provenance.json')
 VOICE = 'fa-IR-DilaraNeural'
 RATE = '-10%'
-EDGE_PITCH = '+8Hz'
+EDGE_PITCH = '+0Hz'
 POST_PITCH = '1.00'  # no destructive post-synthesis pitch shifting
 
 

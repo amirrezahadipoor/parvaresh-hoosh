@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-08-21",
+  "scope": "32 Persian letter lessons",
+  "proxyModel": "faster-whisper-small, language=fa, CPU int8, beam=1",
+  "metric": "normalized character error rate; lower is better",
+  "candidates": [
+    {
+      "voice": "fa-IR-DilaraNeural",
+      "edgePitch": "+0Hz",
+      "postPitch": "1.00",
+      "meanCER": 0.2223,
+      "medianCER": 0.2321,
+      "winsAgainstDilaraPlus8": 14
+    },
+    {
+      "voice": "fa-IR-DilaraNeural",
+      "edgePitch": "+8Hz",
+      "postPitch": "1.00",
+      "meanCER": 0.2269,
+      "medianCER": 0.2212,
+      "winsAgainstDilaraZero": 11
+    },
+    {
+      "voice": "fa-IR-FaridNeural",
+      "edgePitch": "+8Hz",
+      "postPitch": "1.00",
+      "meanCER": 0.2296,
+      "medianCER": 0.2281,
+      "winsAgainstDilaraPlus8": 12
+    }
+  ],
+  "selected": {
+    "voice": "fa-IR-DilaraNeural",
+    "edgePitch": "+0Hz",
+    "postPitch": "1.00",
+    "reason": "lowest mean ASR character error over all 32 letter scripts and no post-synthesis spectral transformation"
+  },
+  "limitations": [
+    "ASR agreement is a reproducible intelligibility proxy, not a substitute for native-speaker listening tests.",
+    "Small Whisper can confuse Persian letters and homophones; results are used only for comparing identical scripts across synthesis configurations."
+  ]
+}
