@@ -76,7 +76,11 @@ assert.ok(androidManifest.includes('android:allowBackup="false"'),
     'Android OS backup must be disabled for local child data');
 assert.ok(!androidManifest.includes('android.permission.INTERNET'),
     'offline Android build must not request INTERNET permission');
+const mainActivity = read('android/app/src/main/java/ir/parvareshhoosh/app/MainActivity.java');
+assert.ok(mainActivity.includes('WindowInsetsCompat.Type.systemBars()') && mainActivity.includes('view.setPadding('),
+    'Android WebView must reserve system Home/gesture/navigation insets');
 assert.ok(fs.existsSync(path.join(root, 'LICENSE')), 'LICENSE is missing');
+assert.ok(fs.existsSync(path.join(root, 'docs/EVIDENCE_AND_COMPLIANCE_FA.md')), 'evidence/compliance registry is missing');
 
 const tracked = cp.execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' }).trim().split('\n');
 assert.ok(!tracked.some(file => /\.zip$/i.test(file)), 'archive file is tracked in Git');

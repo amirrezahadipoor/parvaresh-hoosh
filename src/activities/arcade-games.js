@@ -61,6 +61,9 @@ window.ArcadeGames = (function() {
         }
     ];
 
+    const FEED_FOODS = ['سیب', 'استخوان', 'ماهی', 'موز', 'هندوانه', 'کاهو', 'انگور', 'حشره', 'علف', 'دانه', 'هویج'];
+    const REQUIRED_FEED_ANSWERS = ['هویج', 'استخوان', 'ماهی', 'موز', 'هندوانه', 'سیب', 'کاهو', 'انگور', 'حشره', 'علف', 'علف', 'دانه'];
+
     function list() {
         return GAMES;
     }
@@ -230,14 +233,17 @@ window.ArcadeGames = (function() {
         function renderRound() {
             if (!active) return;
             const current = pairs[currentIdx % pairs.length];
-            const foodOptions = [
-                { name: 'سیب', svg: SvgArt.object('apple', 44) },
-                { name: 'استخوان', svg: SvgArt.object('bone', 44) },
-                { name: 'ماهی', svg: SvgArt.animal('fish', 44) },
-                { name: 'موز', svg: SvgArt.object('banana', 44) },
-                { name: 'پرتقال', svg: SvgArt.object('orange', 44) },
-                { name: 'هندوانه', svg: SvgArt.object('watermelon', 44) }
-            ].sort(() => Math.random() - 0.5);
+            const foodArt = {
+                'سیب': () => SvgArt.object('apple', 44), 'استخوان': () => SvgArt.object('bone', 44),
+                'ماهی': () => SvgArt.animal('fish', 44), 'موز': () => SvgArt.object('banana', 44),
+                'هندوانه': () => SvgArt.object('watermelon', 44), 'کاهو': () => SvgArt.object('lettuce', 44),
+                'انگور': () => SvgArt.object('grape', 44), 'حشره': () => SvgArt.animal('bee', 44),
+                'علف': () => SvgArt.object('grass', 44), 'دانه': () => SvgArt.object('seeds', 44),
+                'هویج': () => SvgArt.object('carrot', 44)
+            };
+            const distractors = FEED_FOODS.filter(name => name !== current.food).sort(() => Math.random() - 0.5).slice(0, 5);
+            const foodOptions = [current.food, ...distractors].sort(() => Math.random() - 0.5)
+                .map(name => ({ name, svg: foodArt[name]() }));
 
             container.innerHTML = `
                 <div class="arcade-card">
@@ -687,5 +693,10 @@ window.ArcadeGames = (function() {
         }
     }
 
-    return { list, openGame };
+    function auditContent() {
+        const errors = REQUIRED_FEED_ANSWERS.filter(food => !FEED_FOODS.includes(food)).map(food => `missing selectable food: ${food}`);
+        return { games: GAMES.length, feedPairs: REQUIRED_FEED_ANSWERS.length, errors };
+    }
+
+    return { list, openGame, auditContent };
 })();

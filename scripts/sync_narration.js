@@ -109,13 +109,14 @@ for (const clip of clips) {
   }
 }
 
-// Bulk-generated lines. Hand-authored PROMPTS win on conflict so a curated
-// recording is never replaced by an automatic one.
+// Bulk-generated lines are one-text/one-file and therefore override old shared
+// prompt clips. The only exception is a letter lesson: its richer, deliberately
+// authored explanation (e.g. «ثِ سه‌نقطه») must keep the stable letter-* id.
 const clipSet = new Set(clips);
 let autoAdded = 0, autoOrphan = 0;
 for (const [text, clip] of Object.entries(auto)) {
   if (!clipSet.has(clip)) { autoOrphan++; continue; }
-  if (map[text]) continue;
+  if (map[text] && String(map[text]).startsWith('letter-')) continue;
   map[text] = clip;
   autoAdded++;
 }

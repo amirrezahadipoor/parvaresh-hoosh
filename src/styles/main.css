@@ -2397,3 +2397,43 @@ body, .screen { overflow-x: hidden; }
     .home-domains-grid .domain-tile { min-height: 96px; padding: 8px 7px; }
     .home-domains-grid .domain-tile .domain-tile-icon svg { width: 36px; height: 36px; }
 }
+
+/* System-navigation clearance -------------------------------------------------
+   Android 15 can place the gesture/Home area over edge-to-edge content while
+   WebView reports env(safe-area-inset-bottom) as zero. Native MainActivity now
+   reserves the actual inset; this small CSS buffer also protects PWA/iOS and
+   intentionally leaves a blank strip below the last interactive control. */
+:root { --app-bottom-clearance: max(env(safe-area-inset-bottom, 0px), 10px); }
+.main-content,
+.parent-scroll-body,
+.arcade-card { padding-bottom: var(--app-bottom-clearance) !important; }
+.activity-fullscreen-stage {
+    padding-bottom: calc(var(--app-bottom-clearance) + 10px) !important;
+    scroll-padding-bottom: calc(var(--app-bottom-clearance) + 10px);
+}
+
+.reading-story-card {
+    max-width: 340px;
+    padding: 16px 18px;
+    border: 2px solid #D8CFF8;
+    border-radius: 18px;
+    background: #FFFDF7;
+    color: #263445;
+    font-size: 15px;
+    font-weight: 750;
+    line-height: 2;
+    text-align: right;
+    box-shadow: 0 5px 14px rgba(55, 43, 100, .09);
+}
+
+/* WCAG 2.2 input/focus baseline. Child-facing controls intentionally exceed the
+   24px AA minimum; the visible 3px ring also works for keyboard/switch users. */
+button, [role="button"], [role="switch"], input, select, textarea {
+    min-width: 24px;
+    min-height: 24px;
+}
+button:focus-visible, [role="button"]:focus-visible, [role="switch"]:focus-visible,
+a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid #173B74 !important;
+    outline-offset: 3px;
+}

@@ -1607,5 +1607,63 @@ window.SvgArt = (function() {
         `, size);
     }
 
-    return { shape, numberCard, animal, object, letterTile, numberTile, wordTile, questionTile, soundVisual, emotionFace, hasEmotionFace: n => !!EMOTION_FACES[String(n || '').trim()] };
+    function clock(hour, minute, size) {
+        const h = ((Number(hour) || 12) % 12 + 12) % 12;
+        const m = ((Number(minute) || 0) % 60 + 60) % 60;
+        const minuteAngle = m * 6 * Math.PI / 180;
+        const hourAngle = (h * 30 + m * 0.5) * Math.PI / 180;
+        const hand = (angle, length) => ({
+            x: (50 + Math.sin(angle) * length).toFixed(2),
+            y: (50 - Math.cos(angle) * length).toFixed(2)
+        });
+        const hp = hand(hourAngle, 21);
+        const mp = hand(minuteAngle, 30);
+        const ticks = Array.from({ length: 12 }, (_, index) => {
+            const angle = index * 30 * Math.PI / 180;
+            const x = (50 + Math.sin(angle) * 35).toFixed(2);
+            const y = (50 - Math.cos(angle) * 35).toFixed(2);
+            return `<circle cx="${x}" cy="${y}" r="1.8" fill="#2C3A47"/>`;
+        }).join('');
+        return wrap(`
+            <circle cx="50" cy="50" r="42" fill="#FFFFFF" stroke="#6C5CE7" stroke-width="4"/>
+            ${ticks}
+            <line x1="50" y1="50" x2="${hp.x}" y2="${hp.y}" stroke="#2C3A47" stroke-width="4.2" stroke-linecap="round"/>
+            <line x1="50" y1="50" x2="${mp.x}" y2="${mp.y}" stroke="#FF4757" stroke-width="2.8" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="4" fill="#2C3A47"/>
+        `, size || 128);
+    }
+
+    // Neutral but truthful family/person portrait. Older code reused a house for
+    // fathers, a ball for brothers and a doll for sisters; those pictures were
+    // factually wrong answer options. Role-specific colour/age/hair plus the
+    // visible role label keeps every option distinct without pretending an object
+    // is a person.
+    function person(role, size) {
+        const name = String(role || 'فرد خانواده').trim();
+        const elder = /پدربزرگ|مادربزرگ/.test(name);
+        const child = /خواهر|برادر|پسر|دختر|نوه/.test(name);
+        const feminine = /مادر|خواهر|خاله|عمه|دختر|مادربزرگ/.test(name);
+        const colors = ['#6C5CE7', '#00B894', '#1E90FF', '#E84393', '#FF8A5C', '#F9CA24'];
+        let hash = 0;
+        for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+        const shirt = colors[hash % colors.length];
+        const skin = '#FFD7B5';
+        const hair = elder ? '#D8DCE3' : feminine ? '#6B4423' : '#3D3028';
+        const headY = child ? 31 : 28;
+        const headR = child ? 15 : 17;
+        const safeName = name.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[char]));
+        const fontSize = Math.max(11, 17 - Math.max(0, [...name].length - 5));
+        return wrap(`
+            <circle cx="50" cy="${headY}" r="${headR}" fill="${skin}" stroke="#2C3A47" stroke-width="2.4"/>
+            <path d="M${50-headR} ${headY-2} Q${50-headR+2} ${headY-headR-10} 50 ${headY-headR-8} Q${50+headR-2} ${headY-headR-10} ${50+headR} ${headY-2} Q60 ${headY-10} 50 ${headY-9} Q40 ${headY-10} ${50-headR} ${headY-2} Z" fill="${hair}" stroke="#2C3A47" stroke-width="1.8"/>
+            <circle cx="43" cy="${headY+2}" r="2.4" fill="#2C3A47"/><circle cx="57" cy="${headY+2}" r="2.4" fill="#2C3A47"/>
+            <path d="M44 ${headY+10} Q50 ${headY+14} 56 ${headY+10}" fill="none" stroke="#2C3A47" stroke-width="2" stroke-linecap="round"/>
+            ${elder ? `<path d="M34 ${headY-4} Q30 ${headY+4} 35 ${headY+10} M66 ${headY-4} Q70 ${headY+4} 65 ${headY+10}" stroke="#B8BDC7" stroke-width="3" fill="none"/>` : ''}
+            <path d="M28 82 Q29 51 50 51 Q71 51 72 82 Z" fill="${shirt}" stroke="#2C3A47" stroke-width="2.4"/>
+            <rect x="16" y="78" width="68" height="18" rx="9" fill="#FFFFFF" stroke="#2C3A47" stroke-width="1.8"/>
+            <text x="50" y="91" text-anchor="middle" font-size="${fontSize}" font-weight="900" fill="#2C3A47" font-family="Vazirmatn,Tahoma,sans-serif">${safeName}</text>
+        `, size);
+    }
+
+    return { shape, numberCard, animal, object, person, clock, letterTile, numberTile, wordTile, questionTile, soundVisual, emotionFace, hasEmotionFace: n => !!EMOTION_FACES[String(n || '').trim()] };
 })();

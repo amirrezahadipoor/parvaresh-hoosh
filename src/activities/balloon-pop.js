@@ -44,10 +44,6 @@ window.BalloonPopActivity = (function() {
         targetHint.textContent = targetText ? `هدف: فقط «${targetText}»` : 'همهٔ بادکنک‌ها را لمس کن';
         card.appendChild(targetHint);
 
-        setTimeout(() => {
-            AudioEngine.speak(round.speech || 'بادکنک‌ها را لمس کن تا بترکند!');
-        }, 150);
-
         // Stage where balloons float
         const stage = document.createElement('div');
         stage.className = 'balloon-stage';

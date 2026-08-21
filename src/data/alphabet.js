@@ -38,7 +38,12 @@ window.ALPHABET = [
 // First-sound map
 window.FIRST_SOUND_WORDS = {};
 window.ALPHABET.forEach(item => {
-    window.FIRST_SOUND_WORDS[item.letter] = item.words;
+    // Only true initial-sound examples belong here. The broader vocabulary list
+    // also contains words where a rare letter appears in the middle («مثلث»،
+    // «قورباغه»، «لذیذ»); using those as correct answers made the quiz false.
+    const normalizeInitial = value => String(value || '').replace(/^آ/, 'ا');
+    const initialWords = item.words.filter(word => normalizeInitial(word).startsWith(normalizeInitial(item.letter)));
+    window.FIRST_SOUND_WORDS[item.letter] = initialWords.length ? initialWords : [item.example];
 });
 
 // Rhyming word pairs for phonemic awareness

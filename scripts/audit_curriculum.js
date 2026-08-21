@@ -86,6 +86,10 @@ for (const lesson of lessons) {
         if (round.audioClip && !clipIds.has(round.audioClip)) {
             errors.push(`${lesson.id}/${index + 1}: missing audioClip ${round.audioClip}`);
         }
+        const isLetterSound = /^letter-/.test(String(round.audioClip || '')) && /کدام حرف/.test(String(round.prompt || ''));
+        if (!isLetterSound && mappedClip && round.audioClip !== mappedClip) {
+            errors.push(`${lesson.id}/${index + 1}: audioClip ${round.audioClip} does not match exact instruction ${mappedClip}`);
+        }
         if (round.lessonIntro && !clipIds.has(round.lessonIntro)) {
             errors.push(`${lesson.id}: missing lessonIntro ${round.lessonIntro}`);
         }

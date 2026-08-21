@@ -34,10 +34,6 @@ window.OrderingActivity = (function() {
         promptBanner.appendChild(speakerBtn);
         stage.appendChild(promptBanner);
 
-        setTimeout(() => {
-            AudioEngine.speak(round.speech || round.prompt);
-        }, 150);
-
         // 2. Horizontal Ordering Row
         const row = document.createElement('div');
         row.className = 'ordering-horizontal-row';

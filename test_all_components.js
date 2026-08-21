@@ -136,7 +136,9 @@ console.log(`Adventure Journey: ${nodes.length} progressive milestones configure
 
 // Test Arcade Games
 const arcadeList = ArcadeGames.list();
-console.log(`Arcade Games: ${arcadeList.length} endless games available.`);
+const arcadeAudit = ArcadeGames.auditContent();
+if (arcadeAudit.errors.length) throw new Error(`Arcade content errors: ${arcadeAudit.errors.join('; ')}`);
+console.log(`Arcade Games: ${arcadeList.length} endless games available; ${arcadeAudit.feedPairs} animal-food pairs validated.`);
 
 for (const game of arcadeList) {
     const dummyDiv = createMockEl('div');
