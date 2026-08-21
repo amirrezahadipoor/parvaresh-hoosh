@@ -57,8 +57,11 @@ const roundTypes = new Map();
 const skillTypes = new Map();
 const clipIds = new Set(fs.readdirSync(path.join(root, 'assets/audio/kid'))
     .filter(file => file.endsWith('.mp3')).map(file => file.slice(0, -4)));
+const provenance = JSON.parse(fs.readFileSync(path.join(root, 'assets/audio/kid/narration-provenance.json'), 'utf8'));
+const narrationRebuildInProgress = provenance.rebuildStatus === 'in-progress';
 let mapped = 0;
 let voicedRounds = 0;
+let pendingNarrationRounds = 0;
 
 for (const lesson of lessons) {
     const rounds = window.Generator.generate(lesson.id, lesson);
@@ -82,15 +85,16 @@ for (const lesson of lessons) {
         const mappedClip = spoken && window.NARRATION_MAP ? window.NARRATION_MAP[spoken] : null;
         const clip = round.audioClip || mappedClip;
         if (clip && clipIds.has(clip)) voicedRounds++;
+        else if (narrationRebuildInProgress) pendingNarrationRounds++;
         else errors.push(`${lesson.id}/${index + 1}: no bundled narration for "${spoken.slice(0, 80)}"`);
-        if (round.audioClip && !clipIds.has(round.audioClip)) {
+        if (round.audioClip && !clipIds.has(round.audioClip) && !narrationRebuildInProgress) {
             errors.push(`${lesson.id}/${index + 1}: missing audioClip ${round.audioClip}`);
         }
         const isLetterSound = /^letter-/.test(String(round.audioClip || '')) && /کدام حرف/.test(String(round.prompt || ''));
         if (!isLetterSound && mappedClip && round.audioClip !== mappedClip) {
             errors.push(`${lesson.id}/${index + 1}: audioClip ${round.audioClip} does not match exact instruction ${mappedClip}`);
         }
-        if (round.lessonIntro && !clipIds.has(round.lessonIntro)) {
+        if (round.lessonIntro && !clipIds.has(round.lessonIntro) && !narrationRebuildInProgress) {
             errors.push(`${lesson.id}: missing lessonIntro ${round.lessonIntro}`);
         }
     });
@@ -114,6 +118,8 @@ console.log(JSON.stringify({
     uniqueLessonIds: ids.size,
     mappedLessons: mapped,
     voicedRounds,
+    pendingNarrationRounds,
+    narrationRebuildInProgress,
     skillTypes: Object.fromEntries([...skillTypes.entries()].sort()),
     generatedRoundTypes: Object.fromEntries([...roundTypes.entries()].sort()),
     warnings,

@@ -3,6 +3,7 @@ package ir.parvareshhoosh.app;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 
 import androidx.activity.OnBackPressedCallback;
@@ -40,9 +41,20 @@ public class MainActivity extends BridgeActivity {
                 Insets bars = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
                 );
-                // This deliberately leaves the phone Home/gesture area blank. App
-                // buttons and lesson choices can no longer sit underneath it.
-                view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                // Insets must reduce the WebView's measured viewport. Padding the
+                // WebView leaves CSS 100dvh at the full edge-to-edge size and clips
+                // the page, which breaks scaling on Android 15. Real layout margins
+                // make CSS pixels match the visible area and reserve Home/gesture UI.
+                ViewGroup.LayoutParams rawParams = view.getLayoutParams();
+                if (rawParams instanceof ViewGroup.MarginLayoutParams) {
+                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) rawParams;
+                    if (params.leftMargin != bars.left || params.topMargin != bars.top
+                        || params.rightMargin != bars.right || params.bottomMargin != bars.bottom) {
+                        params.setMargins(bars.left, bars.top, bars.right, bars.bottom);
+                        view.setLayoutParams(params);
+                    }
+                }
+                view.setPadding(0, 0, 0, 0);
                 return windowInsets;
             });
             ViewCompat.requestApplyInsets(webView);

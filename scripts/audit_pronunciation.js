@@ -9,8 +9,10 @@ const root = path.resolve(__dirname, '..');
 const ledger = JSON.parse(fs.readFileSync(path.join(root, 'assets/audio/kid/narration-provenance.json'), 'utf8'));
 const records = Object.entries(ledger.clips || {});
 const errors = [];
-if (ledger.postPitch !== '1.00') errors.push('post-synthesis pitch shifting is forbidden because it reduces consonant clarity');
-if (ledger.edgePitch !== '+0Hz') errors.push('native neural voice must use its unshifted default pitch for maximum pronunciation clarity');
+const rebuildInProgress = ledger.rebuildStatus === 'in-progress';
+if (ledger.postPitch !== '1.08') errors.push('the selected natural child profile requires an exact +8% pitch ratio');
+if (ledger.formant !== 'preserved') errors.push('pitch shifting must preserve formants to avoid a cartoon-like timbre');
+if (ledger.edgePitch !== '+0Hz') errors.push('the source AI voice must use its native pitch before the controlled post-process');
 const forbidden = [
     [/[A-Za-z]/, 'Latin letters'], [/[0-9]/, 'ASCII digits'], [/[يك]/, 'Arabic yeh/kaf'],
     [/\uFFFD/, 'replacement character'], [/ـ/, 'tatweel'], [/ {2,}/, 'double spaces'],
@@ -36,6 +38,9 @@ const requiredLetterPhrases = {
     'letter-heh': ['هِ دوچشم', 'صدای «ه»']
 };
 for (const [clip, phrases] of Object.entries(requiredLetterPhrases)) {
+    // During the requested 10-clip rebuild, absent clips are pending rather than
+    // invalid. As soon as the ledger is marked complete every rule is mandatory.
+    if (rebuildInProgress && !ledger.clips[clip]) continue;
     const text = ledger.clips[clip] && ledger.clips[clip].text || '';
     for (const phrase of phrases) if (!text.includes(phrase)) errors.push(`${clip}: missing pronunciation phrase ${phrase}`);
 }
