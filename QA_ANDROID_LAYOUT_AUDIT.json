@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-08-21",
+  "androidViewportModel": {
+    "edgeToEdge": true,
+    "webViewInsets": "native layout margins from systemBars + displayCutout",
+    "homeGestureAreaReserved": true,
+    "runtimeTts": false
+  },
+  "homeMatrix": {
+    "viewports": ["320x568", "360x640", "360x800", "390x844", "412x915", "600x960", "740x360", "915x412"],
+    "beforeOverflowPx": [108, 5, 41, 0, 0, 0, 273, 221],
+    "afterOverflowPx": [0, 0, 0, 0, 0, 0, 0, 0],
+    "afterClippedControls": 0,
+    "afterUndersizedControls": 0,
+    "horizontalDocumentOverflow": 0,
+    "pageErrors": 0
+  },
+  "screenRoutes": {
+    "viewports": ["320x568", "390x844", "740x360"],
+    "routes": ["onboarding", "home", "rewards", "arcade-grid", "arcade-game", "difficulty", "lesson-activity", "parents-gate"],
+    "routeViewportCombinations": 24,
+    "unexpectedHorizontalOverflow": 0,
+    "unscrollableClippedControls": 0,
+    "pageErrors": 0
+  },
+  "activityMatrix": {
+    "viewports": ["320x568", "390x844", "740x360"],
+    "renderedRoundsPerViewport": 1750,
+    "totalRenderedRounds": 5250,
+    "unexpectedHorizontalOverflow": 0,
+    "undersizedInteractiveControls": 0,
+    "renderErrors": 0,
+    "intentionalHorizontalScroll": ["painting template picker"],
+    "maxVerticalScrollRatio": {
+      "320x568": 1.74,
+      "390x844": 1.16,
+      "740x360": 2.17
+    }
+  },
+  "automatedGuards": [
+    "Chromium Android home viewport matrix",
+    "RTL startup and all seven direct domains",
+    "arcade and lesson navigation",
+    "44px home touch targets",
+    "no home clipping or horizontal document overflow",
+    "cold offline reload",
+    "JSDOM stress render for 342 lessons"
+  ],
+  "apkBuilt": false
+}

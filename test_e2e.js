@@ -138,7 +138,52 @@ async function main() {
             await page.locator('#screen-home.active').waitFor();
         }
 
-        // Wait until all 692 local files are installed, then prove cold navigation
+        // Android home-layout regression matrix. These are CSS viewport pixels
+        // after native system-bar margins have reduced the WebView's measured area.
+        // The matrix includes the shortest supported portrait and landscape sizes.
+        for (const [width, height] of [[320, 568], [360, 640], [360, 800], [390, 844], [412, 915], [740, 360], [915, 412]]) {
+            const matrixContext = await browser.newContext({
+                viewport: { width, height }, deviceScaleFactor: 2, locale: 'fa-IR',
+                colorScheme: 'light', reducedMotion: 'reduce', isMobile: true, hasTouch: true
+            });
+            const matrixPage = await matrixContext.newPage();
+            await matrixPage.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'domcontentloaded' });
+            await matrixPage.locator('#screen-home.active').waitFor({ timeout: 10000 });
+            const matrixOnboarding = matrixPage.locator('.profile-onboarding-overlay');
+            if (await matrixOnboarding.count()) {
+                await matrixOnboarding.locator('.age-choice').first().click();
+                await matrixOnboarding.locator('#profile-start').click();
+            }
+            await matrixPage.waitForTimeout(50);
+            const layout = await matrixPage.evaluate(() => {
+                const home = document.querySelector('#home-content');
+                const controls = [...document.querySelectorAll('#screen-home button, #screen-home [role="button"]')]
+                    .filter(element => {
+                        const style = getComputedStyle(element);
+                        const rect = element.getBoundingClientRect();
+                        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+                    });
+                return {
+                    homeOverflow: home.scrollHeight - home.clientHeight,
+                    horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+                    clipped: controls.filter(element => {
+                        const rect = element.getBoundingClientRect();
+                        return rect.left < -1 || rect.right > innerWidth + 1 || rect.top < -1 || rect.bottom > innerHeight + 1;
+                    }).map(element => element.getAttribute('aria-label') || element.textContent.trim().slice(0, 30)),
+                    undersized: controls.filter(element => {
+                        const rect = element.getBoundingClientRect();
+                        return rect.width < 44 || rect.height < 44;
+                    }).map(element => element.getAttribute('aria-label') || element.textContent.trim().slice(0, 30))
+                };
+            });
+            assert.ok(layout.homeOverflow <= 1, `${width}x${height}: home overflows by ${layout.homeOverflow}px`);
+            assert.ok(layout.horizontalOverflow <= 1, `${width}x${height}: document has horizontal overflow`);
+            assert.deepEqual(layout.clipped, [], `${width}x${height}: clipped controls ${layout.clipped.join(', ')}`);
+            assert.deepEqual(layout.undersized, [], `${width}x${height}: undersized controls ${layout.undersized.join(', ')}`);
+            await matrixContext.close();
+        }
+
+        // Wait until all local files are installed, then prove cold navigation
         // works while Chromium itself is offline.
         await page.evaluate(async expectedVersion => {
             if (!('serviceWorker' in navigator)) throw new Error('service worker unavailable');

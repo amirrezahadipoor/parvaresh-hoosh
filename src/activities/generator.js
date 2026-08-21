@@ -689,7 +689,7 @@ window.Generator = (function() {
             ? `<span style="display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:16px;border:3px dashed #B9A9F5;background:#F3EFFF;color:#6C5CE7;font-size:${Math.round(size * 0.5)}px;font-weight:800;">؟</span>`
             : `<span style="display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;">${c}</span>`
         ).join('');
-        return `<div dir="rtl" style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:${gap}px;max-width:340px;margin:0 auto">${html}</div>`;
+        return `<div class="pattern-strip" dir="rtl" style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:${gap}px;max-width:340px;margin:0 auto">${html}</div>`;
     }
 
     function patternRound() {

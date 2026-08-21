@@ -2515,3 +2515,132 @@ a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visib
 @media (prefers-reduced-motion: reduce) {
     .order-direction-arrows { animation: none; }
 }
+
+/* Android home-layout matrix fixes -------------------------------------------
+   Verified at 320x568, 360x640, 360x800, 390x844, 412x915 and landscape. */
+.domain-tile-progress b,
+.challenge-count,
+.daily-plan-head strong {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+/* Seven subjects in a 3-column grid left one lonely card and two empty cells.
+   The gifted school becomes a compact full-width seventh destination. */
+.home-domains-grid .domain-tile.is-gifted-tile {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    align-items: center;
+    column-gap: 11px;
+    min-height: 76px;
+    padding: 9px 13px;
+}
+.home-domains-grid .domain-tile.is-gifted-tile .domain-tile-icon {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    width: 48px;
+    height: 48px;
+    margin: 0;
+}
+.home-domains-grid .domain-tile.is-gifted-tile .domain-tile-title {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    font-size: 14px;
+}
+.home-domains-grid .domain-tile.is-gifted-tile .domain-tile-progress {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    margin-top: 5px;
+}
+
+/* The rewards row duplicates the tappable star chip in the header. Keep the
+   child-friendly large row on tall devices, but never let it fall below screen. */
+@media (max-height: 850px) {
+    .home-quick-actions { display: none; }
+}
+
+/* Very short portrait phones cannot fit status chrome plus seven large subjects.
+   The header already identifies the app, so remove only the duplicate greeting. */
+@media (max-height: 590px) and (orientation: portrait) {
+    .home-welcome-card { display: none; }
+    .home-dashboard { gap: 5px; }
+    .daily-challenge-card { padding-block: 5px; }
+}
+
+/* Never shrink child-facing controls below a 44px touch target. */
+@media (max-height: 720px) {
+    .home-welcome-card .home-mascot-button,
+    .home-welcome-card .home-mascot-button svg {
+        width: 44px;
+        height: 44px;
+    }
+    .home-quick-actions > * { min-height: 44px; }
+}
+
+/* Landscape is a separate composition, not a cropped portrait page. */
+@media (orientation: landscape) and (max-height: 500px) {
+    .home-welcome-card,
+    .giant-play-btn,
+    .daily-challenge-card,
+    .home-quick-actions { display: none !important; }
+    .home-dashboard { gap: 5px; }
+    .home-section-heading { min-height: 22px; }
+    .home-domains-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+    .home-domains-grid .domain-tile,
+    .home-domains-grid .domain-tile.is-gifted-tile {
+        grid-column: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: 92px;
+        padding: 7px 9px;
+    }
+    .home-domains-grid .domain-tile.is-gifted-tile .domain-tile-icon {
+        width: 38px;
+        height: 38px;
+        margin-bottom: 4px;
+    }
+    .home-domains-grid .domain-tile.is-gifted-tile .domain-tile-title {
+        align-self: auto;
+        font-size: 12.5px;
+    }
+    .home-domains-grid .domain-tile.is-gifted-tile .domain-tile-progress {
+        align-self: auto;
+        margin-top: auto;
+    }
+    .arcade-banner.compact { min-height: 40px; padding-block: 5px; }
+    .main-content { padding-top: 4px; padding-bottom: 4px; }
+}
+
+/* Android activity overflow/touch-target fixes ------------------------------- */
+.pattern-strip {
+    width: 100%;
+    max-width: 340px;
+    overflow: hidden;
+    gap: clamp(3px, 2vw, 8px) !important;
+}
+.pattern-strip > span {
+    flex: 1 1 0;
+    width: auto !important;
+    min-width: 0;
+    max-width: 84px;
+    height: auto !important;
+    aspect-ratio: 1;
+}
+.pattern-strip > span > svg {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    max-height: 100%;
+}
+.order-helper-btn { min-height: 44px; }
+.palette-swatch { width: 44px; height: 44px; }
+.memory-card-3d-box { min-height: 44px; }
