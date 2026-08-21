@@ -34,6 +34,21 @@ window.OrderingActivity = (function() {
         promptBanner.appendChild(speakerBtn);
         stage.appendChild(promptBanner);
 
+        // The validation model stores step zero first. In the RTL interface that
+        // means the first slot is the RIGHTMOST slot. Make this explicit; without
+        // a direction cue children could reasonably build the same sequence from
+        // the left and be marked wrong.
+        const directionGuide = document.createElement('div');
+        directionGuide.className = 'order-direction-guide';
+        directionGuide.setAttribute('role', 'note');
+        directionGuide.setAttribute('aria-label', 'از خانهٔ شمارهٔ یک در سمت راست شروع کن و به سمت چپ ادامه بده');
+        directionGuide.innerHTML = `
+            <span class="order-direction-start">شروع از راست</span>
+            <span class="order-direction-arrows" aria-hidden="true">← ← ←</span>
+            <span class="order-direction-end">پایان</span>
+        `;
+        stage.appendChild(directionGuide);
+
         // 2. Horizontal Ordering Row
         const row = document.createElement('div');
         row.className = 'ordering-horizontal-row';
@@ -47,7 +62,7 @@ window.OrderingActivity = (function() {
 
         const status = document.createElement('div');
         status.className = 'order-status';
-        status.textContent = 'یک کارت را انتخاب کن، بعد جای کارت دوم را بزن.';
+        status.textContent = 'از جایگاه ۱ در سمت راست شروع کن؛ یک کارت و بعد کارت دوم را بزن.';
 
         const actions = document.createElement('div');
         actions.className = 'order-actions';
@@ -76,7 +91,12 @@ window.OrderingActivity = (function() {
             if (completed || hintUsed) return;
             hintUsed = true;
             hintBtn.disabled = true;
-            const correctIndex = currentOrder.findIndex((item, index) => round.answer === 'idx' ? item.idx !== index : false);
+            const sortedSizes = round.answer === 'size'
+                ? currentOrder.map(item => item.size).slice().sort((a, b) => a - b)
+                : null;
+            const correctIndex = currentOrder.findIndex((item, index) => round.answer === 'idx'
+                ? item.idx !== index
+                : round.answer === 'size' && item.size !== sortedSizes[index]);
             if (correctIndex >= 0) {
                 selectedIndex = correctIndex;
                 status.textContent = 'این کارت جای درستش را پیدا می‌کند؛ کارت مناسب را انتخاب کن.';
@@ -92,24 +112,31 @@ window.OrderingActivity = (function() {
             selectedIndex = null;
             moves = 0;
             undoStack.length = 0;
-            status.textContent = 'دوباره با آرامش شروع کن.';
+            status.textContent = 'دوباره از جایگاه ۱ در سمت راست شروع کن.';
             renderRow();
             AudioEngine.play('click');
         });
 
         function renderRow() {
             row.innerHTML = '';
-            // Steps whose text already starts with «۱.» must NOT also get a slot badge,
-            // otherwise the card reads «۱ ۱. کاشت دانه». And on word-ordering cards a
-            // slot badge reads as the answer. So: never show slot badges here.
-            const showPositionBadges = false;
+            // Badges label the FIXED slots, not the shuffled cards. They explain
+            // unambiguously that slot ۱ is on the right and do not reveal which
+            // card belongs there. Numeric prefixes embedded in old labels are
+            // stripped below so the answer itself is never printed on a card.
+            const showPositionBadges = true;
             currentOrder.forEach((item, idx) => {
                 const itemEl = document.createElement('div');
-                itemEl.className = `order-step-card ${selectedIndex === idx ? 'selected' : ''}`;
+                itemEl.className = `order-step-card ${round.answer === 'size' ? 'size-order-card' : ''} ${selectedIndex === idx ? 'selected' : ''}`;
+                itemEl.setAttribute('role', 'button');
+                itemEl.setAttribute('tabindex', '0');
+                itemEl.setAttribute('aria-label', `کارت جایگاه ${String(idx + 1).replace(/[0-9]/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)])}`);
                 // Expose the sort key so the ordering can be verified/automated.
                 itemEl.dataset.slot = String(idx);
                 if (item.idx !== undefined) itemEl.dataset.idx = String(item.idx);
-                if (item.size !== undefined) itemEl.dataset.size = String(item.size);
+                if (item.size !== undefined) {
+                    itemEl.dataset.size = String(item.size);
+                    itemEl.style.setProperty('--order-item-size', `${item.size}px`);
+                }
 
                 // Position badges are useful for "put the steps in order" cards, but on
                 // word-ordering cards a printed ۱..۴ reads as the answer. Only show the
@@ -124,7 +151,8 @@ window.OrderingActivity = (function() {
 
                 if (item.img) {
                     const imgWrap = document.createElement('div');
-                    imgWrap.style.maxHeight = '70px';
+                    imgWrap.className = 'order-step-visual';
+                    imgWrap.style.maxHeight = round.answer === 'size' ? '104px' : '82px';
                     imgWrap.innerHTML = item.img;
                     itemEl.appendChild(imgWrap);
                 }
@@ -136,14 +164,24 @@ window.OrderingActivity = (function() {
                     const label = document.createElement('span');
                     label.style.fontSize = '12px';
                     label.style.fontWeight = '800';
-                    label.textContent = item.label;
+                    // Several authored sequence labels started with «۱.»…«۴.»;
+                    // those prefixes disclosed the complete answer before play.
+                    label.textContent = String(item.label).replace(/^[۰-۹0-9]+\s*[.)،-]\s*/, '');
                     itemEl.appendChild(label);
                 }
+
+                itemEl.addEventListener('keydown', event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        itemEl.click();
+                    }
+                });
 
                 itemEl.addEventListener('click', () => {
                     AudioEngine.play('click');
                     if (selectedIndex === null) {
                         selectedIndex = idx;
+                        status.textContent = 'کارت انتخاب شد؛ حالا جایگاهی را که باید با آن عوض شود بزن.';
                         renderRow();
                     } else if (selectedIndex === idx) {
                         selectedIndex = null;
@@ -195,6 +233,7 @@ window.OrderingActivity = (function() {
                     if (cb && cb.onCorrect) cb.onCorrect(round, { moves, hintUsed });
                 }, 500);
             } else {
+                status.textContent = 'هنوز درست نیست؛ جایگاه ۱ از سمت راست شروع می‌شود.';
                 AudioEngine.play('wrong');
                 if (window.Fx) Fx.shake(row);
             }

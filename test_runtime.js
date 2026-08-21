@@ -181,13 +181,42 @@ async function main() {
     const orderHost = document.createElement('div');
     let orderDone = 0;
     window.OrderingActivity.render(orderHost, {
-        items: [{ idx: 1, label: 'دوم' }, { idx: 0, label: 'اول' }],
+        items: [{ idx: 1, label: '۲. دوم' }, { idx: 0, label: '۱. اول' }],
         answer: 'idx', prompt: 'ترتیب را پیدا کن'
     }, { onCorrect() { orderDone++; } });
+    assert.ok(orderHost.querySelector('.order-direction-guide'), 'ordering must show an explicit right-to-left direction guide');
+    assert.equal(orderHost.querySelectorAll('.order-step-num').length, 2, 'every fixed ordering slot needs a visible position badge');
+    assert.ok(!orderHost.textContent.includes('۲. دوم') && !orderHost.textContent.includes('۱. اول'), 'authored numeric prefixes must not reveal the answer');
     const orderCards = orderHost.querySelectorAll('.order-step-card');
     orderCards[0].click(); orderHost.querySelectorAll('.order-step-card')[1].click();
     await wait(500);
     assert.equal(orderDone, 1, 'ordering game should finish after a correct swap');
+
+    const sizeOrderHost = document.createElement('div');
+    window.OrderingActivity.render(sizeOrderHost, {
+        items: [
+            { size: 96, img: window.SvgArt.object('apple', 96) },
+            { size: 36, img: window.SvgArt.object('apple', 36) },
+            { size: 62, img: window.SvgArt.object('apple', 62) }
+        ],
+        answer: 'size', prompt: 'از کوچک به بزرگ'
+    }, {});
+    const sizeCards = [...sizeOrderHost.querySelectorAll('.size-order-card')];
+    assert.deepEqual(sizeCards.map(card => card.style.getPropertyValue('--order-item-size')), ['96px', '36px', '62px'], 'size ordering must preserve visibly distinct artwork dimensions');
+
+    // A small maths pool used to repeat the same equation in adjacent rounds.
+    // The session shuffle-bag must prevent immediate duplicates while retaining
+    // valid age-banded questions.
+    const additionLesson = curriculum.domains.flatMap(domain => domain.levels)
+        .flatMap(level => level.lessons).find(lesson => lesson.id === 'M-L4-L01');
+    const arithmeticSpeech = [];
+    for (let pass = 0; pass < 12; pass++) {
+        const rounds = window.Generator.generate(additionLesson.id, { ...additionLesson, domain: 'math', childAge: 6 });
+        arithmeticSpeech.push(...rounds.filter(round => /به اضافه|منهای/.test(round.speech || '')).map(round => round.speech));
+    }
+    for (let index = 1; index < arithmeticSpeech.length; index++) {
+        assert.notEqual(arithmeticSpeech[index], arithmeticSpeech[index - 1], 'adjacent maths equations must not repeat');
+    }
 
     const dragHost = document.createElement('div');
     let dragDone = 0;

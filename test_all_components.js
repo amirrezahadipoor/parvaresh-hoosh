@@ -196,6 +196,13 @@ function validateRound(round, lessonId) {
         const items = round.items || [];
         if (items.length < 2 || !['idx', 'size'].includes(round.answer)) errors.push(`Lesson ${lessonId} has invalid ordering data.`);
         if (round.answer === 'idx' && new Set(items.map(item => item.idx)).size !== items.length) errors.push(`Lesson ${lessonId} has duplicate ordering indices.`);
+        if (round.answer === 'size') {
+            const sizes = items.map(item => Number(item.size)).sort((a, b) => a - b);
+            if (sizes.some(size => !Number.isFinite(size))) errors.push(`Lesson ${lessonId} has invalid size-order dimensions.`);
+            if (sizes.some((size, index) => index > 0 && size - sizes[index - 1] < 20)) {
+                errors.push(`Lesson ${lessonId} size-order pictures are too visually similar: ${sizes.join('/')}.`);
+            }
+        }
     } else if (round.type === 'raven-matrix') {
         if ((round.grid || []).length !== 3 || !(round.options || []).length || !Number.isInteger(round.answer)) errors.push(`Lesson ${lessonId} has invalid Raven data.`);
     } else if (round.type === 'shadow-match') {

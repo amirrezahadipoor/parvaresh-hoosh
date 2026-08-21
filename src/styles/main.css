@@ -2437,3 +2437,81 @@ a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visib
     outline: 3px solid #173B74 !important;
     outline-offset: 3px;
 }
+
+/* Ordering direction and size-discrimination ---------------------------------
+   The internal sequence starts at index zero. In RTL that slot is the rightmost
+   card, so show the child the direction instead of making them guess. */
+.order-direction-guide {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 38px;
+    padding: 6px 10px;
+    border: 2px solid #CFE0F2;
+    border-radius: 13px;
+    direction: rtl;
+    color: #23415F;
+    background: #EDF6FF;
+    font-size: 11px;
+    font-weight: 900;
+}
+.order-direction-start,
+.order-direction-end {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+.order-direction-start { color: #FFF; background: #2563EB; }
+.order-direction-end { color: #526173; background: #FFF; }
+.order-direction-arrows {
+    flex: 1;
+    color: #2563EB;
+    font-size: 20px;
+    letter-spacing: 4px;
+    text-align: center;
+    animation: orderDirectionPulse 1.4s ease-in-out infinite;
+}
+@keyframes orderDirectionPulse {
+    0%, 100% { transform: translateX(0); opacity: .7; }
+    50% { transform: translateX(-5px); opacity: 1; }
+}
+
+.ordering-horizontal-row { direction: rtl; align-items: stretch; }
+.order-step-card { position: relative; padding-top: 31px; }
+.order-step-card .order-step-num {
+    position: absolute;
+    top: 5px;
+    right: 50%;
+    width: 23px;
+    height: 23px;
+    transform: translateX(50%);
+    color: #FFF;
+    font-size: 11px;
+    box-shadow: none;
+}
+.order-step-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 72px;
+}
+/* Do not let the global `width:100%` rule equalise the three size examples. */
+.order-step-card.size-order-card .order-step-visual svg {
+    width: var(--order-item-size, 62px);
+    height: auto;
+    max-width: 100%;
+    max-height: 100px;
+}
+.order-step-card.size-order-card[data-size="36"] { background: #F8FBFF; }
+.order-step-card.size-order-card[data-size="62"] { background: #F5FAFF; }
+.order-step-card.size-order-card[data-size="96"] { background: #F1F8FF; }
+
+@media (max-width: 360px) {
+    .order-direction-guide { padding-inline: 7px; font-size: 10px; }
+    .order-direction-arrows { letter-spacing: 1px; font-size: 17px; }
+    .order-step-card { padding-inline: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .order-direction-arrows { animation: none; }
+}

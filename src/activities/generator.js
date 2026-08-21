@@ -19,6 +19,25 @@ window.Generator = (function() {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    // Keep a short session history for maths generators. Pure random selection
+    // repeatedly served the same number/equation in adjacent rounds, especially
+    // in the small 1..5 pool. This is a shuffle-bag style guard: it retries a
+    // recent value, but always has a bounded fallback so generation cannot hang.
+    const recentMath = new Map();
+    function freshMath(bucket, producer, keyOf, memoryLimit) {
+        const recent = recentMath.get(bucket) || [];
+        let candidate = producer();
+        let key = String(keyOf(candidate));
+        for (let attempt = 0; attempt < 32 && recent.includes(key); attempt++) {
+            candidate = producer();
+            key = String(keyOf(candidate));
+        }
+        recent.push(key);
+        while (recent.length > Math.max(1, memoryLimit)) recent.shift();
+        recentMath.set(bucket, recent);
+        return candidate;
+    }
+
     function toFaDigit(n) {
         const faMap = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
         return String(n).split('').map(ch => faMap[ch] !== undefined ? faMap[ch] : ch).join('');
@@ -481,7 +500,13 @@ window.Generator = (function() {
     }
 
     function countRound(max) {
-        const n = rint(1, max);
+        const hi = Math.max(2, Math.floor(Number(max) || 10));
+        const n = freshMath(
+            `number-focus:${hi}`,
+            () => rint(1, hi),
+            value => value,
+            Math.min(5, hi - 1)
+        );
         const img = countImage(n);
         const faDigit = toFaDigit(n);
         // Distractors must stay inside the same band as the answer: "max + 2" pushed
@@ -501,8 +526,14 @@ window.Generator = (function() {
     }
 
     function numberNameRound(max) {
-        const n = rint(1, max);
-        const others = shuffle(numberPool(max).filter(x => x !== n)).slice(0, 3);
+        const hi = Math.max(2, Math.floor(Number(max) || 10));
+        const n = freshMath(
+            `number-focus:${hi}`,
+            () => rint(1, hi),
+            value => value,
+            Math.min(5, hi - 1)
+        );
+        const others = shuffle(numberPool(hi).filter(x => x !== n)).slice(0, 3);
         const opts = shuffle([n, ...others]);
         return mc(
             `عدد «${toFaWord(n)}» کدام است؟`,
@@ -517,7 +548,13 @@ window.Generator = (function() {
 
     function numberOrderRound(max) {
         const hi = Math.max(2, Math.floor(Number(max) || 10));
-        const a = rint(1, Math.max(1, hi - 1));
+        const focusMax = Math.max(1, hi - 1);
+        const a = freshMath(
+            `number-focus:${hi}`,
+            () => rint(1, focusMax),
+            value => value,
+            Math.max(1, Math.min(5, focusMax - 1))
+        );
         const missing = a + 1;
         const others = shuffle(numberPool(max).filter(x => x !== missing)).slice(0, 3);
         const opts = shuffle([missing, ...others]);
@@ -533,8 +570,18 @@ window.Generator = (function() {
     function compareRound(max) {
         // `a + rint(1,4)` ignored the ceiling, so a toddler band of 3 produced 5.
         const hi = Math.max(3, Math.floor(Number(max) || 10));
-        const a = rint(1, Math.max(1, hi - 1));
-        const b = Math.min(hi, a + rint(1, Math.max(1, Math.min(4, hi - a))));
+        const pairCapacity = hi * (hi - 1) / 2;
+        const pair = freshMath(
+            `compare:${hi}`,
+            () => {
+                const a = rint(1, Math.max(1, hi - 1));
+                const b = Math.min(hi, a + rint(1, Math.max(1, Math.min(4, hi - a))));
+                return { a, b };
+            },
+            value => `${value.a}:${value.b}`,
+            Math.max(1, Math.min(6, pairCapacity - 1))
+        );
+        const { a, b } = pair;
         const isBigger = Math.random() < 0.5;
         const correct = isBigger ? b : a;
         const opts = shuffle([a, b]);
@@ -549,28 +596,32 @@ window.Generator = (function() {
     }
 
     function arithRound(op, max) {
-        let a, b, answer;
-        if (op === '+') {
-            a = rint(1, Math.max(1, max - 1));
-            b = rint(1, Math.max(1, max - a));
-            answer = a + b;
-        } else if (op === '-') {
-            a = rint(2, max);
-            b = rint(1, a - 1);
-            answer = a - b;
-        } else {
-            if (Math.random() < 0.5) {
-                a = rint(1, Math.max(1, max - 1));
-                b = rint(1, Math.max(1, max - a));
-                answer = a + b;
-                op = '+';
-            } else {
-                a = rint(2, max);
-                b = rint(1, a - 1);
-                answer = a - b;
-                op = '-';
-            }
-        }
+        const hi = Math.max(2, Math.floor(Number(max) || 10));
+        const requestedOp = op;
+        const addCapacity = Math.floor((hi * hi) / 4); // unordered positive pairs with sum <= hi
+        const subCapacity = hi * (hi - 1) / 2;
+        const capacity = requestedOp === '+' ? addCapacity : requestedOp === '-' ? subCapacity : addCapacity + subCapacity;
+        const tuple = freshMath(
+            `arithmetic:${requestedOp}:${hi}`,
+            () => {
+                let actualOp = requestedOp;
+                if (actualOp === 'both') actualOp = Math.random() < 0.5 ? '+' : '-';
+                if (actualOp === '+') {
+                    const a = rint(1, Math.max(1, hi - 1));
+                    const b = rint(1, Math.max(1, hi - a));
+                    return { a, b, answer: a + b, op: actualOp };
+                }
+                const a = rint(2, hi);
+                const b = rint(1, a - 1);
+                return { a, b, answer: a - b, op: actualOp };
+            },
+            value => value.op === '+'
+                ? `+${Math.min(value.a, value.b)}:${Math.max(value.a, value.b)}`
+                : `-${value.a}:${value.b}`,
+            Math.max(1, Math.min(8, capacity - 1))
+        );
+        const { a, b, answer } = tuple;
+        op = tuple.op;
 
         const sign = op === '+' ? '+' : '−';
         const expr = `${toFaDigit(a)} ${sign} ${toFaDigit(b)} = ؟`;
@@ -578,7 +629,6 @@ window.Generator = (function() {
         // Distractors were drawn from a fixed 0..20 list regardless of the band, so
         // «۱ + ۲ = ؟» could offer ۱۳ to a five-year-old. Keep them near the answer
         // and inside the band, which also makes them pedagogically meaningful.
-        const hi = Math.max(2, Math.floor(Number(max) || 10));
         const near = [];
         for (let d = 1; d <= hi; d++) {
             if (answer - d >= 0) near.push(answer - d);
@@ -713,7 +763,10 @@ window.Generator = (function() {
 
     function orderSizeRound() {
         const obj = pick(['apple', 'ball', 'car', 'flower', 'tree', 'balloon']);
-        const sizes = [45, 65, 88];
+        // The old 45/65/88 values were then capped to 70px by CSS, making the
+        // middle and large pictures nearly identical. Keep a clear ~1.6x step
+        // and preserve these dimensions in OrderingActivity.
+        const sizes = [36, 62, 96];
         const shuffled = shuffle(sizes.map(s => ({ size: s, img: SvgArt.object(obj, s) })));
         return {
             type: 'order-steps',
