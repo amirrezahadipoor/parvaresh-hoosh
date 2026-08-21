@@ -2,7 +2,7 @@
 const App = {
     name: 'پرورش هوش کودک',
     title: 'پرورش هوش کودک',
-    version: '3.3.0',
+    version: '3.3.1',
     lang: 'fa-IR',
     dir: 'rtl',
     domains: [

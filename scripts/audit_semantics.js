@@ -144,10 +144,11 @@ for (const domain of curriculum.domains) for (const level of domain.levels) for 
                     const expected = arithmetic[2] === '+' ? a + b : a - b;
                     if (Number(faToLatin(answerLabel)) !== expected) where(`arithmetic answer ${answerLabel} != ${expected}`);
                 }
-                if (/بزرگ‌تر/.test(prompt) && Number(faToLatin(answerLabel)) !== Math.max(...options.map(option => Number(faToLatin(option.label))))) {
+                const numericOptions = options && options.map(option => Number(faToLatin(option.label))).filter(Number.isFinite);
+                if (/بزرگ‌تر/.test(prompt) && numericOptions.length === options.length && Number(faToLatin(answerLabel)) !== Math.max(...numericOptions)) {
                     where(`wrong maximum answer ${answerLabel}`);
                 }
-                if (/کوچک‌تر/.test(prompt) && Number(faToLatin(answerLabel)) !== Math.min(...options.map(option => Number(faToLatin(option.label))))) {
+                if (/کوچک‌تر/.test(prompt) && numericOptions.length === options.length && Number(faToLatin(answerLabel)) !== Math.min(...numericOptions)) {
                     where(`wrong minimum answer ${answerLabel}`);
                 }
                 if (round.clockHour && Number(faToLatin(answerLabel).split(':')[0]) !== round.clockHour) {

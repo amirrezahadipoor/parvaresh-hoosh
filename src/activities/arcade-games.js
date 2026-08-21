@@ -209,20 +209,20 @@ window.ArcadeGames = (function() {
             // knowledge game, so a wrong pairing teaches the wrong fact. The
             // rabbit ate an apple here, which is why children answered "carrot"
             // and were marked wrong.
-            { animal: 'rabbit', animalName: 'خرگوش مهربون', food: 'هویج', foodSvg: SvgArt.object('carrot', 50) },
-            { animal: 'dog', animalName: 'هاپو باوفا', food: 'استخوان', foodSvg: SvgArt.object('bone', 50) },
-            { animal: 'cat', animalName: 'پیشی ملوس', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) },
-            { animal: 'monkey', animalName: 'میمون زرنگ', food: 'موز', foodSvg: SvgArt.object('banana', 50) },
-            { animal: 'elephant', animalName: 'فیل آرام', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
-            { animal: 'bear', animalName: 'خرس مهربان', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
-            { animal: 'turtle', animalName: 'لاک‌پشت آرام', food: 'کاهو', foodSvg: SvgArt.object('lettuce', 50) },
-            { animal: 'fox', animalName: 'روباه زرنگ', food: 'انگور', foodSvg: SvgArt.object('grape', 50) },
+            { animal: 'rabbit', animalName: 'خرگوش', food: 'هویج', foodSvg: SvgArt.object('carrot', 50) },
+            { animal: 'dog', animalName: 'سگ', food: 'استخوان', foodSvg: SvgArt.object('bone', 50) },
+            { animal: 'cat', animalName: 'گربه', food: 'ماهی', foodSvg: SvgArt.animal('fish', 50) },
+            { animal: 'monkey', animalName: 'میمون', food: 'موز', foodSvg: SvgArt.object('banana', 50) },
+            { animal: 'elephant', animalName: 'فیل', food: 'هندوانه', foodSvg: SvgArt.object('watermelon', 50) },
+            { animal: 'bear', animalName: 'خرس', food: 'سیب', foodSvg: SvgArt.object('apple', 50) },
+            { animal: 'turtle', animalName: 'لاک‌پشت', food: 'کاهو', foodSvg: SvgArt.object('lettuce', 50) },
+            { animal: 'fox', animalName: 'روباه', food: 'انگور', foodSvg: SvgArt.object('grape', 50) },
             // A frog eats insects, not citrus.
-            { animal: 'frog', animalName: 'قورباغه شاد', food: 'حشره', foodSvg: SvgArt.animal('bee', 50) },
-            { animal: 'cow', animalName: 'گاو دوست‌داشتنی', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
-            { animal: 'sheep', animalName: 'گوسفند پشمالو', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
+            { animal: 'frog', animalName: 'قورباغه', food: 'حشره', foodSvg: SvgArt.animal('bee', 50) },
+            { animal: 'cow', animalName: 'گاو', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
+            { animal: 'sheep', animalName: 'گوسفند', food: 'علف', foodSvg: SvgArt.object('grass', 50) },
             // A duck eats grain, not fish.
-            { animal: 'duck', animalName: 'اردک زرد', food: 'دانه', foodSvg: SvgArt.object('seeds', 50) }
+            { animal: 'duck', animalName: 'اردک', food: 'دانه', foodSvg: SvgArt.object('seeds', 50) }
         ];
 
         let currentIdx = 0;
@@ -301,7 +301,7 @@ window.ArcadeGames = (function() {
             });
 
             setTimeout(() => {
-                AudioEngine.speak(`به ${current.animalName} چی غذا بدیم؟`);
+                AudioEngine.speak(`به ${current.animalName} چه غذایی بدهیم؟`);
             }, 200);
         }
 
@@ -431,7 +431,7 @@ window.ArcadeGames = (function() {
             }
 
             setTimeout(() => {
-                AudioEngine.speak(`${targetCount} تا هدیه داخل واگن قطار بذار!`);
+                AudioEngine.speak(`${['صفر','یک','دو','سه','چهار','پنج','شش'][targetCount]} هدیه داخل واگن قطار بگذار!`);
             }, 150);
         }
 

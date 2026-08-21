@@ -68,14 +68,28 @@ LETTERS = {
 }
 
 def letter_script(letter, sound, example):
-    if letter == "ث":
-        # Standalone «ثِ» was once rendered unclearly and heard as «ف». Naming
-        # the three dots and the real Persian /s/ sound removes all ambiguity.
-        return "این حرف «ث» است؛ ثِ سه‌نقطه. در فارسی صدای «س» می‌دهد. کلمهٔ «ثانیه» با حرف «ث» شروع می‌شود."
+    # Persian spelling has several letters that share one modern phoneme. Saying
+    # «صِ» or «ذِ» as if it were the sound is pedagogically wrong; name the letter
+    # and then state the sound actually heard in Persian.
+    shared_phonemes = {
+        "ث": ("ثِ سه‌نقطه", "س"),
+        "ح": ("حِ جیمی", "ه"),
+        "ذ": ("ذال", "ز"),
+        "ص": ("صاد", "س"),
+        "ض": ("ضاد", "ز"),
+        "ط": ("طا", "ت"),
+        "ظ": ("ظا", "ز"),
+    }
+    if letter in shared_phonemes:
+        name, phoneme = shared_phonemes[letter]
+        return (f"این حرف «{letter}» است؛ {name}. در فارسی صدای «{phoneme}» می‌دهد. "
+                f"کلمهٔ «{example}» با حرف «{letter}» شروع می‌شود.")
     if letter == "ف":
         return "این حرف «ف» است؛ فِ تک‌نقطه. صدای «ف» می‌دهد. کلمهٔ «فیل» با حرف «ف» شروع می‌شود."
+    if letter == "ه":
+        return "این حرف «ه» است؛ هِ دوچشم. صدای «ه» می‌دهد. کلمهٔ «هندوانه» با حرف «ه» شروع می‌شود."
     return (f"این حرف «{letter}» است. صدایش «{sound}» است. "
-            f"«{example}» با «{letter}» شروع می‌شود.")
+            f"کلمهٔ «{example}» با حرف «{letter}» شروع می‌شود.")
 
 # ------------------------------------------------------------ lesson intros --
 LESSON = {

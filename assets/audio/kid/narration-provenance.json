@@ -91,6 +91,12 @@
       "sha256": "e5ef69aac4fcbb97bacf1fa082a4876b62d3cd435007742f8e96b2c50ba603d3",
       "text": "نوزده منهای پانزده چند می‌شود؟"
     },
+    "auto-03cd98f72259": {
+      "bytes": 13244,
+      "kind": "runtime-text",
+      "sha256": "31af7b1d738de93202819f1b8c2c9763e59bfd42b96a2288fc66ef461811117a",
+      "text": "به سگ چه غذایی بدهیم؟"
+    },
     "auto-03d6788a967f": {
       "bytes": 14900,
       "kind": "runtime-text",
@@ -397,6 +403,12 @@
       "sha256": "68703c6489695a812f04e390c098a6a2f5b7b4c9e16847cb1ca4248d7b53fe75",
       "text": "رنگ بنفش را انتخاب کن"
     },
+    "auto-11f8da848640": {
+      "bytes": 20828,
+      "kind": "runtime-text",
+      "sha256": "462ffbb6ba876e61f71b85be110c2d91947f2de2fbd5e1b9f1f7e4416fe35753",
+      "text": "صدای ما ما صدای کدام حیوان است؟"
+    },
     "auto-121acdc49afd": {
       "bytes": 13628,
       "kind": "runtime-text",
@@ -486,6 +498,18 @@
       "kind": "runtime-text",
       "sha256": "786ea8fc7d7cf4f08576f9c3a3f87933fc0142143fcabeb6fce834db296ebd84",
       "text": "صدای بلبل در آب صدای کدام حیوان است؟"
+    },
+    "auto-16056a758f3d": {
+      "bytes": 24332,
+      "kind": "runtime-text",
+      "sha256": "79b7c960623b1a61faf7310003a610a66ab05cad1ddbf8e820ecd21e4c8d11a5",
+      "text": "بزرگ‌تر مهربان با قصه‌های شیرین و قدیمی"
+    },
+    "auto-16df6ee57bdc": {
+      "bytes": 13412,
+      "kind": "runtime-text",
+      "sha256": "21d8c801eb70cf7e61e16a5bb96cc3eb90e81532fb1f7a3d5078d2828ec64803",
+      "text": "به روباه چه غذایی بدهیم؟"
     },
     "auto-1783af1d8d45": {
       "bytes": 28052,
@@ -715,12 +739,6 @@
       "sha256": "b82b2a9e25283cb4bb6225194daf66f38c722a0bf2b4c11c57a00a3abf1802a2",
       "text": "یازده به اضافه چهار چند می‌شود؟"
     },
-    "auto-205e120b719c": {
-      "bytes": 15380,
-      "kind": "runtime-text",
-      "sha256": "8cf83e5c26f0016dbb72ae47b110d7839b44e2843d69dea3ee7741f4bbbc0f27",
-      "text": "به میمون زرنگ چی غذا بدیم؟"
-    },
     "auto-207c84ead609": {
       "bytes": 16244,
       "kind": "runtime-text",
@@ -835,6 +853,12 @@
       "sha256": "3a777f5d99ecad5871c5772189e8cbdc2fafc23ce43e54cf451a26f827b7afcb",
       "text": "کدام کلمه با صدای ز شروع می‌شود؟"
     },
+    "auto-24c6657a1598": {
+      "bytes": 21068,
+      "kind": "runtime-text",
+      "sha256": "c80249d55f9e70939bacc221874538b74ef35845503b0e4f6d6313277937559f",
+      "text": "سه هدیه داخل واگن قطار بگذار!"
+    },
     "auto-24e823808546": {
       "bytes": 17012,
       "kind": "runtime-text",
@@ -852,6 +876,12 @@
       "kind": "runtime-text",
       "sha256": "60b7a7d97d7b05e56d5d0d2ba30aa0f8cf393e4bf674faf02abfd880e215e470",
       "text": "صدای غررر بم صدای کدام حیوان است؟"
+    },
+    "auto-25842fd39dee": {
+      "bytes": 20372,
+      "kind": "runtime-text",
+      "sha256": "90964fd3152f647818eeb5a59c9f47edcd9525d0f6bfe5deedcee9829237e89d",
+      "text": "صدای وِز وِز صدای کدام حیوان است؟"
     },
     "auto-25dc55006b09": {
       "bytes": 17372,
@@ -901,12 +931,6 @@
       "sha256": "5ae7469ed8a24f26594ca9b94279a72652ef307eebe1adeec47c743b153516a8",
       "text": "صدای هاپ هاپ صدای کدام حیوان است؟"
     },
-    "auto-28a2db5dde28": {
-      "bytes": 17540,
-      "kind": "runtime-text",
-      "sha256": "01be46b533c794e705bdcc1ffaab603638bd9943dae5d51f2ba332cb857f793e",
-      "text": "به لاک‌پشت آرام چی غذا بدیم؟"
-    },
     "auto-28def723a123": {
       "bytes": 13532,
       "kind": "runtime-text",
@@ -930,12 +954,6 @@
       "kind": "runtime-text",
       "sha256": "9f519e4dab6da0f97d80b130a30165cc55705327eb3a5bb79853c5d67d270706",
       "text": "تصویر کفش را پیدا کن"
-    },
-    "auto-29e951cc6997": {
-      "bytes": 15188,
-      "kind": "runtime-text",
-      "sha256": "c937e90a18c7cbc54ac5245764477cffbfae8accfad71c5aa7817fd7c323c713",
-      "text": "به پیشی ملوس چی غذا بدیم؟"
     },
     "auto-2a5acce801b5": {
       "bytes": 17612,
@@ -1069,12 +1087,6 @@
       "sha256": "2a5ba2ad2e238bb383899b2edd1877c48abbc914013fc240f6ae2b3cc1f23838",
       "text": "عدد بعد از پانزده کدام است؟"
     },
-    "auto-2fea8dad45a6": {
-      "bytes": 18092,
-      "kind": "runtime-text",
-      "sha256": "b09df5cd2f7b6acf4d153501b9e0ecaa204e8da25bc51016c62f2fc015c2e76d",
-      "text": "به خرگوش مهربون چی غذا بدیم؟"
-    },
     "auto-300299aa6370": {
       "bytes": 15860,
       "kind": "runtime-text",
@@ -1135,12 +1147,6 @@
       "sha256": "fdc2656c536250b29df16dbc3d146d2b6cfbf315a6fca5923b5bc40c0f22d3e4",
       "text": "چهارده منهای نه چند می‌شود؟"
     },
-    "auto-3364f1d0c666": {
-      "bytes": 23780,
-      "kind": "runtime-text",
-      "sha256": "c1a1d12b5277bdaa77090a349735ddf44051461c830618231bdf6ed7d7c246f4",
-      "text": "6 تا هدیه داخل واگن قطار بذار!"
-    },
     "auto-336b184837e2": {
       "bytes": 18764,
       "kind": "runtime-text",
@@ -1183,6 +1189,12 @@
       "sha256": "0a2f74e427aa2ef94044ee924df8e5b52f94e75e0711d6e20c145fba2c3489c9",
       "text": "چهارده منهای سیزده چند می‌شود؟"
     },
+    "auto-352ebce8609e": {
+      "bytes": 22508,
+      "kind": "runtime-text",
+      "sha256": "1555467457daff1b0280a19b4f3f31349ef85b8794557b11c4eac4b0b3fb8220",
+      "text": "صدای غُرّشِ بَم صدای کدام حیوان است؟"
+    },
     "auto-35592d725ed4": {
       "bytes": 7988,
       "kind": "runtime-text",
@@ -1200,6 +1212,12 @@
       "kind": "runtime-text",
       "sha256": "08bca38680259ec0ca4d23715e0737cf7f7af2ce5f8476c861fe3b4ed5ec29da",
       "text": "یازده به اضافه پنج چند می‌شود؟"
+    },
+    "auto-36dee599ad9c": {
+      "bytes": 24644,
+      "kind": "runtime-text",
+      "sha256": "1df8926efe344675c5d3146e0606685d2ac0dc8c79bb5ff8ede88bb2942462ad",
+      "text": "صدای غُرّشِ بلند صدای کدام حیوان است؟"
     },
     "auto-3748bc4161d7": {
       "bytes": 20948,
@@ -1303,6 +1321,12 @@
       "sha256": "53dc2adeb45ca95cc57e192fac4ee0590bdafe81e8838c8470655f46191a9f2b",
       "text": "کتاب چند بخش دارد؟"
     },
+    "auto-3b5e2e872777": {
+      "bytes": 21908,
+      "kind": "runtime-text",
+      "sha256": "9814b216a0e015856050432ecf72dfb14d600b2eb60a65aae7e5d656bb15cc45",
+      "text": "شش هدیه داخل واگن قطار بگذار!"
+    },
     "auto-3b75946bba8c": {
       "bytes": 19652,
       "kind": "runtime-text",
@@ -1380,6 +1404,12 @@
       "kind": "runtime-text",
       "sha256": "d483f225dec4c99ca09d01e860ecd30b70ca9e64e904a3f0fea41a9cf0f03daf",
       "text": "شکل دایره"
+    },
+    "auto-3e0360bd0148": {
+      "bytes": 12668,
+      "kind": "runtime-text",
+      "sha256": "44f8e75ef4184c5fa25a28c2bae31f5499495beee54a5feb3c31c7380c1b55af",
+      "text": "به گاو چه غذایی بدهیم؟"
     },
     "auto-3e178b12f06e": {
       "bytes": 18620,
@@ -1500,12 +1530,6 @@
       "kind": "runtime-text",
       "sha256": "55eb262eeee0fea761736f047875a76f59648fca6cc954b11df50273baa5e30c",
       "text": "تصویر چتر را پیدا کن"
-    },
-    "auto-428ea916689d": {
-      "bytes": 22532,
-      "kind": "runtime-text",
-      "sha256": "fb2e7fab52a677ef114f326939884fef212dc21e0475c41b3314311d6088abe3",
-      "text": "هر چی دوست داری با رنگ‌های شاد نقاشی کن!"
     },
     "auto-42a11497c658": {
       "bytes": 29540,
@@ -1638,6 +1662,12 @@
       "kind": "runtime-text",
       "sha256": "1dc3a98445c4318e0d50b90fabd1ba6d43f4247d6017cd123c68c49f50bf924d",
       "text": "باران"
+    },
+    "auto-4893fdfa0867": {
+      "bytes": 25700,
+      "kind": "runtime-text",
+      "sha256": "674ac66fb09450df8c92c2e248025e86949f689b45f7d17878b68237bd11bb14",
+      "text": "صدای قُد قُد قُدا صدای کدام حیوان است؟"
     },
     "auto-48aa4331f5a3": {
       "bytes": 16508,
@@ -1788,12 +1818,6 @@
       "kind": "runtime-text",
       "sha256": "77ed1833dd67010c60aef5b7856ab174b2cc4c66f9d251296589e8059a202e7c",
       "text": "چهارده منهای ده چند می‌شود؟"
-    },
-    "auto-4f229982a760": {
-      "bytes": 22412,
-      "kind": "runtime-text",
-      "sha256": "95804c11333fc0131ad0961569629792f4e4825cc8b5c97f30608acb557ddd67",
-      "text": "3 تا هدیه داخل واگن قطار بذار!"
     },
     "auto-4f3909faac27": {
       "bytes": 25052,
@@ -2190,12 +2214,6 @@
       "kind": "runtime-text",
       "sha256": "0d9dbf1e3b300acedc0e0dcaeac0d4cf04c921f774526cb46df63b57bde46473",
       "text": "سگ"
-    },
-    "auto-61733d9704b3": {
-      "bytes": 18764,
-      "kind": "runtime-text",
-      "sha256": "d7a69c1756829952f9108957c1c6701e97ba2b7c1d1400dbec86d789d262a21f",
-      "text": "به گوسفند پشمالو چی غذا بدیم؟"
     },
     "auto-618162c2130a": {
       "bytes": 16604,
@@ -2767,6 +2785,12 @@
       "sha256": "02b2df8bfb00233001f962ecefd7c9c7938566b080c64bde811b9912d893de0c",
       "text": "کدام منبع انرژی با وزیدن هوا کار می‌کند؟"
     },
+    "auto-7cde7f3680f6": {
+      "bytes": 12572,
+      "kind": "runtime-text",
+      "sha256": "3382a41e702fce43bd038362479cbbee20c04a0964ac433c38cdf166b526de13",
+      "text": "به میمون چه غذایی بدهیم؟"
+    },
     "auto-7cf036a1c082": {
       "bytes": 23180,
       "kind": "runtime-text",
@@ -2965,6 +2989,12 @@
       "sha256": "2d8be1fb56133845a8797ff316665d3635029785ac9c76e54e39892a9cc80754",
       "text": "بیست منهای ده چند می‌شود؟"
     },
+    "auto-8445beca28ad": {
+      "bytes": 12956,
+      "kind": "runtime-text",
+      "sha256": "d3b3bada96ab7a8a6342f16601d87d714f088d4bb54ab1e26edba57a5265bf14",
+      "text": "به خرس چه غذایی بدهیم؟"
+    },
     "auto-84792e982ebd": {
       "bytes": 15812,
       "kind": "runtime-text",
@@ -2976,12 +3006,6 @@
       "kind": "runtime-text",
       "sha256": "10307b12a05ff82713c9d7238489c35f0016df45424e7860fb226fe5aae1f370",
       "text": "هشت به اضافه دوازده چند می‌شود؟"
-    },
-    "auto-84f9038b0bbc": {
-      "bytes": 14420,
-      "kind": "runtime-text",
-      "sha256": "1fc21e6329f3cfa254a382baefbefcf47e8ae949b0a4f20436968d42437a5de7",
-      "text": "به فیل آرام چی غذا بدیم؟"
     },
     "auto-851533ea6989": {
       "bytes": 25220,
@@ -3193,12 +3217,6 @@
       "sha256": "c6fae6db2b1ce93242726cd561ec1ab20c292962c501477ff98ce5191ca878f3",
       "text": "لاک‌پشت در کجا زندگی می‌کند؟"
     },
-    "auto-8e3c66c29b78": {
-      "bytes": 22604,
-      "kind": "runtime-text",
-      "sha256": "a7a9ad501b0f3ba7c358dec39d3083391e41de95a0d64f0f4379eb33ed6e9063",
-      "text": "5 تا هدیه داخل واگن قطار بذار!"
-    },
     "auto-8e45476f6d4b": {
       "bytes": 17684,
       "kind": "runtime-text",
@@ -3234,6 +3252,12 @@
       "kind": "runtime-text",
       "sha256": "e65fe03e94b3985d6a14129e7cb6cd8ac23f1e71b3e2e67b7780a5c475104422",
       "text": "شکل بیضی را انتخاب کن"
+    },
+    "auto-903be846654d": {
+      "bytes": 14708,
+      "kind": "runtime-text",
+      "sha256": "db35aa8326198d515c0291493b677d2c4802b21b6961111e0883f3ab7bb54c63",
+      "text": "به لاک‌پشت چه غذایی بدهیم؟"
     },
     "auto-9068944de271": {
       "bytes": 19676,
@@ -3403,6 +3427,12 @@
       "sha256": "da12e86919d3150486dcfe9f7136a59e222346b11e9bb0e81ecff1425ac2d952",
       "text": "تصویر شتر را پیدا کن"
     },
+    "auto-9770489f43b6": {
+      "bytes": 21476,
+      "kind": "runtime-text",
+      "sha256": "0028dc2b24e69338e6c0023535097fd58f899bdf52149f7193ec8d7ff1b44f3f",
+      "text": "پنج هدیه داخل واگن قطار بگذار!"
+    },
     "auto-9783a9dc6481": {
       "bytes": 14612,
       "kind": "runtime-text",
@@ -3426,6 +3456,12 @@
       "kind": "runtime-text",
       "sha256": "daf2354143a2c30364086ede70d29d3f20147b87febbe441e7b1edc10c880818",
       "text": "عدد پانزده را انتخاب کن"
+    },
+    "auto-98232b43d3db": {
+      "bytes": 14516,
+      "kind": "runtime-text",
+      "sha256": "da4b2a2dbe50a7c892e2ff654041dbb251a683ef5739629e12bf1fa251d179a5",
+      "text": "به خرگوش چه غذایی بدهیم؟"
     },
     "auto-98c8a99afe4c": {
       "bytes": 16964,
@@ -3577,6 +3613,24 @@
       "sha256": "ca1da4792dc92f14d6ef06a2e22f3d43df28de1d60e1a03779e488fa9234270e",
       "text": "فیل در کجا زندگی می‌کند؟"
     },
+    "auto-9e84814a11cb": {
+      "bytes": 14852,
+      "kind": "runtime-text",
+      "sha256": "2bc0db82988dbb7541fbd907676b6b504b16ddc34214b19fd3706eef9ba0a214",
+      "text": "به گوسفند چه غذایی بدهیم؟"
+    },
+    "auto-9ed9d9f15bf4": {
+      "bytes": 12380,
+      "kind": "runtime-text",
+      "sha256": "fb3ada127a436151a6a6591894d85a498dce7e43afca7d66ada49d3109ba1d07",
+      "text": "به فیل چه غذایی بدهیم؟"
+    },
+    "auto-9eef3cd215be": {
+      "bytes": 13892,
+      "kind": "runtime-text",
+      "sha256": "eadae79967e2e0547d921310da90bf4b160231f7ca3161e617d81d50f41444f5",
+      "text": "به گربه چه غذایی بدهیم؟"
+    },
     "auto-9f041bc13ffc": {
       "bytes": 11276,
       "kind": "runtime-text",
@@ -3588,12 +3642,6 @@
       "kind": "runtime-text",
       "sha256": "c7336dc44db36f26825ad2d48ca8f7fb98bcad299848ddf5583f8baf6ce2453f",
       "text": "نقاشی کشیدن، لمس کردن و در آغوش گرفتن عزیزان"
-    },
-    "auto-9ffca96fda1f": {
-      "bytes": 16196,
-      "kind": "runtime-text",
-      "sha256": "f18b85bd9b3350d85b49bfdaabd25ad9f2225d68a180d61fda3380739f8e2c53",
-      "text": "به هاپو باوفا چی غذا بدیم؟"
     },
     "auto-a015a5784a34": {
       "bytes": 23324,
@@ -3679,12 +3727,6 @@
       "sha256": "419e6d2d2b76cbc23f9f7ad2d0dd49b9ee2a7c95d3b166041ed32c18a50b86c1",
       "text": "دو به اضافه شش چند می‌شود؟"
     },
-    "auto-a2fba183bd7a": {
-      "bytes": 21500,
-      "kind": "runtime-text",
-      "sha256": "ff25293f22d969b98917076cb900b76bdeee47f8899f23d2d1991055ee89222c",
-      "text": "2 تا هدیه داخل واگن قطار بذار!"
-    },
     "auto-a31815dff27b": {
       "bytes": 11396,
       "kind": "runtime-text",
@@ -3714,12 +3756,6 @@
       "kind": "runtime-text",
       "sha256": "5cb9e64c86336a475aab620732f9d21d1d6f86ac075e22217552a9e74865ba27",
       "text": "سیزده منهای هفت چند می‌شود؟"
-    },
-    "auto-a4eb394c4245": {
-      "bytes": 22412,
-      "kind": "runtime-text",
-      "sha256": "8eae0ac4548a1cc90148c616a1a3908f199a9fe532c55fab926f683bbe40b1c8",
-      "text": "4 تا هدیه داخل واگن قطار بذار!"
     },
     "auto-a520c935bb36": {
       "bytes": 27260,
@@ -3919,6 +3955,12 @@
       "sha256": "e98a3bf799b0edf86be880036b7023b201a0d3776c7d723dbda0f6eca22b773b",
       "text": "دوازده به اضافه هشت چند می‌شود؟"
     },
+    "auto-aca614292406": {
+      "bytes": 14564,
+      "kind": "runtime-text",
+      "sha256": "f470ed8aa55b22dc775fc397b6a2dc58898eb3e3f68137711731629e28996b41",
+      "text": "به قورباغه چه غذایی بدهیم؟"
+    },
     "auto-acd1b71dfb98": {
       "bytes": 20588,
       "kind": "runtime-text",
@@ -4027,12 +4069,6 @@
       "sha256": "ec2d2c63df72b0ac38ad9202f83c897a96779a6641a184ae5eb7890c3e2f4096",
       "text": "دو به اضافه چهارده چند می‌شود؟"
     },
-    "auto-b1fad9807bbb": {
-      "bytes": 25628,
-      "kind": "runtime-text",
-      "sha256": "4df6b0b7fe3b74d5065d64bbd56d090e50018d5c96fc64385c35220f12b0b075",
-      "text": "هر چی دوست داری با رنگ‌های شاد نقاشی کن گل من!"
-    },
     "auto-b1fd125ccf42": {
       "bytes": 17372,
       "kind": "runtime-text",
@@ -4050,12 +4086,6 @@
       "kind": "runtime-text",
       "sha256": "ea1243d497e724a90f442f7a40c163fd925aa64c62d4258b5c091ebbd8dfeba4",
       "text": "عدد چهار"
-    },
-    "auto-b2f3c8612f15": {
-      "bytes": 15812,
-      "kind": "runtime-text",
-      "sha256": "1d13d716a959b9fd925403a386eaf5725b0c75613125026c87cf093ce25bd9d3",
-      "text": "به روباه زرنگ چی غذا بدیم؟"
     },
     "auto-b3ce6231a677": {
       "bytes": 19196,
@@ -4086,6 +4116,12 @@
       "kind": "runtime-text",
       "sha256": "ca8d117561d4759d741d60a13e77bc44e0c2ac697bd4b2774c55e2614e504a19",
       "text": "شش به اضافه دوازده چند می‌شود؟"
+    },
+    "auto-b49b74ab2eed": {
+      "bytes": 21596,
+      "kind": "runtime-text",
+      "sha256": "95b5fb1570f132979efaf0f0cb385bf95e84716b1ad5e815fac99824e82abc2f",
+      "text": "چهار هدیه داخل واگن قطار بگذار!"
     },
     "auto-b4a98982c36d": {
       "bytes": 18692,
@@ -4387,6 +4423,12 @@
       "sha256": "4d0c77b7d69c38aabd072acad05e73197d560fa9c15fb709b3dc4478c69a8100",
       "text": "هشت به اضافه چهار چند می‌شود؟"
     },
+    "auto-c1ea6c838aa1": {
+      "bytes": 14084,
+      "kind": "runtime-text",
+      "sha256": "686e4512dbbb4750b26b13638e341fa0be985bbbb7f95df45c26856e1a6e8474",
+      "text": "به اردک چه غذایی بدهیم؟"
+    },
     "auto-c24a4cbb78fd": {
       "bytes": 14660,
       "kind": "runtime-text",
@@ -4620,6 +4662,12 @@
       "kind": "runtime-text",
       "sha256": "dcbd21b6349fb8c4b0ddc16797c4e62ebfcb0137c92cc31d45d1b688f3caad4d",
       "text": "هفده منهای یک چند می‌شود؟"
+    },
+    "auto-cbe1d303262e": {
+      "bytes": 24428,
+      "kind": "runtime-text",
+      "sha256": "4488400ac75c454222ddd30e8c1ef117ca57f97f03f8b91cfe51c023ff4a9723",
+      "text": "هر چیزی که دوست داری با رنگ‌های شاد نقاشی کن!"
     },
     "auto-cc33fce0484b": {
       "bytes": 17012,
@@ -4927,12 +4975,6 @@
       "sha256": "6fbd06b16e29c61cac80e0c4324bcd4f90a7176523691b369a13aaf3f22de87a",
       "text": "ده منهای چهار چند می‌شود؟"
     },
-    "auto-dacaaa15fe32": {
-      "bytes": 15932,
-      "kind": "runtime-text",
-      "sha256": "f7d8b53a6f7b3bf521f9f1faaf5b9a126961724a0524384e2d963abe8c7fbc2c",
-      "text": "به اردک زرد چی غذا بدیم؟"
-    },
     "auto-daee4781fdde": {
       "bytes": 13748,
       "kind": "runtime-text",
@@ -5089,12 +5131,6 @@
       "sha256": "b6924bc35ea03967ae5ce7787af1e64a7de4262d4823150e7f52de3bb94cdcdc",
       "text": "تصویر توپ را پیدا کن"
     },
-    "auto-e0bc342f4445": {
-      "bytes": 17276,
-      "kind": "runtime-text",
-      "sha256": "3c3f5dafbac97acba54a9096f10915ecf2e799e3eec7812d9ef5354c89ee33d3",
-      "text": "به خرس مهربان چی غذا بدیم؟"
-    },
     "auto-e0ddaa38a66e": {
       "bytes": 28244,
       "kind": "runtime-text",
@@ -5130,12 +5166,6 @@
       "kind": "runtime-text",
       "sha256": "7f3c0d64970108670e960ae1f749887383140c8e7a22f1a4c78b460700cfd717",
       "text": "آفرین!"
-    },
-    "auto-e1c7e34f817f": {
-      "bytes": 18908,
-      "kind": "runtime-text",
-      "sha256": "1288d969b49be94ba743f80560e0d432370d6af6b426878d7eaa031258e8c295",
-      "text": "به گاو دوست‌داشتنی چی غذا بدیم؟"
     },
     "auto-e1eab6ec9bef": {
       "bytes": 19628,
@@ -5191,12 +5221,6 @@
       "sha256": "8ab0f91666dc01d49fe14407c2fff92ad6607ffb904d67181da42047b4a2d717",
       "text": "همبازی و همدم صمیمی در خانه"
     },
-    "auto-e440793b5845": {
-      "bytes": 16508,
-      "kind": "runtime-text",
-      "sha256": "eb5c76c07b609d47ee69f22846d99fd98f41887117aaffaf1798193b4df2f554",
-      "text": "به قورباغه شاد چی غذا بدیم؟"
-    },
     "auto-e4d083bf2059": {
       "bytes": 18116,
       "kind": "runtime-text",
@@ -5214,6 +5238,12 @@
       "kind": "runtime-text",
       "sha256": "c79d04dbfd91df93787c498d976f2d60dddf6c41b5e0d9cadd95ff2a9141931e",
       "text": "استشمام بوی گل یاس و نان گرم"
+    },
+    "auto-e5323d863e4c": {
+      "bytes": 28172,
+      "kind": "runtime-text",
+      "sha256": "924899bee2dab12727ac51f49d243f91a4b57ddac251f05ca9fcb000bd8a7382",
+      "text": "هر چیزی که دوست داری با رنگ‌های شاد نقاشی کن، گل من!"
     },
     "auto-e53525d53f0d": {
       "bytes": 16772,
@@ -5262,12 +5292,6 @@
       "kind": "runtime-text",
       "sha256": "2264d9af3b7f172585c4755be16cb60507974acec0b896d21ddb5ae5c04f42a4",
       "text": "ساعت دوازده را پیدا کن"
-    },
-    "auto-e6f860f65ff6": {
-      "bytes": 24236,
-      "kind": "runtime-text",
-      "sha256": "510e9311823ad9da291c299dcdf9c96f5144331fab532687f8da097f702e087c",
-      "text": "بزرگتر مهربان با قصه‌های شیرین و قدیمی"
     },
     "auto-e7bce4680b00": {
       "bytes": 16820,
@@ -5394,6 +5418,12 @@
       "kind": "runtime-text",
       "sha256": "db7d95d5224cf843b8e386456e422f500f362eceabcb1225187ad4a8d75288be",
       "text": "شکل مثلث"
+    },
+    "auto-ecea3a587253": {
+      "bytes": 20204,
+      "kind": "runtime-text",
+      "sha256": "50f6a734184280db91b33b90f0f5838a6b4d61d0124b0f549edcab3e7dda6c4e",
+      "text": "صدای او او صدای کدام حیوان است؟"
     },
     "auto-ed06d9920508": {
       "bytes": 17564,
@@ -5556,6 +5586,12 @@
       "kind": "runtime-text",
       "sha256": "ea3c29e3b68dc7867f9ae28482e619c33b8a5a7641948aa88ad4e4dceebdf79d",
       "text": "بیست منهای شش چند می‌شود؟"
+    },
+    "auto-f525315a634d": {
+      "bytes": 19916,
+      "kind": "runtime-text",
+      "sha256": "7e4f1cab695c2fd29338b92308f9b6aed7ee38c947494ff3ee8eacbca2d318f6",
+      "text": "دو هدیه داخل واگن قطار بگذار!"
     },
     "auto-f583237f6626": {
       "bytes": 16892,
@@ -6248,34 +6284,34 @@
       "text": "به مدرسه تیزهوشان خوش آمدی! اینجا با بازی، باهوش‌تر می‌شویم."
     },
     "letter-alef": {
-      "bytes": 32684,
+      "bytes": 38372,
       "kind": "letter",
-      "sha256": "4c1751df3c67772e838e84639e564d396ca2e59d70b60f10270d8e3dca528776",
-      "text": "این حرف «ا» است. صدایش «اَ» است. «اسب» با «ا» شروع می‌شود."
+      "sha256": "5521239940dc89e8ddf6e67d83b3862a440f1bd224953911dab49a10016ee266",
+      "text": "این حرف «ا» است. صدایش «اَ» است. کلمهٔ «اسب» با حرف «ا» شروع می‌شود."
     },
     "letter-be": {
-      "bytes": 35036,
+      "bytes": 40436,
       "kind": "letter",
-      "sha256": "86820184cbb759473907adeee1673bf623d7acb4b5349158d52f579f9171b0b1",
-      "text": "این حرف «ب» است. صدایش «بِ» است. «بادکنک» با «ب» شروع می‌شود."
+      "sha256": "ea1f7297160358536f1e4b4fcf3940f400b4871c55bb8e20b5e966f0927bb05c",
+      "text": "این حرف «ب» است. صدایش «بِ» است. کلمهٔ «بادکنک» با حرف «ب» شروع می‌شود."
     },
     "letter-che": {
-      "bytes": 33044,
+      "bytes": 39140,
       "kind": "letter",
-      "sha256": "c5ca5d521dd96a1ae900c89436a03e6f64d222eb657458ddcd9d3e84b5377657",
-      "text": "این حرف «چ» است. صدایش «چِ» است. «چتر» با «چ» شروع می‌شود."
+      "sha256": "c650099a8ef0827bcc3a73e44b22a7dac89cf8a19d74b5a5d01f1a2af02df13e",
+      "text": "این حرف «چ» است. صدایش «چِ» است. کلمهٔ «چتر» با حرف «چ» شروع می‌شود."
     },
     "letter-dal": {
-      "bytes": 32684,
+      "bytes": 38468,
       "kind": "letter",
-      "sha256": "da445a1f73360b1af4fb693c957cd7f120fa38df598fa9eec149a56a41518886",
-      "text": "این حرف «د» است. صدایش «دِ» است. «درخت» با «د» شروع می‌شود."
+      "sha256": "f01a957aa982caba5a2545227042b5b087787a648c7cbc5883991018813e3dd2",
+      "text": "این حرف «د» است. صدایش «دِ» است. کلمهٔ «درخت» با حرف «د» شروع می‌شود."
     },
     "letter-eyn": {
-      "bytes": 34076,
+      "bytes": 39884,
       "kind": "letter",
-      "sha256": "f2c5025c18e6917b6ff1414236ebcc4c8ac1201aef572457b23a7d908099681b",
-      "text": "این حرف «ع» است. صدایش «عِ» است. «عسل» با «ع» شروع می‌شود."
+      "sha256": "c48881f76c50ec39e42c02659cd0dded627b679520f3baee8c7431b7420fa81f",
+      "text": "این حرف «ع» است. صدایش «عِ» است. کلمهٔ «عسل» با حرف «ع» شروع می‌شود."
     },
     "letter-fe": {
       "bytes": 40580,
@@ -6284,88 +6320,88 @@
       "text": "این حرف «ف» است؛ فِ تک‌نقطه. صدای «ف» می‌دهد. کلمهٔ «فیل» با حرف «ف» شروع می‌شود."
     },
     "letter-gaf": {
-      "bytes": 32444,
+      "bytes": 37988,
       "kind": "letter",
-      "sha256": "3231f910eb5214e7c65e15dbf5e92480256c47bc02e1dac07535c222d04aa03b",
-      "text": "این حرف «گ» است. صدایش «گِ» است. «گل» با «گ» شروع می‌شود."
+      "sha256": "07ced2f3f39470420dac53c523c32d78f491653b339882e5bebfb09ce3d1f6f1",
+      "text": "این حرف «گ» است. صدایش «گِ» است. کلمهٔ «گل» با حرف «گ» شروع می‌شود."
     },
     "letter-ghaf": {
-      "bytes": 33020,
+      "bytes": 39044,
       "kind": "letter",
-      "sha256": "ee4b1029ec9d7526edd4135d3281fb002fe2455383e558ad33ce0e2cd029af1b",
-      "text": "این حرف «ق» است. صدایش «قِ» است. «قایق» با «ق» شروع می‌شود."
+      "sha256": "9ec2a8128b0d8b89090b4199830a34b00712b6652c4c5eb93210b8d811bb3818",
+      "text": "این حرف «ق» است. صدایش «قِ» است. کلمهٔ «قایق» با حرف «ق» شروع می‌شود."
     },
     "letter-gheyn": {
-      "bytes": 32924,
+      "bytes": 38540,
       "kind": "letter",
-      "sha256": "44c699553781bacd9641bcffe4f7481f43ea2cdf11004e41e22cb3384cf0b340",
-      "text": "این حرف «غ» است. صدایش «غِ» است. «غذا» با «غ» شروع می‌شود."
+      "sha256": "56c79eaf1c50ed5453aeab0d60501a0a0cd1cb7740bdb87e7731f53ca0c5d1aa",
+      "text": "این حرف «غ» است. صدایش «غِ» است. کلمهٔ «غذا» با حرف «غ» شروع می‌شود."
     },
     "letter-he": {
-      "bytes": 31316,
+      "bytes": 44204,
       "kind": "letter",
-      "sha256": "ba58c0b4dcf0d64aa934633df4bdf9151e48963187507fe1182969e19b7ad638",
-      "text": "این حرف «ح» است. صدایش «حِ» است. «حوض» با «ح» شروع می‌شود."
+      "sha256": "153a507f8ea9da6791ad060c7d6162e5ee6e22d4f6b085670c7d9c1d16280a20",
+      "text": "این حرف «ح» است؛ حِ جیمی. در فارسی صدای «ه» می‌دهد. کلمهٔ «حوض» با حرف «ح» شروع می‌شود."
     },
     "letter-heh": {
-      "bytes": 35036,
+      "bytes": 44084,
       "kind": "letter",
-      "sha256": "6f2772861e9bcf43092ed8c2654589a03a01108346e1b5bb7690fb437f1f0b56",
-      "text": "این حرف «ه» است. صدایش «هِ» است. «هندوانه» با «ه» شروع می‌شود."
+      "sha256": "c2e65acffa64e36a61c00ddb58f2e0fb1404fe9acb3999cdb3cfafb92e2f6927",
+      "text": "این حرف «ه» است؛ هِ دوچشم. صدای «ه» می‌دهد. کلمهٔ «هندوانه» با حرف «ه» شروع می‌شود."
     },
     "letter-jim": {
-      "bytes": 33500,
+      "bytes": 39212,
       "kind": "letter",
-      "sha256": "0dc66d7caa4dcbc51a179d10d83cdec2f7d4a914ad7c7c8d14f2cdef66119f9c",
-      "text": "این حرف «ج» است. صدایش «جِ» است. «جوجه» با «ج» شروع می‌شود."
+      "sha256": "6255fa0781bbb7ce52c93b8e4cf29d7c3ec2af3ce22075940ea21afc6928750b",
+      "text": "این حرف «ج» است. صدایش «جِ» است. کلمهٔ «جوجه» با حرف «ج» شروع می‌شود."
     },
     "letter-kaf": {
-      "bytes": 31988,
+      "bytes": 38084,
       "kind": "letter",
-      "sha256": "4b1e227ebc9c41bbad0d6903712da23fada7e3d6bac57123b17c72ee9a0e95f3",
-      "text": "این حرف «ک» است. صدایش «کِ» است. «کتاب» با «ک» شروع می‌شود."
+      "sha256": "63e53a561d821da8ca096e3b59f960786a989f888e9ef4c7a36b39b052a8a65b",
+      "text": "این حرف «ک» است. صدایش «کِ» است. کلمهٔ «کتاب» با حرف «ک» شروع می‌شود."
     },
     "letter-khe": {
-      "bytes": 35012,
+      "bytes": 39716,
       "kind": "letter",
-      "sha256": "cd1201a627a16b4e6430718dd5a23f626a84e4e84a906375963fec3585ec6b65",
-      "text": "این حرف «خ» است. صدایش «خِ» است. «خرگوش» با «خ» شروع می‌شود."
+      "sha256": "7e19f3ed478ebab452e7b1c84d575d955c465346e614c4194e7b86b2b84d9486",
+      "text": "این حرف «خ» است. صدایش «خِ» است. کلمهٔ «خرگوش» با حرف «خ» شروع می‌شود."
     },
     "letter-lam": {
-      "bytes": 32276,
+      "bytes": 37268,
       "kind": "letter",
-      "sha256": "05e677ee44a292811b6773127e9ed09aedf340b01f1a830528d14fc47c8c7dc9",
-      "text": "این حرف «ل» است. صدایش «لِ» است. «لیمو» با «ل» شروع می‌شود."
+      "sha256": "c19b3255f24adbb451ef39c062dbb3552dcf2c078fed78ed5ac3980d4061a3d8",
+      "text": "این حرف «ل» است. صدایش «لِ» است. کلمهٔ «لیمو» با حرف «ل» شروع می‌شود."
     },
     "letter-mim": {
-      "bytes": 32204,
+      "bytes": 37292,
       "kind": "letter",
-      "sha256": "e1909b10bd508bbacb98f9786e63c5f1acee6600a90eaaf2278f887c9a3dc4df",
-      "text": "این حرف «م» است. صدایش «مِ» است. «ماهی» با «م» شروع می‌شود."
+      "sha256": "7ae4681c35bb071b28c93854abd9954d759678591a0fe122590c500dfe0ba275",
+      "text": "این حرف «م» است. صدایش «مِ» است. کلمهٔ «ماهی» با حرف «م» شروع می‌شود."
     },
     "letter-nun": {
-      "bytes": 32924,
+      "bytes": 38300,
       "kind": "letter",
-      "sha256": "3015654e3b4c971956a145fdc1ab1fc662c2f276d1a369a550869fb8cd9143e4",
-      "text": "این حرف «ن» است. صدایش «نِ» است. «نان» با «ن» شروع می‌شود."
+      "sha256": "3fa59a4743a61f554b1514c1bb23a3842f1b8643400210916c6863eb8fb014c9",
+      "text": "این حرف «ن» است. صدایش «نِ» است. کلمهٔ «نان» با حرف «ن» شروع می‌شود."
     },
     "letter-pe": {
-      "bytes": 34700,
+      "bytes": 39812,
       "kind": "letter",
-      "sha256": "14b2fc6c542af1262c91d5c04f8bf527d73b7228e9a1237a275b24ac1b4a4f6e",
-      "text": "این حرف «پ» است. صدایش «پِ» است. «پروانه» با «پ» شروع می‌شود."
+      "sha256": "f79dcc94840dff035cd8aab1227f5cf96dcdca66f62ce2e3de384d19cd3391e9",
+      "text": "این حرف «پ» است. صدایش «پِ» است. کلمهٔ «پروانه» با حرف «پ» شروع می‌شود."
     },
     "letter-re": {
-      "bytes": 35228,
+      "bytes": 40628,
       "kind": "letter",
-      "sha256": "0b222c55b4b5d85a28856fb9f7cccf964222243d1a07c85c3cf7e754bbceca40",
-      "text": "این حرف «ر» است. صدایش «رِ» است. «رنگین‌کمان» با «ر» شروع می‌شود."
+      "sha256": "7d2f023ea43e544f24f12f21a16dbcf04266039661102f2d91f10f2de0d4ac63",
+      "text": "این حرف «ر» است. صدایش «رِ» است. کلمهٔ «رنگین‌کمان» با حرف «ر» شروع می‌شود."
     },
     "letter-sad": {
-      "bytes": 33404,
+      "bytes": 44684,
       "kind": "letter",
-      "sha256": "1e39838c2f9d902b2dc794cec201fcfaff03cd1a46ced3572e751d6533f93761",
-      "text": "این حرف «ص» است. صدایش «صِ» است. «صابون» با «ص» شروع می‌شود."
+      "sha256": "9ee37b58be796207186a46a0cb54057730ab4f2e2d7d3d62bc9a635fb6317273",
+      "text": "این حرف «ص» است؛ صاد. در فارسی صدای «س» می‌دهد. کلمهٔ «صابون» با حرف «ص» شروع می‌شود."
     },
     "letter-se": {
       "bytes": 48884,
@@ -6374,70 +6410,70 @@
       "text": "این حرف «ث» است؛ ثِ سه‌نقطه. در فارسی صدای «س» می‌دهد. کلمهٔ «ثانیه» با حرف «ث» شروع می‌شود."
     },
     "letter-shin": {
-      "bytes": 32228,
+      "bytes": 37028,
       "kind": "letter",
-      "sha256": "64e9f330cde2b04f9766233e3a033be4dd95867df9bd8f34ceeb87e1f236c035",
-      "text": "این حرف «ش» است. صدایش «شِ» است. «شیر» با «ش» شروع می‌شود."
+      "sha256": "e0055abe2568365e5b1902f9f9ccc525dec475654611380df7ae7fc1a3fca8af",
+      "text": "این حرف «ش» است. صدایش «شِ» است. کلمهٔ «شیر» با حرف «ش» شروع می‌شود."
     },
     "letter-sin": {
-      "bytes": 32084,
+      "bytes": 37988,
       "kind": "letter",
-      "sha256": "52c773c223dd185f8384dba387e1f969a9feeea6d1222d891f69b49f20d59a49",
-      "text": "این حرف «س» است. صدایش «سِ» است. «سیب» با «س» شروع می‌شود."
+      "sha256": "5c00e36a75feffa97850db578a2cd2a0d198f531a6b73ed47f0d9142da851743",
+      "text": "این حرف «س» است. صدایش «سِ» است. کلمهٔ «سیب» با حرف «س» شروع می‌شود."
     },
     "letter-ta": {
-      "bytes": 32732,
+      "bytes": 43676,
       "kind": "letter",
-      "sha256": "51bb2fa15afa858ed3674ad7bb2ba778db1f570f938c3ed4a35ed4999d16f83f",
-      "text": "این حرف «ط» است. صدایش «طِ» است. «طوطی» با «ط» شروع می‌شود."
+      "sha256": "ee9dbf49d3f9795fe16d8523b1a9b09f7a260dabe0fcf1f106814d6b6c52d870",
+      "text": "این حرف «ط» است؛ طا. در فارسی صدای «ت» می‌دهد. کلمهٔ «طوطی» با حرف «ط» شروع می‌شود."
     },
     "letter-te": {
-      "bytes": 32156,
+      "bytes": 37436,
       "kind": "letter",
-      "sha256": "3c7945085d1ee78b95fddbf64a8289a836fe30fa99c372703044170a48c21f5d",
-      "text": "این حرف «ت» است. صدایش «تِ» است. «توپ» با «ت» شروع می‌شود."
+      "sha256": "ec1be5e5d6a2cf9c0c04cd13505bdb5fd7a2b6527387c272c2de92198893db8c",
+      "text": "این حرف «ت» است. صدایش «تِ» است. کلمهٔ «توپ» با حرف «ت» شروع می‌شود."
     },
     "letter-vav": {
-      "bytes": 34916,
+      "bytes": 39692,
       "kind": "letter",
-      "sha256": "a02060a88ddb4740544b869d605846d58cf87abf99635f99e9559f2abb5da8d1",
-      "text": "این حرف «و» است. صدایش «وِ» است. «ورزش» با «و» شروع می‌شود."
+      "sha256": "62e9d4a3573ad314ee15f91a62a955b5077a0d906ef65277341dac550e410670",
+      "text": "این حرف «و» است. صدایش «وِ» است. کلمهٔ «ورزش» با حرف «و» شروع می‌شود."
     },
     "letter-ye": {
-      "bytes": 31940,
+      "bytes": 37340,
       "kind": "letter",
-      "sha256": "ed18ac9e6de76403deb429ec0aadf1d672fe495d9b7a6693849eaca25682b5c2",
-      "text": "این حرف «ی» است. صدایش «یِ» است. «یخ» با «ی» شروع می‌شود."
+      "sha256": "f7f3c0cb6d214255db55b7114a80601a9b6c2b53406065203f6d8a07d51ee798",
+      "text": "این حرف «ی» است. صدایش «یِ» است. کلمهٔ «یخ» با حرف «ی» شروع می‌شود."
     },
     "letter-za": {
-      "bytes": 32804,
+      "bytes": 43748,
       "kind": "letter",
-      "sha256": "c57a2cf8e28bbeb77c47f21173c3ed3b9e019548b852a8ae2a7d53eb195cc1f1",
-      "text": "این حرف «ظ» است. صدایش «ظِ» است. «ظرف» با «ظ» شروع می‌شود."
+      "sha256": "f304d59572c877acb8cf7193d721377e2d12a83e72b490af803ac41e13447b63",
+      "text": "این حرف «ظ» است؛ ظا. در فارسی صدای «ز» می‌دهد. کلمهٔ «ظرف» با حرف «ظ» شروع می‌شود."
     },
     "letter-zad": {
-      "bytes": 33212,
+      "bytes": 44516,
       "kind": "letter",
-      "sha256": "4f79b724deb09bc5bca1975514e33a99b63ff336b23aa3b6a925342b4c3bc513",
-      "text": "این حرف «ض» است. صدایش «ضِ» است. «ضربه» با «ض» شروع می‌شود."
+      "sha256": "f9135f7b08cc9490619ccc59e0024eb1f33b37ccb7959aef0126e494eb378d9e",
+      "text": "این حرف «ض» است؛ ضاد. در فارسی صدای «ز» می‌دهد. کلمهٔ «ضربه» با حرف «ض» شروع می‌شود."
     },
     "letter-zal": {
-      "bytes": 32828,
+      "bytes": 43436,
       "kind": "letter",
-      "sha256": "ba3c861461d8a23225c88521464f20e801399aed400b7d7e1e356b0e4dcb958d",
-      "text": "این حرف «ذ» است. صدایش «ذِ» است. «ذرت» با «ذ» شروع می‌شود."
+      "sha256": "8a8395341c7ecd014ee36b90614f3ee786c3fc834fa917a6292ec40b08203d57",
+      "text": "این حرف «ذ» است؛ ذال. در فارسی صدای «ز» می‌دهد. کلمهٔ «ذرت» با حرف «ذ» شروع می‌شود."
     },
     "letter-ze": {
-      "bytes": 33932,
+      "bytes": 39260,
       "kind": "letter",
-      "sha256": "137332aa08662264c0053b85aba3331785a7a6a8a0fc3901d1bfad3cba837544",
-      "text": "این حرف «ز» است. صدایش «زِ» است. «زنبور» با «ز» شروع می‌شود."
+      "sha256": "6a87895a7fabda0cd83d56d1feb8069b6348cbf9f34dbf0b71990529c9933e2a",
+      "text": "این حرف «ز» است. صدایش «زِ» است. کلمهٔ «زنبور» با حرف «ز» شروع می‌شود."
     },
     "letter-zhe": {
-      "bytes": 33452,
+      "bytes": 38492,
       "kind": "letter",
-      "sha256": "5d78fad1f260cc31bf457303314324c3966ad409d628840f012e8bb50df0fe03",
-      "text": "این حرف «ژ» است. صدایش «ژِ» است. «ژاکت» با «ژ» شروع می‌شود."
+      "sha256": "fef958cc33244cff06622be3f57108d1f886c4211e38e296d97715de4951e606",
+      "text": "این حرف «ژ» است. صدایش «ژِ» است. کلمهٔ «ژاکت» با حرف «ژ» شروع می‌شود."
     },
     "topic-addition": {
       "bytes": 32468,
@@ -6584,7 +6620,7 @@
       "text": "بیا با کلمه‌ها بازی کنیم و صدای آن‌ها را بشنویم."
     }
   },
-  "generatedAt": "2026-08-21T07:55:11.215860+00:00",
+  "generatedAt": "2026-08-21T08:08:15.451173+00:00",
   "pitch": "1.15",
   "rate": "-10%",
   "sampleRate": 24000,

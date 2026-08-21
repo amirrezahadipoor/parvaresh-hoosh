@@ -47,7 +47,7 @@ window.PaintingActivity = (function() {
         `;
         speakerBtn.addEventListener('click', () => {
             AudioEngine.play('click');
-            AudioEngine.speak('هر چی دوست داری با رنگ‌های شاد نقاشی کن گل من!');
+            AudioEngine.speak('هر چیزی که دوست داری با رنگ‌های شاد نقاشی کن، گل من!');
         });
 
         headerRow.appendChild(promptTitle);
