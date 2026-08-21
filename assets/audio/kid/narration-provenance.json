@@ -212,6 +212,56 @@
       "text": "اردک در کجا زندگی می‌کند؟",
       "sha256": "2ae57b929ffbf83c46f9506af9e9ab8b5b7b3b4af3576e15717969f4fbe4e0dc",
       "batch": 4
+    },
+    "auto-e4f04e5bd43b": {
+      "text": "استشمام بوی گل یاس و نان گرم",
+      "sha256": "e0e2ff1cec17c7e16a4c2ac1c12ff0613fc73d3451daf5dc87528696323b1849",
+      "batch": 5
+    },
+    "auto-c8486cc590b4": {
+      "text": "اشکالی ندارد، دوباره تلاش کن!",
+      "sha256": "1b8efda2ccdbd0bf72e58552e0c5659ccd7da456b9f02b53e1dfc22057c3877b",
+      "batch": 5
+    },
+    "auto-d7f20808c0f3": {
+      "text": "این بخش‌ها چه کلمه‌ای می‌سازند؟",
+      "sha256": "716dcef0a6b281b89bb37efdb78e05dfc4170707c19a15f4347e4b2c92fb166d",
+      "batch": 5
+    },
+    "auto-2c9856c0e706": {
+      "text": "این چه شکلی است؟",
+      "sha256": "63ad4b0759b35413c6882380346fcd7a737678e20f0f3f50c8476e15a91a77d1",
+      "batch": 5
+    },
+    "auto-92385c26b1e2": {
+      "text": "با انگشت روی حرف ا بکش",
+      "sha256": "0487969135b2d39ffaac428611ded699248fbc5da01cf946e1588788f37edfe0",
+      "batch": 5
+    },
+    "auto-14cbec062a10": {
+      "text": "با انگشت روی حرف ب بکش",
+      "sha256": "4bd22973e0d9cd02734dadea781003976cff13fe96755d4d5da2270f69d1c88e",
+      "batch": 5
+    },
+    "auto-e981c438f515": {
+      "text": "با انگشت روی حرف ت بکش",
+      "sha256": "f13d97705b29e21e61ce97a5d51935e31bb0995d57f489b4a872d0684ff663e9",
+      "batch": 5
+    },
+    "auto-6e4067ed4d69": {
+      "text": "با انگشت روی حرف ث بکش",
+      "sha256": "d183196639328598f3d323dfd206d6a8d61c04b40a41ef9f0893e9c5eacf961b",
+      "batch": 5
+    },
+    "auto-30d48f6e60b6": {
+      "text": "با انگشت روی حرف ج بکش",
+      "sha256": "415c9a9f224343899e0b26e086580bf44bd5a8451a8a5e27d4674a484e8afe15",
+      "batch": 5
+    },
+    "auto-08bc0ee5de8a": {
+      "text": "با انگشت روی حرف ح بکش",
+      "sha256": "4286f0ad80d2b7f1a17d3c9d3948cdb04ec4e7a4f9c9bce6507cb80d57418eed",
+      "batch": 5
     }
   },
   "rejected": [
@@ -265,6 +315,21 @@
         "auto-f7125af3d856",
         "auto-ca976e4a13db",
         "auto-9a7de2d1a16e"
+      ]
+    },
+    {
+      "batch": 5,
+      "accepted": [
+        "auto-e4f04e5bd43b",
+        "auto-c8486cc590b4",
+        "auto-d7f20808c0f3",
+        "auto-2c9856c0e706",
+        "auto-92385c26b1e2",
+        "auto-14cbec062a10",
+        "auto-e981c438f515",
+        "auto-6e4067ed4d69",
+        "auto-30d48f6e60b6",
+        "auto-08bc0ee5de8a"
       ]
     }
   ]

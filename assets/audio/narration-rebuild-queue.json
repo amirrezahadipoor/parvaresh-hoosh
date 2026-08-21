@@ -3,8 +3,8 @@
   "createdAt": "2026-08-21",
   "batchSize": 10,
   "totalTexts": 1016,
-  "generatedTexts": 39,
-  "pendingTexts": 977,
+  "generatedTexts": 49,
+  "pendingTexts": 967,
   "items": [
     {
       "text": "صدای حرف الف",
@@ -204,52 +204,52 @@
     {
       "text": "استشمام بوی گل یاس و نان گرم",
       "clip": "auto-e4f04e5bd43b",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "اشکالی ندارد، دوباره تلاش کن!",
       "clip": "auto-c8486cc590b4",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "این بخش‌ها چه کلمه‌ای می‌سازند؟",
       "clip": "auto-d7f20808c0f3",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "این چه شکلی است؟",
       "clip": "auto-2c9856c0e706",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ا بکش",
       "clip": "auto-92385c26b1e2",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ب بکش",
       "clip": "auto-14cbec062a10",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ت بکش",
       "clip": "auto-e981c438f515",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ث بکش",
       "clip": "auto-6e4067ed4d69",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ج بکش",
       "clip": "auto-30d48f6e60b6",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف ح بکش",
       "clip": "auto-08bc0ee5de8a",
-      "status": "pending"
+      "status": "generated"
     },
     {
       "text": "با انگشت روی حرف خ بکش",

@@ -338,11 +338,21 @@ window.AudioEngine = (function() {
     // legacy names such as 'letter-alef'; without this guard those turn into
     // a 404 on every round instead of just staying silent.
     const AVAILABLE_CLIPS = new Set([
+        'auto-08bc0ee5de8a',
         'auto-146b31d0a8b7',
+        'auto-14cbec062a10',
+        'auto-2c9856c0e706',
+        'auto-30d48f6e60b6',
         'auto-4f3909faac27',
+        'auto-6e4067ed4d69',
+        'auto-92385c26b1e2',
         'auto-9a7de2d1a16e',
+        'auto-c8486cc590b4',
         'auto-ca976e4a13db',
+        'auto-d7f20808c0f3',
         'auto-e17c5c9d03e3',
+        'auto-e4f04e5bd43b',
+        'auto-e981c438f515',
         'auto-f0cc197ea7cb',
         'auto-f7125af3d856',
         'letter-alef',
