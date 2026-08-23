@@ -226,6 +226,20 @@ function playScreen(lessonId) {
           ]),
         );
       }
+      // چند شکل درهم — کودک باید عضوهای یک دسته را جدا کند
+      if (r.display.kind === 'mixed') {
+        const box = el('div', { class: 'mixed' });
+        r.display.items.forEach((it, k) => {
+          box.append(
+            el('span', {
+              class: 'ico',
+              style: `animation-delay:${k * 55}ms`,
+              html: svgShape(it) || '',
+            }),
+          );
+        });
+        stage.append(box);
+      }
       // الگوی تاس — چیدمان آشنا که تشخیص فوری را ممکن می‌کند
       if (r.display.kind === 'dice') {
         const box = el('div', { class: `dice d${r.display.times}` });

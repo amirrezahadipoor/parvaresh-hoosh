@@ -9,7 +9,7 @@
 import { ALPHABET } from '../data/alphabet.js';
 import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
-import { SHAPES, SHAPE_NAMES, CATEGORIES, COLOR_HEX, GEO } from './svg.js';
+import { SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, COLOR_HEX, GEO } from './svg.js';
 import {
   EN_ALPHABET,
   EN_PICTURE_WORDS,
@@ -236,6 +236,66 @@ export function buildRound(round, track) {
         display: { kind: 'latin', value: target },
         options: buildOptions(SIGHT_WORD_FA[target], wrong, n).map((v) => ({ label: v, value: v })),
         answer: SIGHT_WORD_FA[target],
+      };
+    }
+
+    case 'trait': {
+      // دسته‌بندی بر پایهٔ ویژگی، نه نوع: «کدام پرواز می‌کند؟»
+      // انعطاف شناختی — یک چیز می‌تواند عضو چند دسته باشد.
+      const names = Object.keys(TRAITS);
+      const trait = pick(names);
+      const members = TRAITS[trait];
+      const answer = pick(members);
+      const others = SHAPE_NAMES.filter((x) => !members.includes(x));
+      if (others.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{t}', trait),
+        display: null,
+        options: buildOptions(answer, others, n).map((v) => ({ label: v, value: v, pic: v })),
+        answer,
+        because: `${answer} ${trait}.`,
+      };
+    }
+
+    case 'which-group': {
+      // عکس گِرد بالا: چیز را می‌بینی، دسته‌اش را بگو.
+      const cats = Object.keys(CATEGORIES);
+      const cat = pick(cats);
+      const item = pick(CATEGORIES[cat]);
+      const wrong = cats.filter((c) => c !== cat);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: item },
+        options: buildOptions(cat, wrong, n).map((v) => ({ label: v, value: v })),
+        answer: cat,
+        because: `${item} یک ${cat} است.`,
+      };
+    }
+
+    case 'count-group': {
+      // شمردن اعضای یک دسته در میان چیزهای پراکنده — توجه انتخابی.
+      const cat = pick(Object.keys(CATEGORIES));
+      const members = CATEGORIES[cat];
+      const others = SHAPE_NAMES.filter((x) => !members.includes(x));
+      const hits = 1 + rand(Math.min(4, members.length));
+      const fillers = 2 + rand(3);
+      const items = [];
+      for (let k = 0; k < hits; k++) items.push(pick(members));
+      for (let k = 0; k < fillers; k++) items.push(pick(others));
+      // ترتیب قطعی‌شکن ولی درهم
+      for (let k = items.length - 1; k > 0; k--) {
+        const j = rand(k + 1);
+        [items[k], items[j]] = [items[j], items[k]];
+      }
+      const pool = [1, 2, 3, 4, 5, 6];
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{c}', cat),
+        display: { kind: 'mixed', items },
+        options: buildOptions(hits, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer: hits,
       };
     }
 

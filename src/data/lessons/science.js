@@ -76,4 +76,59 @@ export const SCIENCE_LESSONS = [
       { kind: 'count-shapes', max: 9, prompt: 'چند تا هست؟' },
     ],
   },
+  {
+    id: 'science-trait-01',
+    domain: 'science',
+    order: 5,
+    title: 'کدام پرواز می‌کند؟',
+    goal: 'کودک چیزها را بر پایهٔ ویژگی دسته‌بندی می‌کند، نه فقط بر پایهٔ نوع.',
+    minutes: 5,
+    parentNote:
+      'اینجا کودک یاد می‌گیرد یک چیز می‌تواند همزمان عضو چند دسته باشد: پروانه هم حیوان است هم پرواز می‌کند. این «انعطاف شناختی» پایهٔ تفکر علمی است.',
+    rounds: [
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+    ],
+  },
+  {
+    id: 'science-group-01',
+    domain: 'science',
+    order: 6,
+    title: 'این از کدام دسته است؟',
+    goal: 'کودک هر چیز را به دستهٔ درستش نسبت می‌دهد.',
+    minutes: 5,
+    parentNote:
+      'دسته‌بندی پایهٔ نظم‌دادن به دنیاست. بعد از بازی، در خانه از کودک بپرسید این چیز از کدام دسته است.',
+    rounds: [
+      { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
+      { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
+      { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
+      { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
+      { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
+      { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
+    ],
+  },
+  {
+    id: 'science-count-02',
+    domain: 'science',
+    order: 7,
+    title: 'چند تا از این دسته؟',
+    goal: 'کودک در میان چیزهای درهم، اعضای یک دسته را می‌شمارد.',
+    minutes: 6,
+    parentNote:
+      'این تمرین «توجه انتخابی» است: کودک باید چیزهای نامربوط را نادیده بگیرد و فقط یک دسته را بشمارد — مهارتی که در کلاس درس بسیار لازم می‌شود.',
+    rounds: [
+      { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
+      { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
+      { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
+      { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
+      { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
+      { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
+    ],
+  },
+
 ];

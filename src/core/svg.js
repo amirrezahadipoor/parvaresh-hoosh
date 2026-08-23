@@ -13,6 +13,113 @@ const svg = (body, vb = '0 0 100 100') =>
 
 // ── حیوان‌ها ────────────────────────────────────────────────────────────
 export const SHAPES = {
+  // ── افزودهٔ فاز ۳: گسترش دسته‌ها ──────────────────────────────────
+  // علوم و منطق به تنوع تصویری نیاز دارند؛ با ۱۸ شکل نمی‌شد درس تازه
+  // ساخت بدون تکرار. همان سبک: viewBox ۱۰۰×۱۰۰، بدون ارجاع بیرونی.
+
+  جوجه: () =>
+    svg(`<g><ellipse cx="50" cy="60" rx="24" ry="22" fill="#F4D03F"/>
+    <circle cx="50" cy="34" r="16" fill="#F7DC6F"/>
+    <path d="M50 18 q-3 -6 2 -8 q1 5 -2 8" fill="#F4B942"/>
+    <circle cx="44" cy="32" r="3.4" fill="#2D2A32"/><circle cx="56" cy="32" r="3.4" fill="#2D2A32"/>
+    <circle cx="45" cy="31" r="1.2" fill="#fff"/><circle cx="57" cy="31" r="1.2" fill="#fff"/>
+    <path d="M50 38 l-6 4 l6 4 l6 -4 z" fill="#F07818"/>
+    <ellipse cx="30" cy="60" rx="7" ry="12" fill="#F7DC6F"/>
+    <ellipse cx="70" cy="60" rx="7" ry="12" fill="#F7DC6F"/>
+    <path d="M42 82 v6 M58 82 v6" stroke="#F07818" stroke-width="4" stroke-linecap="round"/>
+    <path d="M38 90 h8 M54 90 h8" stroke="#F07818" stroke-width="4" stroke-linecap="round"/></g>`),
+
+  گاو: () =>
+    svg(`<g><ellipse cx="50" cy="58" rx="28" ry="20" fill="#F2F0EC"/>
+    <ellipse cx="36" cy="52" rx="8" ry="6" fill="#2D2A32"/><ellipse cx="64" cy="64" rx="9" ry="6" fill="#2D2A32"/>
+    <ellipse cx="50" cy="74" rx="13" ry="9" fill="#F7C9C0"/>
+    <circle cx="45" cy="72" r="2" fill="#2D2A32"/><circle cx="55" cy="72" r="2" fill="#2D2A32"/>
+    <circle cx="40" cy="48" r="3.5" fill="#2D2A32"/><circle cx="60" cy="48" r="3.5" fill="#2D2A32"/>
+    <path d="M28 42 Q22 32 30 30" stroke="#C8B8A0" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M72 42 Q78 32 70 30" stroke="#C8B8A0" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M36 78 v9 M64 78 v9" stroke="#2D2A32" stroke-width="4" stroke-linecap="round"/></g>`),
+
+  پروانه: () =>
+    svg(`<g><ellipse cx="50" cy="52" rx="3.5" ry="20" fill="#5A4A3F"/>
+    <ellipse cx="32" cy="40" rx="17" ry="14" fill="#F07818"/>
+    <ellipse cx="68" cy="40" rx="17" ry="14" fill="#F07818"/>
+    <ellipse cx="34" cy="62" rx="13" ry="11" fill="#F4B942"/>
+    <ellipse cx="66" cy="62" rx="13" ry="11" fill="#F4B942"/>
+    <circle cx="30" cy="40" r="4" fill="#fff" opacity="0.8"/><circle cx="70" cy="40" r="4" fill="#fff" opacity="0.8"/>
+    <path d="M48 34 Q42 24 36 22 M52 34 Q58 24 64 22" stroke="#5A4A3F" stroke-width="2" fill="none" stroke-linecap="round"/></g>`),
+
+  زنبور: () =>
+    svg(`<g><ellipse cx="50" cy="56" rx="22" ry="17" fill="#F4B942"/>
+    <path d="M40 42 v28 M52 40 v32" stroke="#2D2A32" stroke-width="6"/>
+    <ellipse cx="38" cy="38" rx="13" ry="9" fill="#fff" opacity="0.75"/>
+    <ellipse cx="62" cy="38" rx="13" ry="9" fill="#fff" opacity="0.75"/>
+    <circle cx="72" cy="52" r="8" fill="#2D2A32"/>
+    <circle cx="75" cy="50" r="2.2" fill="#fff"/>
+    <path d="M28 56 l-8 4" stroke="#2D2A32" stroke-width="3" stroke-linecap="round"/></g>`),
+
+  لاکپشت: () =>
+    svg(`<g><ellipse cx="50" cy="58" rx="28" ry="20" fill="#4CAF50"/>
+    <path d="M50 38 v40 M28 54 h44 M34 44 L66 72 M66 44 L34 72" stroke="#2E7D32" stroke-width="2.5"/>
+    <circle cx="78" cy="50" r="9" fill="#7CB342"/>
+    <circle cx="81" cy="48" r="2.2" fill="#2D2A32"/>
+    <ellipse cx="32" cy="76" rx="7" ry="5" fill="#7CB342"/><ellipse cx="66" cy="76" rx="7" ry="5" fill="#7CB342"/></g>`),
+
+  پرتقال: () =>
+    svg(`<g><circle cx="50" cy="56" r="27" fill="#F07818"/>
+    <circle cx="42" cy="48" r="7" fill="#FF9642" opacity="0.55"/>
+    <path d="M50 29 v-8" stroke="#6B4423" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M52 24 Q64 16 70 24 Q60 30 52 26 Z" fill="#4CAF50"/></g>`),
+
+  هویج: () =>
+    svg(`<g><path d="M50 84 L36 40 Q50 34 64 40 Z" fill="#F07818"/>
+    <path d="M42 52 h14 M40 62 h12 M45 72 h8" stroke="#D45F10" stroke-width="2" stroke-linecap="round"/>
+    <path d="M50 36 Q44 20 34 18 Q40 30 46 36 Z" fill="#4CAF50"/>
+    <path d="M50 36 Q50 18 50 14 Q56 26 54 36 Z" fill="#66BB6A"/>
+    <path d="M52 36 Q62 22 72 20 Q64 32 56 37 Z" fill="#4CAF50"/></g>`),
+
+  گیلاس: () =>
+    svg(`<g><circle cx="36" cy="66" r="14" fill="#D42B2B"/><circle cx="64" cy="70" r="13" fill="#E4572E"/>
+    <circle cx="31" cy="61" r="4" fill="#fff" opacity="0.5"/>
+    <path d="M36 52 Q46 28 56 22" stroke="#4CAF50" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M64 57 Q60 32 56 22" stroke="#4CAF50" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M56 22 Q68 14 76 20 Q66 26 56 24 Z" fill="#66BB6A"/></g>`),
+
+  کوه: () =>
+    svg(`<g><path d="M8 80 L34 34 L52 62 L64 44 L92 80 Z" fill="#7B8A99"/>
+    <path d="M34 34 L44 52 L24 52 Z" fill="#F2F0EC"/>
+    <path d="M64 44 L72 56 L56 56 Z" fill="#F2F0EC"/>
+    <path d="M8 80 H92" stroke="#5A6B7A" stroke-width="3" stroke-linecap="round"/></g>`),
+
+  رودخانه: () =>
+    svg(`<g><path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#2E86AB" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#7FD1E8" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="68" cy="42" rx="9" ry="6" fill="#8FBF6A"/><ellipse cx="76" cy="66" rx="8" ry="5" fill="#8FBF6A"/></g>`),
+
+  برف: () =>
+    svg(`<g stroke="#2E86AB" stroke-width="4" stroke-linecap="round">
+    <path d="M50 16 v68 M20 33 L80 67 M80 33 L20 67"/>
+    <path d="M50 26 l-7 -7 M50 26 l7 -7 M50 74 l-7 7 M50 74 l7 7"/>
+    <path d="M30 39 l-10 1 M30 39 l1 -10 M70 61 l10 -1 M70 61 l-1 10"/>
+    <path d="M70 39 l10 1 M70 39 l-1 -10 M30 61 l-10 -1 M30 61 l1 10"/></g>`),
+
+  چتر: () =>
+    svg(`<g><path d="M12 54 Q50 12 88 54 Z" fill="#E4572E"/>
+    <path d="M12 54 Q22 44 32 54 Q42 44 50 54 Q58 44 68 54 Q78 44 88 54" fill="#C8431F"/>
+    <path d="M50 54 v26 Q50 90 38 88" stroke="#6B4423" stroke-width="4" fill="none" stroke-linecap="round"/></g>`),
+
+  ساعت: () =>
+    svg(`<g><circle cx="50" cy="54" r="30" fill="#F2F0EC" stroke="#2D2A32" stroke-width="4"/>
+    <circle cx="50" cy="54" r="3" fill="#2D2A32"/>
+    <path d="M50 54 V34" stroke="#2D2A32" stroke-width="4" stroke-linecap="round"/>
+    <path d="M50 54 L66 62" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+    <path d="M50 28 v5 M76 54 h-5 M50 80 v-5 M24 54 h5" stroke="#2D2A32" stroke-width="3" stroke-linecap="round"/>
+    <path d="M36 20 L30 12 M64 20 L70 12" stroke="#2D2A32" stroke-width="4" stroke-linecap="round"/></g>`),
+
+  کلید: () =>
+    svg(`<g><circle cx="32" cy="46" r="16" fill="none" stroke="#F4B942" stroke-width="8"/>
+    <path d="M44 54 L78 76" stroke="#F4B942" stroke-width="8" stroke-linecap="round"/>
+    <path d="M66 68 l6 -10 M74 74 l6 -10" stroke="#F4B942" stroke-width="6" stroke-linecap="round"/></g>`),
+
   گربه: () =>
     svg(`<g><ellipse cx="50" cy="62" rx="26" ry="24" fill="#F4A259"/>
     <path d="M28 44 L24 22 L42 34 Z" fill="#F4A259"/><path d="M72 44 L76 22 L58 34 Z" fill="#F4A259"/>
@@ -90,10 +197,12 @@ export const SHAPES = {
 
   // ── اشیاء ─────────────────────────────────────────────────────────────
   توپ: () =>
-    svg(`<g><circle cx="50" cy="52" r="28" fill="#2E86AB"/>
-    <path d="M22 52 H78" stroke="#fff" stroke-width="4"/>
-    <path d="M50 24 V80" stroke="#fff" stroke-width="4"/>
-    <circle cx="50" cy="52" r="10" fill="none" stroke="#fff" stroke-width="4"/></g>`),
+    svg(`<g><circle cx="50" cy="54" r="28" fill="#E4572E"/>
+    <path d="M50 26 v56" stroke="#fff" stroke-width="4"/>
+    <path d="M22 54 h56" stroke="#fff" stroke-width="4"/>
+    <path d="M30 34 Q50 54 30 74" stroke="#fff" stroke-width="3.5" fill="none"/>
+    <path d="M70 34 Q50 54 70 74" stroke="#fff" stroke-width="3.5" fill="none"/>
+    <circle cx="40" cy="42" r="6" fill="#fff" opacity="0.35"/></g>`),
 
   کتاب: () =>
     svg(`<g><path d="M18 26 H48 V78 H18 Z" fill="#E4572E"/><path d="M52 26 H82 V78 H52 Z" fill="#C1352B"/>
@@ -170,8 +279,22 @@ export function geo(name, color = '#2E86AB') {
 
 /** دسته‌بندی معنایی — برای بازی «کدام فرق دارد؟». */
 export const CATEGORIES = Object.freeze({
-  حیوان: ['گربه', 'سگ', 'ماهی', 'پرنده', 'خرگوش'],
-  میوه: ['سیب', 'موز', 'انار'],
-  طبیعت: ['گل', 'درخت', 'خورشید', 'ماه', 'ابر', 'ستاره'],
-  وسیله: ['توپ', 'کتاب', 'خانه', 'ماشین'],
+  حیوان: ['گربه', 'سگ', 'ماهی', 'پرنده', 'خرگوش', 'جوجه', 'گاو', 'پروانه', 'زنبور', 'لاکپشت'],
+  میوه: ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس'],
+  طبیعت: ['گل', 'درخت', 'خورشید', 'ماه', 'ابر', 'ستاره', 'کوه', 'رودخانه', 'برف'],
+  وسیله: ['توپ', 'کتاب', 'خانه', 'ماشین', 'چتر', 'ساعت', 'کلید'],
+});
+
+/**
+ * دسته‌بندی دوم — بر پایهٔ ویژگی، نه نوع.
+ * همان شکل‌ها از زاویهٔ دیگری دسته می‌شوند؛ این «انعطاف شناختی» است:
+ * کودک یاد می‌گیرد یک چیز می‌تواند همزمان عضو چند دسته باشد.
+ */
+export const TRAITS = Object.freeze({
+  'پرواز می‌کند': ['پرنده', 'پروانه', 'زنبور'],
+  'در آب زندگی می‌کند': ['ماهی', 'لاکپشت'],
+  'در آسمان است': ['خورشید', 'ماه', 'ستاره', 'ابر'],
+  'می‌شود خورد': ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس', 'هویج'],
+  'چرخ دارد': ['ماشین'],
+  'گیاه است': ['گل', 'درخت', 'هویج'],
 });

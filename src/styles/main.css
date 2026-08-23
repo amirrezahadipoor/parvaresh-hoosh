@@ -1115,3 +1115,18 @@ canvas.pad {
 .bond-part.q {
   color: var(--brand);
 }
+
+/* چند شکل درهم — برای شمردن انتخابی */
+.mixed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  justify-content: center;
+  max-width: 300px;
+}
+
+.mixed .ico {
+  width: 56px;
+  height: 56px;
+  animation: pop var(--base) var(--ease) backwards;
+}

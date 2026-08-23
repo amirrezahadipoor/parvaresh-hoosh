@@ -69,4 +69,74 @@ export const LOGIC_LESSONS = [
       { kind: 'memory-pairs', pairs: 5, prompt: 'جفت‌های مثل هم را پیدا کن' },
     ],
   },
+  {
+    id: 'logic-pattern-02',
+    domain: 'logic',
+    order: 5,
+    title: 'الگوی شکل‌ها',
+    goal: 'کودک الگوی تکرارشوندهٔ شکل‌ها را می‌یابد و ادامه می‌دهد.',
+    minutes: 5,
+    parentNote:
+      'الگویابی پایهٔ ریاضی است. اگر کودک گیر کرد، الگو را با انگشت نشان دهید و بلند بخوانید: «دایره، مثلث، دایره، مثلث، بعدی؟»',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'pattern-next', unit: 'shape', sequence: ['دایره', 'مثلث', 'دایره', 'مثلث'], answer: 'دایره', prompt: 'شکل بعدی کدام است؟' },
+      { kind: 'pattern-next', unit: 'shape', sequence: ['مربع', 'مربع', 'ستاره', 'مربع', 'مربع'], answer: 'ستاره', prompt: 'شکل بعدی کدام است؟' },
+      { kind: 'pattern-next', unit: 'color', sequence: ['نارنجی', 'بنفش', 'نارنجی', 'بنفش'], answer: 'نارنجی', prompt: 'رنگ بعدی کدام است؟' },
+      { kind: 'odd-one-out', items: ['پروانه', 'زنبور', 'پرنده', 'لاکپشت'], answer: 'لاکپشت', because: 'بقیه پرواز می‌کنند.', prompt: 'کدام یکی فرق دارد؟' },
+      { kind: 'pattern-next', unit: 'shape', sequence: ['قلب', 'لوزی', 'قلب', 'لوزی'], answer: 'قلب', prompt: 'شکل بعدی کدام است؟' },
+      { kind: 'odd-one-out', items: ['خورشید', 'ماه', 'ستاره', 'هویج'], answer: 'هویج', because: 'بقیه در آسمان هستند.', prompt: 'کدام یکی فرق دارد؟' },
+    ],
+  },
+  {
+    id: 'logic-memory-02',
+    domain: 'logic',
+    order: 6,
+    title: 'حافظهٔ قوی‌تر',
+    goal: 'کودک جفت‌های بیشتری را در ذهن نگه می‌دارد.',
+    minutes: 6,
+    parentNote:
+      'بازی حافظه، حافظهٔ کاری را تقویت می‌کند. عجله نکنید؛ گذاشتن وقت برای به‌یادآوردن، خودِ تمرین است.',
+    rounds: [
+      { kind: 'memory-pairs', pairs: 4, prompt: 'جفت‌های مثل هم را پیدا کن' },
+      { kind: 'memory-pairs', pairs: 5, prompt: 'جفت‌های مثل هم را پیدا کن' },
+      { kind: 'memory-pairs', pairs: 6, prompt: 'جفت‌های مثل هم را پیدا کن' },
+    ],
+  },
+  {
+    id: 'logic-sort-02',
+    domain: 'logic',
+    order: 7,
+    title: 'از کوچک به بزرگ',
+    goal: 'کودک چیزها را بر پایهٔ اندازه و عدد مرتب می‌کند.',
+    minutes: 5,
+    parentNote:
+      'مرتب‌کردن، مقایسه را به ترتیب تبدیل می‌کند. در خانه با قاشق‌ها یا کتاب‌ها همین بازی را بکنید.',
+    rounds: [
+      { kind: 'order-size', count: 4, prompt: 'از کوچک به بزرگ بچین' },
+      { kind: 'order-number', count: 4, max: 20, prompt: 'عددها را از کم به زیاد بچین' },
+      { kind: 'order-size', count: 5, prompt: 'از کوچک به بزرگ بچین' },
+      { kind: 'order-number', count: 5, max: 50, prompt: 'عددها را از کم به زیاد بچین' },
+      { kind: 'order-size', count: 5, prompt: 'از کوچک به بزرگ بچین' },
+    ],
+  },
+  {
+    id: 'logic-shadow-01',
+    domain: 'logic',
+    order: 8,
+    title: 'سایه‌ها',
+    goal: 'کودک شکل را از روی سایه‌اش می‌شناسد.',
+    minutes: 5,
+    parentNote:
+      'تشخیص از روی سایه یعنی کودک باید شکل کلی را ببیند، نه رنگ و جزئیات. این پایهٔ شناخت حروف هم هست.',
+    rounds: [
+      { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },
+      { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },
+      { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },
+      { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },
+      { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },
+      { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },
+    ],
+  },
+
 ];
