@@ -691,6 +691,33 @@ canvas.pad {
   opacity: 0.45;
 }
 
+/* گِردهای چیدنِ تصویری (مهارت زندگی: «نه، برو، بگو»).
+   ⚠ نخست min-width برابر ۹۲px بود و در عرض ۳۲۰px آیتم سوم به سطر
+   دوم می‌افتاد. برای گِردِ «چیدن» این باگ جدی است: کودک باید هر سه
+   گام را با هم ببیند تا بتواند ترتیبشان را بفهمد.
+   حساب دقیق در باریک‌ترین صفحه: سینی ۲۸۸px، دو فاصلهٔ ۱۰px، پس هر
+   آیتم حداکثر ۸۹٫۳px. با ۸۴px هر سه در یک سطر جا می‌شوند و هنوز از
+   حداقل هدف لمسی (۵۶px) بزرگ‌ترند. */
+.order-item.has-pic {
+  grid-auto-flow: row;
+  gap: 4px;
+  min-width: 84px;
+  padding: 8px 4px;
+}
+
+.order-item.has-pic .ord-ico {
+  width: 52px;
+  height: 52px;
+  display: block;
+}
+
+.order-item.has-pic .ord-label {
+  font-size: 0.875rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--muted);
+}
+
 .order-slots {
   display: flex;
   gap: 10px;
@@ -1021,6 +1048,17 @@ canvas.pad {
   font-weight: 800;
   font-family: system-ui, sans-serif;
   color: var(--english);
+}
+
+/* برچسب فارسیِ زیر تصویر (مهارت زندگی).
+   ⚠ نباید از .pic-label ارث ببرد: آن یکی برای واژهٔ انگلیسی است و
+   هم رنگ حوزهٔ انگلیسی را دارد هم فونت لاتین. نام فارسیِ احساس با
+   فونت لاتین بد رندر می‌شود. مشخصیت بالاتر است، پس بعد از آن می‌آید. */
+.opt .pic-label:not([lang='en']) {
+  font-family: inherit;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  line-height: 1.35;
 }
 
 /* ── الگوی تاس (subitizing) ───────────────────────────────

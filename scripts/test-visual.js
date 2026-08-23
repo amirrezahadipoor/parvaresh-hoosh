@@ -344,7 +344,70 @@ for (const vp of VIEWPORTS) {
     await page.goto(BASE, { waitUntil: 'networkidle' });
   }
 
-  notes.push(`${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس + ترتیب صداکشی بررسی شد`);
+  // ── گِرد چیدنِ تصویری «نه، برو، بگو» ─────────────────────────────
+  // چرا صحنه را دستی می‌سازیم: این درس در مسیر سفر قفل است و خزشِ
+  // بازی هرگز به آن نمی‌رسد. محافظی که به صحنه نرسد، محافظ نیست.
+  //
+  // چه چیزی را می‌پاید: هر سه گام باید در یک سطر دیده شوند. اگر
+  // آیتم سوم به سطر دوم بیفتد کودک نمی‌تواند ترتیب را بفهمد — این
+  // دقیقاً باگی بود که در ۳۲۰px رخ داد.
+  {
+    const bad = await page.evaluate(async () => {
+      const R = await import('/src/core/rounds.js');
+      const C = await import('/src/data/curriculum.js');
+      const L = await import('/src/data/lessons/life.js');
+      const les = L.LIFE_LESSONS.find((l) => l.id === 'life-safety-02');
+      const rd = les?.rounds.find((r) => r.kind === 'safety-order');
+      if (!rd) return { err: 'گِرد «نه، برو، بگو» در درس تعریف نشده' };
+      const built = R.buildRound(rd, C.AGE_TRACKS.school);
+      if (!built?.items?.length) return { err: 'صحنهٔ چیدن ساخته نشد' };
+
+      const host = document.createElement('div');
+      host.className = 'screen';
+      const tray = document.createElement('div');
+      tray.className = 'order-tray';
+      built.items.forEach((it) => {
+        const btn = document.createElement('button');
+        btn.className = `order-item${it.pic ? ' has-pic' : ''}`;
+        const ico = document.createElement('span');
+        ico.className = 'ico ord-ico';
+        ico.textContent = '□';
+        const lab = document.createElement('span');
+        lab.className = 'ord-label';
+        lab.textContent = it.label;
+        btn.append(ico, lab);
+        tray.append(btn);
+      });
+      host.append(tray);
+      document.querySelector('#app').replaceChildren(host);
+
+      const nodes = [...document.querySelectorAll('.order-tray .order-item')];
+      if (nodes.length !== 3) return { err: `${nodes.length} گام به‌جای ۳` };
+
+      const lines = new Set(nodes.map((e) => Math.round(e.getBoundingClientRect().top)));
+      if (lines.size > 1) return { err: `گام‌های ایمنی در ${lines.size} سطر شکسته‌اند` };
+
+      // هدف لمسی: هیچ گامی نباید از حداقلِ انگشت کودک کوچک‌تر شود.
+      const small = nodes.filter((e) => {
+        const r = e.getBoundingClientRect();
+        return Math.min(r.width, r.height) < 56;
+      });
+      if (small.length) return { err: `${small.length} گام کوچک‌تر از ۵۶px است` };
+
+      const out = nodes.filter((e) => {
+        const r = e.getBoundingClientRect();
+        return r.left < -0.5 || r.right > window.innerWidth + 0.5;
+      });
+      if (out.length) return { err: `${out.length} گام از صفحه بیرون زده` };
+      return null;
+    });
+    if (bad?.err) errors.push(`${vp.name}: ${bad.err}`);
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+  }
+
+  notes.push(
+    `${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس + ترتیب صداکشی + چیدن ایمنی بررسی شد`,
+  );
   await page.close();
 }
 

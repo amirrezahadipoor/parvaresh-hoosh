@@ -378,6 +378,11 @@ function playScreen(lessonId) {
         // در درس انگلیسی، واژه زیر تصویر می‌آید تا شکل و واژه با هم دیده شوند.
         if (o.latinLabel) {
           btn.append(el('span', { class: 'pic-label', dir: 'ltr', lang: 'en', text: o.label }));
+        } else if (o.picLabel) {
+          // در مهارت زندگی، نامِ احساس خودش درسِ اصلی است: کودک باید
+          // یاد بگیرد به این حس بگوید «غمگین». تصویر تنها، واژه را
+          // یاد نمی‌دهد. برای والد هم روشن می‌کند برنامه چه می‌آموزد.
+          btn.append(el('span', { class: 'pic-label', text: o.label }));
         }
       } else if (o.geo) {
         btn.append(el('span', { class: 'ico lg', html: svgGeo(o.geo.name, o.geo.color) || '' }));
@@ -550,21 +555,47 @@ function playScreen(lessonId) {
     const slots = el('div', { class: 'order-slots' });
     const tray = el('div', { class: 'order-tray' });
 
+    // چیدن گِردهای مهارت زندگی («نه، برو، بگو») تصویری است، نه متنی:
+    // کودک پیش‌خوان باید ترتیب را از روی تصویر بچیند. پس اگر آیتم
+    // تصویر داشت، تصویر بالا و برچسب زیرش می‌آید؛ وگرنه مثل قبل
+    // فقط متن. برچسب هرگز حذف نمی‌شود — والد باید بتواند بخواند.
+    const fill = (node, it) => {
+      if (it.pic && svgShape(it.pic)) {
+        node.append(
+          el('span', { class: 'ico ord-ico', html: svgShape(it.pic) }),
+          el('span', { class: 'ord-label', text: it.label }),
+        );
+      } else {
+        node.append(document.createTextNode(it.label));
+      }
+      return node;
+    };
+
     const refresh = () => {
       slots.replaceChildren(
         ...(chosen.length
-          ? chosen.map((c) => el('div', { class: 'order-item', text: c.label, style: `transform:scale(${c.scale})` }))
+          ? chosen.map((c) =>
+              fill(
+                el('div', {
+                  class: `order-item${c.pic ? ' has-pic' : ''}`,
+                  style: `transform:scale(${c.scale})`,
+                }),
+                c,
+              ),
+            )
           : [el('span', { class: 'muted', text: 'به ترتیب لمس کن' })]),
       );
     };
     refresh();
 
     r.items.forEach((it) => {
-      const b = el('button', {
-        class: 'order-item',
-        text: it.label,
-        style: `transform:scale(${it.scale})`,
-      });
+      const b = fill(
+        el('button', {
+          class: `order-item${it.pic ? ' has-pic' : ''}`,
+          style: `transform:scale(${it.scale})`,
+        }),
+        it,
+      );
       b.addEventListener('click', () => {
         if (b.classList.contains('picked')) return;
         b.classList.add('picked');

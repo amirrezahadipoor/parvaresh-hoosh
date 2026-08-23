@@ -75,6 +75,13 @@ export const DOMAINS = Object.freeze([
     icon: 'abc',
   }),
   Object.freeze({
+    id: 'life',
+    title: 'مهارت زندگی',
+    description: 'شناخت احساس‌ها، ایمنی، بهداشت و مهربانی',
+    color: '#E08A1E',
+    icon: 'heart',
+  }),
+  Object.freeze({
     id: 'logic',
     title: 'منطق و الگو',
     description: 'الگویابی، دسته‌بندی و حل مسئله',

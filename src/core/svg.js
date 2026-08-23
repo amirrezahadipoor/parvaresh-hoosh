@@ -487,6 +487,24 @@ export const SCENES = {
     <path d="M20 54 q30 -10 30 0 q0 -10 30 0 v22 q-30 -10 -30 0 q0 -10 -30 0 z"
       fill="#FFF" stroke="#C9BFB0" stroke-width="2.5"/>
     <path d="M50 54 v22" stroke="#C9BFB0" stroke-width="2.5"/>`),
+
+  نفس‌عمیق: () =>
+    svg(`<circle cx="50" cy="46" r="20" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M39 42 q5 -4 10 0" fill="none" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M53 42 q5 -4 10 0" fill="none" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/>
+    <ellipse cx="50" cy="55" rx="5" ry="4" fill="#2B2A33"/>
+    <circle cx="50" cy="46" r="29" fill="none" stroke="#7FB8D8" stroke-width="3" opacity=".55"/>
+    <circle cx="50" cy="46" r="37" fill="none" stroke="#7FB8D8" stroke-width="2.4" opacity=".3"/>
+    <path d="M50 78 q-8 8 -3 16 M50 78 q8 8 3 16" fill="none" stroke="#7FB8D8" stroke-width="3" stroke-linecap="round"/>`),
+
+  غذا: () =>
+    svg(`<ellipse cx="50" cy="58" rx="34" ry="24" fill="#FFF" stroke="#C9BFB0" stroke-width="3"/>
+    <ellipse cx="50" cy="56" rx="24" ry="16" fill="#F4E7D4"/>
+    <circle cx="42" cy="52" r="6" fill="#E4572E"/>
+    <circle cx="56" cy="56" r="5" fill="#3D9A50"/>
+    <circle cx="50" cy="62" r="4.5" fill="#F4B942"/>
+    <path d="M14 32 v18 M11 32 v10 M17 32 v10" stroke="#9AA5B1" stroke-width="3" stroke-linecap="round"/>
+    <path d="M86 32 q4 8 0 14 v10" stroke="#9AA5B1" stroke-width="3" stroke-linecap="round" fill="none"/>`),
 };
 
 /** نام همهٔ صحنه‌ها. */

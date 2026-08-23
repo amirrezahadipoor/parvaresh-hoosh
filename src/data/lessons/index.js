@@ -5,12 +5,14 @@ import { MATH_LESSONS } from './math.js';
 import { LOGIC_LESSONS } from './logic.js';
 import { ENGLISH_LESSONS } from './english.js';
 import { SCIENCE_LESSONS } from './science.js';
+import { LIFE_LESSONS } from './life.js';
 
 export const LESSONS = Object.freeze([
   ...READING_LESSONS,
   ...MATH_LESSONS,
   ...SCIENCE_LESSONS,
   ...ENGLISH_LESSONS,
+  ...LIFE_LESSONS,
   ...LOGIC_LESSONS,
 ]);
 
@@ -62,4 +64,9 @@ export const SUPPORTED_ROUND_KINDS = Object.freeze([
   'en-number',
   'en-cvc',
   'en-translate',
+  'feel-face',
+  'name-face',
+  'safe-pick',
+  'good-habit',
+  'safety-order',
 ]);

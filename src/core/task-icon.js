@@ -73,6 +73,13 @@ const KIND_ACTION = Object.freeze({
   'en-number': ACTIONS.count,
   'en-cvc': ACTIONS.pick,
   'en-translate': ACTIONS.pick,
+  // مهارت زندگی — «انتخاب کن» درست است: کودک از میان چند تصویر یکی
+  // را برمی‌گزیند. «چیدن» فقط برای گِردِ سه‌گامیِ ایمنی.
+  'feel-face': ACTIONS.pick,
+  'name-face': ACTIONS.pick,
+  'safe-pick': ACTIONS.pick,
+  'good-habit': ACTIONS.pick,
+  'safety-order': ACTIONS.order,
 });
 
 /** برچسب فارسی — برای والد و صفحه‌خوان، نه برای کودک پیش‌خوان. */

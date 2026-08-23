@@ -12,7 +12,10 @@ import { ALPHABET } from '../data/alphabet.js';
 import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
 import { pickWords, soundsOf, flatSounds, syllableText, SOUND_MAP } from '../data/phonics.js';
-import { SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, COLOR_HEX, GEO } from './svg.js';
+import {
+  SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, COLOR_HEX, GEO,
+  FACES, SITUATIONS, HAZARDS, SAFETY_STEPS, SCENES,
+} from './svg.js';
 import {
   EN_ALPHABET,
   EN_PICTURE_WORDS,
@@ -55,6 +58,43 @@ function buildOptions(answer, pool, count) {
 // نام شکل‌های SVG که برای شمردن استفاده می‌شوند (به‌جای اموجی، که روی
 // هر دستگاه شکل متفاوتی دارد).
 const COUNTABLES = ['سیب', 'ستاره', 'ماهی', 'گل', 'توپ', 'موز', 'انار', 'پرنده'];
+
+// ── دانشِ حوزهٔ مهارت زندگی ──────────────────────────────────────────
+//
+// این جدول‌ها «پاسخ درست» درس‌های مهارت زندگی‌اند و عمداً اینجا و نه
+// در فایل درس‌ها نشسته‌اند: هر موقعیت یک پاسخ درست دارد و اگر در
+// چند درس تکرار می‌شد، امکان داشت جایی پاسخ متفاوتی بگیرد.
+//
+// منبع: چارچوب CASEL (خودآگاهی — نام‌گذاری احساس) و راهنمای رسمی
+// مهارت زندگی سازمان بهزیستی (ایمنی فردی).
+
+// موقعیت → حسی که کودک در آن موقعیت دارد.
+// هر موقعیت باید حسِ بی‌ابهام داشته باشد؛ موقعیت‌های دوپهلو
+// («دوستش اسباب‌بازی را گرفت») عمداً نیامده‌اند چون پاسخ درست
+// ندارند و کودک را سردرگم می‌کنند.
+const SITUATION_FEELING = Object.freeze({
+  هدیه: 'شاد',
+  'برج‌خراب': 'غمگین',
+  'اتاق‌تاریک': 'ترسیده',
+  'زانوی‌زخمی': 'غمگین',
+  رعدوبرق: 'ترسیده',
+  'بستنی‌افتاده': 'غمگین',
+  'باغچه‌آرام': 'آرام',
+});
+
+// کارهای درستِ بهداشت و مراقبت از خود — همه از فهرست بهداشت فردی
+// کودکان: شستن دست، مسواک، دستمال هنگام عطسه، خواب کافی، آب.
+const GOOD_HABITS = ['دست‌شستن', 'مسواک', 'دستمال', 'خواب', 'آب‌خوردن', 'زبالهٔ‌درست'];
+
+// کارهای درستِ اجتماعی — از صلاحیت «مهارت‌های ارتباطی» CASEL.
+const KIND_ACTS = ['کمک‌کردن', 'نوبت'];
+
+const HAZARD_NAMES_L = Object.keys(HAZARDS);
+const FACE_NAMES = Object.keys(FACES);
+
+// چیزهای بی‌خطر که کودک اجازه دارد لمسشان کند — برای درس ایمنی، در
+// برابر خطرها. اینها باید آشکارا بی‌خطر باشند تا انتخاب معنا بدهد.
+const SAFE_THINGS = ['توپ', 'کتاب', 'سیب', 'گل', 'موز', 'ستاره'];
 const GEO_NAMES = Object.keys(GEO);
 
 /**
@@ -794,6 +834,112 @@ function buildRoundInner(round, track) {
         display: { kind: 'scatter', icon, times: count },
         options: buildOptions(count, pool, n).map((v) => ({ label: toFa(v), value: v })),
         answer: count,
+      };
+    }
+
+    // ── مهارت زندگی ────────────────────────────────────────────────────
+    case 'feel-face': {
+      // «او چه حسی دارد؟» — موقعیت را می‌بیند، چهرهٔ درست را می‌زند.
+      // نخستین گام سواد هیجانی در CASEL: نام‌گذاری احساس.
+      const sit = round.situation || pick(Object.keys(SITUATION_FEELING));
+      const answer = SITUATION_FEELING[sit];
+      const wrong = FACE_NAMES.filter((f) => f !== answer);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: sit },
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer,
+        because: `او ${answer} است.`,
+      };
+    }
+
+    case 'name-face': {
+      // عکسِ گِرد بالا: چهره را می‌بیند، نامش را می‌گوید. تشخیص و
+      // نام‌گذاری دو مهارت جدا هستند و هر دو باید تمرین شوند.
+      const answer = round.emotion || pick(FACE_NAMES);
+      const wrong = FACE_NAMES.filter((f) => f !== answer);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: answer },
+        options: buildOptions(answer, wrong, n).map((v) => ({ label: v, value: v })),
+        answer,
+      };
+    }
+
+    case 'safe-pick': {
+      // «کدام خطرناک است؟» یا «کدام بی‌خطر است؟».
+      // منبع: فهرست ایمنی کودک — وسایل برقی، اشیای تیز، دارو، کبریت.
+      const wantHazard = round.want !== 'safe';
+      const answer = wantHazard ? pick(HAZARD_NAMES_L) : pick(SAFE_THINGS);
+      const wrong = wantHazard
+        ? SAFE_THINGS.filter((x) => x !== answer)
+        : HAZARD_NAMES_L.filter((x) => x !== answer);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: null,
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer,
+        because: wantHazard ? `${answer} خطرناک است.` : `${answer} بی‌خطر است.`,
+      };
+    }
+
+    case 'good-habit': {
+      // «کدام برای تو خوب است؟» — بهداشت فردی و مهربانی.
+      //
+      // بدیل‌ها خطرند، نه یک عادتِ درستِ دیگر: اگر هر دو گزینه درست
+      // بودند، پاسخ یکتا نبود.
+      //
+      // ⚠ پرسش اول «کدام کارِ درست است؟» بود و غلط بود: بدیل‌ها
+      // شیءاند («کبریت»)، نه کار. کودک می‌دید «کدام کار… کبریت» و
+      // پرسش با گزینه جور درنمی‌آمد. «خوب بودن» هم دربارهٔ کار صدق
+      // می‌کند هم دربارهٔ شیء، پس هر دو را می‌پوشاند.
+      const pool = round.pool === 'kind' ? KIND_ACTS : GOOD_HABITS;
+      const answer = pick(pool);
+      const wrong = HAZARD_NAMES_L;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: null,
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer,
+        because: `${answer} کارِ درستی است.`,
+      };
+    }
+
+    case 'safety-order': {
+      // چیدنِ «نه، برو، بگو» — فرمول سه‌گامیِ ایمنی شخصی از راهنمای
+      // بهزیستی. تصویری است تا کودک پیش‌خوان هم بتواند بچیند.
+      const steps = ['نه‌گفتن', 'دورشدن', 'گفتن‌به‌بزرگ‌تر'];
+      const labels = { 'نه‌گفتن': 'نه!', دورشدن: 'برو', 'گفتن‌به‌بزرگ‌تر': 'بگو' };
+      const mixed = shuffle(steps.map((name, i) => ({ name, order: i + 1 })));
+      return {
+        type: 'order',
+        prompt: round.prompt,
+        items: mixed.map((m) => ({
+          label: labels[m.name],
+          value: m.order,
+          scale: 1,
+          pic: m.name,
+        })),
+        answer: [1, 2, 3],
       };
     }
 
