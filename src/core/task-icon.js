@@ -30,6 +30,7 @@ export const ACTIONS = Object.freeze({
   next: 'next', // ادامهٔ الگو
   add: 'add', // جمع
   sub: 'sub', // تفریق
+  blend: 'blend', // صداها را به هم بچسبان
 });
 
 /** هر نوع گِرد به یک فعل نگاشت می‌شود. */
@@ -39,6 +40,9 @@ const KIND_ACTION = Object.freeze({
   'digit-trace': ACTIONS.trace,
   'letter-word': ACTIONS.pick,
   'letter-in-word': ACTIONS.pick,
+  'blend-word': ACTIONS.blend,
+  'segment-count': ACTIONS.count,
+  'syllable-build': ACTIONS.order,
   'count-letters': ACTIONS.count,
   'count-objects': ACTIONS.count,
   'count-shapes': ACTIONS.count,
@@ -84,6 +88,7 @@ const LABEL = Object.freeze({
   next: 'بعدی کدام است؟',
   add: 'با هم جمع کن',
   sub: 'کم کن',
+  blend: 'صداها را بچسبان',
 });
 
 const S = { w: 3.2, cap: 'round', join: 'round' };
@@ -147,6 +152,12 @@ const ART = Object.freeze({
   add: `${stroke('M20 9v22')}${stroke('M9 20h22')}`,
   // علامت تفریق
   sub: `${stroke('M9 20h22')}`,
+  // سه صدای جدا که با قوس به هم می‌پیوندند → «صداکشی».
+  // این همان حرکتی است که معلم با انگشت روی تخته می‌کشد.
+  blend: `<circle cx="9" cy="15" r="4" fill="currentColor"/>
+          <circle cx="20" cy="15" r="4" fill="currentColor"/>
+          <circle cx="31" cy="15" r="4" fill="currentColor"/>
+          ${stroke('M9 22 Q20 34 31 22')}`,
 });
 
 /** فعلِ یک نوع گِرد. */

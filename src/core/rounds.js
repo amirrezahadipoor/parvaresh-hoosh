@@ -11,6 +11,7 @@ import { actionFor } from './task-icon.js';
 import { ALPHABET } from '../data/alphabet.js';
 import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
+import { pickWords, soundsOf, flatSounds, syllableText, SOUND_MAP } from '../data/phonics.js';
 import { SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, COLOR_HEX, GEO } from './svg.js';
 import {
   EN_ALPHABET,
@@ -372,6 +373,103 @@ function buildRoundInner(round, track) {
       };
     }
 
+
+    // ── صداکشی و ترکیب: قلب آموزش خواندن ──────────────────────────
+    // تا پیش از این، حوزهٔ خواندن در سطح «شناخت حرف» می‌ماند و کودک
+    // هرگز به خواندن نمی‌رسید. این سه نوع آن حلقه را می‌بندند.
+    // پژوهش (Herlambang 2020): ترکیب پیش از تجزیه — ۶۶٪ در برابر ۴۷٪.
+
+    case 'blend-word': {
+      // صداها را می‌بیند و می‌شنود، واژه را می‌سازد: ب‑آ‑د ← باد
+      // ساده‌ترین گام خواندن، و همانی که مدرسه «صداکشی» می‌نامد.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = pickWords({
+        maxSounds: round.maxSounds ?? 3,
+        maxSyllables: round.maxSyllables ?? 1,
+        longVowelOnly: round.longVowelOnly ?? true,
+        readable,
+      });
+      if (!pool.length) return null;
+      const target = pick(pool);
+      // بدل‌ها: واژه‌هایی با همان تعداد صدا، تا انتخاب واقعاً خواندن بخواهد
+      const others = pool.filter((w) => w.word !== target.word).map((w) => w.word);
+      if (others.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        // صداها جدا نشان داده می‌شوند — کودک باید ترکیبشان کند
+        display: { kind: 'sounds', parts: flatSounds(target).map((x) => ({ g: x.g, s: x.s })) },
+        options: buildOptions(target.word, [target.word, ...others], n).map((w) => ({
+          label: w,
+          value: w,
+          big: true,
+        })),
+        answer: target.word,
+      };
+    }
+
+    case 'segment-count': {
+      // واژه را می‌بیند، می‌شمارد چند صدا دارد.
+      // این «تجزیه» است و پس از ترکیب می‌آید (ترتیب پژوهش‌محور).
+      // مهم: در فارسی مصوت کوتاه نوشته نمی‌شود، پس «سبد» سه حرف
+      // دارد ولی پنج صدا — دقیقاً همان چیزی که باید آموخته شود.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = pickWords({ maxSounds: round.maxSounds ?? 5, readable });
+      if (!pool.length) return null;
+      const target = pick(pool);
+      const count = flatSounds(target).length;
+      const nums = [2, 3, 4, 5, 6];
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'text', value: target.word },
+        options: buildOptions(count, nums, n).map((v) => ({ label: toFa(v), value: v })),
+        answer: count,
+      };
+    }
+
+    case 'syllable-build': {
+      // بخش‌ها را به ترتیب می‌چیند: ما + دَر ← مادر
+      // روش مدرسهٔ ایران: «ما» را بخوان، «دَر» را بخوان، حالا با هم.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = pickWords({ maxSyllables: 3, readable }).filter(
+        (w) => w.syllables.length >= 2,
+      );
+      if (!pool.length) return null;
+      const target = pick(pool);
+      const parts = target.syllables.map((syl, i) => ({
+        label: syllableText(syl),
+        value: i,
+      }));
+      // ⚠ واژهٔ کامل نمایش داده نمی‌شود: اگر «اتو» بالای صفحه باشد،
+      // کودک فقط تطبیق شکلی می‌کند و هیچ چیز نمی‌آموزد. همان دام
+      // «نشتی پاسخ» که پیش‌تر در letter-sound گرفتیم.
+      return {
+        type: 'order',
+        prompt: round.prompt,
+        items: shuffle(parts.map((p) => ({ ...p, scale: 1 }))),
+        answer: parts.map((p) => p.value),
+      };
+    }
+
     case 'letter-in-word': {
       // «کدام کلمه حرف X را دارد؟» — سخت‌تر از «با X شروع می‌شود»
       // چون کودک باید کل کلمه را بکاود، نه فقط حرف اول.
@@ -698,7 +796,44 @@ function buildRoundInner(round, track) {
 
 /** همهٔ گِردهای یک درس را برای یک ردهٔ سنی می‌سازد. */
 export function buildLesson(lesson, track) {
-  const rounds = lesson.rounds.map((r) => buildRound(r, track));
-  // ردهٔ سنی تعداد گِرد را هم تعیین می‌کند: کودک کوچک‌تر، نشست کوتاه‌تر.
-  return rounds.slice(0, Math.max(3, track.roundsPerLesson));
+  const rounds = lesson.rounds.map((r) => buildRound(r, track)).filter(Boolean);
+  const cap = Math.max(3, track.roundsPerLesson);
+  if (rounds.length <= cap) return rounds;
+
+  // ⚠ برش سادهٔ «۶ تای اول» یک باگ آموزشی جدی بود: گِردهای صداکشی
+  // و بخش‌بندی در انتهای درس تعریف شده‌اند، پس هرگز به هیچ کودکی
+  // نشان داده نمی‌شدند — کل آموزش خواندنِ واقعی مرده بود.
+  //
+  // به‌جایش از هر مهارت نمونه برمی‌داریم و ترتیب اصلی را نگه
+  // می‌داریم. مهارت‌های رمزگشایی اولویت دارند چون هدف درس‌اند؛
+  // شناخت حرف مقدمه است، نه مقصد.
+  const PRIORITY = ['blend-word', 'syllable-build', 'segment-count'];
+  const picked = [];
+  const used = new Set();
+
+  // ۱) یکی از هر مهارت رمزگشایی
+  for (const kind of PRIORITY) {
+    const i = rounds.findIndex((r, k) => !used.has(k) && r.kindName === kind);
+    if (i >= 0 && picked.length < cap) {
+      picked.push(i);
+      used.add(i);
+    }
+  }
+  // ۲) یکی از هر مهارت دیگر، به ترتیب ظهور
+  for (const [i, r] of rounds.entries()) {
+    if (picked.length >= cap) break;
+    if (used.has(i)) continue;
+    if (picked.some((k) => rounds[k].kindName === r.kindName)) continue;
+    picked.push(i);
+    used.add(i);
+  }
+  // ۳) اگر هنوز جا هست، از ابتدا پر کن
+  for (const [i] of rounds.entries()) {
+    if (picked.length >= cap) break;
+    if (used.has(i)) continue;
+    picked.push(i);
+    used.add(i);
+  }
+
+  return picked.sort((a, b) => a - b).map((i) => rounds[i]);
 }

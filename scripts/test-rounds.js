@@ -90,6 +90,15 @@ for (const trackId of TRACK_ORDER) {
 
         if (r.type === 'order') {
           if (!r.items?.length) errors.push(`${tag}: بدون آیتم`);
+          // نشتی پاسخ در چیدن: اگر صحنه همان چیزی را نشان دهد که
+          // کودک باید از قطعه‌ها بسازد، تمرین به تطبیق شکلی تبدیل
+          // می‌شود و هیچ چیز نمی‌آموزد. («اتو» بالا، «ا»+«تو» پایین)
+          if (r.display?.kind === 'text') {
+            const built = r.answer.map((i) => r.items.find((x) => x.value === i)?.label ?? '').join('');
+            if (String(r.display.value) === built) {
+              errors.push(`${tag}: صحنه چیدمان درست «${built}» را لو می‌دهد`);
+            }
+          }
           if (r.answer.length !== r.items.length) errors.push(`${tag}: طول پاسخ با آیتم‌ها فرق دارد`);
           const sorted = [...r.answer].every((v, k, a) => k === 0 || a[k - 1] <= v);
           if (!sorted) errors.push(`${tag}: پاسخ مرتب نیست`);

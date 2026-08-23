@@ -132,6 +132,11 @@ for (const problem of auditReviewData()) errors.push(`تکرار فاصله‌د
 
 // هر نوع گِرد باید نشان تصویری داشته باشد — کودکِ پیش‌خوان تنها
 // راهنمایش همین است.
+// نقشهٔ صدای واژه‌ها باید با املا بخواند، وگرنه کودک چیزی می‌بیند
+// که با آنچه صداکشی می‌کند یکی نیست.
+const { auditPhonics } = await import('../src/data/phonics.js');
+for (const problem of auditPhonics()) errors.push(`واج‌شناسی: ${problem}`);
+
 const { auditIcons } = await import('../src/core/task-icon.js');
 const allKinds = [...new Set(LESSONS.flatMap((l) => l.rounds.map((r) => r.kind)))];
 for (const problem of auditIcons(allKinds)) errors.push(`نشان تمرین: ${problem}`);

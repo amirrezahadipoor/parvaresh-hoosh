@@ -12,6 +12,7 @@ import { ALPHABET } from '../src/data/alphabet.js';
 import { NARRATION } from '../src/data/narration.js';
 import { NESHANEH_LESSONS, teachRank } from '../src/data/neshaneh.js';
 import { STAGED_WORDS } from '../src/data/word-bank.js';
+import { pickWords } from '../src/data/phonics.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -117,6 +118,73 @@ const lessons = groups.map((grp, gi) => {
       });
     }
   }
+  // ── صداکشی: قلب آموزش خواندن ────────────────────────────────────
+  // مولد فقط وقتی این گِردها را می‌سازد که واژگان کافی با نقشهٔ صدا
+  // موجود باشد. اگر نتواند صادقانه بسازد، رد می‌کند (قانون پروژه).
+  const lastLetter = letters[letters.length - 1];
+  const limit = teachRank(lastLetter);
+  const soundReadable = (w) =>
+    [...w].every((ch) => {
+      if (SKIP_CHARS.has(ch)) return true;
+      const r = teachRank(ch);
+      return r === 999 || r <= limit;
+    });
+
+  // گام ۱ — ترکیب (پیش از تجزیه؛ Herlambang 2020: ۶۶٪ در برابر ۴۷٪)
+  // اول فقط مصوت بلند، چون نوشته می‌شود و کودک می‌بیندش.
+  const blendEasy = pickWords({
+    maxSounds: 3,
+    maxSyllables: 1,
+    longVowelOnly: true,
+    readable: soundReadable,
+  });
+  if (blendEasy.length >= 4) {
+    rounds.push({
+      kind: 'blend-word',
+      letter: lastLetter,
+      maxSounds: 3,
+      maxSyllables: 1,
+      longVowelOnly: true,
+      prompt: 'صداها را به هم بچسبان. کدام کلمه می‌شود؟',
+    });
+  }
+
+  // گام ۲ — ترکیب با مصوت کوتاه: سخت‌تر، چون نوشته نمی‌شود
+  const blendHard = pickWords({ maxSounds: 4, maxSyllables: 1, readable: soundReadable });
+  if (blendHard.length >= 6) {
+    rounds.push({
+      kind: 'blend-word',
+      letter: lastLetter,
+      maxSounds: 4,
+      maxSyllables: 1,
+      longVowelOnly: false,
+      prompt: 'صداها را به هم بچسبان. کدام کلمه می‌شود؟',
+    });
+  }
+
+  // گام ۳ — بخش کردن: «ما» + «دَر» ← مادر (روش مدرسهٔ ایران)
+  const syl = pickWords({ maxSyllables: 3, readable: soundReadable }).filter(
+    (w) => w.syllables.length >= 2,
+  );
+  if (syl.length >= 3) {
+    rounds.push({
+      kind: 'syllable-build',
+      letter: lastLetter,
+      prompt: 'بخش‌ها را به ترتیب بچین',
+    });
+  }
+
+  // گام ۴ — تجزیه: چند صدا دارد؟ (پس از ترکیب می‌آید)
+  const segPool = pickWords({ maxSounds: 5, readable: soundReadable });
+  if (segPool.length >= 6) {
+    rounds.push({
+      kind: 'segment-count',
+      letter: lastLetter,
+      maxSounds: 5,
+      prompt: 'این کلمه چند صدا دارد؟',
+    });
+  }
+
   // شمردن حرف‌ها: از درسی که واژگان کافی جمع شده باشد.
   if (readablePool.filter((w) => w.length >= 2 && w.length <= 6).length >= 6) {
     rounds.push({
@@ -132,7 +200,7 @@ const lessons = groups.map((grp, gi) => {
     order: gi + 1,
     title: `نشانه‌های ${letters.join(' ')}`,
     schoolLessons: grp.labels,
-    goal: `کودک صدای حرف‌های ${letters.join('، ')} را می‌شناسد و شکلشان را می‌نویسد.`,
+    goal: `کودک صدای حرف‌های ${letters.join('، ')} را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.`,
     letters,
     minutes: 6,
     rounds,

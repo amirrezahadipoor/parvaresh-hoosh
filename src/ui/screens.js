@@ -238,6 +238,24 @@ function playScreen(lessonId) {
     const stage = r.display ? el('div', { class: 'stage' }) : null;
     if (stage) {
       if (r.display.kind === 'text') stage.textContent = r.display.value;
+      // صداکشی: هر صدا جدا، با قوس پیوند زیرشان — همان حرکتی که
+      // معلم با انگشت روی تخته می‌کشد. کودک باید صداها را به هم
+      // بچسباند و واژه را بسازد.
+      if (r.display.kind === 'sounds') {
+        const row = el('div', { class: 'sounds' });
+        r.display.parts.forEach((p, i) => {
+          if (i) row.append(el('span', { class: 'snd-link', 'aria-hidden': 'true' }));
+          row.append(
+            el('span', { class: 'snd' }, [
+              // آنچه نوشته می‌شود (مصوت کوتاه نوشته نمی‌شود → خالی)
+              el('span', { class: 'snd-g', text: p.g || '·' }),
+              // آنچه شنیده می‌شود
+              el('span', { class: 'snd-s', text: p.s }),
+            ]),
+          );
+        });
+        stage.append(row);
+      }
       if (r.display.kind === 'repeat') {
         const row = el('div', { class: 'repeat' });
         for (let k = 0; k < r.display.times; k++) {

@@ -12,7 +12,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "آ ا ــ بـ ب"
     ],
-    "goal": "کودک صدای حرف‌های ا، ب را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ا، ب را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ا",
       "ب"
@@ -76,7 +76,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "اَ ــ د"
     ],
-    "goal": "کودک صدای حرف‌های د را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های د را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "د"
     ],
@@ -123,7 +123,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "مـ م ــ سـ س"
     ],
-    "goal": "کودک صدای حرف‌های م، س را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های م، س را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "م",
       "س"
@@ -184,6 +184,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «س» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "س",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "س",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "س",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "س",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "س",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -204,7 +231,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "او و ــ تـ ت"
     ],
-    "goal": "کودک صدای حرف‌های و، ت را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های و، ت را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "و",
       "ت"
@@ -265,6 +292,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ت» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ت",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ت",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ت",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ت",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ت",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -285,7 +339,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "ر ــ نـ ن"
     ],
-    "goal": "کودک صدای حرف‌های ر، ن را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ر، ن را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ر",
       "ن"
@@ -346,6 +400,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ن» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ن",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ن",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ن",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ن",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ن",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -366,7 +447,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "ایـ یـ ی ــ ز"
     ],
-    "goal": "کودک صدای حرف‌های ی، ز را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ی، ز را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ی",
       "ز"
@@ -427,6 +508,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ز» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ز",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ز",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ز",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ز",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ز",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -447,7 +555,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "اِ ـه ه ــ شـ ش"
     ],
-    "goal": "کودک صدای حرف‌های ه، ش را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ه، ش را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ه",
       "ش"
@@ -517,6 +625,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ش» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ش",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ش",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ش",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ش",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ش",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -537,7 +672,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "کـ ک ــ و"
     ],
-    "goal": "کودک صدای حرف‌های ک را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ک را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ک"
     ],
@@ -575,6 +710,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ک» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ک",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ک",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ک",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ک",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ک",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -595,7 +757,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "پـ پ ــ گـ گ"
     ],
-    "goal": "کودک صدای حرف‌های پ، گ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های پ، گ را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "پ",
       "گ"
@@ -665,6 +827,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «گ» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "گ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "گ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "گ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "گ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "گ",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -685,7 +874,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "فـ ف ــ خـ خ"
     ],
-    "goal": "کودک صدای حرف‌های ف، خ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ف، خ را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ف",
       "خ"
@@ -746,6 +935,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «خ» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "خ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "خ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "خ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "خ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "خ",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -766,7 +982,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "قـ ق ــ لـ ل"
     ],
-    "goal": "کودک صدای حرف‌های ق، ل را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ق، ل را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ق",
       "ل"
@@ -836,6 +1052,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ل» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ل",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ل",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ل",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ل",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ل",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -856,7 +1099,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "جـ ج"
     ],
-    "goal": "کودک صدای حرف‌های ج را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ج را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ج"
     ],
@@ -894,6 +1137,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ج» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ج",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ج",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ج",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ج",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ج",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -914,7 +1184,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "هـ ه ــ چـ چ"
     ],
-    "goal": "کودک صدای حرف‌های چ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های چ را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "چ"
     ],
@@ -952,6 +1222,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «چ» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "چ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "چ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "چ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "چ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "چ",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -972,7 +1269,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "ژ ــ خوا"
     ],
-    "goal": "کودک صدای حرف‌های ژ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ژ را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ژ"
     ],
@@ -1010,6 +1307,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ژ» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ژ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ژ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ژ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ژ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ژ",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -1030,7 +1354,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "صـ ص ــ ذ"
     ],
-    "goal": "کودک صدای حرف‌های ص، ذ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ص، ذ را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ص",
       "ذ"
@@ -1091,6 +1415,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ذ» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ذ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ذ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ذ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ذ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ذ",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -1111,7 +1462,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "عـ ع ــ ثـ ث"
     ],
-    "goal": "کودک صدای حرف‌های ع، ث را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ع، ث را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ع",
       "ث"
@@ -1163,6 +1514,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ث» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ث",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ث",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ث",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ث",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ث",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -1183,7 +1561,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "حـ ح"
     ],
-    "goal": "کودک صدای حرف‌های ح را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ح را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ح"
     ],
@@ -1221,6 +1599,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ح» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ح",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ح",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ح",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ح",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ح",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -1241,7 +1646,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "ضـ ض ــ ط"
     ],
-    "goal": "کودک صدای حرف‌های ض، ط را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ض، ط را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ض",
       "ط"
@@ -1302,6 +1707,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «ط» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "ط",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ط",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ط",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ط",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "ط",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -1322,7 +1754,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "غـ غ"
     ],
-    "goal": "کودک صدای حرف‌های غ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های غ را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "غ"
     ],
@@ -1351,6 +1783,33 @@ export const READING_LESSONS = [
         "prompt": "کدام کلمه حرف «غ» را دارد؟"
       },
       {
+        "kind": "blend-word",
+        "letter": "غ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "غ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "غ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "غ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
         "kind": "count-letters",
         "letter": "غ",
         "prompt": "کلمهٔ {w} چند حرف دارد؟"
@@ -1371,7 +1830,7 @@ export const READING_LESSONS = [
     "schoolLessons": [
       "ظ"
     ],
-    "goal": "کودک صدای حرف‌های ظ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ظ را می‌شناسد، شکلشان را می‌نویسد و با آن‌ها کلمه می‌خواند.",
     "letters": [
       "ظ"
     ],
@@ -1407,6 +1866,33 @@ export const READING_LESSONS = [
         "letter": "ظ",
         "name": "ظا",
         "prompt": "کدام کلمه حرف «ظ» را دارد؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ظ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ظ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ظ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ظ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
       },
       {
         "kind": "count-letters",

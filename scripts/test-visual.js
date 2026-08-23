@@ -40,7 +40,27 @@ async function audit(page, label, vp) {
       overlaps: [],
       clipped: [],
       invisible: [],
+      soundOrder: null,
     };
+
+    // ── ترتیب صداکشی ──────────────────────────────────────────────
+    // بنیادی‌ترین بررسی حوزهٔ خواندن. صداها باید به ترتیب خواندن
+    // دیده شوند. یک بار با row-reverse وارونه شدند و کودک «اَم»
+    // می‌دید به‌جای «ما» — تمرین دقیقاً عکس هدفش را می‌آموخت.
+    // آزمون ساختاری این را نمی‌بیند؛ فقط مختصات واقعی نشانش می‌دهد.
+    {
+      const nodes = [...document.querySelectorAll('.sounds .snd')];
+      if (nodes.length >= 2) {
+        const dom = nodes.map((e) => e.querySelector('.snd-g')?.textContent ?? '');
+        const visual = nodes
+          .map((e) => ({ t: e.querySelector('.snd-g')?.textContent ?? '', x: e.getBoundingClientRect().left }))
+          .sort((a, b) => b.x - a.x)
+          .map((o) => o.t);
+        if (dom.join('') !== visual.join('')) {
+          out.soundOrder = { dom: dom.join(' '), visual: visual.join(' ') };
+        }
+      }
+    }
 
     const interactive = [...document.querySelectorAll('button, a, input, select, [role="button"]')];
     const boxes = [];
@@ -101,6 +121,11 @@ async function audit(page, label, vp) {
   if (r.overlaps.length) errors.push(`${tag}: هم‌پوشانی — ${[...new Set(r.overlaps)].slice(0, 3).join('، ')}`);
   if (r.clipped.length) errors.push(`${tag}: متن بریده — ${[...new Set(r.clipped)].slice(0, 3).join('، ')}`);
   if (r.invisible.length) errors.push(`${tag}: متن نامرئی — ${[...new Set(r.invisible)].join('، ')}`);
+  if (r.soundOrder) {
+    errors.push(
+      `${tag}: ترتیب صداکشی وارونه — «${r.soundOrder.visual}» به‌جای «${r.soundOrder.dom}»`,
+    );
+  }
   if (r.bidi?.length) {
     errors.push(`${tag}: دام دوجهته کنار عدد — ${[...new Set(r.bidi)].slice(0, 3).join('، ')}`);
   }
@@ -109,7 +134,15 @@ async function audit(page, label, vp) {
 for (const vp of VIEWPORTS) {
   const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height } });
   await page.goto(BASE, { waitUntil: 'networkidle' });
-  await page.evaluate(() => localStorage.clear());
+  // سن ۸ = بیشترین گِرد در هر درس (۶ به‌جای ۴). گِردهای صداکشی و
+  // بخش‌بندی انتهای درس‌اند؛ با سن پیش‌فرض هرگز بازرسی نمی‌شدند و
+  // محافظِ ترتیب صداکشی کور می‌ماند — در منفی-آزمون لو رفت.
+  await page.evaluate(() =>
+    localStorage.setItem(
+      'parvaresh-hoosh/v4',
+      JSON.stringify({ childName: 'آزمون', age: 8, muted: true, lessons: {}, stars: 0, dailyLimitMin: 0, playLog: {} }),
+    ),
+  );
   await page.reload({ waitUntil: 'networkidle' });
 
   await page.waitForSelector('.play-btn');
@@ -133,9 +166,16 @@ for (const vp of VIEWPORTS) {
     await page.waitForTimeout(420); // پایان انیمیشن ورود
     await audit(page, `بازی ${title}`, vp);
 
-    // درس را تا پایان بازی می‌کنیم تا درس بعدی باز شود
+    // درس را تا پایان بازی می‌کنیم تا درس بعدی باز شود.
+    // ⚠ هر گِرد جداگانه بازرسی می‌شود، نه فقط اولی: گِردهای
+    // صداکشی و بخش‌بندی در انتهای درس‌اند و با بازرسیِ فقط گِرد
+    // اول هرگز دیده نمی‌شدند — محافظ کور بود و در منفی-آزمون لو رفت.
     for (let i = 0; i < 14; i++) {
       if (await page.locator('.done-card').count()) break;
+      if (i > 0 && (await page.locator('.prompt').count())) {
+        await page.waitForTimeout(260);
+        await audit(page, `${title} گِرد ${i + 1}`, vp);
+      }
       const opt = page.locator('.opt:not([disabled])').first();
       const order = page.locator('.order-item:not(.picked)').first();
       const canvas = page.locator('canvas').first();
@@ -183,7 +223,69 @@ for (const vp of VIEWPORTS) {
   await page.waitForTimeout(500);
   await audit(page, 'پنل والدین', vp);
 
-  notes.push(`${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس کامل بررسی شد`);
+  // ── ترتیب صداکشی ────────────────────────────────────────────────
+  // خزشِ بازی برای این کار مناسب نیست: انتخاب گِرد تصادفی است و
+  // بررسی گاهی سبز و گاهی قرمز می‌شد. آزمون متناوب بدتر از نبودنش
+  // است. پس صحنهٔ صداکشی را قطعی می‌سازیم و مختصات واقعی را
+  // می‌سنجیم — همان چیزی که باگ را لو داد.
+  {
+    const bad = await page.evaluate(async () => {
+      const R = await import('/src/core/rounds.js');
+      const C = await import('/src/data/curriculum.js');
+      const L = await import('/src/data/lessons/reading.js');
+      const les = L.READING_LESSONS.find((l) => l.id === 'reading-letters-06');
+      const rd = les.rounds.find((r) => r.kind === 'blend-word');
+      if (!rd) return { err: 'گِرد صداکشی در درس تعریف نشده' };
+      const built = R.buildRound(rd, C.AGE_TRACKS.school);
+      if (!built?.display?.parts?.length) return { err: 'صحنهٔ صداکشی ساخته نشد' };
+
+      const host = document.createElement('div');
+      host.className = 'screen';
+      const stage = document.createElement('div');
+      stage.className = 'stage';
+      const row = document.createElement('div');
+      row.className = 'sounds';
+      built.display.parts.forEach((x, i) => {
+        if (i) {
+          const l = document.createElement('span');
+          l.className = 'snd-link';
+          row.append(l);
+        }
+        const w = document.createElement('span');
+        w.className = 'snd';
+        const g = document.createElement('span');
+        g.className = 'snd-g';
+        g.textContent = x.g || '·';
+        const v = document.createElement('span');
+        v.className = 'snd-s';
+        v.textContent = x.s;
+        w.append(g, v);
+        row.append(w);
+      });
+      stage.append(row);
+      host.append(stage);
+      document.querySelector('#app').replaceChildren(host);
+
+      const nodes = [...document.querySelectorAll('.sounds .snd')];
+      if (nodes.length < 2) return { err: 'کمتر از دو صدا' };
+      const dom = nodes.map((e) => e.querySelector('.snd-g').textContent);
+      const visual = nodes
+        .map((e) => ({ t: e.querySelector('.snd-g').textContent, x: e.getBoundingClientRect().left }))
+        .sort((a2, b2) => b2.x - a2.x)
+        .map((o) => o.t);
+      return dom.join('') === visual.join('')
+        ? null
+        : { dom: dom.join(' '), visual: visual.join(' ') };
+    });
+
+    if (bad?.err) errors.push(`${vp.name}: ${bad.err}`);
+    else if (bad) {
+      errors.push(`${vp.name}: ترتیب صداکشی وارونه — «${bad.visual}» به‌جای «${bad.dom}»`);
+    }
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+  }
+
+  notes.push(`${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس + ترتیب صداکشی بررسی شد`);
   await page.close();
 }
 
