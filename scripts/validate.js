@@ -130,6 +130,12 @@ for (const problem of auditSequence()) errors.push(`مسیر سفر: ${problem}`
 const { auditReviewData } = await import('../src/core/mastery.js');
 for (const problem of auditReviewData()) errors.push(`تکرار فاصله‌دار: ${problem}`);
 
+// هر نوع گِرد باید نشان تصویری داشته باشد — کودکِ پیش‌خوان تنها
+// راهنمایش همین است.
+const { auditIcons } = await import('../src/core/task-icon.js');
+const allKinds = [...new Set(LESSONS.flatMap((l) => l.rounds.map((r) => r.kind)))];
+for (const problem of auditIcons(allKinds)) errors.push(`نشان تمرین: ${problem}`);
+
 console.log('── اعتبارسنجی پرورش هوش ──');
 console.log(`حوزه‌ها: ${DOMAINS.length}`);
 for (const d of DOMAINS) {

@@ -8,6 +8,7 @@ import { speak, sfx, setMuted, isMuted, stop as stopAudio } from '../core/audio.
 import { buildLesson, toFa } from '../core/rounds.js';
 import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../core/journey.js';
 import { masterySummary, isDue, MASTERY_SCORE } from '../core/mastery.js';
+import { taskIcon, actionLabel } from '../core/task-icon.js';
 import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
 
@@ -156,6 +157,7 @@ function playScreen(lessonId) {
   const state = store.getState();
   const track = trackForAge(state.age);
   const rounds = buildLesson(lesson, track);
+  const dom = DOMAINS.find((x) => x.id === lesson.domain) || DOMAINS[0];
 
   let idx = 0;
   let correct = 0;
@@ -196,7 +198,30 @@ function playScreen(lessonId) {
       topbar(lesson.title, () => render(homeScreen())),
       bar,
       el('div', { class: 'muted', text: `تمرین ${toFa(idx + 1)} از ${toFa(rounds.length)}` }),
-      el('p', { class: 'prompt', text: r.prompt }),
+      // ردیف پرسش: نشان تصویری + متن + دکمهٔ شنیدن.
+      // کودکی که خواندن بلد نیست از روی نشان می‌فهمد باید چه کند،
+      // و با تپ روی نشان پرسش را دوباره می‌شنود.
+      el('div', { class: 'ask' }, [
+        el('button', {
+          class: `task-ico${r.speak ? ' can-play' : ''}`,
+          'aria-label': r.speak ? `شنیدن دوباره: ${actionLabel(r.kindName || '')}` : actionLabel(r.kindName || ''),
+          html:
+            taskIcon(r.kindName || '', dom.color) +
+            // بلندگوی SVG، نه ایموجی: ایموجی روی هر دستگاه شکل و
+            // اندازهٔ متفاوتی دارد و در اندروید بریده می‌شد.
+            (r.speak
+              ? `<span class="spk"><svg viewBox="0 0 24 24" aria-hidden="true">
+                   <path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z" fill="currentColor"/>
+                   <path d="M15.5 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round"/>
+                 </svg></span>`
+              : ''),
+          onClick: () => {
+            if (r.speak) speak(r.speak);
+          },
+        }),
+        el('p', { class: 'prompt', text: r.prompt }),
+      ]),
       ...body,
       feedback,
     );

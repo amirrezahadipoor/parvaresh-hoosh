@@ -102,6 +102,55 @@ notes.push(`تپ تا شروع بازی: ${LIMITS.maxTapsToPlay}`);
   notes.push('انیمیشن بی‌پایان حین پرسش: ۰');
 }
 
+// ── ۲.۷ کودکِ پیش‌خوان: هر گِرد راهنمای غیرمتنی دارد ────────────────────
+{
+  // بنیادی‌ترین معیار این برنامه. کودک ۵ ساله خواندن بلد نیست؛
+  // اگر تنها راهنمای یک گِرد متنِ پرسش باشد، آن گِرد برای او
+  // خالی از معناست. هر گِرد باید نشان تصویری داشته باشد و
+  // ترجیحاً صدا.
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.evaluate(() =>
+    localStorage.setItem(
+      'parvaresh-hoosh/v4',
+      JSON.stringify({ childName: 'آزمون', age: 5, muted: true, lessons: {}, stars: 0, dailyLimitMin: 0, playLog: {} }),
+    ),
+  );
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).click();
+  await page.waitForSelector('.map-item');
+
+  let checked = 0;
+  let missingIcon = 0;
+  const open = await page.locator('.map-item:not(.locked)').count();
+  for (let i = 0; i < Math.min(4, open); i++) {
+    // هر بار از نو: بازی کردن یک درس، قفل درس‌های بعدی را عوض می‌کند
+    // و شمارهٔ nth دیگر به همان درس اشاره نمی‌کند.
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).click();
+    await page.waitForSelector('.map-item');
+    const nOpen = await page.locator('.map-item:not(.locked)').count();
+    if (i >= nOpen) break;
+    await page.locator('.map-item:not(.locked)').nth(i).click();
+    await page.waitForSelector('.prompt, canvas.pad', { timeout: 5000 }).catch(() => {});
+    if (await page.locator('.prompt').count()) {
+      checked++;
+      if (!(await page.locator('.task-ico svg').count())) missingIcon++;
+      // بلندگو نباید از کادر نشان بیرون بزند
+      if (await page.locator('.task-ico .spk').count()) {
+        const fits = await page.locator('.task-ico').evaluate((e) => {
+          const r = e.getBoundingClientRect();
+          const s = e.querySelector('.spk').getBoundingClientRect();
+          return s.right <= r.right + 8 && s.bottom <= r.bottom + 8 && s.width >= 14;
+        });
+        check(fits, 'نشان بلندگو از کادر بیرون زده یا خیلی کوچک است');
+      }
+    }
+  }
+  check(checked > 0, 'هیچ گِردی برای بررسی راهنمای تصویری باز نشد');
+  check(missingIcon === 0, `${missingIcon} گِرد از ${checked} نشان تصویری ندارد`);
+  notes.push(`راهنمای تصویری: ${checked - missingIcon}/${checked} گِرد`);
+}
+
 // ── ۳. سرعت بازخورد: کودک باید فوراً اثر لمس را ببیند ───────────────────
 {
   await page.waitForSelector('.opt:not([disabled])');

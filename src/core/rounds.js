@@ -6,6 +6,8 @@
 // اینجا هر گِرد باید نوع مشخص و دادهٔ خودش را داشته باشد. نوع ناشناخته
 // یعنی خطا — نه حدس زدن.
 
+import { NARRATION } from '../data/narration.js';
+import { actionFor } from './task-icon.js';
 import { ALPHABET } from '../data/alphabet.js';
 import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
@@ -98,7 +100,31 @@ function pictureFor(letter) {
   return name && SHAPE_NAMES.includes(name) ? name : null;
 }
 
+/**
+ * هر گِرد را برای کودکِ پیش‌خوان آماده می‌کند.
+ *
+ * کودک پنج‌ساله خواندن بلد نیست. پیش از این ۶۷٪ گِردها هیچ صدایی
+ * نداشتند و تنها راهنمای کودک متنی بود که نمی‌توانست بخواند.
+ * اینجا دو چیز به هر گِرد افزوده می‌شود:
+ *   speak → اگر کلیپ ضبط‌شده‌ای برای همان پرسش هست، خودکار وصل شود.
+ *   action → فعل تمرین، تا رابط نشان تصویری درست را نشان دهد.
+ * هیچ‌کدام دستی در ۳۲ نوع گِرد تکرار نمی‌شود؛ یک نقطهٔ خروجی مشترک.
+ */
+function withCues(built, round) {
+  if (!built || typeof built !== 'object') return built;
+  if (!built.speak && built.prompt && NARRATION[built.prompt]) {
+    built.speak = built.prompt;
+  }
+  built.action = actionFor(round.kind);
+  built.kindName = round.kind;
+  return built;
+}
+
 export function buildRound(round, track) {
+  return withCues(buildRoundInner(round, track), round);
+}
+
+function buildRoundInner(round, track) {
   const n = track.optionCount;
   // سقف عدد: کمینهٔ چیزی که درس می‌خواهد و چیزی که سن اجازه می‌دهد.
   const cap = Math.min(round.max ?? track.maxNumber, track.maxNumber);
