@@ -226,6 +226,40 @@ function playScreen(lessonId) {
           ]),
         );
       }
+      // الگوی تاس — چیدمان آشنا که تشخیص فوری را ممکن می‌کند
+      if (r.display.kind === 'dice') {
+        const box = el('div', { class: `dice d${r.display.times}` });
+        for (let k = 0; k < r.display.times; k++) {
+          box.append(el('span', { class: 'pip', style: `animation-delay:${k * 50}ms` }));
+        }
+        stage.append(box);
+      }
+      // قاب ده‌تایی
+      if (r.display.kind === 'ten-frame') {
+        const frame = el('div', { class: 'ten-frame' });
+        for (let k = 0; k < 10; k++) {
+          frame.append(
+            el('span', {
+              class: `cell${k < r.display.filled ? ' on' : ''}`,
+              style: `animation-delay:${k * 40}ms`,
+            }),
+          );
+        }
+        stage.append(frame);
+      }
+      // تجزیهٔ عدد: کل بالا، بخش شناخته‌شده پایین
+      if (r.display.kind === 'bond') {
+        stage.append(
+          el('div', { class: 'bond' }, [
+            el('span', { class: 'bond-total', text: toFa(r.display.total) }),
+            el('span', { class: 'bond-line', 'aria-hidden': 'true' }),
+            el('span', { class: 'bond-parts' }, [
+              el('span', { class: 'bond-part', text: toFa(r.display.part) }),
+              el('span', { class: 'bond-part q', text: '؟' }),
+            ]),
+          ]),
+        );
+      }
       // متن لاتین در محیط راست‌به‌چپ: باید dir="ltr" صریح داشته باشد،
       // وگرنه نویسه‌های خنثی (خط تیره، فاصله) جابه‌جا می‌شوند.
       if (r.display.kind === 'latin') {

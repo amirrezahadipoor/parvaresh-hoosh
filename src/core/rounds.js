@@ -239,6 +239,100 @@ export function buildRound(round, track) {
       };
     }
 
+    case 'subitize': {
+      // تشخیص فوری تعداد بدون شمردن — پایهٔ «حس عدد» (IES REL).
+      // الگوی تاس/کارت‌نقطه، چون چیدمان آشنا تشخیص را ممکن می‌کند.
+      // تا ۵ نقطه در توان بیشتر کودکان است؛ بالاتر باید شمرد.
+      const count = 1 + rand(Math.min(5, Math.max(2, cap)));
+      const pool = Array.from({ length: Math.min(6, Math.max(3, cap)) }, (_, i) => i + 1);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'dice', times: count },
+        options: buildOptions(count, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer: count,
+      };
+    }
+
+    case 'ten-frame': {
+      // قاب ده‌تایی — ابزار متعارف برای دیدن «چقدر تا ۱۰ مانده».
+      // پل میان شمردن و جمع/تفریق.
+      const filled = 1 + rand(9);
+      const pool = Array.from({ length: 10 }, (_, i) => i + 1);
+      const askRemain = round.mode === 'remain';
+      const answer = askRemain ? 10 - filled : filled;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'ten-frame', filled },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+      };
+    }
+
+    case 'number-bond': {
+      // تجزیهٔ عدد: «۵ می‌شود ۳ و چند؟» — subitizing مفهومی که
+      // پژوهش آن را پل به جمع و تفریق می‌داند.
+      const total = 3 + rand(Math.min(7, Math.max(3, cap - 2)));
+      const part = 1 + rand(total - 1);
+      const answer = total - part;
+      const pool = Array.from({ length: Math.max(4, total) }, (_, i) => i + 1);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{t}', toFa(total)).replace('{p}', toFa(part)),
+        display: { kind: 'bond', total, part },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+      };
+    }
+
+    case 'letter-in-word': {
+      // «کدام کلمه حرف X را دارد؟» — سخت‌تر از «با X شروع می‌شود»
+      // چون کودک باید کل کلمه را بکاود، نه فقط حرف اول.
+      const limit = teachRank(round.letter);
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = STAGED_WORDS.filter(readable);
+      const withL = pool.filter((w) => w.includes(round.letter));
+      const without = pool.filter((w) => !w.includes(round.letter));
+      if (!withL.length || without.length < n - 1) return null;
+      const answer = pick(withL);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'text', value: round.letter },
+        options: buildOptions(answer, without, n).map((v) => ({ label: v, value: v })),
+        answer,
+      };
+    }
+
+    case 'count-letters': {
+      // شمردن حرف‌های یک کلمه — پل میان خواندن و ریاضی.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = STAGED_WORDS.filter((w) => readable(w) && w.length >= 2 && w.length <= 6);
+      if (!pool.length) return null;
+      const word = pick(pool);
+      const count = [...word].filter((ch) => !SKIP_CHARS.has(ch)).length;
+      const nums = [2, 3, 4, 5, 6, 7];
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{w}', word),
+        display: { kind: 'text', value: word },
+        options: buildOptions(count, nums, n).map((v) => ({ label: toFa(v), value: v })),
+        answer: count,
+      };
+    }
+
     case 'letter-trace':
       return {
         type: 'trace',

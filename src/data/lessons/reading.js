@@ -8,16 +8,14 @@ export const READING_LESSONS = [
     "id": "reading-letters-01",
     "domain": "reading",
     "order": 1,
-    "title": "نشانه‌های ا ب د",
+    "title": "نشانه‌های ا ب",
     "schoolLessons": [
-      "آ ا ــ بـ ب",
-      "اَ ــ د"
+      "آ ا ــ بـ ب"
     ],
-    "goal": "کودک صدای حرف‌های ا، ب، د را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ا، ب را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
       "ا",
-      "ب",
-      "د"
+      "ب"
     ],
     "minutes": 6,
     "rounds": [
@@ -40,15 +38,6 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
-        "kind": "letter-sound",
-        "letter": "د",
-        "name": "دال",
-        "prompt": "کدام یکی حرف «دال» است؟",
-        "speak": "صدای حرف دال",
-        "answer": "د",
-        "distractorPool": "letters"
-      },
-      {
         "kind": "letter-trace",
         "letter": "ا",
         "name": "الف",
@@ -63,27 +52,11 @@ export const READING_LESSONS = [
         "speak": "با انگشت روی حرف ب بکش"
       },
       {
-        "kind": "letter-trace",
-        "letter": "د",
-        "name": "دال",
-        "prompt": "با انگشت روی حرف «د» بکش",
-        "speak": "با انگشت روی حرف د بکش"
-      },
-      {
         "kind": "letter-word",
         "letter": "ب",
         "name": "بِ",
         "prompt": "کدام کلمه با حرف «ب» شروع می‌شود؟",
-        "answer": "باد",
-        "readablePool": true,
-        "distractorPool": "words"
-      },
-      {
-        "kind": "letter-word",
-        "letter": "د",
-        "name": "دال",
-        "prompt": "کدام کلمه با حرف «د» شروع می‌شود؟",
-        "answer": "داد",
+        "answer": "بابا",
         "readablePool": true,
         "distractorPool": "words"
       }
@@ -99,17 +72,61 @@ export const READING_LESSONS = [
     "id": "reading-letters-02",
     "domain": "reading",
     "order": 2,
-    "title": "نشانه‌های م س و ت",
+    "title": "نشانه‌های د",
     "schoolLessons": [
-      "مـ م ــ سـ س",
-      "او و ــ تـ ت"
+      "اَ ــ د"
     ],
-    "goal": "کودک صدای حرف‌های م، س، و، ت را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های د را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "د"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "د",
+        "name": "دال",
+        "prompt": "کدام یکی حرف «دال» است؟",
+        "speak": "صدای حرف دال",
+        "answer": "د",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "د",
+        "name": "دال",
+        "prompt": "با انگشت روی حرف «د» بکش",
+        "speak": "با انگشت روی حرف د بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "د",
+        "name": "دال",
+        "prompt": "کدام کلمه با حرف «د» شروع می‌شود؟",
+        "answer": "داد",
+        "readablePool": true,
+        "distractorPool": "words"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «د» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-03",
+    "domain": "reading",
+    "order": 3,
+    "title": "نشانه‌های م س",
+    "schoolLessons": [
+      "مـ م ــ سـ س"
+    ],
+    "goal": "کودک صدای حرف‌های م، س را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
       "م",
-      "س",
-      "و",
-      "ت"
+      "س"
     ],
     "minutes": 6,
     "rounds": [
@@ -132,6 +149,69 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
+        "kind": "letter-trace",
+        "letter": "م",
+        "name": "میم",
+        "prompt": "با انگشت روی حرف «م» بکش",
+        "speak": "با انگشت روی حرف م بکش"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "س",
+        "name": "سین",
+        "prompt": "با انگشت روی حرف «س» بکش",
+        "speak": "با انگشت روی حرف س بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "س",
+        "name": "سین",
+        "prompt": "کدام کلمه با حرف «س» شروع می‌شود؟",
+        "answer": "سام",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "م",
+        "name": "میم",
+        "prompt": "کدام کلمه حرف «م» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "س",
+        "name": "سین",
+        "prompt": "کدام کلمه حرف «س» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "س",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «م» یا «س» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-04",
+    "domain": "reading",
+    "order": 4,
+    "title": "نشانه‌های و ت",
+    "schoolLessons": [
+      "او و ــ تـ ت"
+    ],
+    "goal": "کودک صدای حرف‌های و، ت را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "و",
+      "ت"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
         "kind": "letter-sound",
         "letter": "و",
         "name": "واو",
@@ -151,20 +231,6 @@ export const READING_LESSONS = [
       },
       {
         "kind": "letter-trace",
-        "letter": "م",
-        "name": "میم",
-        "prompt": "با انگشت روی حرف «م» بکش",
-        "speak": "با انگشت روی حرف م بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "س",
-        "name": "سین",
-        "prompt": "با انگشت روی حرف «س» بکش",
-        "speak": "با انگشت روی حرف س بکش"
-      },
-      {
-        "kind": "letter-trace",
         "letter": "و",
         "name": "واو",
         "prompt": "با انگشت روی حرف «و» بکش",
@@ -179,33 +245,32 @@ export const READING_LESSONS = [
       },
       {
         "kind": "letter-word",
-        "letter": "م",
-        "name": "میم",
-        "prompt": "کدام کلمه با حرف «م» شروع می‌شود؟",
-        "answer": "ماست",
-        "readablePool": true,
-        "distractorPool": "words"
-      },
-      {
-        "kind": "letter-word",
-        "letter": "س",
-        "name": "سین",
-        "prompt": "کدام کلمه با حرف «س» شروع می‌شود؟",
-        "answer": "سام",
-        "readablePool": true,
-        "distractorPool": "words"
-      },
-      {
-        "kind": "letter-word",
         "letter": "ت",
         "name": "تِ",
         "prompt": "کدام کلمه با حرف «ت» شروع می‌شود؟",
         "answer": "توت",
         "readablePool": true,
         "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "و",
+        "name": "واو",
+        "prompt": "کدام کلمه حرف «و» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ت",
+        "name": "تِ",
+        "prompt": "کدام کلمه حرف «ت» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ت",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
-    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «م» یا «س» شروع می‌شوند.",
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «و» یا «ت» شروع می‌شوند.",
     "reviewDays": [
       1,
       3,
@@ -213,20 +278,17 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-03",
+    "id": "reading-letters-05",
     "domain": "reading",
-    "order": 3,
-    "title": "نشانه‌های ر ن ی ز",
+    "order": 5,
+    "title": "نشانه‌های ر ن",
     "schoolLessons": [
-      "ر ــ نـ ن",
-      "ایـ یـ ی ــ ز"
+      "ر ــ نـ ن"
     ],
-    "goal": "کودک صدای حرف‌های ر، ن، ی، ز را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ر، ن را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
       "ر",
-      "ن",
-      "ی",
-      "ز"
+      "ن"
     ],
     "minutes": 6,
     "rounds": [
@@ -249,6 +311,69 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
+        "kind": "letter-trace",
+        "letter": "ر",
+        "name": "رِ",
+        "prompt": "با انگشت روی حرف «ر» بکش",
+        "speak": "با انگشت روی حرف ر بکش"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "ن",
+        "name": "نون",
+        "prompt": "با انگشت روی حرف «ن» بکش",
+        "speak": "با انگشت روی حرف ن بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "ن",
+        "name": "نون",
+        "prompt": "کدام کلمه با حرف «ن» شروع می‌شود؟",
+        "answer": "نان",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ر",
+        "name": "رِ",
+        "prompt": "کدام کلمه حرف «ر» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ن",
+        "name": "نون",
+        "prompt": "کدام کلمه حرف «ن» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ن",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ر» یا «ن» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-06",
+    "domain": "reading",
+    "order": 6,
+    "title": "نشانه‌های ی ز",
+    "schoolLessons": [
+      "ایـ یـ ی ــ ز"
+    ],
+    "goal": "کودک صدای حرف‌های ی، ز را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "ی",
+      "ز"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
         "kind": "letter-sound",
         "letter": "ی",
         "name": "یِ",
@@ -268,20 +393,6 @@ export const READING_LESSONS = [
       },
       {
         "kind": "letter-trace",
-        "letter": "ر",
-        "name": "رِ",
-        "prompt": "با انگشت روی حرف «ر» بکش",
-        "speak": "با انگشت روی حرف ر بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "ن",
-        "name": "نون",
-        "prompt": "با انگشت روی حرف «ن» بکش",
-        "speak": "با انگشت روی حرف ن بکش"
-      },
-      {
-        "kind": "letter-trace",
         "letter": "ی",
         "name": "یِ",
         "prompt": "با انگشت روی حرف «ی» بکش",
@@ -296,24 +407,32 @@ export const READING_LESSONS = [
       },
       {
         "kind": "letter-word",
-        "letter": "ن",
-        "name": "نون",
-        "prompt": "کدام کلمه با حرف «ن» شروع می‌شود؟",
-        "answer": "نان",
-        "readablePool": true,
-        "distractorPool": "words"
-      },
-      {
-        "kind": "letter-word",
         "letter": "ز",
         "name": "زِ",
         "prompt": "کدام کلمه با حرف «ز» شروع می‌شود؟",
         "answer": "زرد",
         "readablePool": true,
         "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ی",
+        "name": "یِ",
+        "prompt": "کدام کلمه حرف «ی» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ز",
+        "name": "زِ",
+        "prompt": "کدام کلمه حرف «ز» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ز",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
-    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ر» یا «ن» شروع می‌شوند.",
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ی» یا «ز» شروع می‌شوند.",
     "reviewDays": [
       1,
       3,
@@ -321,19 +440,17 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-04",
+    "id": "reading-letters-07",
     "domain": "reading",
-    "order": 4,
-    "title": "نشانه‌های ه ش ک",
+    "order": 7,
+    "title": "نشانه‌های ه ش",
     "schoolLessons": [
-      "اِ ـه ه ــ شـ ش",
-      "کـ ک ــ و"
+      "اِ ـه ه ــ شـ ش"
     ],
-    "goal": "کودک صدای حرف‌های ه، ش، ک را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ه، ش را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
       "ه",
-      "ش",
-      "ک"
+      "ش"
     ],
     "minutes": 6,
     "rounds": [
@@ -356,15 +473,6 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
-        "kind": "letter-sound",
-        "letter": "ک",
-        "name": "کاف",
-        "prompt": "کدام یکی حرف «کاف» است؟",
-        "speak": "صدای حرف کاف",
-        "answer": "ک",
-        "distractorPool": "letters"
-      },
-      {
         "kind": "letter-trace",
         "letter": "ه",
         "name": "هِ",
@@ -377,13 +485,6 @@ export const READING_LESSONS = [
         "name": "شین",
         "prompt": "با انگشت روی حرف «ش» بکش",
         "speak": "با انگشت روی حرف ش بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "ک",
-        "name": "کاف",
-        "prompt": "با انگشت روی حرف «ک» بکش",
-        "speak": "با انگشت روی حرف ک بکش"
       },
       {
         "kind": "letter-word",
@@ -404,13 +505,21 @@ export const READING_LESSONS = [
         "distractorPool": "words"
       },
       {
-        "kind": "letter-word",
-        "letter": "ک",
-        "name": "کاف",
-        "prompt": "کدام کلمه با حرف «ک» شروع می‌شود؟",
-        "answer": "کتاب",
-        "readablePool": true,
-        "distractorPool": "words"
+        "kind": "letter-in-word",
+        "letter": "ه",
+        "name": "هِ",
+        "prompt": "کدام کلمه حرف «ه» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ش",
+        "name": "شین",
+        "prompt": "کدام کلمه حرف «ش» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ش",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
     "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ه» یا «ش» شروع می‌شوند.",
@@ -421,20 +530,75 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-05",
+    "id": "reading-letters-08",
     "domain": "reading",
-    "order": 5,
-    "title": "نشانه‌های پ گ ف خ",
+    "order": 8,
+    "title": "نشانه‌های ک",
     "schoolLessons": [
-      "پـ پ ــ گـ گ",
-      "فـ ف ــ خـ خ"
+      "کـ ک ــ و"
     ],
-    "goal": "کودک صدای حرف‌های پ، گ، ف، خ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ک را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "ک"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "ک",
+        "name": "کاف",
+        "prompt": "کدام یکی حرف «کاف» است؟",
+        "speak": "صدای حرف کاف",
+        "answer": "ک",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "ک",
+        "name": "کاف",
+        "prompt": "با انگشت روی حرف «ک» بکش",
+        "speak": "با انگشت روی حرف ک بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "ک",
+        "name": "کاف",
+        "prompt": "کدام کلمه با حرف «ک» شروع می‌شود؟",
+        "answer": "کتاب",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ک",
+        "name": "کاف",
+        "prompt": "کدام کلمه حرف «ک» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ک",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ک» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-09",
+    "domain": "reading",
+    "order": 9,
+    "title": "نشانه‌های پ گ",
+    "schoolLessons": [
+      "پـ پ ــ گـ گ"
+    ],
+    "goal": "کودک صدای حرف‌های پ، گ را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
       "پ",
-      "گ",
-      "ف",
-      "خ"
+      "گ"
     ],
     "minutes": 6,
     "rounds": [
@@ -457,24 +621,6 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
-        "kind": "letter-sound",
-        "letter": "ف",
-        "name": "فِ",
-        "prompt": "کدام یکی حرف «فِ» است؟",
-        "speak": "صدای حرف فِ",
-        "answer": "ف",
-        "distractorPool": "letters"
-      },
-      {
-        "kind": "letter-sound",
-        "letter": "خ",
-        "name": "خِ",
-        "prompt": "کدام یکی حرف «خِ» است؟",
-        "speak": "صدای حرف خِ",
-        "answer": "خ",
-        "distractorPool": "letters"
-      },
-      {
         "kind": "letter-trace",
         "letter": "پ",
         "name": "پِ",
@@ -487,20 +633,6 @@ export const READING_LESSONS = [
         "name": "گاف",
         "prompt": "با انگشت روی حرف «گ» بکش",
         "speak": "با انگشت روی حرف گ بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "ف",
-        "name": "فِ",
-        "prompt": "با انگشت روی حرف «ف» بکش",
-        "speak": "با انگشت روی حرف ف بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "خ",
-        "name": "خِ",
-        "prompt": "با انگشت روی حرف «خ» بکش",
-        "speak": "با انگشت روی حرف خ بکش"
       },
       {
         "kind": "letter-word",
@@ -521,13 +653,21 @@ export const READING_LESSONS = [
         "distractorPool": "words"
       },
       {
-        "kind": "letter-word",
-        "letter": "خ",
-        "name": "خِ",
-        "prompt": "کدام کلمه با حرف «خ» شروع می‌شود؟",
-        "answer": "خانه",
-        "readablePool": true,
-        "distractorPool": "words"
+        "kind": "letter-in-word",
+        "letter": "پ",
+        "name": "پِ",
+        "prompt": "کدام کلمه حرف «پ» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "گ",
+        "name": "گاف",
+        "prompt": "کدام کلمه حرف «گ» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "گ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
     "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «پ» یا «گ» شروع می‌شوند.",
@@ -538,19 +678,98 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-06",
+    "id": "reading-letters-10",
     "domain": "reading",
-    "order": 6,
-    "title": "نشانه‌های ق ل ج",
+    "order": 10,
+    "title": "نشانه‌های ف خ",
     "schoolLessons": [
-      "قـ ق ــ لـ ل",
-      "جـ ج"
+      "فـ ف ــ خـ خ"
     ],
-    "goal": "کودک صدای حرف‌های ق، ل، ج را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ف، خ را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "ف",
+      "خ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "ف",
+        "name": "فِ",
+        "prompt": "کدام یکی حرف «فِ» است؟",
+        "speak": "صدای حرف فِ",
+        "answer": "ف",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "خ",
+        "name": "خِ",
+        "prompt": "کدام یکی حرف «خِ» است؟",
+        "speak": "صدای حرف خِ",
+        "answer": "خ",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "ف",
+        "name": "فِ",
+        "prompt": "با انگشت روی حرف «ف» بکش",
+        "speak": "با انگشت روی حرف ف بکش"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "خ",
+        "name": "خِ",
+        "prompt": "با انگشت روی حرف «خ» بکش",
+        "speak": "با انگشت روی حرف خ بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "خ",
+        "name": "خِ",
+        "prompt": "کدام کلمه با حرف «خ» شروع می‌شود؟",
+        "answer": "خانه",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ف",
+        "name": "فِ",
+        "prompt": "کدام کلمه حرف «ف» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "خ",
+        "name": "خِ",
+        "prompt": "کدام کلمه حرف «خ» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "خ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ف» یا «خ» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-11",
+    "domain": "reading",
+    "order": 11,
+    "title": "نشانه‌های ق ل",
+    "schoolLessons": [
+      "قـ ق ــ لـ ل"
+    ],
+    "goal": "کودک صدای حرف‌های ق، ل را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
       "ق",
-      "ل",
-      "ج"
+      "ل"
     ],
     "minutes": 6,
     "rounds": [
@@ -573,15 +792,6 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
-        "kind": "letter-sound",
-        "letter": "ج",
-        "name": "جیم",
-        "prompt": "کدام یکی حرف «جیم» است؟",
-        "speak": "صدای حرف جیم",
-        "answer": "ج",
-        "distractorPool": "letters"
-      },
-      {
         "kind": "letter-trace",
         "letter": "ق",
         "name": "قاف",
@@ -594,13 +804,6 @@ export const READING_LESSONS = [
         "name": "لام",
         "prompt": "با انگشت روی حرف «ل» بکش",
         "speak": "با انگشت روی حرف ل بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "ج",
-        "name": "جیم",
-        "prompt": "با انگشت روی حرف «ج» بکش",
-        "speak": "با انگشت روی حرف ج بکش"
       },
       {
         "kind": "letter-word",
@@ -621,13 +824,21 @@ export const READING_LESSONS = [
         "distractorPool": "words"
       },
       {
-        "kind": "letter-word",
-        "letter": "ج",
-        "name": "جیم",
-        "prompt": "کدام کلمه با حرف «ج» شروع می‌شود؟",
-        "answer": "جوجه",
-        "readablePool": true,
-        "distractorPool": "words"
+        "kind": "letter-in-word",
+        "letter": "ق",
+        "name": "قاف",
+        "prompt": "کدام کلمه حرف «ق» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ل",
+        "name": "لام",
+        "prompt": "کدام کلمه حرف «ل» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ل",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
     "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ق» یا «ل» شروع می‌شوند.",
@@ -638,18 +849,74 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-07",
+    "id": "reading-letters-12",
     "domain": "reading",
-    "order": 7,
-    "title": "نشانه‌های چ ژ",
+    "order": 12,
+    "title": "نشانه‌های ج",
     "schoolLessons": [
-      "هـ ه ــ چـ چ",
-      "ژ ــ خوا"
+      "جـ ج"
     ],
-    "goal": "کودک صدای حرف‌های چ، ژ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ج را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
-      "چ",
-      "ژ"
+      "ج"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "ج",
+        "name": "جیم",
+        "prompt": "کدام یکی حرف «جیم» است؟",
+        "speak": "صدای حرف جیم",
+        "answer": "ج",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "ج",
+        "name": "جیم",
+        "prompt": "با انگشت روی حرف «ج» بکش",
+        "speak": "با انگشت روی حرف ج بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "ج",
+        "name": "جیم",
+        "prompt": "کدام کلمه با حرف «ج» شروع می‌شود؟",
+        "answer": "جوجه",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ج",
+        "name": "جیم",
+        "prompt": "کدام کلمه حرف «ج» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ج",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ج» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-13",
+    "domain": "reading",
+    "order": 13,
+    "title": "نشانه‌های چ",
+    "schoolLessons": [
+      "هـ ه ــ چـ چ"
+    ],
+    "goal": "کودک صدای حرف‌های چ را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "چ"
     ],
     "minutes": 6,
     "rounds": [
@@ -663,27 +930,11 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
-        "kind": "letter-sound",
-        "letter": "ژ",
-        "name": "ژِ",
-        "prompt": "کدام یکی حرف «ژِ» است؟",
-        "speak": "صدای حرف ژِ",
-        "answer": "ژ",
-        "distractorPool": "letters"
-      },
-      {
         "kind": "letter-trace",
         "letter": "چ",
         "name": "چِه",
         "prompt": "با انگشت روی حرف «چ» بکش",
         "speak": "با انگشت روی حرف چ بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "ژ",
-        "name": "ژِ",
-        "prompt": "با انگشت روی حرف «ژ» بکش",
-        "speak": "با انگشت روی حرف ژ بکش"
       },
       {
         "kind": "letter-word",
@@ -695,16 +946,18 @@ export const READING_LESSONS = [
         "distractorPool": "words"
       },
       {
-        "kind": "letter-word",
-        "letter": "ژ",
-        "name": "ژِ",
-        "prompt": "کدام کلمه با حرف «ژ» شروع می‌شود؟",
-        "answer": "ژاله",
-        "readablePool": true,
-        "distractorPool": "words"
+        "kind": "letter-in-word",
+        "letter": "چ",
+        "name": "چِه",
+        "prompt": "کدام کلمه حرف «چ» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "چ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
-    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «چ» یا «ژ» شروع می‌شوند.",
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «چ» شروع می‌شوند.",
     "reviewDays": [
       1,
       3,
@@ -712,20 +965,75 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-08",
+    "id": "reading-letters-14",
     "domain": "reading",
-    "order": 8,
-    "title": "نشانه‌های ص ذ ع ث",
+    "order": 14,
+    "title": "نشانه‌های ژ",
     "schoolLessons": [
-      "صـ ص ــ ذ",
-      "عـ ع ــ ثـ ث"
+      "ژ ــ خوا"
     ],
-    "goal": "کودک صدای حرف‌های ص، ذ، ع، ث را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ژ را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "ژ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "ژ",
+        "name": "ژِ",
+        "prompt": "کدام یکی حرف «ژِ» است؟",
+        "speak": "صدای حرف ژِ",
+        "answer": "ژ",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "ژ",
+        "name": "ژِ",
+        "prompt": "با انگشت روی حرف «ژ» بکش",
+        "speak": "با انگشت روی حرف ژ بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "ژ",
+        "name": "ژِ",
+        "prompt": "کدام کلمه با حرف «ژ» شروع می‌شود؟",
+        "answer": "ژاله",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ژ",
+        "name": "ژِ",
+        "prompt": "کدام کلمه حرف «ژ» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ژ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ژ» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-15",
+    "domain": "reading",
+    "order": 15,
+    "title": "نشانه‌های ص ذ",
+    "schoolLessons": [
+      "صـ ص ــ ذ"
+    ],
+    "goal": "کودک صدای حرف‌های ص، ذ را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
       "ص",
-      "ذ",
-      "ع",
-      "ث"
+      "ذ"
     ],
     "minutes": 6,
     "rounds": [
@@ -748,6 +1056,69 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
+        "kind": "letter-trace",
+        "letter": "ص",
+        "name": "صاد",
+        "prompt": "با انگشت روی حرف «ص» بکش",
+        "speak": "با انگشت روی حرف ص بکش"
+      },
+      {
+        "kind": "letter-trace",
+        "letter": "ذ",
+        "name": "ذال",
+        "prompt": "با انگشت روی حرف «ذ» بکش",
+        "speak": "با انگشت روی حرف ذ بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "ص",
+        "name": "صاد",
+        "prompt": "کدام کلمه با حرف «ص» شروع می‌شود؟",
+        "answer": "صدف",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ص",
+        "name": "صاد",
+        "prompt": "کدام کلمه حرف «ص» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ذ",
+        "name": "ذال",
+        "prompt": "کدام کلمه حرف «ذ» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ذ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ص» یا «ذ» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-16",
+    "domain": "reading",
+    "order": 16,
+    "title": "نشانه‌های ع ث",
+    "schoolLessons": [
+      "عـ ع ــ ثـ ث"
+    ],
+    "goal": "کودک صدای حرف‌های ع، ث را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "ع",
+      "ث"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
         "kind": "letter-sound",
         "letter": "ع",
         "name": "عین",
@@ -767,20 +1138,6 @@ export const READING_LESSONS = [
       },
       {
         "kind": "letter-trace",
-        "letter": "ص",
-        "name": "صاد",
-        "prompt": "با انگشت روی حرف «ص» بکش",
-        "speak": "با انگشت روی حرف ص بکش"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "ذ",
-        "name": "ذال",
-        "prompt": "با انگشت روی حرف «ذ» بکش",
-        "speak": "با انگشت روی حرف ذ بکش"
-      },
-      {
-        "kind": "letter-trace",
         "letter": "ع",
         "name": "عین",
         "prompt": "با انگشت روی حرف «ع» بکش",
@@ -794,16 +1151,24 @@ export const READING_LESSONS = [
         "speak": "با انگشت روی حرف ث بکش"
       },
       {
-        "kind": "letter-word",
-        "letter": "ص",
-        "name": "صاد",
-        "prompt": "کدام کلمه با حرف «ص» شروع می‌شود؟",
-        "answer": "صدف",
-        "readablePool": true,
-        "distractorPool": "words"
+        "kind": "letter-in-word",
+        "letter": "ع",
+        "name": "عین",
+        "prompt": "کدام کلمه حرف «ع» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ث",
+        "name": "ثِ",
+        "prompt": "کدام کلمه حرف «ث» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ث",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
-    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ص» یا «ذ» شروع می‌شوند.",
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ع» یا «ث» شروع می‌شوند.",
     "reviewDays": [
       1,
       3,
@@ -811,19 +1176,16 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-09",
+    "id": "reading-letters-17",
     "domain": "reading",
-    "order": 9,
-    "title": "نشانه‌های ح ض ط",
+    "order": 17,
+    "title": "نشانه‌های ح",
     "schoolLessons": [
-      "حـ ح",
-      "ضـ ض ــ ط"
+      "حـ ح"
     ],
-    "goal": "کودک صدای حرف‌های ح، ض، ط را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های ح را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
-      "ح",
-      "ض",
-      "ط"
+      "ح"
     ],
     "minutes": 6,
     "rounds": [
@@ -836,6 +1198,56 @@ export const READING_LESSONS = [
         "answer": "ح",
         "distractorPool": "letters"
       },
+      {
+        "kind": "letter-trace",
+        "letter": "ح",
+        "name": "حِ",
+        "prompt": "با انگشت روی حرف «ح» بکش",
+        "speak": "با انگشت روی حرف ح بکش"
+      },
+      {
+        "kind": "letter-word",
+        "letter": "ح",
+        "name": "حِ",
+        "prompt": "کدام کلمه با حرف «ح» شروع می‌شود؟",
+        "answer": "حلزون",
+        "readablePool": true,
+        "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ح",
+        "name": "حِ",
+        "prompt": "کدام کلمه حرف «ح» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ح",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ح» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-18",
+    "domain": "reading",
+    "order": 18,
+    "title": "نشانه‌های ض ط",
+    "schoolLessons": [
+      "ضـ ض ــ ط"
+    ],
+    "goal": "کودک صدای حرف‌های ض، ط را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "ض",
+      "ط"
+    ],
+    "minutes": 6,
+    "rounds": [
       {
         "kind": "letter-sound",
         "letter": "ض",
@@ -856,13 +1268,6 @@ export const READING_LESSONS = [
       },
       {
         "kind": "letter-trace",
-        "letter": "ح",
-        "name": "حِ",
-        "prompt": "با انگشت روی حرف «ح» بکش",
-        "speak": "با انگشت روی حرف ح بکش"
-      },
-      {
-        "kind": "letter-trace",
         "letter": "ض",
         "name": "ضاد",
         "prompt": "با انگشت روی حرف «ض» بکش",
@@ -877,24 +1282,32 @@ export const READING_LESSONS = [
       },
       {
         "kind": "letter-word",
-        "letter": "ح",
-        "name": "حِ",
-        "prompt": "کدام کلمه با حرف «ح» شروع می‌شود؟",
-        "answer": "حلزون",
-        "readablePool": true,
-        "distractorPool": "words"
-      },
-      {
-        "kind": "letter-word",
         "letter": "ط",
         "name": "طا",
         "prompt": "کدام کلمه با حرف «ط» شروع می‌شود؟",
         "answer": "طوطی",
         "readablePool": true,
         "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ض",
+        "name": "ضاد",
+        "prompt": "کدام کلمه حرف «ض» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ط",
+        "name": "طا",
+        "prompt": "کدام کلمه حرف «ط» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ط",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
-    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ح» یا «ض» شروع می‌شوند.",
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ض» یا «ط» شروع می‌شوند.",
     "reviewDays": [
       1,
       3,
@@ -902,18 +1315,16 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-10",
+    "id": "reading-letters-19",
     "domain": "reading",
-    "order": 10,
-    "title": "نشانه‌های غ ظ",
+    "order": 19,
+    "title": "نشانه‌های غ",
     "schoolLessons": [
-      "غـ غ",
-      "ظ"
+      "غـ غ"
     ],
-    "goal": "کودک صدای حرف‌های غ، ظ را می‌شناسد و شکلشان را می‌نویسد.",
+    "goal": "کودک صدای حرف‌های غ را می‌شناسد و شکلشان را می‌نویسد.",
     "letters": [
-      "غ",
-      "ظ"
+      "غ"
     ],
     "minutes": 6,
     "rounds": [
@@ -927,6 +1338,46 @@ export const READING_LESSONS = [
         "distractorPool": "letters"
       },
       {
+        "kind": "letter-trace",
+        "letter": "غ",
+        "name": "غین",
+        "prompt": "با انگشت روی حرف «غ» بکش",
+        "speak": "با انگشت روی حرف غ بکش"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "غ",
+        "name": "غین",
+        "prompt": "کدام کلمه حرف «غ» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "غ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «غ» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-20",
+    "domain": "reading",
+    "order": 20,
+    "title": "نشانه‌های ظ",
+    "schoolLessons": [
+      "ظ"
+    ],
+    "goal": "کودک صدای حرف‌های ظ را می‌شناسد و شکلشان را می‌نویسد.",
+    "letters": [
+      "ظ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
         "kind": "letter-sound",
         "letter": "ظ",
         "name": "ظا",
@@ -934,13 +1385,6 @@ export const READING_LESSONS = [
         "speak": "صدای حرف ظا",
         "answer": "ظ",
         "distractorPool": "letters"
-      },
-      {
-        "kind": "letter-trace",
-        "letter": "غ",
-        "name": "غین",
-        "prompt": "با انگشت روی حرف «غ» بکش",
-        "speak": "با انگشت روی حرف غ بکش"
       },
       {
         "kind": "letter-trace",
@@ -957,9 +1401,20 @@ export const READING_LESSONS = [
         "answer": "ظهر",
         "readablePool": true,
         "distractorPool": "words"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ظ",
+        "name": "ظا",
+        "prompt": "کدام کلمه حرف «ظ» را دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ظ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
       }
     ],
-    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «غ» یا «ظ» شروع می‌شوند.",
+    "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ظ» شروع می‌شوند.",
     "reviewDays": [
       1,
       3,

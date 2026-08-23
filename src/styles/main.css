@@ -1020,3 +1020,98 @@ canvas.pad {
   font-family: system-ui, sans-serif;
   color: var(--english);
 }
+
+/* ── الگوی تاس (subitizing) ───────────────────────────────
+   چیدمان آشنا تشخیص فوری را ممکن می‌کند؛ نقطه‌های تصادفی نه. */
+.dice {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s4);
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  grid-template-columns: repeat(3, 30px);
+  grid-template-rows: repeat(3, 30px);
+  place-items: center;
+}
+
+.pip {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--math);
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.dice.d1 { grid-template-columns: 30px; grid-template-rows: 30px; }
+.dice.d2 { grid-template-columns: repeat(2, 30px); grid-template-rows: 30px; }
+.dice.d3 { grid-template-columns: repeat(3, 30px); grid-template-rows: 30px; }
+.dice.d4, .dice.d6 { grid-template-columns: repeat(2, 30px); grid-template-rows: repeat(2, 30px); }
+.dice.d6 { grid-template-rows: repeat(3, 30px); }
+
+/* ── قاب ده‌تایی ──────────────────────────────────────────
+   ابزار متعارف برای دیدن «چقدر تا ده مانده». */
+.ten-frame {
+  display: grid;
+  grid-template-columns: repeat(5, 42px);
+  grid-template-rows: repeat(2, 42px);
+  gap: 3px;
+  padding: 6px;
+  background: var(--surface);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.cell {
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  display: block;
+}
+
+.cell.on {
+  background: var(--math);
+  border-color: var(--math);
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+/* ── تجزیهٔ عدد ───────────────────────────────────────────*/
+.bond {
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
+}
+
+.bond-total {
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--math);
+  line-height: 1;
+}
+
+.bond-line {
+  width: 92px;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.bond-parts {
+  display: flex;
+  gap: var(--s5);
+}
+
+.bond-part {
+  font-size: 38px;
+  font-weight: 900;
+  min-width: 54px;
+  text-align: center;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: var(--s2) var(--s3);
+  box-shadow: var(--shadow);
+}
+
+.bond-part.q {
+  color: var(--brand);
+}

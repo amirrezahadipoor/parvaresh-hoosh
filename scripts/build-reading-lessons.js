@@ -35,14 +35,13 @@ for (const nl of NESHANEH_LESSONS) {
   const have = nl.letters.map((l) => byLetter.get(l)).filter(Boolean);
   if (have.length) ordered.push({ letters: have, label: nl.label });
 }
-const groups = [];
-for (let i = 0; i < ordered.length; i += 2) {
-  const chunk = ordered.slice(i, i + 2);
-  groups.push({
-    letters: chunk.flatMap((c) => c.letters),
-    labels: chunk.map((c) => c.label),
-  });
-}
+// یک نشانهٔ کتاب = یک درس بازی.
+//
+// پیش‌تر دو نشانه در یک درس ادغام می‌شد تا نشست طولانی‌تر شود، ولی این
+// کار نصف درس‌ها را حذف می‌کرد و هر درس را شلوغ‌تر می‌ساخت. پژوهش
+// می‌گوید دامنهٔ توجه این سن ۸ تا ۱۲ دقیقه است و نشست‌های *کوتاه‌ترِ
+// پرتکرار* بهتر از نشست‌های طولانی‌اند. پس درس‌ها کوچک و پرشمار می‌شوند.
+const groups = ordered.map((c) => ({ letters: c.letters, labels: [c.label] }));
 
 const lessons = groups.map((grp, gi) => {
   const group = grp.letters;
@@ -99,6 +98,31 @@ const lessons = groups.map((grp, gi) => {
       answer: ok[0],
       readablePool: true,
       distractorPool: 'words',
+    });
+  }
+
+  // مهارت‌های افزوده — فقط وقتی داده اجازه بدهد.
+  // قانون پروژه: مولد هر گِردی را که نتواند صادقانه بسازد، رد می‌کند.
+  const readablePool = STAGED_WORDS.filter(readable);
+  for (const a of group) {
+    const withL = readablePool.filter((w) => w.includes(a.letter));
+    const without = readablePool.filter((w) => !w.includes(a.letter));
+    // ۴ گزینه بیشترین حالت است (ردهٔ ۷–۸ سال)، پس ۳ گزینهٔ نادرست لازم است.
+    if (withL.length && without.length >= 3) {
+      rounds.push({
+        kind: 'letter-in-word',
+        letter: a.letter,
+        name: a.name,
+        prompt: `کدام کلمه حرف «${a.letter}» را دارد؟`,
+      });
+    }
+  }
+  // شمردن حرف‌ها: از درسی که واژگان کافی جمع شده باشد.
+  if (readablePool.filter((w) => w.length >= 2 && w.length <= 6).length >= 6) {
+    rounds.push({
+      kind: 'count-letters',
+      letter: letters[letters.length - 1],
+      prompt: 'کلمهٔ {w} چند حرف دارد؟',
     });
   }
 
