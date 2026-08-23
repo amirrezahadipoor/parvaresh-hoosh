@@ -1468,20 +1468,34 @@ canvas.pad {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* واژهٔ پنج‌صدایی در ۳۲۰px جا نمی‌شود. transform فضای چیدمان
+     را کم نمی‌کند و سرریز افقی می‌ساخت، پس به‌جایش خودِ اندازهٔ
+     کارت‌ها کوچک می‌شود (متغیر --snd). */
+  max-width: 100%;
   gap: var(--s2);
-  flex-wrap: wrap;
   /* ⚠ حیاتی: صداها به ترتیب خواندن — اولین صدا سمت راست.
      صفحه RTL است، پس ترتیب طبیعی DOM همین را می‌دهد و
      row-reverse آن را خراب می‌کند. با اندازه‌گیری مختصات
-     واقعی تأیید شد، نه با نگاه به کد. */
+     واقعی تأیید شد، نه با نگاه به کد.
+
+     ⚠⚠ و هرگز flex-wrap نگذار: وقتی «شکار» به خط دوم می‌شکست،
+     ترتیب دیداری «ا ک ِ ش ر» می‌شد به‌جای «ش ِ ک ا ر» — یعنی
+     واژه‌ای که کودک می‌خواند اصلاً واژه نبود. آزمون مختصات هم
+     نگرفتش چون فقط یک ردیف را می‌سنجید. به‌جای شکستن، صداها
+     کوچک می‌شوند تا در یک خط جا شوند. */
+  flex-wrap: nowrap;
 }
 
 .snd {
   display: grid;
   gap: 2px;
   justify-items: center;
-  min-width: 52px;
-  padding: var(--s2) var(--s3);
+  /* در یک خط می‌مانند. min-width:0 یک بار باعث شد کارت‌های
+     میانی تا صفر جمع شوند و عملاً نامرئی گردند — کودک فقط
+     «ش» و «ر» می‌دید. کمینه باید واقعی باشد. */
+  min-width: var(--snd-w, 44px);
+  flex: 0 0 auto;
+  padding: var(--s2) 4px;
   background: var(--bg);
   border-radius: var(--radius-sm);
   animation: snd-in var(--base) var(--ease) backwards;
@@ -1497,24 +1511,51 @@ canvas.pad {
 }
 
 .snd-g {
-  font-size: var(--t-title);
+  font-size: var(--snd-g, var(--t-title));
   font-weight: 800;
   line-height: 1.1;
 }
 
 .snd-s {
-  font-size: var(--t-small);
+  font-size: var(--snd-s, var(--t-small));
   color: var(--muted);
   font-weight: 700;
 }
 
 /* قوس پیوند میان صداها — نشانهٔ «به هم بچسبان» */
 .snd-link {
-  width: 18px;
-  height: 10px;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 9px;
   border-bottom: 3px solid var(--brand);
   border-radius: 0 0 12px 12px;
-  opacity: 0.55;
-  align-self: end;
-  margin-bottom: 6px;
+  opacity: 0.5;
+  /* قوس باید کنارِ میانهٔ کارت بنشیند، نه زیر آن — پیش‌تر
+     آویزان به نظر می‌رسید و پیوند دو صدا را نمی‌رساند. */
+  align-self: center;
+  margin-top: 14px;
+}
+
+/* واژهٔ بلند: کارت‌ها کوچک‌تر تا در یک خط جا شوند و ترتیب خواندن
+   نشکند. شکستن خط در RTL ترتیب صداها را وارونه می‌کرد. */
+.sounds[data-n="4"] {
+  --snd-w: 40px;
+  --snd-g: var(--t-body);
+}
+
+.sounds[data-n="5"],
+.sounds[data-n="6"] {
+  --snd-w: 34px;
+  --snd-g: var(--t-body);
+  --snd-s: 13px;
+  gap: var(--s1);
+}
+
+@media (max-width: 360px) {
+  .sounds[data-n="4"] { --snd-w: 36px; }
+  .sounds[data-n="5"],
+  .sounds[data-n="6"] {
+    --snd-w: 29px;
+    --snd-s: 12px;
+  }
 }

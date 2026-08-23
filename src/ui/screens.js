@@ -254,6 +254,10 @@ function playScreen(lessonId) {
             ]),
           );
         });
+        // تعداد صدا به CSS می‌رود تا کارت‌ها کوچک شوند و واژه در
+        // یک خط بماند. شکستن خط در RTL ترتیب خواندن را وارونه
+        // می‌کرد — «ا ک ِ ش ر» به‌جای «ش ِ ک ا ر».
+        row.dataset.n = String(r.display.parts.length);
         stage.append(row);
       }
       if (r.display.kind === 'repeat') {

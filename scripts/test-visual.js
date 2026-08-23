@@ -133,6 +133,18 @@ async function audit(page, label, vp) {
 
 for (const vp of VIEWPORTS) {
   const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height } });
+
+  // ⚠ استثنای زمان اجرا هیچ‌وقت گرفته نمی‌شد. یک بار یک ویرایش
+  // اشتباه `r.display.parts.length` را در بلوک repeat گذاشت و همهٔ
+  // درس‌های ریاضی/منطق/علوم با «Cannot read properties of undefined»
+  // از کار افتادند — ولی هر پنج آزمون سبز بودند، چون هیچ‌کدام به
+  // خطای صفحه گوش نمی‌داد. برنامه برای کاربر واقعی می‌شکست.
+  page.on('pageerror', (e) => {
+    errors.push(`${vp.name}: استثنای زمان اجرا — ${e.message}`);
+  });
+  page.on('console', (m) => {
+    if (m.type() === 'error') errors.push(`${vp.name}: خطای کنسول — ${m.text().slice(0, 120)}`);
+  });
   await page.goto(BASE, { waitUntil: 'networkidle' });
   // سن ۸ = بیشترین گِرد در هر درس (۶ به‌جای ۴). گِردهای صداکشی و
   // بخش‌بندی انتهای درس‌اند؛ با سن پیش‌فرض هرگز بازرسی نمی‌شدند و
@@ -162,7 +174,19 @@ for (const vp of VIEWPORTS) {
     await page.waitForSelector('.play-btn');
     const title = (await page.locator('.play-title').textContent())?.trim();
     await page.locator('.play-btn').click();
-    await page.waitForSelector('.prompt');
+    // اگر درس باز نشود، آزمون باید **گزارش** دهد نه اینکه بمیرد.
+    // یک بار استثنای زمان اجرا همهٔ درس‌های ریاضی را از کار انداخت
+    // و آزمون با TimeoutError کرش کرد؛ هیچ‌کس نفهمید علت چیست.
+    const opened = await page
+      .waitForSelector('.prompt', { timeout: 10000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!opened) {
+      errors.push(`${vp.name}: درس «${title}» باز نشد`);
+      await page.goto(BASE, { waitUntil: 'networkidle' });
+      await page.waitForSelector('.play-btn');
+      continue;
+    }
     await page.waitForTimeout(420); // پایان انیمیشن ورود
     await audit(page, `بازی ${title}`, vp);
 
@@ -170,7 +194,7 @@ for (const vp of VIEWPORTS) {
     // ⚠ هر گِرد جداگانه بازرسی می‌شود، نه فقط اولی: گِردهای
     // صداکشی و بخش‌بندی در انتهای درس‌اند و با بازرسیِ فقط گِرد
     // اول هرگز دیده نمی‌شدند — محافظ کور بود و در منفی-آزمون لو رفت.
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 20; i++) {
       if (await page.locator('.done-card').count()) break;
       if (i > 0 && (await page.locator('.prompt').count())) {
         await page.waitForTimeout(260);
@@ -189,8 +213,9 @@ for (const vp of VIEWPORTS) {
           for (let k = 0; k < 12; k++) await page.mouse.move(b.x + 20 + k * 6, b.y + 30 + k * 3);
           await page.mouse.up();
         }
-        const nx = page.locator('.btn', { hasText: 'تمام شد' }).first();
-        if (await nx.count()) await nx.click();
+        // «تمام شد» را نمی‌زنیم: گِرد کشیدن خودش جلو می‌رود و
+        // زدن دکمه با پیشرَویِ خودکار تداخل می‌کرد و یک گِرد
+        // پریده می‌شد.
       } else break;
       await page.waitForTimeout(2100);
     }
@@ -200,9 +225,16 @@ for (const vp of VIEWPORTS) {
       played++;
       await page.locator('.btn.ghost', { hasText: 'خانه' }).click();
     } else {
-      await page.locator('.icon-btn[aria-label="بازگشت"]').click();
+      // درس تمام نشد (گِرد ناشناخته یا گیر). به‌جای شکست خاموش،
+      // از راه خانه برمی‌گردیم تا گام‌های بعدی اجرا شوند.
+      const back = page.locator('.icon-btn[aria-label="بازگشت"]').first();
+      if (await back.count()) await back.click().catch(() => {});
+      else await page.goto(BASE, { waitUntil: 'networkidle' });
     }
-    await page.waitForSelector('.play-btn');
+    await page.waitForSelector('.play-btn', { timeout: 15000 }).catch(async () => {
+      await page.goto(BASE, { waitUntil: 'networkidle' });
+      await page.waitForSelector('.play-btn');
+    });
   }
 
   // تنظیمات
@@ -236,8 +268,15 @@ for (const vp of VIEWPORTS) {
       const les = L.READING_LESSONS.find((l) => l.id === 'reading-letters-06');
       const rd = les.rounds.find((r) => r.kind === 'blend-word');
       if (!rd) return { err: 'گِرد صداکشی در درس تعریف نشده' };
-      const built = R.buildRound(rd, C.AGE_TRACKS.school);
-      if (!built?.display?.parts?.length) return { err: 'صحنهٔ صداکشی ساخته نشد' };
+      // بدترین حالت را می‌سنجیم، نه یک واژهٔ تصادفی: واژهٔ کوتاه
+      // همیشه جا می‌شود و باگِ شکستن خط را پنهان می‌کند.
+      let built = null;
+      for (let k = 0; k < 40; k++) {
+        const cand = R.buildRound(rd, C.AGE_TRACKS.school);
+        if (!cand?.display?.parts?.length) continue;
+        if (!built || cand.display.parts.length > built.display.parts.length) built = cand;
+      }
+      if (!built) return { err: 'صحنهٔ صداکشی ساخته نشد' };
 
       const host = document.createElement('div');
       host.className = 'screen';
@@ -273,9 +312,29 @@ for (const vp of VIEWPORTS) {
         .map((e) => ({ t: e.querySelector('.snd-g').textContent, x: e.getBoundingClientRect().left }))
         .sort((a2, b2) => b2.x - a2.x)
         .map((o) => o.t);
-      return dom.join('') === visual.join('')
-        ? null
-        : { dom: dom.join(' '), visual: visual.join(' ') };
+      if (dom.join('') !== visual.join('')) {
+        return { dom: dom.join(' '), visual: visual.join(' ') };
+      }
+
+      // همهٔ صداها باید در یک خط باشند. شکستن خط در RTL ترتیب را
+      // وارونه می‌کرد: «شکار» به‌صورت «ا ک ِ ش ر» دیده می‌شد —
+      // واژه‌ای که کودک می‌خواند اصلاً واژه نبود.
+      const lines = new Set(nodes.map((e) => Math.round(e.getBoundingClientRect().top)));
+      if (lines.size > 1) return { err: `صداها در ${lines.size} خط شکسته‌اند` };
+
+      // هیچ کارتی نباید آن‌قدر کوچک شود که ناخوانا گردد.
+      const tiny = nodes.filter((e) => e.getBoundingClientRect().width < 24);
+      if (tiny.length) return { err: `${tiny.length} کارت صدا خیلی کوچک است` };
+
+      // ردیف نباید از کادر بزند بیرون.
+      const row2 = document.querySelector('.sounds');
+      const host2 = row2.parentElement;
+      const rr = row2.getBoundingClientRect();
+      const hr = host2.getBoundingClientRect();
+      if (rr.left < hr.left - 1 || rr.right > hr.right + 1) {
+        return { err: 'ردیف صداکشی از کادر بیرون زده' };
+      }
+      return null;
     });
 
     if (bad?.err) errors.push(`${vp.name}: ${bad.err}`);
