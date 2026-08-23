@@ -190,7 +190,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -291,7 +291,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -392,7 +392,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -493,7 +493,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -603,7 +603,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -612,7 +612,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -690,7 +690,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -699,7 +699,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -809,7 +809,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -818,7 +818,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -919,7 +919,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -928,7 +928,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1038,7 +1038,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1047,7 +1047,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1125,7 +1125,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1134,7 +1134,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1212,7 +1212,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1221,7 +1221,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1299,7 +1299,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1308,7 +1308,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1409,7 +1409,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1418,7 +1418,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1510,7 +1510,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1519,7 +1519,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1597,7 +1597,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1606,7 +1606,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1707,7 +1707,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1716,7 +1716,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1785,7 +1785,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1794,7 +1794,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",
@@ -1872,7 +1872,7 @@ export const READING_LESSONS = [
         "maxSyllables": 2,
         "minSyllables": 2,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
@@ -1881,7 +1881,7 @@ export const READING_LESSONS = [
         "maxSyllables": 1,
         "minSyllables": 1,
         "longVowelOnly": false,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
+        "prompt": "کدام کلمه می‌شود؟"
       },
       {
         "kind": "syllable-build",

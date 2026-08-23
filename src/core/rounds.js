@@ -674,15 +674,23 @@ function buildRoundInner(round, track) {
       };
     }
 
-    case 'odd-one-out':
+    case 'odd-one-out': {
+      // این گِرد تنها جایی بود که قانون «تعداد گزینه بر حسب سن» را
+      // دور می‌زد و به کودک ۵ ساله ۴ گزینه می‌داد. پژوهش دانشگاه
+      // کالیفرنیای جنوبی: چیدمان ساده‌تر ← خطای ناوبری کمتر در ۵–۸ سال.
+      // کمینهٔ منطقی این تمرین ۳ است (یکی متفاوت، دوتا هم‌گروه).
+      const others = round.items.filter((v) => v !== round.answer);
+      const keep = Math.max(3, Math.min(n, round.items.length));
+      const items = shuffle([round.answer, ...shuffle(others).slice(0, keep - 1)]);
       return {
         type: 'choice',
         prompt: round.prompt,
         display: null,
-        options: shuffle(round.items).map((v) => ({ label: v, value: v })),
+        options: items.map((v) => ({ label: v, value: v })),
         answer: round.answer,
         because: round.because,
       };
+    }
 
     case 'order-size': {
       const icon = pick(COUNTABLES);

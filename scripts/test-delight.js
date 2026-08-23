@@ -230,6 +230,48 @@ notes.push(`تپ تا شروع بازی: ${LIMITS.maxTapsToPlay}`);
   notes.push(`مسیر بی‌صدا و بی‌خواندن: ${steps} گام${finished ? '، درس تمام شد' : ''}`);
 }
 
+
+// ── ۲.۹ سادگی برای سنین پایین ────────────────────────────────────
+// کاربر خواست «سادگی کار برای سنین پایین‌تر». دو چیز را مکانیکی
+// می‌سنجیم چون چشم آن‌ها را در انبوه گِرد نمی‌بیند:
+//   ۱. کودک ۵ ساله هرگز بیش از ۳ گزینه نبیند
+//      (odd-one-out یک بار ۴ تا می‌داد و قانون سن را دور می‌زد)
+//   ۲. پرسش‌ها کوتاه بمانند — نشان تصویری فعل را می‌رساند،
+//      جمله نباید تکرارش کند
+{
+  const { LESSONS } = await import('../src/data/lessons/index.js');
+  const { buildLesson } = await import('../src/core/rounds.js');
+  const { AGE_TRACKS } = await import('../src/data/curriculum.js');
+
+  const MAX_OPTIONS_EARLY = 3;
+  const MAX_PROMPT_EARLY = 34;
+
+  const tooMany = new Set();
+  const tooLong = new Set();
+  for (const lesson of LESSONS) {
+    for (let rep = 0; rep < 8; rep++) {
+      for (const r of buildLesson(lesson, AGE_TRACKS.early)) {
+        if (r.options && r.options.length > MAX_OPTIONS_EARLY) {
+          tooMany.add(`${r.kindName}(${r.options.length})`);
+        }
+        if ((r.prompt || '').length > MAX_PROMPT_EARLY) {
+          tooLong.add(`${(r.prompt || '').slice(0, 40)} [${r.prompt.length}]`);
+        }
+      }
+    }
+  }
+  if (tooMany.size) {
+    errors.push(`کودک ۵ ساله بیش از ${MAX_OPTIONS_EARLY} گزینه می‌بیند: ${[...tooMany].join('، ')}`);
+  } else {
+    notes.push(`کودک ۵ ساله هرگز بیش از ${MAX_OPTIONS_EARLY} گزینه نمی‌بیند`);
+  }
+  if (tooLong.size) {
+    errors.push(`پرسش بلند برای ۵ ساله: ${[...tooLong].slice(0, 3).join(' | ')}`);
+  } else {
+    notes.push(`همهٔ پرسش‌های ۵ ساله زیر ${MAX_PROMPT_EARLY} کاراکتر`);
+  }
+}
+
 // ── ۳. سرعت بازخورد: کودک باید فوراً اثر لمس را ببیند ───────────────────
 {
   // از نو شروع کن: بخش قبلی یک درس کامل بازی کرد و ممکن است

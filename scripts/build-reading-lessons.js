@@ -151,7 +151,7 @@ const lessons = groups.map((grp, gi) => {
       kind: 'blend-word',
       letter: lastLetter,
       ...blendSpec,
-      prompt: 'صداها را به هم بچسبان. کدام کلمه می‌شود؟',
+      prompt: 'کدام کلمه می‌شود؟',
     });
   }
 
@@ -166,7 +166,7 @@ const lessons = groups.map((grp, gi) => {
         kind: 'blend-word',
         letter: lastLetter,
         ...easier,
-        prompt: 'صداها را به هم بچسبان. کدام کلمه می‌شود؟',
+        prompt: 'کدام کلمه می‌شود؟',
       });
     }
   }
