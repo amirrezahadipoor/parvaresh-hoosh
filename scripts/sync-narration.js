@@ -16,7 +16,9 @@ const kept = Object.entries(NARRATION).filter(([, c]) => files.has(c));
 const dropped = Object.entries(NARRATION).filter(([, c]) => !files.has(c));
 const orphans = [...files].filter((f) => !kept.some(([, c]) => c === f));
 
-const body = kept.sort((a, b) => a[1].localeCompare(b[1]))
+// مرتب‌سازی باید قطعی باشد: localeCompare به ICU و locale سیستم وابسته است
+// و روی CI خروجی متفاوتی می‌داد، پس بررسی «بازتولیدپذیری» شکست می‌خورد.
+const body = kept.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
   .map(([t, c]) => `  ${JSON.stringify(t)}: ${JSON.stringify(c)}`).join(',\n');
 
 fs.writeFileSync(path.join(ROOT, 'src/data/narration.js'),

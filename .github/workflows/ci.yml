@@ -22,7 +22,9 @@ jobs:
           node-version: '20'
 
       - name: نصب وابستگی‌ها
-        run: npm install --no-audit --no-fund
+        # ci به‌جای install: قفل را دست‌نخورده نگه می‌دارد تا بررسی
+        # بازتولیدپذیری زیر، فقط فایل‌های *تولیدشدهٔ ما* را بسنجد.
+        run: npm ci --no-audit --no-fund
 
       - name: اعتبارسنجی محتوا و موتور گِرد
         run: npm test
@@ -31,9 +33,9 @@ jobs:
         run: |
           npm run build:lessons
           npm run sync:narration
-          if ! git diff --quiet; then
+          if ! git diff --quiet -- src/data; then
             echo "::error::فایل‌های تولیدشده با منبع هم‌خوان نیستند. build:lessons و sync:narration را اجرا و کامیت کنید."
-            git diff --stat
+            git diff --stat -- src/data
             exit 1
           fi
 
