@@ -130,39 +130,48 @@ const lessons = groups.map((grp, gi) => {
       return r === 999 || r <= limit;
     });
 
-  // گام ۱ — ترکیب (پیش از تجزیه؛ Herlambang 2020: ۶۶٪ در برابر ۴۷٪)
-  // اول فقط مصوت بلند، چون نوشته می‌شود و کودک می‌بیندش.
-  const blendEasy = pickWords({
-    maxSounds: 3,
-    maxSyllables: 1,
-    longVowelOnly: true,
-    readable: soundReadable,
-  });
-  if (blendEasy.length >= 4) {
+  // سختی صداکشی با پیشرفت درس بالا می‌رود — نه اینکه سه سطح در یک
+  // درس سر جای محدود بجنگند. سقف گِردِ هر درس ۴ تا ۶ است، پس اگر
+  // هر سه سطح را همیشه اضافه کنیم فقط ساده‌ترین می‌ماند و کودک
+  // بیست درس پشت سر هم همان ۲۶ واژهٔ سه‌صدایی را می‌بیند.
+  //
+  // درس ۳–۶ : سه‌صدایی با مصوت بلند (ساده‌ترین — مصوت نوشته می‌شود)
+  // درس ۷–۱۱ : + مصوت کوتاه (سخت‌تر — نوشته نمی‌شود)
+  // درس ۱۲+ : واژهٔ دوبخشی (سخت‌ترین)
+  const stage = gi + 1;
+  const blendSpec =
+    stage >= 12
+      ? { maxSounds: 6, maxSyllables: 2, minSyllables: 2, longVowelOnly: false }
+      : stage >= 7
+        ? { maxSounds: 4, maxSyllables: 1, minSyllables: 1, longVowelOnly: false }
+        : { maxSounds: 3, maxSyllables: 1, minSyllables: 1, longVowelOnly: true };
+
+  if (pickWords({ ...blendSpec, readable: soundReadable }).length >= 4) {
     rounds.push({
       kind: 'blend-word',
       letter: lastLetter,
-      maxSounds: 3,
-      maxSyllables: 1,
-      longVowelOnly: true,
+      ...blendSpec,
       prompt: 'صداها را به هم بچسبان. کدام کلمه می‌شود؟',
     });
   }
 
-  // گام ۲ — ترکیب با مصوت کوتاه: سخت‌تر، چون نوشته نمی‌شود
-  const blendHard = pickWords({ maxSounds: 4, maxSyllables: 1, readable: soundReadable });
-  if (blendHard.length >= 6) {
-    rounds.push({
-      kind: 'blend-word',
-      letter: lastLetter,
-      maxSounds: 4,
-      maxSyllables: 1,
-      longVowelOnly: false,
-      prompt: 'صداها را به هم بچسبان. کدام کلمه می‌شود؟',
-    });
+  // یک سطح آسان‌تر هم نگه می‌داریم تا مرور باشد و کودک جا نماند.
+  if (stage >= 7) {
+    const easier =
+      stage >= 12
+        ? { maxSounds: 4, maxSyllables: 1, minSyllables: 1, longVowelOnly: false }
+        : { maxSounds: 3, maxSyllables: 1, minSyllables: 1, longVowelOnly: true };
+    if (pickWords({ ...easier, readable: soundReadable }).length >= 4) {
+      rounds.push({
+        kind: 'blend-word',
+        letter: lastLetter,
+        ...easier,
+        prompt: 'صداها را به هم بچسبان. کدام کلمه می‌شود؟',
+      });
+    }
   }
 
-  // گام ۳ — بخش کردن: «ما» + «دَر» ← مادر (روش مدرسهٔ ایران)
+  // بخش کردن: «ما» + «دَر» ← مادر (روش مدرسهٔ ایران)
   const syl = pickWords({ maxSyllables: 3, readable: soundReadable }).filter(
     (w) => w.syllables.length >= 2,
   );
@@ -174,7 +183,7 @@ const lessons = groups.map((grp, gi) => {
     });
   }
 
-  // گام ۴ — تجزیه: چند صدا دارد؟ (پس از ترکیب می‌آید)
+  // گام ۵ — تجزیه: چند صدا دارد؟ (پس از ترکیب می‌آید)
   const segPool = pickWords({ maxSounds: 5, readable: soundReadable });
   if (segPool.length >= 6) {
     rounds.push({

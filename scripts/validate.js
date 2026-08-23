@@ -137,6 +137,59 @@ for (const problem of auditReviewData()) errors.push(`تکرار فاصله‌د
 const { auditPhonics } = await import('../src/data/phonics.js');
 for (const problem of auditPhonics()) errors.push(`واج‌شناسی: ${problem}`);
 
+// ── تنوع واژگان صداکشی ────────────────────────────────────────────
+// یک بار بانک واژگان ۱۰۶ تایی در عمل به ۲۵ واژهٔ تکراری فرو ریخت:
+// سه سطح سختی در سقف ۶ گِردِ درس با هم می‌جنگیدند و فقط ساده‌ترین
+// می‌ماند، پس کودک بیست درس پشت سر هم همان واژه‌ها را می‌دید.
+// شمارش «واژهٔ موجود» این را نمی‌دید — باید «واژهٔ رسیده به کودک»
+// را شمرد.
+{
+  const { READING_LESSONS } = await import('../src/data/lessons/reading.js');
+  const { buildLesson } = await import('../src/core/rounds.js');
+  const { AGE_TRACKS } = await import('../src/data/curriculum.js');
+  const { SOUND_MAP } = await import('../src/data/phonics.js');
+
+  const reached = new Set();
+  for (const lesson of READING_LESSONS) {
+    for (let rep = 0; rep < 15; rep++) {
+      for (const r of buildLesson(lesson, AGE_TRACKS.school)) {
+        if (r.kindName === 'blend-word') reached.add(r.answer);
+      }
+    }
+  }
+  const ratio = reached.size / SOUND_MAP.length;
+  if (ratio < 0.5) {
+    errors.push(
+      `صداکشی: فقط ${reached.size} واژه از ${SOUND_MAP.length} به کودک می‌رسد ` +
+        `(${Math.round(ratio * 100)}٪) — بانک واژگان دارد هدر می‌رود`,
+    );
+  }
+
+  // سختی باید با پیشرفت درس بالا برود، وگرنه درس بیستم به‌سادگی سوم است.
+  const avgSounds = (idx) => {
+    const words = new Set();
+    for (let k = 0; k < 20; k++) {
+      for (const r of buildLesson(READING_LESSONS[idx], AGE_TRACKS.school)) {
+        if (r.kindName === 'blend-word') words.add(r.answer);
+      }
+    }
+    if (!words.size) return 0;
+    let total = 0;
+    for (const w of words) {
+      const e = SOUND_MAP.find((x) => x.word === w);
+      total += e ? e.syllables.flat().length : 0;
+    }
+    return total / words.size;
+  };
+  const early = avgSounds(3);
+  const late = avgSounds(19);
+  if (early && late && late <= early) {
+    errors.push(
+      `صداکشی: درس آخر سخت‌تر از درس اول نیست (${late.toFixed(1)} در برابر ${early.toFixed(1)} صدا)`,
+    );
+  }
+}
+
 const { auditIcons } = await import('../src/core/task-icon.js');
 const allKinds = [...new Set(LESSONS.flatMap((l) => l.rounds.map((r) => r.kind)))];
 for (const problem of auditIcons(allKinds)) errors.push(`نشان تمرین: ${problem}`);

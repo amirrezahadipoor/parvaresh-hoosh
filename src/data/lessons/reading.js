@@ -188,15 +188,8 @@ export const READING_LESSONS = [
         "letter": "س",
         "maxSounds": 3,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
-      },
-      {
-        "kind": "blend-word",
-        "letter": "س",
-        "maxSounds": 4,
-        "maxSyllables": 1,
-        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -296,15 +289,8 @@ export const READING_LESSONS = [
         "letter": "ت",
         "maxSounds": 3,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
-      },
-      {
-        "kind": "blend-word",
-        "letter": "ت",
-        "maxSounds": 4,
-        "maxSyllables": 1,
-        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -404,15 +390,8 @@ export const READING_LESSONS = [
         "letter": "ن",
         "maxSounds": 3,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
-      },
-      {
-        "kind": "blend-word",
-        "letter": "ن",
-        "maxSounds": 4,
-        "maxSyllables": 1,
-        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -512,15 +491,8 @@ export const READING_LESSONS = [
         "letter": "ز",
         "maxSounds": 3,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": true,
-        "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
-      },
-      {
-        "kind": "blend-word",
-        "letter": "ز",
-        "maxSounds": 4,
-        "maxSyllables": 1,
-        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -627,17 +599,19 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ش",
-        "maxSounds": 3,
+        "maxSounds": 4,
         "maxSyllables": 1,
-        "longVowelOnly": true,
+        "minSyllables": 1,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
         "letter": "ش",
-        "maxSounds": 4,
+        "maxSounds": 3,
         "maxSyllables": 1,
-        "longVowelOnly": false,
+        "minSyllables": 1,
+        "longVowelOnly": true,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -712,17 +686,19 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ک",
-        "maxSounds": 3,
+        "maxSounds": 4,
         "maxSyllables": 1,
-        "longVowelOnly": true,
+        "minSyllables": 1,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
         "letter": "ک",
-        "maxSounds": 4,
+        "maxSounds": 3,
         "maxSyllables": 1,
-        "longVowelOnly": false,
+        "minSyllables": 1,
+        "longVowelOnly": true,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -829,17 +805,19 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "گ",
-        "maxSounds": 3,
+        "maxSounds": 4,
         "maxSyllables": 1,
-        "longVowelOnly": true,
+        "minSyllables": 1,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
         "letter": "گ",
-        "maxSounds": 4,
+        "maxSounds": 3,
         "maxSyllables": 1,
-        "longVowelOnly": false,
+        "minSyllables": 1,
+        "longVowelOnly": true,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -937,17 +915,19 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "خ",
-        "maxSounds": 3,
+        "maxSounds": 4,
         "maxSyllables": 1,
-        "longVowelOnly": true,
+        "minSyllables": 1,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
         "letter": "خ",
-        "maxSounds": 4,
+        "maxSounds": 3,
         "maxSyllables": 1,
-        "longVowelOnly": false,
+        "minSyllables": 1,
+        "longVowelOnly": true,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1054,17 +1034,19 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ل",
-        "maxSounds": 3,
+        "maxSounds": 4,
         "maxSyllables": 1,
-        "longVowelOnly": true,
+        "minSyllables": 1,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
         "kind": "blend-word",
         "letter": "ل",
-        "maxSounds": 4,
+        "maxSounds": 3,
         "maxSyllables": 1,
-        "longVowelOnly": false,
+        "minSyllables": 1,
+        "longVowelOnly": true,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1139,9 +1121,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ج",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1149,6 +1132,7 @@ export const READING_LESSONS = [
         "letter": "ج",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1224,9 +1208,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "چ",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1234,6 +1219,7 @@ export const READING_LESSONS = [
         "letter": "چ",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1309,9 +1295,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ژ",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1319,6 +1306,7 @@ export const READING_LESSONS = [
         "letter": "ژ",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1417,9 +1405,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ذ",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1427,6 +1416,7 @@ export const READING_LESSONS = [
         "letter": "ذ",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1516,9 +1506,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ث",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1526,6 +1517,7 @@ export const READING_LESSONS = [
         "letter": "ث",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1601,9 +1593,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ح",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1611,6 +1604,7 @@ export const READING_LESSONS = [
         "letter": "ح",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1709,9 +1703,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ط",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1719,6 +1714,7 @@ export const READING_LESSONS = [
         "letter": "ط",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1785,9 +1781,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "غ",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1795,6 +1792,7 @@ export const READING_LESSONS = [
         "letter": "غ",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
@@ -1870,9 +1868,10 @@ export const READING_LESSONS = [
       {
         "kind": "blend-word",
         "letter": "ظ",
-        "maxSounds": 3,
-        "maxSyllables": 1,
-        "longVowelOnly": true,
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },
       {
@@ -1880,6 +1879,7 @@ export const READING_LESSONS = [
         "letter": "ظ",
         "maxSounds": 4,
         "maxSyllables": 1,
+        "minSyllables": 1,
         "longVowelOnly": false,
         "prompt": "صداها را به هم بچسبان. کدام کلمه می‌شود؟"
       },

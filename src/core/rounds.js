@@ -392,6 +392,7 @@ function buildRoundInner(round, track) {
       const pool = pickWords({
         maxSounds: round.maxSounds ?? 3,
         maxSyllables: round.maxSyllables ?? 1,
+        minSyllables: round.minSyllables ?? 1,
         longVowelOnly: round.longVowelOnly ?? true,
         readable,
       });
@@ -807,13 +808,26 @@ export function buildLesson(lesson, track) {
   // به‌جایش از هر مهارت نمونه برمی‌داریم و ترتیب اصلی را نگه
   // می‌داریم. مهارت‌های رمزگشایی اولویت دارند چون هدف درس‌اند؛
   // شناخت حرف مقدمه است، نه مقصد.
+  // ⚠ «یکی از هر نوع» برای صداکشی غلط است: سه گِرد blend-word با
+  // سختی‌های متفاوت وجود دارد (سه‌صدایی ساده، چهارصدایی، دوبخشی) و
+  // نگه‌داشتن فقط یکی باعث می‌شد ۵۷ واژهٔ چندبخشی هرگز دیده نشوند و
+  // بانک واژگان به ۲۵ واژهٔ تکراری فرو بریزد. تمایز بر پایهٔ سختی است.
+  const variantKey = (r) =>
+    r.kindName === 'blend-word'
+      ? `blend-${r.display?.parts?.length ?? 0}`
+      : r.kindName;
   const PRIORITY = ['blend-word', 'syllable-build', 'segment-count'];
   const picked = [];
   const used = new Set();
 
   // ۱) یکی از هر مهارت رمزگشایی
   for (const kind of PRIORITY) {
-    const i = rounds.findIndex((r, k) => !used.has(k) && r.kindName === kind);
+    const i = rounds.findIndex(
+      (r, k) =>
+        !used.has(k) &&
+        r.kindName === kind &&
+        !picked.some((j) => variantKey(rounds[j]) === variantKey(r)),
+    );
     if (i >= 0 && picked.length < cap) {
       picked.push(i);
       used.add(i);
@@ -823,7 +837,7 @@ export function buildLesson(lesson, track) {
   for (const [i, r] of rounds.entries()) {
     if (picked.length >= cap) break;
     if (used.has(i)) continue;
-    if (picked.some((k) => rounds[k].kindName === r.kindName)) continue;
+    if (picked.some((k) => variantKey(rounds[k]) === variantKey(r))) continue;
     picked.push(i);
     used.add(i);
   }
