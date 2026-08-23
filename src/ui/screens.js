@@ -4,7 +4,7 @@
 import { DOMAINS, AGE_TRACKS, TRACK_ORDER, trackForAge, TARGET_AGE } from '../data/curriculum.js';
 import { lessonsByDomain, LESSONS } from '../data/lessons/index.js';
 import * as store from '../core/storage.js';
-import { speak, sfx, setMuted, isMuted, stop as stopAudio } from '../core/audio.js';
+import { speak, sfx, setMuted, isMuted, hasClip, stop as stopAudio } from '../core/audio.js';
 import { buildLesson, toFa } from '../core/rounds.js';
 import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../core/journey.js';
 import { masterySummary, isDue, MASTERY_SCORE } from '../core/mastery.js';
@@ -189,7 +189,7 @@ function playScreen(lessonId) {
       r.type === 'choice'
         ? choiceView(r, feedback, next, track)
         : r.type === 'trace'
-          ? traceView(r, next)
+          ? traceView(r, next, feedback)
           : r.type === 'order'
             ? orderView(r, feedback, next)
             : memoryView(r, feedback, next);
@@ -203,13 +203,18 @@ function playScreen(lessonId) {
       // و با تپ روی نشان پرسش را دوباره می‌شنود.
       el('div', { class: 'ask' }, [
         el('button', {
-          class: `task-ico${r.speak ? ' can-play' : ''}`,
-          'aria-label': r.speak ? `شنیدن دوباره: ${actionLabel(r.kindName || '')}` : actionLabel(r.kindName || ''),
+          // بلندگو فقط وقتی کلیپ واقعی وجود دارد — وعدهٔ دروغ به کودک
+          // بدتر از نبودِ دکمه است. بیشتر گِردها صدا ندارند و باید
+          // کاملاً بی‌صدا قابل انجام باشند.
+          class: `task-ico${hasClip(r.speak) ? ' can-play' : ''}`,
+          'aria-label': hasClip(r.speak)
+            ? `شنیدن دوباره: ${actionLabel(r.kindName || '')}`
+            : actionLabel(r.kindName || ''),
           html:
             taskIcon(r.kindName || '', dom.color) +
             // بلندگوی SVG، نه ایموجی: ایموجی روی هر دستگاه شکل و
             // اندازهٔ متفاوتی دارد و در اندروید بریده می‌شد.
-            (r.speak
+            (hasClip(r.speak)
               ? `<span class="spk"><svg viewBox="0 0 24 24" aria-hidden="true">
                    <path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z" fill="currentColor"/>
                    <path d="M15.5 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor"
@@ -217,7 +222,7 @@ function playScreen(lessonId) {
                  </svg></span>`
               : ''),
           onClick: () => {
-            if (r.speak) speak(r.speak);
+            if (hasClip(r.speak)) speak(r.speak);
           },
         }),
         el('p', { class: 'prompt', text: r.prompt }),
@@ -385,13 +390,11 @@ function playScreen(lessonId) {
         if (right) {
           correct++;
           sfx.correct();
-          feedback.className = 'feedback ok';
-          feedback.textContent = 'آفرین!';
+          markOk(feedback, 'آفرین!');
           speak('آفرین!');
         } else {
           sfx.wrong();
-          feedback.className = 'feedback no';
-          feedback.textContent = r.because || 'اشکالی ندارد، دفعهٔ بعد!';
+          markRetry(feedback, r.because || 'اشکالی ندارد، دفعهٔ بعد!');
           speak('اشکالی ندارد، دوباره تلاش کن!');
           // پاسخ درست را نشان بده — کودک باید یاد بگیرد، نه فقط رد شود.
           [...grid.children].forEach((c, i) => {
@@ -438,7 +441,7 @@ function playScreen(lessonId) {
     return out;
   }
 
-  function traceView(r, done) {
+  function traceView(r, done, feedback) {
     const canvas = el('canvas', { class: 'pad' });
     const wrapEl = el('div', { class: 'trace-wrap' }, [
       el('div', { class: 'trace-ghost', text: r.letter }),
@@ -446,6 +449,7 @@ function playScreen(lessonId) {
     ]);
     let drawn = 0;
     let drawing = false;
+    let advanced = false;
 
     requestAnimationFrame(() => {
       const dpr = window.devicePixelRatio || 1;
@@ -480,6 +484,13 @@ function playScreen(lessonId) {
       };
       const end = () => {
         drawing = false;
+        // کودکِ پیش‌خوان دکمهٔ «تمام شد» را نمی‌خواند. وقتی حرف را
+        // کشید، خودش جلو می‌رود — دکمه فقط راه فرار برای کسی است
+        // که زودتر خسته شد.
+        if (!advanced && drawn > 24) {
+          advanced = true;
+          setTimeout(() => finishTrace(), 650);
+        }
       };
       canvas.addEventListener('pointerdown', start);
       canvas.addEventListener('pointermove', move);
@@ -487,18 +498,27 @@ function playScreen(lessonId) {
       canvas.addEventListener('pointerleave', end);
     });
 
+    // اعلان تابع (نه const): بالا برده می‌شود، پس رویداد pointerup
+    // که پیش از این خط اجرا می‌شود هم می‌تواند صدایش بزند.
+    function finishTrace() {
+      // خط کشیدن نمره‌دهی درست/غلط ندارد — تلاش کافی است.
+      if (drawn > 8) correct++;
+      markOk(feedback);
+      sfx.correct();
+      setTimeout(done, 550);
+    }
+
     const btns = el('div', { style: 'display:grid;gap:10px' }, [
       el('button', {
         class: 'btn',
         text: 'تمام شد',
         onClick: () => {
-          // خط کشیدن نمره‌دهی درست/غلط ندارد — تلاش کافی است.
-          if (drawn > 8) correct++;
-          sfx.correct();
-          done();
+          if (advanced) return;
+          advanced = true;
+          finishTrace();
         },
       }),
-      el('button', { class: 'btn ghost', text: 'شنیدن دوباره', onClick: () => speak(r.speak) }),
+      ...(hasClip(r.speak) ? [el('button', { class: 'btn ghost', text: 'شنیدن دوباره', onClick: () => speak(r.speak) })] : []),
     ]);
     return [wrapEl, btns];
   }
@@ -534,13 +554,11 @@ function playScreen(lessonId) {
           if (ok) {
             correct++;
             sfx.correct();
-            feedback.className = 'feedback ok';
-            feedback.textContent = 'آفرین! درست چیدی.';
+            markOk(feedback, 'آفرین! درست چیدی.');
             speak('آفرین!');
           } else {
             sfx.wrong();
-            feedback.className = 'feedback no';
-            feedback.textContent = 'ترتیب درست نبود — دوباره نگاه کن.';
+            markRetry(feedback, 'ترتیب درست نبود — دوباره نگاه کن.');
           }
           setTimeout(done, ok ? 1000 : 1800);
         }
@@ -576,8 +594,7 @@ function playScreen(lessonId) {
           sfx.correct();
           if (found === r.pairs) {
             correct++;
-            feedback.className = 'feedback ok';
-            feedback.textContent = 'همه را پیدا کردی!';
+            markOk(feedback, 'همه را پیدا کردی!');
             speak('آفرین! عالی بود.');
             setTimeout(done, 1100);
           }
@@ -600,6 +617,44 @@ function playScreen(lessonId) {
 
   draw();
   return wrap;
+}
+
+// ── بازخورد شکلی ────────────────────────────────────────────────────────
+// کودک پیش‌خوان «آفرین!» را نمی‌خواند. تیک سبز و ضربدر نارنجی را
+// در یک نگاه می‌فهمد. متن زیرش می‌ماند برای والد و کودک بزرگ‌تر،
+// ولی پیام اصلی شکل است نه نوشته.
+const OK_MARK = `<svg viewBox="0 0 48 48" aria-hidden="true">
+  <circle cx="24" cy="24" r="21" fill="var(--ok)"/>
+  <path d="M14 25l7 7 13-14" fill="none" stroke="#fff" stroke-width="5"
+    stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+// نه ضربدرِ قرمزِ «باختی» — یک فلش چرخشی «دوباره». پژوهش می‌گوید
+// بازخورد اصلاحی باید راهنما باشد نه تنبیه.
+const RETRY_MARK = `<svg viewBox="0 0 48 48" aria-hidden="true">
+  <circle cx="24" cy="24" r="21" fill="var(--life)"/>
+  <path d="M33 20a11 11 0 1 0 2 8" fill="none" stroke="#fff" stroke-width="4.5"
+    stroke-linecap="round"/>
+  <path d="M33 12v9h-9" fill="none" stroke="#fff" stroke-width="4.5"
+    stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+function markOk(feedback, text) {
+  if (!feedback) return;
+  feedback.className = 'feedback ok';
+  feedback.replaceChildren(
+    el('span', { class: 'fb-mark', html: OK_MARK }),
+    ...(text ? [el('span', { class: 'fb-text', text })] : []),
+  );
+}
+
+function markRetry(feedback, text) {
+  if (!feedback) return;
+  feedback.className = 'feedback no';
+  feedback.replaceChildren(
+    el('span', { class: 'fb-mark', html: RETRY_MARK }),
+    ...(text ? [el('span', { class: 'fb-text', text })] : []),
+  );
 }
 
 // ── پایان درس ───────────────────────────────────────────────────────────

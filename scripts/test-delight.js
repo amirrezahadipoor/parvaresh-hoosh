@@ -151,8 +151,93 @@ notes.push(`تپ تا شروع بازی: ${LIMITS.maxTapsToPlay}`);
   notes.push(`راهنمای تصویری: ${checked - missingIcon}/${checked} گِرد`);
 }
 
+// ── ۲.۸ بدون خواندن و بدون صدا هم باید کامل پیش برود ────────────────────
+{
+  // سنگ‌محک واقعی: کودکی که نه می‌خواند و نه صدا دارد، باید بتواند
+  // یک درس را از اول تا آخر تمام کند بدون اینکه گیر کند و بدون اینکه
+  // لازم باشد دکمه‌ای را بخواند.
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.evaluate(() =>
+    localStorage.setItem(
+      'parvaresh-hoosh/v4',
+      JSON.stringify({ childName: 'آزمون', age: 5, muted: true, lessons: {}, stars: 0, dailyLimitMin: 0, playLog: {} }),
+    ),
+  );
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.locator('.play-btn').click();
+  await page.waitForSelector('.prompt');
+
+  let steps = 0;
+  let readRequired = 0;
+  let finished = false;
+  for (let i = 0; i < 14; i++) {
+    if (await page.locator('.done-card').count()) {
+      finished = true;
+      break;
+    }
+    // هر گِرد باید بازخورد شکلی بدهد، نه فقط متن
+    const canvas = page.locator('canvas.pad').first();
+    const opt = page.locator('.opt:not([disabled])').first();
+    const card = page.locator('.card:not(.matched)').first();
+    const orderItem = page.locator('.order-item:not(.picked)').first();
+
+    if (await opt.count()) {
+      await opt.click().catch(() => {});
+      steps++;
+      await page.waitForTimeout(260);
+      if (!(await page.locator('.fb-mark svg').count())) readRequired++;
+      await page.waitForTimeout(1900);
+    } else if (await canvas.count()) {
+      const label = await page.locator('.prompt').textContent();
+      const bb = await canvas.boundingBox();
+      await page.mouse.move(bb.x + 40, bb.y + 40);
+      await page.mouse.down();
+      for (let k = 0; k < 40; k++) await page.mouse.move(bb.x + 40 + k * 4, bb.y + 45 + k * 3);
+      await page.mouse.up();
+      steps++;
+      // باید خودش جلو برود — کودک دکمهٔ «تمام شد» را نمی‌خواند
+      const moved = await page
+        .waitForFunction(
+          (prev) => {
+            const el = document.querySelector('.prompt');
+            return !el || el.textContent !== prev;
+          },
+          label,
+          { timeout: 4000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      if (!moved) {
+        readRequired++;
+        await page.locator('.btn', { hasText: 'تمام شد' }).click().catch(() => {});
+        await page.waitForTimeout(700);
+      }
+    } else if (await card.count()) {
+      await card.click().catch(() => {});
+      steps++;
+      await page.waitForTimeout(700);
+    } else if (await orderItem.count()) {
+      await orderItem.click().catch(() => {});
+      steps++;
+      await page.waitForTimeout(500);
+    } else {
+      break;
+    }
+  }
+
+  check(steps > 0, 'هیچ تعاملی بدون خواندن ممکن نبود');
+  check(readRequired === 0, `${readRequired} بار کودک مجبور شد متن بخواند یا دکمهٔ متنی بزند`);
+  notes.push(`مسیر بی‌صدا و بی‌خواندن: ${steps} گام${finished ? '، درس تمام شد' : ''}`);
+}
+
 // ── ۳. سرعت بازخورد: کودک باید فوراً اثر لمس را ببیند ───────────────────
 {
+  // از نو شروع کن: بخش قبلی یک درس کامل بازی کرد و ممکن است
+  // روی صفحهٔ پایان یا گِرد کشیدن مانده باشد.
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.locator('.play-btn').click();
   await page.waitForSelector('.opt:not([disabled])');
   const t = await page.evaluate(async () => {
     const el = document.querySelector('.opt:not([disabled])');

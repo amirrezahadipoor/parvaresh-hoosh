@@ -1422,3 +1422,40 @@ canvas.pad {
   margin: 0;
   flex: 1;
 }
+
+/* ── بازخورد شکلی ─────────────────────────────────────────
+   کودک پیش‌خوان «آفرین!» را نمی‌خواند. نشان بزرگ را می‌بیند.
+   متن کنارش می‌ماند برای والد و کودک بزرگ‌تر. */
+.feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s3);
+  min-height: 52px;
+}
+
+.fb-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  animation: mark-in 420ms var(--ease);
+}
+
+.fb-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes mark-in {
+  from { opacity: 0; transform: scale(0.3); }
+  60%  { transform: scale(1.14); }
+  to   { opacity: 1; transform: none; }
+}
+
+.fb-text {
+  font-size: var(--t-body);
+  font-weight: 700;
+}
