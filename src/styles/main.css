@@ -1130,3 +1130,138 @@ canvas.pad {
   height: 56px;
   animation: pop var(--base) var(--ease) backwards;
 }
+
+/* ── پنل والدین ───────────────────────────────────────────
+   تنها جایی که متن طولانی مجاز است: اینجا بزرگسال می‌خواند. */
+.gate {
+  display: grid;
+  gap: var(--s4);
+  justify-items: center;
+  padding: var(--s5);
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.gate input {
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+  width: 130px;
+  padding: var(--s3);
+  border: 3px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  min-height: var(--tap-min);
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s3);
+}
+
+.stat {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: var(--s3);
+  text-align: center;
+  display: grid;
+  gap: 2px;
+}
+
+.stat strong {
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--brand);
+}
+
+.stat span {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.sec {
+  font-size: var(--t-body);
+  font-weight: 800;
+  margin: var(--s3) 0 0;
+}
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s2);
+  height: 120px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: var(--s3);
+}
+
+.bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 4px;
+}
+
+.bar {
+  width: 100%;
+  min-height: 3px;
+  background: var(--math);
+  border-radius: 5px 5px 0 0;
+  transition: height var(--slow) var(--ease);
+}
+
+.bar-label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.dom-list {
+  display: grid;
+  gap: var(--s2);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: var(--s3);
+}
+
+.dom-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.dom-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.dom-bar {
+  height: 11px;
+  background: var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  display: block;
+}
+
+.dom-fill {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  transition: width var(--slow) var(--ease);
+}
+
+.dom-num {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 700;
+  white-space: nowrap;
+}

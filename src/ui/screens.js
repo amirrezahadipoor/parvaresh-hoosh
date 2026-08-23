@@ -55,7 +55,11 @@ export function homeScreen() {
 
   const play = el(
     'button',
-    { class: 'play-btn', style: `--c:${d.color}`, onClick: () => render(playScreen(step.lesson.id)) },
+    {
+      class: 'play-btn',
+      style: `--c:${d.color}`,
+      onClick: () => render(store.limitReached() ? timeUpScreen() : playScreen(step.lesson.id)),
+    },
     [
       el('span', { class: 'play-kicker', text: mode === 'review' ? 'بیا مرور کنیم' : 'بریم بازی' }),
       el('span', { class: 'play-title', text: step.lesson.title }),
@@ -150,7 +154,10 @@ function playScreen(lessonId) {
   let correct = 0;
   const wrap = el('div', { class: 'screen' });
 
+  const startedAt = Date.now();
   const finish = () => {
+    const spent = Math.min(30, (Date.now() - startedAt) / 60000);
+    store.addPlayTime(Math.round(spent * 10) / 10);
     store.recordLesson(lessonId, { correct, total: rounds.length });
     sfx.win();
     render(doneScreen(lesson, correct, rounds.length));
@@ -607,6 +614,155 @@ function doneScreen(lesson, correct, total) {
 }
 
 // ── تنظیمات ─────────────────────────────────────────────────────────────
+
+
+// وقتی سهم روزانه تمام می‌شود — با مهربانی، نه با تنبیه.
+function timeUpScreen() {
+  return el('div', { class: 'screen home' }, [
+    el('div', { class: 'topbar' }, [el('h1', { text: 'برای امروز کافی است' })]),
+    el('div', { class: 'done-card' }, [
+      el('div', { class: 'big', text: '🌙' }),
+      el('h2', { text: 'آفرین! امروز خوب بازی کردی' }),
+      el('p', { class: 'muted', text: 'فردا دوباره منتظرت هستیم.' }),
+    ]),
+    el('button', { class: 'btn ghost', text: 'نقشهٔ سفر', onClick: () => render(mapScreen()) }),
+  ]);
+}
+
+// ── دروازهٔ والدین ───────────────────────────────────────────────────────
+// یک ضرب ساده. کودک ۵ تا ۸ ساله نمی‌تواند از آن بگذرد، ولی والد در دو
+// ثانیه رد می‌شود. رمز واقعی برای برنامه‌ای که هیچ خریدی درونش نیست
+// زیاده‌روی است و فقط والد را آزار می‌دهد.
+function parentGate() {
+  const a = 3 + Math.floor(Math.random() * 7);
+  const b = 3 + Math.floor(Math.random() * 7);
+  const input = el('input', { type: 'number', inputmode: 'numeric', placeholder: '؟' });
+  const err = el('div', { class: 'muted' });
+
+  const submit = () => {
+    if (Number(input.value) === a * b) render(parentScreen());
+    else {
+      err.textContent = 'درست نیست. دوباره تلاش کنید.';
+      input.value = '';
+    }
+  };
+
+  return el('div', { class: 'screen' }, [
+    topbar('بخش والدین', () => render(homeScreen())),
+    el('div', { class: 'gate' }, [
+      el('p', { class: 'prompt', dir: 'ltr', text: `${a} × ${b} = ?` }),
+      input,
+      el('button', { class: 'btn', text: 'ورود', onClick: submit }),
+      err,
+    ]),
+    el('div', { class: 'note', text: 'این بخش برای والدین است: گزارش پیشرفت، محدودیت زمان و پشتیبان‌گیری.' }),
+  ]);
+}
+
+// ── پنل والدین ──────────────────────────────────────────────────────────
+// تنها جایی که متن طولانی مجاز است (قانون ۱۳ نقشهٔ راه): اینجا
+// بزرگسال می‌خواند، نه کودک.
+function parentScreen() {
+  const s = store.getState();
+  const p = progress();
+  const week = store.weekLog();
+  const maxMin = Math.max(10, ...week.map((d) => d.minutes));
+  const DAY_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+
+  // نمودار هفته
+  const chart = el(
+    'div',
+    { class: 'chart' },
+    week.map((d) =>
+      el('div', { class: 'bar-wrap' }, [
+        el('div', { class: 'bar', style: `height:${Math.round((d.minutes / maxMin) * 100)}%` }),
+        el('span', { class: 'bar-label', text: DAY_FA[d.day][0] }),
+      ]),
+    ),
+  );
+
+  // پیشرفت هر حوزه
+  const domains = el(
+    'div',
+    { class: 'dom-list' },
+    p.byDomain.map((d) =>
+      el('div', { class: 'dom-row' }, [
+        el('span', { class: 'dom-name', text: d.title }),
+        el('span', { class: 'dom-bar' }, [
+          el('span', {
+            class: 'dom-fill',
+            style: `width:${d.total ? Math.round((d.done / d.total) * 100) : 0}%;background:${d.color}`,
+          }),
+        ]),
+        el('span', { class: 'dom-num', text: `${toFa(d.done)} از ${toFa(d.total)}` }),
+      ]),
+    ),
+  );
+
+  // محدودیت زمان روزانه
+  const limitSel = el('select');
+  [0, 10, 15, 20, 30, 45, 60].forEach((m) => {
+    limitSel.append(
+      el('option', {
+        value: String(m),
+        text: m === 0 ? 'بدون محدودیت' : `${toFa(m)} دقیقه`,
+        ...(m === s.dailyLimitMin ? { selected: 'selected' } : {}),
+      }),
+    );
+  });
+  limitSel.addEventListener('change', () => store.setDailyLimit(Number(limitSel.value)));
+
+  return el('div', { class: 'screen' }, [
+    topbar('بخش والدین', () => render(homeScreen())),
+
+    el('div', { class: 'stat-row' }, [
+      el('div', { class: 'stat' }, [
+        el('strong', { text: `${toFa(p.done)}` }),
+        el('span', { text: `از ${toFa(p.total)} درس` }),
+      ]),
+      el('div', { class: 'stat' }, [
+        el('strong', { text: toFa(s.stars) }),
+        el('span', { text: 'ستاره' }),
+      ]),
+      el('div', { class: 'stat' }, [
+        el('strong', { text: toFa(store.todayMinutes()) }),
+        el('span', { text: 'دقیقه امروز' }),
+      ]),
+    ]),
+
+    el('h2', { class: 'sec', text: 'هفت روز گذشته' }),
+    chart,
+
+    el('h2', { class: 'sec', text: 'پیشرفت در هر حوزه' }),
+    domains,
+
+    el('h2', { class: 'sec', text: 'محدودیت زمان روزانه' }),
+    el('label', { class: 'field' }, [el('span', { text: 'هر روز حداکثر' }), limitSel]),
+    el('div', {
+      class: 'note',
+      text: 'وقتی سهم روز تمام شود، برنامه با مهربانی بازی را تا فردا می‌بندد. پژوهش‌ها نشان می‌دهند نشست‌های کوتاه و منظم از نشست‌های طولانی مؤثرترند؛ برای این سن ۱۵ تا ۲۰ دقیقه در روز کافی است.',
+    }),
+
+    el('h2', { class: 'sec', text: 'پشتیبان‌گیری' }),
+    el('button', {
+      class: 'btn ghost',
+      text: 'ذخیرهٔ پیشرفت روی دستگاه',
+      onClick: () => {
+        const blob = new Blob([store.exportData()], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'parvaresh-hoosh-backup.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      },
+    }),
+    el('div', {
+      class: 'note',
+      text: 'همهٔ اطلاعات فقط روی همین دستگاه ذخیره می‌شود. هیچ چیز به هیچ سروری فرستاده نمی‌شود و برنامه به اینترنت نیازی ندارد.',
+    }),
+  ]);
+}
+
 function settingsScreen() {
   const s = store.getState();
   const name = el('input', { type: 'text', value: s.childName, placeholder: 'مثلاً سارا', maxlength: '20' });
@@ -637,6 +793,7 @@ function settingsScreen() {
       },
     }),
     el('div', { class: 'note', text: 'همهٔ اطلاعات فقط روی همین دستگاه ذخیره می‌شود و به هیچ سروری فرستاده نمی‌شود.' }),
+    el('button', { class: 'btn ghost', text: 'بخش والدین', onClick: () => render(parentGate()) }),
     el('button', {
       class: 'btn ghost',
       text: 'پاک کردن همهٔ پیشرفت',

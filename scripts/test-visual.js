@@ -170,6 +170,19 @@ for (const vp of VIEWPORTS) {
   await page.waitForSelector('select');
   await audit(page, 'تنظیمات', vp);
 
+  // پنل والدین — طولانی‌ترین متن برنامه و پرخطرترین جا برای دام دوجهته،
+  // چون پر از عدد و درصد است.
+  await page.locator('.btn.ghost', { hasText: 'بخش والدین' }).click();
+  await page.waitForSelector('.gate');
+  await audit(page, 'دروازهٔ والدین', vp);
+  const q = await page.locator('.gate .prompt').textContent();
+  const [x, y] = (q || '').match(/\d+/g).map(Number);
+  await page.locator('.gate input').fill(String(x * y));
+  await page.locator('.btn', { hasText: 'ورود' }).click();
+  await page.waitForSelector('.chart');
+  await page.waitForTimeout(500);
+  await audit(page, 'پنل والدین', vp);
+
   notes.push(`${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس کامل بررسی شد`);
   await page.close();
 }

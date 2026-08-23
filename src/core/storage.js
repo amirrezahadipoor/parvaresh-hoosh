@@ -10,6 +10,10 @@ const EMPTY = {
   muted: false,
   lessons: {}, // id -> { completions, bestScore, lastPlayed }
   stars: 0,
+  // پنل والدین
+  dailyLimitMin: 0, // ۰ یعنی بدون محدودیت
+  playLog: {}, // 'YYYY-MM-DD' -> دقیقهٔ بازی
+  sessionStart: 0,
 };
 
 let cache = null;
@@ -82,4 +86,75 @@ export function resetAll() {
     /* بی‌اهمیت */
   }
   return getState();
+}
+
+
+// ── پنل والدین ──────────────────────────────────────────────────────────
+// پژوهش: والدین در نقد بی‌رحم‌اند و انتظار کنترل دارند. این بخش برای
+// آن‌هاست، نه برای کودک — و پشت یک دروازهٔ ساده پنهان می‌ماند.
+
+/** کلید امروز به وقت محلی. */
+function today() {
+  const d = new Date();
+  const p = (x) => String(x).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+/** دقیقهٔ بازی امروز. */
+export function todayMinutes() {
+  return read().playLog[today()] || 0;
+}
+
+/** ثبت زمان بازی. با هر پایان درس صدا زده می‌شود. */
+export function addPlayTime(minutes) {
+  const s = read();
+  const log = { ...s.playLog };
+  const key = today();
+  log[key] = Math.round(((log[key] || 0) + minutes) * 10) / 10;
+  // فقط ۳۰ روز اخیر نگه داشته می‌شود؛ حافظهٔ دستگاه بی‌جهت پر نشود.
+  const keys = Object.keys(log).sort();
+  while (keys.length > 30) delete log[keys.shift()];
+  return write({ ...s, playLog: log });
+}
+
+export function setDailyLimit(minutes) {
+  const s = read();
+  return write({ ...s, dailyLimitMin: Math.max(0, Math.min(180, minutes | 0)) });
+}
+
+/** آیا سهم امروز تمام شده؟ */
+export function limitReached() {
+  const s = read();
+  if (!s.dailyLimitMin) return false;
+  return todayMinutes() >= s.dailyLimitMin;
+}
+
+/** گزارش هفت روز اخیر برای نمودار پنل والدین. */
+export function weekLog() {
+  const s = read();
+  const out = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const p = (x) => String(x).padStart(2, '0');
+    const key = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    out.push({ key, minutes: s.playLog[key] || 0, day: d.getDay() });
+  }
+  return out;
+}
+
+/** پشتیبان‌گیری — والد می‌تواند پیشرفت را نگه دارد. */
+export function exportData() {
+  return JSON.stringify(read(), null, 2);
+}
+
+export function importData(json) {
+  try {
+    const parsed = JSON.parse(json);
+    if (!parsed || typeof parsed !== 'object') return false;
+    write({ ...EMPTY, ...parsed });
+    return true;
+  } catch {
+    return false;
+  }
 }
