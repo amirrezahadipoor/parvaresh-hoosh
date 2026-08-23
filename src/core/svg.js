@@ -278,6 +278,214 @@ export function geo(name, color = '#2E86AB') {
 }
 
 /** دسته‌بندی معنایی — برای بازی «کدام فرق دارد؟». */
+
+// ── چهره‌های احساس (حوزهٔ مهارت زندگی) ──────────────────────────────
+//
+// چرا چهره و نه اموجی: کل حوزهٔ مهارت زندگی روی «خواندن احساس از
+// تصویر» بنا شده و اموجی روی هر دستگاه شکل دیگری دارد. اگر چهرهٔ
+// «ترسیده» روی یک گوشی شبیه «متعجب» درآید، درس چیز غلطی یاد می‌دهد.
+//
+// منبع (CASEL، صلاحیت خودآگاهی): نخستین گام سواد هیجانی «نام‌گذاری
+// احساس» است. پس هر احساس باید نشانهٔ دیداری یکتا و بدون ابهام
+// داشته باشد — فقط دهان کافی نیست، ابرو هم باید فرق کند.
+
+const face = (inner, fill = '#FFD98E') =>
+  svg(`<circle cx="50" cy="50" r="38" fill="${fill}"/>
+    <circle cx="50" cy="50" r="38" fill="none" stroke="#E0A94B" stroke-width="2.5"/>
+    ${inner}`);
+
+// چشم‌های ساده — در همهٔ حالت‌ها یکسان مگر جایی که معنا عوض شود
+const eyes = `<circle cx="37" cy="43" r="4.5" fill="#2B2A33"/>
+    <circle cx="63" cy="43" r="4.5" fill="#2B2A33"/>`;
+
+export const FACES = {
+  شاد: () =>
+    face(`${eyes}
+    <path d="M34 60 q16 15 32 0" fill="none" stroke="#2B2A33" stroke-width="4" stroke-linecap="round"/>`),
+
+  غمگین: () =>
+    face(`${eyes}
+    <path d="M34 68 q16 -15 32 0" fill="none" stroke="#2B2A33" stroke-width="4" stroke-linecap="round"/>
+    <path d="M30 34 q7 -4 13 -1" fill="none" stroke="#2B2A33" stroke-width="3" stroke-linecap="round"/>
+    <path d="M70 34 q-7 -4 -13 -1" fill="none" stroke="#2B2A33" stroke-width="3" stroke-linecap="round"/>`,
+    '#BFD3E6'),
+
+  عصبانی: () =>
+    face(`${eyes}
+    <path d="M30 32 q8 4 13 8" fill="none" stroke="#2B2A33" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M70 32 q-8 4 -13 8" fill="none" stroke="#2B2A33" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M36 66 q14 -8 28 0" fill="none" stroke="#2B2A33" stroke-width="4" stroke-linecap="round"/>`,
+    '#F0A08A'),
+
+  // ⚠ «ترسیده» و «متعجب» اول تقریباً یکسان درآمدند — هر دو چشم گرد و
+  // دهان باز. اگر هر دو گزینهٔ یک پرسش باشند کودک نمی‌تواند تشخیص
+  // دهد و درس چیز غلطی می‌آموزد. پس ترسیده نشانه‌های یکتا گرفت:
+  // دهان موجدار (لرزیدن)، قطرهٔ عرق، ابروی جمع‌شده به داخل.
+  ترسیده: () =>
+    face(`<ellipse cx="37" cy="44" rx="5" ry="6.5" fill="#2B2A33"/>
+    <ellipse cx="63" cy="44" rx="5" ry="6.5" fill="#2B2A33"/>
+    <path d="M30 33 q7 -3 13 1" fill="none" stroke="#2B2A33" stroke-width="3" stroke-linecap="round"/>
+    <path d="M70 33 q-7 -3 -13 1" fill="none" stroke="#2B2A33" stroke-width="3" stroke-linecap="round"/>
+    <path d="M38 64 q4 -5 8 0 q4 5 8 0 q4 -5 8 0" fill="none" stroke="#2B2A33" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M76 36 q4 7 0 10 q-4 -3 0 -10" fill="#7FB8D8"/>`,
+    '#D8CFE8'),
+
+  آرام: () =>
+    face(`<path d="M31 43 q6 -4 12 0" fill="none" stroke="#2B2A33" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M57 43 q6 -4 12 0" fill="none" stroke="#2B2A33" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M38 62 q12 7 24 0" fill="none" stroke="#2B2A33" stroke-width="3.6" stroke-linecap="round"/>`,
+    '#BFE3C8'),
+
+  خسته: () =>
+    face(`<path d="M31 44 q6 5 12 0" fill="none" stroke="#2B2A33" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M57 44 q6 5 12 0" fill="none" stroke="#2B2A33" stroke-width="3.4" stroke-linecap="round"/>
+    <ellipse cx="50" cy="65" rx="7" ry="8" fill="#2B2A33"/>`,
+    '#D9D2C4'),
+
+  متعجب: () =>
+    face(`<circle cx="37" cy="42" r="6" fill="#2B2A33"/>
+    <circle cx="63" cy="42" r="6" fill="#2B2A33"/>
+    <path d="M29 29 q8 -6 15 -2" fill="none" stroke="#2B2A33" stroke-width="3" stroke-linecap="round"/>
+    <path d="M71 29 q-8 -6 -15 -2" fill="none" stroke="#2B2A33" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="66" r="7" fill="#2B2A33"/>`,
+    '#FFE8A3'),
+};
+
+/** نام همهٔ احساس‌ها. */
+export const EMOTIONS = Object.freeze(Object.keys(FACES));
+
+/** SVG یک احساس، یا رشتهٔ خالی اگر نبود. */
+export function faceSvg(name) {
+  const f = FACES[name];
+  return f ? f() : '';
+}
+
+
+// ── صحنه‌های زندگی روزمره (حوزهٔ مهارت زندگی) ────────────────────────
+//
+// کل حوزه باید بدون خواندن کار کند، پس موقعیت‌ها هم باید تصویری
+// باشند: «دست‌شستن»، «مسواک»، «کمک‌کردن»، «نوبت گرفتن».
+//
+// منابع: سازمان بهداشت جهانی (مهارت‌های ده‌گانه)، و فهرست بهداشت
+// فردی کودکان — شستن دست پیش از غذا و پس از سرویس، مسواک، دستمال
+// هنگام عطسه، ناخن کوتاه، لباس تمیز.
+
+export const SCENES = {
+  // ⚠ نسخهٔ اول: دست‌ها لکه‌های بی‌شکل بودند و شیر آب خوانده نمی‌شد.
+  // حالا شیر از بالا، جریان آب عمودی، و دو دست کاسه‌شده با انگشت.
+  دست‌شستن: () =>
+    svg(`<path d="M20 14 v14 h30" fill="none" stroke="#9AA5B1" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="46" y="22" width="12" height="13" rx="3" fill="#7B8A99"/>
+    <path d="M52 38 v10 M48 42 v8 M56 42 v8" stroke="#7FB8D8" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M28 60 q0 -8 7 -8 q3 -8 8 -3 l3 12 q2 8 -7 10 q-11 2 -11 -11 z" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M72 60 q0 -8 -7 -8 q-3 -8 -8 -3 l-3 12 q-2 8 7 10 q11 2 11 -11 z" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+    <circle cx="42" cy="56" r="5" fill="#FFF" opacity=".9"/>
+    <circle cx="58" cy="54" r="4" fill="#FFF" opacity=".85"/>
+    <circle cx="50" cy="62" r="3.4" fill="#FFF" opacity=".8"/>
+    <path d="M22 78 h56" stroke="#BFD9E8" stroke-width="5" stroke-linecap="round"/>`),
+  // ⚠ دو بار بازنویسی شد. نسخهٔ ۱ افقی بود و شبیه چکش می‌شد؛ نسخهٔ ۲
+  // موهای سفید داشت که روی کارت سفید کاملاً نامرئی بودند. درس این
+  // بود: هیچ جزء معنادار SVG نباید سفیدِ بی‌خط باشد، چون پس‌زمینهٔ
+  // گزینه‌ها سفید است. حالا مورب، با موهای روشن اما خط‌دار.
+  مسواک: () =>
+    svg(`<g transform="rotate(-20 50 50)">
+      <rect x="44" y="34" width="12" height="52" rx="6" fill="#2E86AB"/>
+      <rect x="44" y="66" width="12" height="20" rx="6" fill="#1F6C8C"/>
+      <rect x="39" y="22" width="22" height="16" rx="5" fill="#2E86AB"/>
+      <g fill="#F4F7F9" stroke="#B9C6D0" stroke-width="1.6">
+        <rect x="41.5" y="10" width="5" height="13" rx="2.5"/>
+        <rect x="47.5" y="8" width="5" height="15" rx="2.5"/>
+        <rect x="53.5" y="10" width="5" height="13" rx="2.5"/>
+      </g>
+      <path d="M40 9 q10 -8 21 0 q-10 5 -21 0 z" fill="#6ECB8F" stroke="#4FAE72" stroke-width="1.6"/>
+    </g>
+    <circle cx="20" cy="58" r="6" fill="#DCEAF4" stroke="#BFD9E8" stroke-width="1.6"/>
+    <circle cx="82" cy="46" r="5" fill="#DCEAF4" stroke="#BFD9E8" stroke-width="1.6"/>
+    <circle cx="78" cy="68" r="4" fill="#DCEAF4" stroke="#BFD9E8" stroke-width="1.6"/>`),
+  خواب: () =>
+    svg(`<rect x="14" y="56" width="72" height="24" rx="6" fill="#BFD3E6"/>
+    <rect x="14" y="48" width="26" height="16" rx="6" fill="#FFF"/>
+    <circle cx="30" cy="50" r="10" fill="#F5D3B5"/>
+    <path d="M25 50 q3 3 6 0" fill="none" stroke="#2B2A33" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="62" y="42" font-size="16" fill="#7B8A99" font-family="sans-serif">Z</text>
+    <text x="74" y="32" font-size="11" fill="#9AA5B1" font-family="sans-serif">z</text>`),
+
+  آب‌خوردن: () =>
+    svg(`<path d="M34 34 h32 l-5 42 q-1 6 -11 6 t-11 -6 z" fill="#DCEAF4" stroke="#9CC4DC" stroke-width="2.5"/>
+    <path d="M36 50 h28 l-4 26 q-1 5 -10 5 t-10 -5 z" fill="#7FB8D8"/>
+    <ellipse cx="50" cy="34" rx="16" ry="4" fill="#BFD9E8"/>`),
+
+  // ⚠ نسخهٔ اول فقط یک قوس سبز میان دو سر بود و معنا نمی‌داد. نسخهٔ
+  // دوم خط‌های سبزِ بی‌معنی داشت (قرار بود «حرکت» را برسانند ولی
+  // فقط شلوغی بودند) — برداشته شدند.
+  کمک‌کردن: () =>
+    svg(`<circle cx="26" cy="62" r="11" fill="#F2C6A0" stroke="#D9A87E" stroke-width="1.8"/>
+    <path d="M14 84 q0 -14 12 -14 t12 14 z" fill="#F4B942"/>
+    <circle cx="70" cy="26" r="12" fill="#F5D3B5" stroke="#D9A87E" stroke-width="1.8"/>
+    <path d="M56 74 q0 -32 14 -32 t14 32 z" fill="#2E86AB"/>
+    <path d="M60 48 q-16 4 -22 10" stroke="#F5D3B5" stroke-width="7.5" stroke-linecap="round" fill="none"/>
+    <circle cx="37" cy="59" r="5.5" fill="#F5D3B5" stroke="#D9A87E" stroke-width="1.6"/>
+    <path d="M8 86 h84" stroke="#C9BFB0" stroke-width="3.5" stroke-linecap="round"/>`),
+  نوبت: () =>
+    svg(`<circle cx="26" cy="40" r="10" fill="#F2C6A0"/>
+    <path d="M16 74 q0 -18 10 -18 t10 18 z" fill="#E4572E"/>
+    <circle cx="52" cy="40" r="10" fill="#F5D3B5"/>
+    <path d="M42 74 q0 -18 10 -18 t10 18 z" fill="#F4B942"/>
+    <circle cx="78" cy="40" r="10" fill="#EEC9A8"/>
+    <path d="M68 74 q0 -18 10 -18 t10 18 z" fill="#7B4B94"/>
+    <path d="M12 84 h76" stroke="#C9BFB0" stroke-width="3" stroke-linecap="round"/>`),
+
+  زبالهٔ‌درست: () =>
+    svg(`<path d="M30 40 h40 l-5 42 h-30 z" fill="#7B8A99"/>
+    <rect x="26" y="32" width="48" height="9" rx="4" fill="#5D6B78"/>
+    <rect x="43" y="24" width="14" height="7" rx="3" fill="#5D6B78"/>
+    <path d="M44 52 v20 M56 52 v20" stroke="#4A5560" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="74" cy="24" r="7" fill="#3D9A50"/>
+    <path d="M70 24 l3 3 l6 -6" fill="none" stroke="#FFF" stroke-width="2.6" stroke-linecap="round"/>`),
+
+  // ⚠ سه بار بازنویسی شد. نسخهٔ ۱ شبیه بلندگو، نسخهٔ ۲ شبیه پیش‌بند،
+  // نسخهٔ ۳ آن‌قدر بزرگ بود که صورت را می‌پوشاند و چهره دیده نمی‌شد.
+  // درس: در آیکون ۸۶ پیکسلی، وقتی دو چیز باید هم‌زمان خوانده شوند
+  // (چهره + شیء)، شیء باید کوچک و در حاشیه بماند.
+  دستمال: () =>
+    svg(`<circle cx="48" cy="36" r="22" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M34 24 q7 -5 13 -1" fill="none" stroke="#2B2A33" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M62 24 q-7 -5 -13 -1" fill="none" stroke="#2B2A33" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M36 35 q5 5 10 0" fill="none" stroke="#2B2A33" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M52 35 q5 5 10 0" fill="none" stroke="#2B2A33" stroke-width="2.8" stroke-linecap="round"/>
+    <ellipse cx="48" cy="47" rx="5" ry="4" fill="#2B2A33"/>
+    <g transform="rotate(-12 50 70)">
+      <rect x="30" y="60" width="40" height="24" rx="4" fill="#FBFDFF" stroke="#8FA6B6" stroke-width="2.6"/>
+      <path d="M43 60 v24 M56 60 v24" stroke="#C9D8E2" stroke-width="2"/>
+    </g>
+    <circle cx="74" cy="80" r="7" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>`),
+  دویدن: () =>
+    svg(`<circle cx="52" cy="26" r="11" fill="#F2C6A0"/>
+    <path d="M46 38 q10 -3 14 6 l6 16 h-10 z" fill="#E4572E"/>
+    <path d="M50 60 l-12 20" stroke="#2E86AB" stroke-width="7" stroke-linecap="round"/>
+    <path d="M58 60 l14 14" stroke="#2E86AB" stroke-width="7" stroke-linecap="round"/>
+    <path d="M46 44 l-14 8" stroke="#F2C6A0" stroke-width="6" stroke-linecap="round"/>
+    <path d="M62 44 l12 -6" stroke="#F2C6A0" stroke-width="6" stroke-linecap="round"/>`),
+
+  کتاب‌خواندن: () =>
+    svg(`<circle cx="50" cy="26" r="12" fill="#F5D3B5"/>
+    <circle cx="45" cy="25" r="2.4" fill="#2B2A33"/>
+    <circle cx="55" cy="25" r="2.4" fill="#2B2A33"/>
+    <path d="M45 32 q5 4 10 0" fill="none" stroke="#2B2A33" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M20 54 q30 -10 30 0 q0 -10 30 0 v22 q-30 -10 -30 0 q0 -10 -30 0 z"
+      fill="#FFF" stroke="#C9BFB0" stroke-width="2.5"/>
+    <path d="M50 54 v22" stroke="#C9BFB0" stroke-width="2.5"/>`),
+};
+
+/** نام همهٔ صحنه‌ها. */
+export const SCENE_NAMES = Object.freeze(Object.keys(SCENES));
+
+/** SVG یک صحنه، یا رشتهٔ خالی اگر نبود. */
+export function sceneSvg(name) {
+  const f = SCENES[name];
+  return f ? f() : '';
+}
+
 export const CATEGORIES = Object.freeze({
   حیوان: ['گربه', 'سگ', 'ماهی', 'پرنده', 'خرگوش', 'جوجه', 'گاو', 'پروانه', 'زنبور', 'لاکپشت'],
   میوه: ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس'],
