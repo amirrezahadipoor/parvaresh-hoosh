@@ -194,6 +194,44 @@ const { auditIcons } = await import('../src/core/task-icon.js');
 const allKinds = [...new Set(LESSONS.flatMap((l) => l.rounds.map((r) => r.kind)))];
 for (const problem of auditIcons(allKinds)) errors.push(`نشان تمرین: ${problem}`);
 
+// ── آیکون و مانیفست ─────────────────────────────────────────────────
+// چرا اینجا: آیکون تنها چیزی است که والد پیش از نصب می‌بیند. یک
+// ارجاعِ شکسته در manifest یعنی آیکون خالی در کافه‌بازار، و این
+// باگی است که هیچ آزمون دیگری نمی‌گیرد چون برنامه سالم اجرا می‌شود.
+{
+  const { existsSync, readFileSync } = await import('node:fs');
+  const { fileURLToPath } = await import('node:url');
+  const root = fileURLToPath(new URL('..', import.meta.url));
+  const rel = (f) => root + f.replace(/^\.\//, '');
+
+  const manifest = JSON.parse(readFileSync(rel('./manifest.webmanifest'), 'utf8'));
+  if (!manifest.icons?.length) errors.push('مانیفست: هیچ آیکونی تعریف نشده');
+  for (const ic of manifest.icons || []) {
+    if (!existsSync(rel(ic.src))) errors.push(`مانیفست: آیکون گمشده — ${ic.src}`);
+  }
+  // اندروید بدون maskable آیکون را داخل یک کادر سفید می‌گذارد.
+  if (!(manifest.icons || []).some((i) => i.purpose === 'maskable')) {
+    errors.push('مانیفست: آیکون maskable ندارد — اندروید کادر سفید می‌گذارد');
+  }
+
+  const html = readFileSync(rel('./index.html'), 'utf8');
+  for (const m of html.matchAll(/(?:href|src)="(assets\/icon\/[^"]+)"/g)) {
+    if (!existsSync(root + m[1])) errors.push(`index.html: آیکون گمشده — ${m[1]}`);
+  }
+
+  // رنگ نوار وضعیت باید با پس‌زمینهٔ واقعی برنامه یکی باشد، وگرنه
+  // زیر نوار اندروید یک خط رنگیِ ناهم‌خوان دیده می‌شود.
+  const css = readFileSync(rel('./src/styles/main.css'), 'utf8');
+  const bg = css.match(/--bg:\s*(#[0-9A-Fa-f]{6})/)?.[1];
+  const theme = html.match(/name="theme-color"\s+content="(#[0-9A-Fa-f]{6})"/)?.[1];
+  if (bg && theme && bg.toUpperCase() !== theme.toUpperCase()) {
+    errors.push(`رنگ تم (${theme}) با پس‌زمینهٔ برنامه (${bg}) یکی نیست`);
+  }
+  if (bg && manifest.background_color?.toUpperCase() !== bg.toUpperCase()) {
+    errors.push(`مانیفست: background_color با --bg (${bg}) یکی نیست`);
+  }
+}
+
 console.log('── اعتبارسنجی پرورش هوش ──');
 console.log(`حوزه‌ها: ${DOMAINS.length}`);
 for (const d of DOMAINS) {

@@ -14,6 +14,7 @@ const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './src/core/app-icon.js',
   './src/core/audio.js',
   './src/core/buddy.js',
   './src/core/journey.js',
@@ -46,6 +47,13 @@ const SHELL = [
   './assets/fonts/Vazirmatn-ExtraBold.woff2',
   './assets/fonts/Vazirmatn-Medium.woff2',
   './assets/fonts/Vazirmatn-Regular.woff2',
+  './assets/icon/icon.svg',
+  './assets/icon/icon-32.png',
+  './assets/icon/icon-180.png',
+  './assets/icon/icon-192.png',
+  './assets/icon/icon-512.png',
+  './assets/icon/icon-maskable-192.png',
+  './assets/icon/icon-maskable-512.png',
 ];
 
 self.addEventListener('install', (e) => {

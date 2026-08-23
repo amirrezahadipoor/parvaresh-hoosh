@@ -14,7 +14,7 @@
 // اجرا: node scripts/sync-sw.js
 // بررسی بدون نوشتن: node scripts/sync-sw.js --check
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -48,9 +48,21 @@ export function shellFiles() {
     .map((f) => './' + relative(ROOT, f).split('\\').join('/'))
     .sort();
 
+  // آیکون‌ها — بدون آن‌ها نصبِ آفلاین آیکون خالی نشان می‌دهد.
+  // فقط اندازه‌هایی که واقعاً در manifest یا index.html ارجاع شده‌اند.
+  const icons = [
+    './assets/icon/icon.svg',
+    './assets/icon/icon-32.png',
+    './assets/icon/icon-180.png',
+    './assets/icon/icon-192.png',
+    './assets/icon/icon-512.png',
+    './assets/icon/icon-maskable-192.png',
+    './assets/icon/icon-maskable-512.png',
+  ].filter((f) => existsSync(join(ROOT, f)));
+
   // ⚠ صداها عمداً اینجا نیستند: ۲٫۶ مگابایت‌اند و برنامه باید کاملاً
   // بی‌صدا هم کار کند. هنگام نخستین پخش کش می‌شوند.
-  return [...list, ...src, ...fonts];
+  return [...list, ...src, ...fonts, ...icons];
 }
 
 /** بلوک SHELL را در sw.js بازنویسی می‌کند. */

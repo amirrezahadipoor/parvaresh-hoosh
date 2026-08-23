@@ -10,8 +10,9 @@
     "build:lessons": "node scripts/build-reading-lessons.js",
     "sync:narration": "node scripts/sync-narration.js",
     "sync:sw": "node scripts/sync-sw.js",
+    "build:icons": "node scripts/build-icons.js",
     "validate": "node scripts/validate.js",
-    "test": "node scripts/validate.js && node scripts/sync-sw.js --check && node scripts/test-rounds.js",
+    "test": "node scripts/validate.js && node scripts/sync-sw.js --check && node scripts/build-icons.js --check && node scripts/test-rounds.js",
     "test:browser": "node scripts/test-browser.js",
     "test:visual": "node scripts/test-visual.js",
     "test:delight": "node scripts/test-delight.js"
