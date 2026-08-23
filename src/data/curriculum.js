@@ -68,6 +68,13 @@ export const DOMAINS = Object.freeze([
     icon: 'leaf',
   }),
   Object.freeze({
+    id: 'english',
+    title: 'انگلیسی',
+    description: 'حرف‌ها، واژه‌ها و رنگ‌ها به زبان انگلیسی',
+    color: '#C2185B',
+    icon: 'abc',
+  }),
+  Object.freeze({
     id: 'logic',
     title: 'منطق و الگو',
     description: 'الگویابی، دسته‌بندی و حل مسئله',

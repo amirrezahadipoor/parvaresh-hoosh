@@ -3,12 +3,14 @@
 import { READING_LESSONS } from './reading.js';
 import { MATH_LESSONS } from './math.js';
 import { LOGIC_LESSONS } from './logic.js';
+import { ENGLISH_LESSONS } from './english.js';
 import { SCIENCE_LESSONS } from './science.js';
 
 export const LESSONS = Object.freeze([
   ...READING_LESSONS,
   ...MATH_LESSONS,
   ...SCIENCE_LESSONS,
+  ...ENGLISH_LESSONS,
   ...LOGIC_LESSONS,
 ]);
 
@@ -42,4 +44,11 @@ export const SUPPORTED_ROUND_KINDS = Object.freeze([
   'category',
   'shadow',
   'count-shapes',
+  'en-letter-pic',
+  'en-word-pic',
+  'en-pic-word',
+  'en-color',
+  'en-number',
+  'en-cvc',
+  'en-translate',
 ]);

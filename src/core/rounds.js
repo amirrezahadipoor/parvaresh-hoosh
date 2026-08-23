@@ -10,6 +10,15 @@ import { ALPHABET } from '../data/alphabet.js';
 import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
 import { SHAPES, SHAPE_NAMES, CATEGORIES, COLOR_HEX, GEO } from './svg.js';
+import {
+  EN_ALPHABET,
+  EN_PICTURE_WORDS,
+  EN_COLORS,
+  EN_NUMBERS,
+  CVC_FAMILIES,
+  SIGHT_WORD_FA,
+  TRANSLATABLE_SIGHT_WORDS,
+} from '../data/english.js';
 
 const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 export const toFa = (n) => String(n).replace(/\d/g, (d) => faDigits[+d]);
@@ -109,6 +118,124 @@ export function buildRound(round, track) {
           : null,
         options: buildOptions(round.answer, pool, n).map((v) => ({ label: v, value: v })),
         answer: round.answer,
+      };
+    }
+
+    // ── انگلیسی ────────────────────────────────────────────────────────
+    // هیچ گِرد انگلیسی به صدا وابسته نیست: کلیپ صوتی انگلیسی نداریم و
+    // گفتار مصنوعی ممنوع است. آموزش کاملاً دیداری/نوشتاری است.
+
+    case 'en-letter-pic': {
+      // کدام تصویر با این حرف انگلیسی شروع می‌شود؟
+      const withPic = EN_ALPHABET.filter((a) => a.pic);
+      const target = pick(withPic);
+      const wrong = withPic.filter((a) => a.upper !== target.upper).map((a) => a.pic);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{L}', target.upper),
+        display: { kind: 'text', value: `${target.upper} ${target.lower}` },
+        // برچسب انگلیسی زیر تصویر: کودک شکل و واژه را با هم می‌بیند.
+        options: buildOptions(target.pic, wrong, n).map((v) => ({
+          label: withPic.find((a) => a.pic === v)?.word ?? v,
+          value: v,
+          pic: v,
+          latinLabel: true,
+        })),
+        answer: target.pic,
+      };
+    }
+
+    case 'en-word-pic': {
+      // تصویر را ببین، واژهٔ انگلیسی درست را انتخاب کن.
+      const target = pick(EN_PICTURE_WORDS);
+      const wrong = EN_PICTURE_WORDS.filter((w) => w.en !== target.en).map((w) => w.en);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: target.pic },
+        options: buildOptions(target.en, wrong, n).map((v) => ({ label: v, value: v, latin: true })),
+        answer: target.en,
+      };
+    }
+
+    case 'en-pic-word': {
+      // عکسِ گِرد بالا: واژه را ببین، تصویر درست را انتخاب کن.
+      const target = pick(EN_PICTURE_WORDS);
+      const wrong = EN_PICTURE_WORDS.filter((w) => w.en !== target.en).map((w) => w.pic);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{w}', target.en),
+        display: { kind: 'latin', value: target.en },
+        options: buildOptions(target.pic, wrong, n).map((v) => ({
+          label: EN_PICTURE_WORDS.find((w) => w.pic === v)?.en ?? v,
+          value: v,
+          pic: v,
+          latinLabel: true,
+        })),
+        answer: target.pic,
+      };
+    }
+
+    case 'en-color': {
+      const target = pick(EN_COLORS);
+      const wrong = EN_COLORS.filter((c) => c.en !== target.en).map((c) => c.hex);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{w}', target.en),
+        display: { kind: 'latin', value: target.en },
+        options: buildOptions(target.hex, wrong, n).map((v) => ({
+          label: EN_COLORS.find((c) => c.hex === v).fa,
+          value: v,
+          swatch: v,
+        })),
+        answer: target.hex,
+      };
+    }
+
+    case 'en-number': {
+      const cap10 = Math.min(cap, 10);
+      const target = pick(EN_NUMBERS.slice(0, Math.max(2, cap10)));
+      const wrong = EN_NUMBERS.slice(0, Math.max(2, cap10))
+        .filter((x) => x.n !== target.n)
+        .map((x) => x.n);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{w}', target.en),
+        display: { kind: 'latin', value: target.en },
+        options: buildOptions(target.n, wrong, n).map((v) => ({
+          label: toFa(v),
+          value: v,
+          dots: v,
+        })),
+        answer: target.n,
+      };
+    }
+
+    case 'en-cvc': {
+      // خانوادهٔ واژگانی: کدام واژه به این خانواده تعلق دارد؟
+      // کودک الگو را کشف می‌کند، نه اینکه حفظ کند.
+      const fam = pick(CVC_FAMILIES);
+      const target = pick(fam.words);
+      const others = CVC_FAMILIES.filter((f) => f.rime !== fam.rime).flatMap((f) => f.words);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{r}', `-${fam.rime}`),
+        display: { kind: 'latin', value: `_ ${fam.rime}` },
+        options: buildOptions(target, others, n).map((v) => ({ label: v, value: v, latin: true })),
+        answer: target,
+      };
+    }
+
+    case 'en-translate': {
+      // تطبیق دوزبانه: معنی فارسی واژهٔ انگلیسی.
+      const target = pick(TRANSLATABLE_SIGHT_WORDS);
+      const wrong = TRANSLATABLE_SIGHT_WORDS.filter((w) => w !== target).map((w) => SIGHT_WORD_FA[w]);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{w}', target),
+        display: { kind: 'latin', value: target },
+        options: buildOptions(SIGHT_WORD_FA[target], wrong, n).map((v) => ({ label: v, value: v })),
+        answer: SIGHT_WORD_FA[target],
       };
     }
 

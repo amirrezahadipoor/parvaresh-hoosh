@@ -226,6 +226,11 @@ function playScreen(lessonId) {
           ]),
         );
       }
+      // متن لاتین در محیط راست‌به‌چپ: باید dir="ltr" صریح داشته باشد،
+      // وگرنه نویسه‌های خنثی (خط تیره، فاصله) جابه‌جا می‌شوند.
+      if (r.display.kind === 'latin') {
+        stage.append(el('span', { class: 'latin-big', dir: 'ltr', lang: 'en', text: r.display.value }));
+      }
       // فقط تصویر — بدون حرف، تا پاسخ لو نرود
       if (r.display.kind === 'pic-only') {
         stage.append(el('span', { class: 'lp-ico ico big-pic', html: svgShape(r.display.icon) || '' }));
@@ -256,6 +261,10 @@ function playScreen(lessonId) {
       const btn = el('button', { class: `opt${o.big ? ' big' : ''}` });
       if (o.pic) {
         btn.append(el('span', { class: 'ico lg', html: svgShape(o.pic) || '' }));
+        // در درس انگلیسی، واژه زیر تصویر می‌آید تا شکل و واژه با هم دیده شوند.
+        if (o.latinLabel) {
+          btn.append(el('span', { class: 'pic-label', dir: 'ltr', lang: 'en', text: o.label }));
+        }
       } else if (o.geo) {
         btn.append(el('span', { class: 'ico lg', html: svgGeo(o.geo.name, o.geo.color) || '' }));
       } else if (o.shapeRepeat) {
@@ -264,6 +273,8 @@ function playScreen(lessonId) {
           g.append(el('span', { class: 'ico sm', html: svgShape(o.shapeRepeat.icon) || '' }));
         }
         btn.append(g);
+      } else if (o.latin) {
+        btn.append(el('span', { class: 'latin-opt', dir: 'ltr', lang: 'en', text: o.label }));
       } else if (o.dots) {
         // عدد + نقطه‌های متناظرش روی خودِ گزینه: کودک پیوند
         // «رقم ↔ مقدار» را می‌بیند بدون آنکه پاسخ لو برود.

@@ -9,6 +9,10 @@
 import { chromium } from 'playwright-core';
 
 const BASE = process.env.BASE_URL || 'http://localhost:8080';
+
+// از خودِ داده می‌خوانیم تا با رشد محتوا آزمون نشکند.
+const { LESSONS } = await import('../src/data/lessons/index.js');
+const LESSON_COUNT = LESSONS.length;
 const errors = [];
 const consoleErrors = [];
 
@@ -132,7 +136,7 @@ await page.waitForSelector('.play-btn');
 await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).click();
 await page.waitForSelector('.map-item');
 const mapItems = await page.locator('.map-item').count();
-check(mapItems === 23, `نقشه باید همهٔ ۲۳ درس را یک‌جا نشان دهد، ${mapItems} نشان داد`);
+check(mapItems === LESSON_COUNT, `نقشه باید همهٔ ${LESSON_COUNT} درس را یک‌جا نشان دهد، ${mapItems} نشان داد`);
 const lockedCount = await page.locator('.map-item.locked').count();
 check(lockedCount > 0, 'نقشه باید درس‌های باز نشده را قفل نشان دهد');
 check(lockedCount < mapItems, 'همهٔ درس‌ها قفل‌اند — مسیر پیش نمی‌رود');
