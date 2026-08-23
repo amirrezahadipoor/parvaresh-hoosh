@@ -269,15 +269,27 @@ export const SHAPE_NAMES = Object.freeze(Object.keys(SHAPES));
 
 /** یک شکل تصویری را برمی‌گرداند؛ اگر نبود، null (هرگز شکل اشتباه نمی‌سازیم). */
 export function shape(name) {
-  return SHAPES[name] ? SHAPES[name]() : null;
+  // چرا سه جدول و یک تابع: کل مسیر رندر (screens.js) فقط shape() را
+  // صدا می‌زند. اگر چهره‌ها و صحنه‌ها جدا می‌ماندند، باید هر شاخهٔ
+  // نمایش دوباره نوشته می‌شد. با این عقب‌نشینی، حوزهٔ مهارت زندگی
+  // بدون یک خط تغییر در رابط کاربری تصویر می‌گیرد.
+  const f = SHAPES[name] || FACES[name] || SCENES[name]
+    || SITUATIONS[name] || HAZARDS[name] || SAFETY_STEPS[name];
+  return f ? f() : null;
+}
+
+/** آیا برای این نام تصویری هست؟ — برای اعتبارسنجی درس‌ها. */
+export function hasPicture(name) {
+  return Boolean(
+    SHAPES[name] || FACES[name] || SCENES[name]
+    || SITUATIONS[name] || HAZARDS[name] || SAFETY_STEPS[name],
+  );
 }
 
 /** یک شکل هندسی رنگی برمی‌گرداند. */
 export function geo(name, color = '#2E86AB') {
   return GEO[name] ? GEO[name](COLOR_HEX[color] || color) : null;
 }
-
-/** دسته‌بندی معنایی — برای بازی «کدام فرق دارد؟». */
 
 // ── چهره‌های احساس (حوزهٔ مهارت زندگی) ──────────────────────────────
 //
@@ -486,6 +498,166 @@ export function sceneSvg(name) {
   return f ? f() : '';
 }
 
+
+// ── موقعیت‌های داستانی و ایمنی (حوزهٔ مهارت زندگی) ───────────────────
+//
+// این‌ها قلب حوزه‌اند. پرسش «او چه حسی دارد؟» فقط وقتی بدون خواندن
+// حل می‌شود که خودِ موقعیت تصویری باشد: کودک صحنه را می‌بیند و
+// چهرهٔ درست را انتخاب می‌کند. اگر موقعیت متن بود، درس برای کودک
+// پیش‌خوان بی‌فایده می‌شد.
+//
+// موقعیت‌ها از دو منبع درآمده‌اند: چارچوب CASEL (خودآگاهی: نام‌گذاری
+// احساس) و راهنمای مهارت زندگی بهزیستی (ایمنی فردی، «نه، برو، بگو»).
+
+export const SITUATIONS = {
+  هدیه: () =>
+    svg(`<rect x="24" y="42" width="52" height="40" rx="5" fill="#E4572E"/>
+    <rect x="20" y="32" width="60" height="14" rx="5" fill="#C8462260"/>
+    <rect x="20" y="32" width="60" height="14" rx="5" fill="#D14343"/>
+    <rect x="44" y="32" width="12" height="50" fill="#F4B942"/>
+    <path d="M50 32 q-14 -14 -4 -18 q8 -3 4 18 z" fill="#F4B942"/>
+    <path d="M50 32 q14 -14 4 -18 q-8 -3 -4 18 z" fill="#F4B942"/>`),
+
+  برج‌خراب: () =>
+    svg(`<rect x="14" y="66" width="20" height="16" rx="3" fill="#2E86AB"/>
+    <rect x="16" y="50" width="18" height="15" rx="3" fill="#F4B942" transform="rotate(-8 25 58)"/>
+    <rect x="52" y="70" width="18" height="14" rx="3" fill="#7B4B94" transform="rotate(22 61 77)"/>
+    <rect x="70" y="56" width="17" height="14" rx="3" fill="#3D9A50" transform="rotate(-34 78 63)"/>
+    <rect x="44" y="46" width="16" height="14" rx="3" fill="#E4572E" transform="rotate(48 52 53)"/>
+    <path d="M8 86 h84" stroke="#C9BFB0" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M40 30 l6 8 M52 26 v10 M64 30 l-6 8" stroke="#C9BFB0" stroke-width="3" stroke-linecap="round"/>`),
+
+  // ⚠ نسخهٔ اول: کودک آن‌قدر کوچک بود که در گوشهٔ قاب گم می‌شد و
+  // صحنه فقط «یک اتاق تاریک» خوانده می‌شد، نه «کودکی در تاریکی».
+  // حالا کودک بزرگ و در مرکز است — او سوژه است، نه اتاق.
+  اتاق‌تاریک: () =>
+    svg(`<rect x="6" y="6" width="88" height="88" rx="8" fill="#3A3550"/>
+    <rect x="58" y="18" width="30" height="28" rx="3" fill="#241F3A" stroke="#5A5478" stroke-width="2.5"/>
+    <path d="M73 18 v28 M58 32 h30" stroke="#5A5478" stroke-width="2.2"/>
+    <circle cx="80" cy="25" r="4.5" fill="#F4E3A8" opacity=".8"/>
+    <circle cx="38" cy="46" r="17" fill="#E3C3A6" stroke="#C49B78" stroke-width="2"/>
+    <path d="M28 38 q6 -5 11 -1 M41 37 q6 -4 11 1" fill="none" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/>
+    <ellipse cx="33" cy="46" rx="3.4" ry="4.4" fill="#2B2A33"/>
+    <ellipse cx="45" cy="46" rx="3.4" ry="4.4" fill="#2B2A33"/>
+    <path d="M32 57 q3 -4 6 0 q3 4 6 0" fill="none" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M18 92 q0 -26 20 -26 t20 26 z" fill="#5A5478"/>`),
+  // ⚠ نسخهٔ اول: تنه یک مستطیل تخت بود، پاها شناور بودند و زخم لکهٔ
+  // قرمز بی‌شکل. حالا تنهٔ گرد، پاهای متصل، و چسب‌زخم ضربدری روی
+  // زانو — چسب‌زخم از خودِ خون خواناتر است و کودک را نمی‌ترساند.
+  زانوی‌زخمی: () =>
+    svg(`<circle cx="50" cy="22" r="14" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M42 18 q4 -3 7 1 M51 19 q4 -3 7 1" fill="none" stroke="#2B2A33" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="45" cy="24" r="2.4" fill="#2B2A33"/>
+    <circle cx="56" cy="24" r="2.4" fill="#2B2A33"/>
+    <path d="M45 32 q5 -4 10 0" fill="none" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M50 38 q14 0 15 16 v10 h-30 v-10 q1 -16 15 -16 z" fill="#2E86AB"/>
+    <path d="M40 64 v18 M60 64 v18" stroke="#F5D3B5" stroke-width="11" stroke-linecap="round"/>
+    <path d="M36 46 l-9 12 M64 46 l9 12" stroke="#F5D3B5" stroke-width="7.5" stroke-linecap="round"/>
+    <g transform="rotate(-20 40 72)">
+      <rect x="31" y="66" width="18" height="11" rx="5" fill="#F0C08A" stroke="#D9A05B" stroke-width="1.8"/>
+      <circle cx="40" cy="71.5" r="2.6" fill="#D9A05B"/>
+    </g>
+    <path d="M8 88 h84" stroke="#C9BFB0" stroke-width="3.5" stroke-linecap="round"/>`),
+  رعدوبرق: () =>
+    svg(`<path d="M24 46 q-12 0 -12 -11 q0 -10 11 -10 q3 -13 17 -13 q13 0 16 12 q13 0 13 12 q0 10 -12 10 z"
+      fill="#8A93A8"/>
+    <path d="M52 44 h18 l-13 18 h12 l-24 30 l8 -24 h-11 z" fill="#F4B942" stroke="#D99C1F" stroke-width="2"/>
+    <path d="M22 58 l-5 12 M34 62 l-4 10" stroke="#9CB4C4" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  بستنی‌افتاده: () =>
+    svg(`<path d="M40 34 q10 -16 20 0 z" fill="#F2C6A0" opacity="0"/>
+    <path d="M34 46 l12 26 l12 -26 z" fill="#D9A05B" stroke="#B57F3C" stroke-width="2"/>
+    <circle cx="66" cy="76" r="11" fill="#F6B8C8" stroke="#DE94A8" stroke-width="2"/>
+    <ellipse cx="66" cy="86" rx="18" ry="4" fill="#EFD6DD"/>
+    <path d="M52 58 q10 4 12 10" fill="none" stroke="#C9BFB0" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="4 5"/>
+    <path d="M8 90 h84" stroke="#C9BFB0" stroke-width="3.5" stroke-linecap="round"/>`),
+
+  باغچه‌آرام: () =>
+    svg(`<circle cx="74" cy="24" r="12" fill="#F4B942"/>
+    <path d="M0 78 q25 -14 50 0 q25 14 50 0 v22 h-100 z" fill="#8ED9A8"/>
+    <circle cx="28" cy="58" r="6" fill="#E86A9A"/>
+    <path d="M28 64 v14" stroke="#3D9A50" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="64" r="5" fill="#F4B942"/>
+    <path d="M50 69 v11" stroke="#3D9A50" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="70" cy="60" r="5.5" fill="#B48CD8"/>
+    <path d="M70 66 v13" stroke="#3D9A50" stroke-width="3" stroke-linecap="round"/>`),
+};
+
+// ── چیزهای خطرناک و امن (درس ایمنی) ─────────────────────────────────
+//
+// منبع: فهرست ایمنی کودک — پرهیز از تماس با وسایل برقی، اشیای تیز و
+// مواد شیمیایی، و خبردادن به بزرگ‌تر. کودک باید خطر را از روی شکل
+// بشناسد، پس هر خطر نشانهٔ دیداری تند دارد.
+
+export const HAZARDS = {
+  پریز: () =>
+    svg(`<rect x="26" y="22" width="48" height="56" rx="8" fill="#F0EAE0" stroke="#C9BFB0" stroke-width="3"/>
+    <circle cx="40" cy="44" r="5" fill="#4A4550"/>
+    <circle cx="60" cy="44" r="5" fill="#4A4550"/>
+    <path d="M36 60 h28" stroke="#C9BFB0" stroke-width="3" stroke-linecap="round"/>
+    <path d="M50 6 l-8 14 h7 l-6 12 l14 -16 h-7 z" fill="#F4B942" stroke="#D99C1F" stroke-width="2"/>`),
+
+  چاقو: () =>
+    svg(`<path d="M22 62 q18 -34 40 -44 q6 12 -6 30 q-10 15 -24 22 z" fill="#D8DEE4" stroke="#9AA5B1" stroke-width="2.5"/>
+    <rect x="58" y="62" width="26" height="11" rx="5" fill="#7B4B94" transform="rotate(42 71 67)"/>
+    <path d="M28 56 q16 -28 32 -38" fill="none" stroke="#FFF" stroke-width="2.6" opacity=".8"/>`),
+
+  قرص: () =>
+    svg(`<rect x="30" y="34" width="40" height="50" rx="7" fill="#E86A6A" stroke="#C43F3F" stroke-width="2.5"/>
+    <rect x="34" y="24" width="32" height="12" rx="4" fill="#C43F3F"/>
+    <rect x="36" y="48" width="28" height="22" rx="4" fill="#FFF" opacity=".9"/>
+    <circle cx="44" cy="56" r="3.4" fill="#E86A6A"/>
+    <circle cx="56" cy="56" r="3.4" fill="#E86A6A"/>
+    <circle cx="50" cy="64" r="3.4" fill="#E86A6A"/>`),
+
+  کبریت: () =>
+    svg(`<rect x="40" y="34" width="9" height="50" rx="3" fill="#D9A05B" transform="rotate(12 44 60)"/>
+    <circle cx="40" cy="34" r="7" fill="#C43F3F"/>
+    <path d="M40 26 q-9 -10 0 -20 q3 9 8 11 q4 -3 3 -8 q8 9 3 18 q-4 6 -14 -1 z"
+      fill="#F4B942" stroke="#E0851F" stroke-width="1.8"/>`),
+};
+
+// ── نشانه‌های «نه، برو، بگو» ─────────────────────────────────────────
+//
+// منبع: راهنمای رسمی مهارت زندگی بهزیستی — فرمول سه‌گامیِ ایمنی
+// شخصی. سه گام باید سه تصویر کاملاً متفاوت باشند تا کودک بتواند
+// ترتیبشان را بچیند، نه اینکه حدس بزند.
+
+export const SAFETY_STEPS = {
+  'نه‌گفتن': () =>
+    svg(`<path d="M34 84 v-26 q-8 -4 -8 -14 v-14 q0 -5 5 -5 t5 5 v10 v-20 q0 -5 5 -5 t5 5 v18 v-22
+      q0 -5 5 -5 t5 5 v22 v-16 q0 -5 5 -5 t5 5 v34 q0 18 -14 18 z"
+      fill="#F5D3B5" stroke="#D9A87E" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="76" cy="24" r="13" fill="#D14343"/>
+    <path d="M69 24 h14" stroke="#FFF" stroke-width="4" stroke-linecap="round"/>`),
+
+  'دورشدن': () =>
+    svg(`<circle cx="42" cy="24" r="11" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M36 36 q10 -3 14 6 l6 16 h-10 z" fill="#E4572E"/>
+    <path d="M40 58 l-12 22" stroke="#2E86AB" stroke-width="7.5" stroke-linecap="round"/>
+    <path d="M48 58 l14 16" stroke="#2E86AB" stroke-width="7.5" stroke-linecap="round"/>
+    <path d="M36 42 l-14 8" stroke="#F2C6A0" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M78 44 h14 M84 36 l8 8 l-8 8" fill="none" stroke="#3D9A50" stroke-width="4"
+      stroke-linecap="round" stroke-linejoin="round"/>`),
+
+  'گفتن‌به‌بزرگ‌تر': () =>
+    svg(`<circle cx="26" cy="54" r="11" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M13 86 q0 -18 13 -18 t13 18 z" fill="#F4B942"/>
+    <circle cx="70" cy="28" r="13" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M53 86 q0 -44 17 -44 t17 44 z" fill="#2E86AB"/>
+    <path d="M40 34 h26 q5 0 5 5 v12 q0 5 -5 5 h-16 l-8 8 v-8 h-2 q-5 0 -5 -5 v-12 q0 -5 5 -5 z"
+      fill="#FFF" stroke="#9AA5B1" stroke-width="2.4"/>
+    <circle cx="47" cy="45" r="2.4" fill="#7B8A99"/>
+    <circle cx="55" cy="45" r="2.4" fill="#7B8A99"/>
+    <circle cx="63" cy="45" r="2.4" fill="#7B8A99"/>`),
+};
+
+/** نام همهٔ موقعیت‌ها، خطرها و گام‌های ایمنی. */
+export const SITUATION_NAMES = Object.freeze(Object.keys(SITUATIONS));
+export const HAZARD_NAMES = Object.freeze(Object.keys(HAZARDS));
+export const SAFETY_STEP_NAMES = Object.freeze(Object.keys(SAFETY_STEPS));
+
+/** دسته‌بندی معنایی — برای بازی «کدام فرق دارد؟». */
 export const CATEGORIES = Object.freeze({
   حیوان: ['گربه', 'سگ', 'ماهی', 'پرنده', 'خرگوش', 'جوجه', 'گاو', 'پروانه', 'زنبور', 'لاکپشت'],
   میوه: ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس'],
