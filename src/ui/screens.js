@@ -7,6 +7,7 @@ import * as store from '../core/storage.js';
 import { speak, sfx, setMuted, isMuted, stop as stopAudio } from '../core/audio.js';
 import { buildLesson, toFa } from '../core/rounds.js';
 import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../core/journey.js';
+import { masterySummary, isDue, MASTERY_SCORE } from '../core/mastery.js';
 import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
 
@@ -115,11 +116,12 @@ function mapScreen() {
     const d = DOMAINS.find((x) => x.id === st.domainId);
     const pr = store.lessonProgress(st.lesson.id);
     const locked = isLocked(st.lesson.id);
-    const doneMark = pr.completions ? '✓' : toFa(st.order + 1);
+    const due = isDue(st.lesson.id);
+    const doneMark = due ? '↻' : pr.completions ? '✓' : toFa(st.order + 1);
     return el(
       'button',
       {
-        class: `map-item${pr.completions ? ' done' : ''}${locked ? ' locked' : ''}`,
+        class: `map-item${pr.completions ? ' done' : ''}${locked ? ' locked' : ''}${due ? ' due' : ''}`,
         style: `--c:${d.color}`,
         disabled: locked ? '' : null,
         'aria-label': locked ? `${st.lesson.title} — هنوز باز نشده` : st.lesson.title,
@@ -740,6 +742,33 @@ function parentScreen() {
 
     el('h2', { class: 'sec', text: 'پیشرفت در هر حوزه' }),
     domains,
+
+    el('h2', { class: 'sec', text: 'تسلط و مرور' }),
+    (() => {
+      const m = masterySummary();
+      return el('div', { class: 'dom-list' }, [
+        el('div', { class: 'dom-row plain' }, [
+          el('span', { text: 'درس‌های مسلط‌شده' }),
+          el('strong', { text: `${toFa(m.mastered)} از ${toFa(m.played)}` }),
+        ]),
+        el('div', { class: 'dom-row plain' }, [
+          el('span', { text: 'آمادهٔ مرور امروز' }),
+          el('strong', { text: toFa(m.due) }),
+        ]),
+        ...(m.weak.length
+          ? [
+              el('div', { class: 'note weak' }, [
+                el('span', { text: 'نیاز به تمرین بیشتر: ' }),
+                el('span', { text: m.weak.map((w) => `${w.title} (${toFa(w.score)}٪)`).join('، ') }),
+              ]),
+            ]
+          : []),
+      ]);
+    })(),
+    el('div', {
+      class: 'note',
+      text: `درس‌ها پس از ۱، ۳ و ۷ روز دوباره پیشنهاد می‌شوند تا در حافظه بمانند. درسی که نمره‌اش زیر ${toFa(MASTERY_SCORE)}٪ باشد زودتر برمی‌گردد. مرور جای درس تازه را نمی‌گیرد؛ هر سه درس یک بار می‌آید تا حس پیشرفت حفظ شود.`,
+    }),
 
     el('h2', { class: 'sec', text: 'محدودیت زمان روزانه' }),
     el('label', { class: 'field' }, [el('span', { text: 'هر روز حداکثر' }), limitSel]),

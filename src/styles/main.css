@@ -1348,3 +1348,17 @@ canvas.pad {
 .screen:has(.prompt) {
   animation: fade var(--fast) ease;
 }
+
+/* نشان مرور روی نقشهٔ سفر */
+.map-item.due .map-dot {
+  background: var(--life);
+}
+
+.dom-row.plain {
+  grid-template-columns: 1fr auto;
+  font-size: 15px;
+}
+
+.note.weak {
+  background: #FDF2E4;
+}

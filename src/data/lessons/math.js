@@ -107,6 +107,7 @@ export const MATH_LESSONS = [
     minutes: 5,
     parentNote:
       'تشخیص فوری تعداد (subitizing) پایهٔ حس عدد است. اگر کودک انگشت‌شماری کرد اشکالی ندارد؛ با تکرار، نگاه جای شمردن را می‌گیرد. الگوی تاس عمداً آشناست.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'subitize', max: 3, prompt: 'چند نقطه می‌بینی؟' },
       { kind: 'subitize', max: 4, prompt: 'چند نقطه می‌بینی؟' },
@@ -125,6 +126,7 @@ export const MATH_LESSONS = [
     minutes: 5,
     parentNote:
       'قاب ده‌تایی ابزار متعارف کلاس‌های ریاضی دنیاست: کودک بدون شمردن می‌بیند که ۷ یعنی «یک ردیف پنج‌تایی و دو تا». این پل ورود به جمع و تفریق است.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'ten-frame', prompt: 'چند خانه پر است؟' },
       { kind: 'ten-frame', prompt: 'چند خانه پر است؟' },
@@ -143,6 +145,7 @@ export const MATH_LESSONS = [
     minutes: 6,
     parentNote:
       'تجزیهٔ عدد («۵ می‌شود ۳ و ۲») مهم‌تر از حفظ‌کردن جدول جمع است. کودکی که می‌داند ۵ چطور می‌شکند، جمع و تفریق را می‌فهمد نه اینکه حفظ کند.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'number-bond', max: 5, prompt: '{t} می‌شود {p} و چند؟' },
       { kind: 'number-bond', max: 5, prompt: '{t} می‌شود {p} و چند؟' },

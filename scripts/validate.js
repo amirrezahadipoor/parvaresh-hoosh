@@ -126,6 +126,10 @@ const roundTotal = LESSONS.reduce((s, l) => s + (l.rounds?.length || 0), 0);
 const { auditSequence, SEQUENCE } = await import('../src/core/journey.js');
 for (const problem of auditSequence()) errors.push(`مسیر سفر: ${problem}`);
 
+// دادهٔ تکرار فاصله‌دار باید سالم باشد.
+const { auditReviewData } = await import('../src/core/mastery.js');
+for (const problem of auditReviewData()) errors.push(`تکرار فاصله‌دار: ${problem}`);
+
 console.log('── اعتبارسنجی پرورش هوش ──');
 console.log(`حوزه‌ها: ${DOMAINS.length}`);
 for (const d of DOMAINS) {

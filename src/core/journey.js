@@ -16,6 +16,7 @@
 import { DOMAINS } from '../data/curriculum.js';
 import { lessonsByDomain, LESSONS } from '../data/lessons/index.js';
 import * as store from './storage.js';
+import { shouldReviewNow } from './mastery.js';
 
 /**
  * ترتیب سراسری درس‌ها: حوزه‌ها در هم بافته می‌شوند.
@@ -60,6 +61,14 @@ export function stepOf(lessonId) {
  * تا مسیر هیچ‌وقت به بن‌بست «دیگر کاری نیست» نرسد.
  */
 export function nextStep() {
+  // مرور سررسیده بر درس تازه اولویت دارد — ولی فقط هر ۳ درس یک بار،
+  // تا حس پیشرفت از بین نرود (منطق در mastery.js).
+  const review = shouldReviewNow();
+  if (review) {
+    const step = stepOf(review.id);
+    if (step) return { step, mode: 'review' };
+  }
+
   const fresh = SEQUENCE.find((s) => !store.isCompleted(s.lesson.id));
   if (fresh) return { step: fresh, mode: 'new' };
 

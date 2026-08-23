@@ -19,6 +19,7 @@ export const ENGLISH_LESSONS = Object.freeze([
     minutes: 5,
     parentNote:
       'کودک شکل حرف بزرگ و کوچک انگلیسی را با تصویر واژه‌ای که با آن حرف شروع می‌شود می‌بیند. هنوز هجی‌کردن مطرح نیست؛ هدف آشنایی چشم با شکل حروف است.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'en-letter-pic', prompt: 'کدام تصویر با حرف {L} شروع می‌شود؟' },
       { kind: 'en-letter-pic', prompt: 'کدام تصویر با حرف {L} شروع می‌شود؟' },
@@ -37,6 +38,7 @@ export const ENGLISH_LESSONS = Object.freeze([
     minutes: 5,
     parentNote:
       'واژه‌های پایه‌ای که همه تصویر دارند. کودک معنا را از تصویر می‌گیرد، نه از ترجمه — همان روشی که زبان مادری را یاد گرفت.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'en-word-pic', prompt: 'این چیست؟ واژهٔ انگلیسی را پیدا کن.' },
       { kind: 'en-word-pic', prompt: 'این چیست؟ واژهٔ انگلیسی را پیدا کن.' },
@@ -55,6 +57,7 @@ export const ENGLISH_LESSONS = Object.freeze([
     minutes: 5,
     parentNote:
       'رنگ‌ها برای شروع زبان ایده‌آل‌اند: هم واژه‌اند هم دیدنی، پس نیازی به ترجمه ندارند.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'en-color', prompt: '{w} کدام رنگ است؟' },
       { kind: 'en-color', prompt: '{w} کدام رنگ است؟' },
@@ -73,6 +76,7 @@ export const ENGLISH_LESSONS = Object.freeze([
     minutes: 5,
     parentNote:
       'عددهای یک تا ده. چون کودک عدد را در ریاضی یاد گرفته، فقط نام تازه‌ای روی مفهوم آشنا می‌گذارد — بار شناختی کم.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'en-number', max: 5, prompt: '{w} یعنی چند؟' },
       { kind: 'en-number', max: 5, prompt: '{w} یعنی چند؟' },
@@ -91,6 +95,7 @@ export const ENGLISH_LESSONS = Object.freeze([
     minutes: 6,
     parentNote:
       'خانواده‌های واژگانی CVC ستون فقرات آواشناسی انگلیسی‌اند: cat، bat، hat. کودک کشف می‌کند که با عوض کردن یک حرف، واژهٔ تازه می‌سازد.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'en-cvc', prompt: 'کدام واژه به خانوادهٔ {r} تعلق دارد؟' },
       { kind: 'en-cvc', prompt: 'کدام واژه به خانوادهٔ {r} تعلق دارد؟' },
@@ -109,6 +114,7 @@ export const ENGLISH_LESSONS = Object.freeze([
     minutes: 5,
     parentNote:
       'واژه‌های پرکاربرد فهرست Dolch که ۸۰٪ متن کتاب‌های کودک انگلیسی را می‌سازند. اینجا معنی فارسی را تطبیق می‌دهد.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
       { kind: 'en-translate', prompt: '{w} یعنی چه؟' },

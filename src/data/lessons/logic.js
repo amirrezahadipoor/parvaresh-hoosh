@@ -97,6 +97,7 @@ export const LOGIC_LESSONS = [
     minutes: 6,
     parentNote:
       'بازی حافظه، حافظهٔ کاری را تقویت می‌کند. عجله نکنید؛ گذاشتن وقت برای به‌یادآوردن، خودِ تمرین است.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'memory-pairs', pairs: 4, prompt: 'جفت‌های مثل هم را پیدا کن' },
       { kind: 'memory-pairs', pairs: 5, prompt: 'جفت‌های مثل هم را پیدا کن' },
@@ -112,6 +113,7 @@ export const LOGIC_LESSONS = [
     minutes: 5,
     parentNote:
       'مرتب‌کردن، مقایسه را به ترتیب تبدیل می‌کند. در خانه با قاشق‌ها یا کتاب‌ها همین بازی را بکنید.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'order-size', count: 4, prompt: 'از کوچک به بزرگ بچین' },
       { kind: 'order-number', count: 4, max: 20, prompt: 'عددها را از کم به زیاد بچین' },
@@ -129,6 +131,7 @@ export const LOGIC_LESSONS = [
     minutes: 5,
     parentNote:
       'تشخیص از روی سایه یعنی کودک باید شکل کلی را ببیند، نه رنگ و جزئیات. این پایهٔ شناخت حروف هم هست.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },
       { kind: 'shadow', prompt: 'این سایهٔ چیست؟' },

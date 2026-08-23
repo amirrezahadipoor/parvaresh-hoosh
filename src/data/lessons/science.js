@@ -85,6 +85,7 @@ export const SCIENCE_LESSONS = [
     minutes: 5,
     parentNote:
       'اینجا کودک یاد می‌گیرد یک چیز می‌تواند همزمان عضو چند دسته باشد: پروانه هم حیوان است هم پرواز می‌کند. این «انعطاف شناختی» پایهٔ تفکر علمی است.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'trait', prompt: 'کدام {t}؟' },
       { kind: 'trait', prompt: 'کدام {t}؟' },
@@ -103,6 +104,7 @@ export const SCIENCE_LESSONS = [
     minutes: 5,
     parentNote:
       'دسته‌بندی پایهٔ نظم‌دادن به دنیاست. بعد از بازی، در خانه از کودک بپرسید این چیز از کدام دسته است.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
       { kind: 'which-group', prompt: 'این از کدام دسته است؟' },
@@ -121,6 +123,7 @@ export const SCIENCE_LESSONS = [
     minutes: 6,
     parentNote:
       'این تمرین «توجه انتخابی» است: کودک باید چیزهای نامربوط را نادیده بگیرد و فقط یک دسته را بشمارد — مهارتی که در کلاس درس بسیار لازم می‌شود.',
+    reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
       { kind: 'count-group', prompt: 'چند تا {c} می‌بینی؟' },
