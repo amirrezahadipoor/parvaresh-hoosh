@@ -10,6 +10,10 @@ import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../co
 import { masterySummary, isDue, MASTERY_SCORE } from '../core/mastery.js';
 import { taskIcon, actionLabel } from '../core/task-icon.js';
 import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
+import {
+  starIcon, soundOnIcon, soundOffIcon, gearIcon,
+  lockIcon, checkIcon, reviewIcon, moonIcon, backIcon,
+} from '../core/ui-icons.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
 
 const el = (tag, props = {}, kids = []) => {
@@ -39,9 +43,14 @@ function render(screen) {
 function topbar(title, onBack) {
   const s = store.getState();
   return el('div', { class: 'topbar' }, [
-    onBack ? el('button', { class: 'icon-btn', 'aria-label': 'بازگشت', onClick: onBack, text: '→' }) : null,
+    onBack
+      ? el('button', { class: 'icon-btn', 'aria-label': 'بازگشت', onClick: onBack, html: backIcon() })
+      : null,
     el('h1', { text: title }),
-    el('div', { class: 'stars', text: `⭐ ${toFa(s.stars)}` }),
+    el('div', { class: 'stars' }, [
+      el('span', { class: 'star-ico', html: starIcon() }),
+      el('span', { text: toFa(s.stars) }),
+    ]),
   ]);
 }
 
@@ -84,15 +93,22 @@ export function homeScreen() {
       el('h1', { text: greeting }),
       el('button', {
         class: 'icon-btn',
-        'aria-label': 'صدا',
-        text: isMuted() ? '🔇' : '🔊',
+        'aria-label': isMuted() ? 'روشن‌کردن صدا' : 'خاموش‌کردن صدا',
+        html: isMuted() ? soundOffIcon() : soundOnIcon(),
         onClick: (e) => {
           const m = setMuted(!isMuted());
           store.setMutedPref(m);
-          e.currentTarget.textContent = m ? '🔇' : '🔊';
+          const btn = e.currentTarget;
+          btn.innerHTML = m ? soundOffIcon() : soundOnIcon();
+          btn.setAttribute('aria-label', m ? 'روشن‌کردن صدا' : 'خاموش‌کردن صدا');
         },
       }),
-      el('button', { class: 'icon-btn', 'aria-label': 'تنظیمات', text: '⚙', onClick: () => render(settingsScreen()) }),
+      el('button', {
+        class: 'icon-btn',
+        'aria-label': 'تنظیمات',
+        html: gearIcon(),
+        onClick: () => render(settingsScreen()),
+      }),
     ]),
     el('div', { class: 'buddy-row' }, [
       el('span', { class: 'buddy wave', html: buddy('happy', d.color) }),
@@ -103,7 +119,10 @@ export function homeScreen() {
       bar,
       el('span', { class: 'journey-label', text: `${toFa(p.done)} از ${toFa(p.total)} درس` }),
     ]),
-    el('div', { class: 'stars', text: `⭐ ${toFa(s.stars)} ستاره` }),
+    el('div', { class: 'stars' }, [
+      el('span', { class: 'star-ico', html: starIcon() }),
+      el('span', { text: `${toFa(s.stars)} ستاره` }),
+    ]),
     el('button', { class: 'btn ghost', text: 'نقشهٔ سفر', onClick: () => render(mapScreen()) }),
   ]);
 }
@@ -118,7 +137,8 @@ function mapScreen() {
     const pr = store.lessonProgress(st.lesson.id);
     const locked = isLocked(st.lesson.id);
     const due = isDue(st.lesson.id);
-    const doneMark = due ? '↻' : pr.completions ? '✓' : toFa(st.order + 1);
+    // نشانِ وضعیت درس: قفل، مرور، انجام‌شده، یا شمارهٔ قدم.
+    const markHtml = locked ? lockIcon() : due ? reviewIcon() : pr.completions ? checkIcon() : null;
     return el(
       'button',
       {
@@ -129,7 +149,9 @@ function mapScreen() {
         onClick: locked ? null : () => render(playScreen(st.lesson.id)),
       },
       [
-        el('div', { class: 'map-dot', text: locked ? '🔒' : doneMark }),
+        markHtml
+          ? el('div', { class: 'map-dot', html: markHtml })
+          : el('div', { class: 'map-dot', text: toFa(st.order + 1) }),
         el('div', { class: 'map-body' }, [
           el('strong', { text: st.lesson.title }),
           el('span', { class: 'map-meta' }, [
@@ -734,7 +756,7 @@ function doneScreen(lesson, correct, total) {
           el('span', {
             class: `award${i <= Math.max(1, Math.round((pct / 100) * 3)) ? ' on' : ''}`,
             style: `animation-delay:${140 + i * 190}ms`,
-            text: '★',
+            html: starIcon(),
           }),
         ),
       ),
@@ -761,7 +783,7 @@ function timeUpScreen() {
   return el('div', { class: 'screen home' }, [
     el('div', { class: 'topbar' }, [el('h1', { text: 'برای امروز کافی است' })]),
     el('div', { class: 'done-card' }, [
-      el('div', { class: 'big', text: '🌙' }),
+      el('div', { class: 'big moon', html: moonIcon() }),
       el('h2', { text: 'آفرین! امروز خوب بازی کردی' }),
       el('p', { class: 'muted', text: 'فردا دوباره منتظرت هستیم.' }),
     ]),

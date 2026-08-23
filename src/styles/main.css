@@ -159,6 +159,17 @@ body {
   transform: scale(0.94);
 }
 
+/* نشان‌های SVG رابط.
+   ⚠ اموجی خودش را با font-size می‌کشید؛ SVG نمی‌کشد و بدون اندازهٔ
+   صریح به ۳۰۰px پیش‌فرض می‌رسد یا صفر می‌شود. اندازه‌ها دقیق‌اند:
+   ۲۴px نشانِ دکمه، در دکمهٔ ۵۶px یعنی حاشیهٔ ۱۶px از هر طرف. */
+.icon-btn svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  color: var(--ink);
+}
+
 .stars {
   background: #fff3d6;
   border-radius: 999px;
@@ -166,6 +177,23 @@ body {
   font-weight: 700;
   font-size: 0.95rem;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stars .star-ico {
+  width: 19px;
+  height: 19px;
+  display: block;
+  color: #F0A81E;
+  flex: none;
+}
+
+.stars .star-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* ── کارت‌های حوزه ─────────────────────────────────────── */
@@ -334,6 +362,12 @@ body {
   transform: scale(0.985);
 }
 
+.map-dot svg {
+  width: var(--dot-ico, 18px);
+  height: var(--dot-ico, 18px);
+  display: block;
+}
+
 .map-dot {
   position: absolute;
   right: -34px;
@@ -347,6 +381,8 @@ body {
   font-size: var(--t-small);
   font-weight: 900;
   box-shadow: 0 0 0 4px var(--bg);
+  /* نشانِ SVG درون نقطهٔ ۳۲px: ۱۸px یعنی حاشیهٔ ۷px از هر طرف. */
+  --dot-ico: 18px;
 }
 
 .map-item.locked {
@@ -801,6 +837,19 @@ canvas.pad {
   margin-bottom: 8px;
 }
 
+.done-card .big.moon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 8px;
+  color: #8A93C4;
+}
+
+.done-card .big.moon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .done-card h2 {
   margin: 0 0 8px;
 }
@@ -826,15 +875,32 @@ canvas.pad {
 }
 
 .field input,
+/* ⚠ فلشِ پیش‌فرضِ مرورگر در RTL سمت چپ می‌افتد، در حالی که متن
+   راست‌چین است — نتیجه فلشی جدا افتاده در گوشهٔ مخالف. فلش را خودمان
+   می‌کشیم (data-uri، بدون درخواست شبکه) و سمت چپِ کادر اما با فاصلهٔ
+   دقیق می‌گذاریم؛ فضای متن هم به همان اندازه کم می‌شود تا هرگز
+   روی هم نیفتند. */
 .field select {
   width: 100%;
   padding: 14px;
+  padding-left: 42px;
   border: 2px solid var(--line);
   border-radius: 14px;
   font-family: inherit;
   font-size: 1rem;
   background: var(--surface);
   color: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 6l4.5 4.5L12.5 6' fill='none' stroke='%236E6A78' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+  background-size: 16px 16px;
+}
+
+.field select:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
 }
 
 .muted {
@@ -977,6 +1043,15 @@ canvas.pad {
   line-height: 1;
   color: var(--line);
   animation: award-in var(--slow) var(--ease) backwards;
+  width: 46px;
+  height: 46px;
+  display: block;
+}
+
+.award svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .award.on {

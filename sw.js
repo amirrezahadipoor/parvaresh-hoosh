@@ -23,6 +23,7 @@ const SHELL = [
   './src/core/storage.js',
   './src/core/svg.js',
   './src/core/task-icon.js',
+  './src/core/ui-icons.js',
   './src/data/alphabet.js',
   './src/data/curriculum.js',
   './src/data/english.js',

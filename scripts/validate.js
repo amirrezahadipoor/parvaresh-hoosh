@@ -194,6 +194,34 @@ const { auditIcons } = await import('../src/core/task-icon.js');
 const allKinds = [...new Set(LESSONS.flatMap((l) => l.rounds.map((r) => r.kind)))];
 for (const problem of auditIcons(allKinds)) errors.push(`نشان تمرین: ${problem}`);
 
+// ── ممنوعیت اموجی در رابط ────────────────────────────────────────────
+// چرا: اموجی را سیستم‌عامل می‌کشد، پس روی هر گوشی شکل و رنگ دیگری
+// دارد و روی اندرویدهای قدیمی گاهی مربع خالی می‌شود. برنامه‌ای که
+// «هیچ باگ ظاهری» می‌خواهد نمی‌تواند بخشی از ظاهرش را به دستگاه
+// بسپارد. یک بار ⭐ 🔇 🔊 ⚙ 🔒 🌙 در رابط بودند و حذف شدند؛ این
+// بررسی جلوی بازگشتشان را می‌گیرد.
+{
+  const { readFileSync } = await import('node:fs');
+  const { fileURLToPath } = await import('node:url');
+  const root = fileURLToPath(new URL('..', import.meta.url));
+  const src = readFileSync(root + 'src/ui/screens.js', 'utf8');
+
+  // بازهٔ اموجی + نمادهای متفرقه‌ای که پیش‌تر در رابط بودند.
+  const emoji = /[\u{1F300}-\u{1FAFF}\u{2B00}-\u{2BFF}\u{1F000}-\u{1F2FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+  const lines = src.split('\n');
+  lines.forEach((line, i) => {
+    // فقط رشته‌های واقعی رابط؛ توضیحات فارسی (که ⚠ دارند) معاف‌اند.
+    const code = line.replace(/\/\/.*$/, '');
+    if (!/text:|textContent|innerHTML|'aria-label'/.test(code)) return;
+    const hit = code.match(emoji);
+    if (hit) {
+      errors.push(
+        `اموجی در رابط — خط ${i + 1}: ${hit[0]} (به‌جایش از src/core/ui-icons.js استفاده کنید)`,
+      );
+    }
+  });
+}
+
 // ── آیکون و مانیفست ─────────────────────────────────────────────────
 // چرا اینجا: آیکون تنها چیزی است که والد پیش از نصب می‌بیند. یک
 // ارجاعِ شکسته در manifest یعنی آیکون خالی در کافه‌بازار، و این
