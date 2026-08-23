@@ -1,0 +1,575 @@
+/* پرورش هوش کودک — شیوه‌نامهٔ اصلی
+   طراحی برای انگشتِ کودک: هدف‌های لمسی بزرگ، تضاد بالا، حرکت کم. */
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../../assets/fonts/Vazirmatn-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../../assets/fonts/Vazirmatn-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../../assets/fonts/Vazirmatn-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+:root {
+  --bg: #fdf6ec;
+  --surface: #ffffff;
+  --ink: #2d2a32;
+  --muted: #6f6a7a;
+  --line: #e8e0d5;
+  --brand: #e4572e;
+  --ok: #4caf50;
+  --no: #d94f4f;
+  --reading: #e4572e;
+  --math: #2e86ab;
+  --logic: #7b4b94;
+  --radius: 20px;
+  --tap: 64px;
+  --shadow: 0 4px 14px rgba(45, 42, 50, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: 'Vazirmatn', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  direction: rtl;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* حاشیهٔ امن اندروید — دلیل ۶۷ بار بازنویسی در نسخهٔ قبلی */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+  animation: fade 0.25s ease;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* ── سربرگ ─────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.topbar h1 {
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin: 0;
+  flex: 1;
+}
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+.stars {
+  background: #fff3d6;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* ── کارت‌های حوزه ─────────────────────────────────────── */
+.domain-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.domain-card {
+  background: var(--surface);
+  border: none;
+  border-right: 8px solid var(--c, var(--brand));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  text-align: right;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  min-height: var(--tap);
+}
+
+.domain-card:active {
+  transform: scale(0.98);
+}
+
+.domain-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.domain-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.domain-meta {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--c);
+  font-weight: 700;
+}
+
+/* ── فهرست درس ─────────────────────────────────────────── */
+.lesson-list {
+  display: grid;
+  gap: 12px;
+}
+
+.lesson-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  text-align: right;
+  width: 100%;
+  min-height: var(--tap);
+}
+
+.lesson-card:active {
+  transform: scale(0.98);
+}
+
+.lesson-card.done {
+  border-color: var(--ok);
+}
+
+.lesson-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  flex: none;
+}
+
+.lesson-card.done .lesson-num {
+  background: var(--ok);
+  color: #fff;
+}
+
+.lesson-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.lesson-body strong {
+  display: block;
+  font-size: 1.02rem;
+  margin-bottom: 3px;
+}
+
+.lesson-body span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* ── صفحهٔ بازی ────────────────────────────────────────── */
+.progress {
+  height: 10px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress > i {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.prompt {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  min-height: 130px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  font-size: 3rem;
+  line-height: 1.3;
+  word-break: break-word;
+  text-align: center;
+}
+
+.stage .repeat {
+  font-size: 2.2rem;
+  letter-spacing: 6px;
+  line-height: 1.5;
+}
+
+.stage .seq {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.chip {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--muted);
+}
+
+.chip.q {
+  background: repeating-linear-gradient(45deg, #ddd, #ddd 6px, #eee 6px, #eee 12px);
+  color: var(--ink);
+  font-size: 1.4rem;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.options.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.opt {
+  min-height: 76px;
+  border: 3px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+  padding: 12px;
+  display: grid;
+  place-items: center;
+  transition: transform 0.12s, border-color 0.12s;
+  word-break: break-word;
+}
+
+.opt.big {
+  font-size: 2.2rem;
+}
+
+.opt:active {
+  transform: scale(0.96);
+}
+
+.opt.correct {
+  border-color: var(--ok);
+  background: #eaf7ea;
+}
+
+.opt.wrong {
+  border-color: var(--no);
+  background: #fdeaea;
+  animation: shake 0.3s;
+}
+
+.opt[disabled] {
+  cursor: default;
+}
+
+.opt .swatch {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+}
+
+@keyframes shake {
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+.feedback {
+  text-align: center;
+  font-weight: 700;
+  min-height: 28px;
+  font-size: 1.05rem;
+}
+
+.feedback.ok {
+  color: var(--ok);
+}
+
+.feedback.no {
+  color: var(--no);
+}
+
+/* ── خط کشیدن ──────────────────────────────────────────── */
+.trace-wrap {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  padding: 10px;
+}
+
+.trace-ghost {
+  position: absolute;
+  font-size: 11rem;
+  font-weight: 900;
+  color: rgba(45, 42, 50, 0.12);
+  pointer-events: none;
+  line-height: 1;
+}
+
+canvas.pad {
+  width: 100%;
+  height: 260px;
+  touch-action: none;
+  border-radius: 14px;
+}
+
+/* ── مرتب‌سازی ─────────────────────────────────────────── */
+.order-tray {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 90px;
+  align-items: center;
+}
+
+.order-item {
+  background: var(--surface);
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  min-width: 68px;
+  min-height: 68px;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  padding: 8px;
+}
+
+.order-item.picked {
+  border-color: var(--ok);
+  opacity: 0.45;
+}
+
+.order-slots {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 80px;
+  padding: 10px;
+  border: 3px dashed var(--line);
+  border-radius: 16px;
+  align-items: center;
+}
+
+/* ── حافظه ─────────────────────────────────────────────── */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+  gap: 10px;
+}
+
+.card {
+  aspect-ratio: 1;
+  border-radius: 16px;
+  border: none;
+  background: var(--brand);
+  color: transparent;
+  font-size: 2.1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  min-height: var(--tap);
+}
+
+.card.up {
+  background: var(--surface);
+  border: 3px solid var(--line);
+  color: inherit;
+}
+
+.card.matched {
+  background: #eaf7ea;
+  border: 3px solid var(--ok);
+  color: inherit;
+}
+
+/* ── دکمه‌ها و پایان ───────────────────────────────────── */
+.btn {
+  border: none;
+  border-radius: 16px;
+  background: var(--brand);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 16px 24px;
+  min-height: var(--tap);
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn.ghost {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.done-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px;
+  text-align: center;
+}
+
+.done-card .big {
+  font-size: 3.4rem;
+  margin-bottom: 8px;
+}
+
+.done-card h2 {
+  margin: 0 0 8px;
+}
+
+.note {
+  background: #fff8e8;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: #6a5a3a;
+}
+
+.field {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.field span {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: var(--surface);
+  color: inherit;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

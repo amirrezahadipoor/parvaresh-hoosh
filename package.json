@@ -6,10 +6,17 @@
   "description": "بازی آموزشی آفلاین فارسی برای کودکان ۵ تا ۸ سال",
   "license": "MIT",
   "scripts": {
+    "start": "python3 -m http.server 8080 --bind 0.0.0.0",
     "build:lessons": "node scripts/build-reading-lessons.js",
+    "sync:narration": "node scripts/sync-narration.js",
     "validate": "node scripts/validate.js",
-    "test": "npm run validate",
-    "start": "python3 -m http.server 8080 --bind 0.0.0.0"
+    "test": "node scripts/validate.js && node scripts/test-rounds.js",
+    "test:browser": "node scripts/test-browser.js"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.62.1"
+  }
 }

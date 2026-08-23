@@ -1,0 +1,47 @@
+name: بررسی کیفیت
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: نصب وابستگی‌ها
+        run: npm install --no-audit --no-fund
+
+      - name: اعتبارسنجی محتوا و موتور گِرد
+        run: npm test
+
+      - name: بررسی بازتولیدپذیری فایل‌های تولیدشده
+        run: |
+          npm run build:lessons
+          npm run sync:narration
+          if ! git diff --quiet; then
+            echo "::error::فایل‌های تولیدشده با منبع هم‌خوان نیستند. build:lessons و sync:narration را اجرا و کامیت کنید."
+            git diff --stat
+            exit 1
+          fi
+
+      - name: نصب مرورگر
+        run: npx playwright-core install --with-deps chromium
+
+      - name: آزمون مرورگر
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 &
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:8080 >/dev/null && break; sleep 0.5; done
+          BASE_URL=http://127.0.0.1:8080 npm run test:browser

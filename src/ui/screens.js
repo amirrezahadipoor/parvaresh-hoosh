@@ -1,0 +1,463 @@
+// صفحه‌ها — هر تابع یک صفحه را در ریشه رسم می‌کند.
+// بدون فریم‌ورک، ولی با مرزهای روشن: هیچ صفحه‌ای به داخل صفحهٔ دیگر دست نمی‌زند.
+
+import { DOMAINS, AGE_TRACKS, TRACK_ORDER, trackForAge, TARGET_AGE } from '../data/curriculum.js';
+import { lessonsByDomain, LESSONS } from '../data/lessons/index.js';
+import * as store from '../core/storage.js';
+import { speak, sfx, setMuted, isMuted, stop as stopAudio } from '../core/audio.js';
+import { buildLesson, toFa } from '../core/rounds.js';
+
+const el = (tag, props = {}, kids = []) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k === 'html') n.innerHTML = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (v !== null && v !== undefined) n.setAttribute(k, v);
+  }
+  for (const kid of [].concat(kids)) if (kid) n.append(kid);
+  return n;
+};
+
+let root = null;
+export function mount(node) {
+  root = node;
+}
+
+function render(screen) {
+  stopAudio();
+  root.replaceChildren(screen);
+  window.scrollTo(0, 0);
+}
+
+function topbar(title, onBack) {
+  const s = store.getState();
+  return el('div', { class: 'topbar' }, [
+    onBack ? el('button', { class: 'icon-btn', 'aria-label': 'بازگشت', onClick: onBack, text: '→' }) : null,
+    el('h1', { text: title }),
+    el('div', { class: 'stars', text: `⭐ ${toFa(s.stars)}` }),
+  ]);
+}
+
+// ── خانه ────────────────────────────────────────────────────────────────
+export function homeScreen() {
+  const s = store.getState();
+  const greeting = s.childName ? `سلام ${s.childName}!` : 'پرورش هوش';
+
+  const cards = DOMAINS.map((d) => {
+    const list = lessonsByDomain(d.id);
+    const done = list.filter((l) => store.isCompleted(l.id)).length;
+    return el(
+      'button',
+      { class: 'domain-card', style: `--c:${d.color}`, onClick: () => render(domainScreen(d.id)) },
+      [
+        el('h2', { text: d.title }),
+        el('p', { text: d.description }),
+        el('div', {
+          class: 'domain-meta',
+          text: `${toFa(done)} از ${toFa(list.length)} درس انجام شده`,
+        }),
+      ],
+    );
+  });
+
+  return el('div', { class: 'screen' }, [
+    el('div', { class: 'topbar' }, [
+      el('h1', { text: greeting }),
+      el('button', {
+        class: 'icon-btn',
+        'aria-label': 'صدا',
+        text: isMuted() ? '🔇' : '🔊',
+        onClick: (e) => {
+          const m = setMuted(!isMuted());
+          store.setMutedPref(m);
+          e.currentTarget.textContent = m ? '🔇' : '🔊';
+        },
+      }),
+      el('button', { class: 'icon-btn', 'aria-label': 'تنظیمات', text: '⚙', onClick: () => render(settingsScreen()) }),
+    ]),
+    el('div', { class: 'stars', text: `⭐ ${toFa(s.stars)} ستاره` }),
+    el('div', { class: 'domain-grid' }, cards),
+  ]);
+}
+
+// ── فهرست درس‌های یک حوزه ───────────────────────────────────────────────
+function domainScreen(domainId) {
+  const d = DOMAINS.find((x) => x.id === domainId);
+  const list = lessonsByDomain(domainId);
+
+  const cards = list.map((l, i) => {
+    const p = store.lessonProgress(l.id);
+    return el(
+      'button',
+      {
+        class: `lesson-card${p.completions ? ' done' : ''}`,
+        onClick: () => render(playScreen(l.id, domainId)),
+      },
+      [
+        el('div', { class: 'lesson-num', text: p.completions ? '✓' : toFa(i + 1) }),
+        el('div', { class: 'lesson-body' }, [
+          el('strong', { text: l.title }),
+          el('span', {
+            text: p.completions
+              ? `بهترین نتیجه: ${toFa(p.bestScore)}٪ • ${toFa(l.minutes)} دقیقه`
+              : `${toFa(l.rounds.length)} تمرین • ${toFa(l.minutes)} دقیقه`,
+          }),
+        ]),
+      ],
+    );
+  });
+
+  return el('div', { class: 'screen' }, [
+    topbar(d.title, () => render(homeScreen())),
+    el('div', { class: 'lesson-list' }, cards),
+  ]);
+}
+
+// ── بازی ────────────────────────────────────────────────────────────────
+function playScreen(lessonId, domainId) {
+  const lesson = LESSONS.find((l) => l.id === lessonId);
+  const state = store.getState();
+  const track = trackForAge(state.age);
+  const rounds = buildLesson(lesson, track);
+
+  let idx = 0;
+  let correct = 0;
+  const wrap = el('div', { class: 'screen' });
+
+  const finish = () => {
+    store.recordLesson(lessonId, { correct, total: rounds.length });
+    sfx.win();
+    render(doneScreen(lesson, correct, rounds.length, domainId));
+  };
+
+  const next = () => {
+    idx++;
+    if (idx >= rounds.length) finish();
+    else draw();
+  };
+
+  function draw() {
+    const r = rounds[idx];
+    const bar = el('div', { class: 'progress' }, [
+      el('i', { style: `width:${((idx) / rounds.length) * 100}%` }),
+    ]);
+    const feedback = el('div', { class: 'feedback' });
+
+    const body =
+      r.type === 'choice'
+        ? choiceView(r, feedback, next, track)
+        : r.type === 'trace'
+          ? traceView(r, next)
+          : r.type === 'order'
+            ? orderView(r, feedback, next)
+            : memoryView(r, feedback, next);
+
+    wrap.replaceChildren(
+      topbar(lesson.title, () => render(domainScreen(domainId))),
+      bar,
+      el('div', { class: 'muted', text: `تمرین ${toFa(idx + 1)} از ${toFa(rounds.length)}` }),
+      el('p', { class: 'prompt', text: r.prompt }),
+      ...body,
+      feedback,
+    );
+
+    if (r.speak) setTimeout(() => speak(r.speak), 220);
+  }
+
+  function choiceView(r, feedback, done, trk) {
+    const stage = r.display ? el('div', { class: 'stage' }) : null;
+    if (stage) {
+      if (r.display.kind === 'text') stage.textContent = r.display.value;
+      if (r.display.kind === 'repeat') {
+        stage.append(el('div', { class: 'repeat', text: r.display.icon.repeat(r.display.times) }));
+      }
+      if (r.display.kind === 'sequence') {
+        const seq = el('div', { class: 'seq' });
+        r.display.items.forEach((it) => seq.append(chip(it, r.display.unit)));
+        seq.append(el('div', { class: 'chip q', text: '؟' }));
+        stage.append(seq);
+      }
+    }
+
+    const grid = el('div', { class: `options${r.options.length === 3 ? ' cols-3' : ''}` });
+    let answered = false;
+
+    r.options.forEach((o) => {
+      const btn = el('button', { class: `opt${o.big ? ' big' : ''}` });
+      if (o.swatch) btn.append(el('div', { class: 'swatch', style: `background:${o.swatch}` }));
+      else btn.append(document.createTextNode(o.label));
+
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        const right = o.value === r.answer;
+        btn.classList.add(right ? 'correct' : 'wrong');
+        [...grid.children].forEach((c) => (c.disabled = true));
+
+        if (right) {
+          correct++;
+          sfx.correct();
+          feedback.className = 'feedback ok';
+          feedback.textContent = 'آفرین!';
+          speak('آفرین!');
+        } else {
+          sfx.wrong();
+          feedback.className = 'feedback no';
+          feedback.textContent = r.because || 'اشکالی ندارد، دفعهٔ بعد!';
+          speak('اشکالی ندارد، دوباره تلاش کن!');
+          // پاسخ درست را نشان بده — کودک باید یاد بگیرد، نه فقط رد شود.
+          [...grid.children].forEach((c, i) => {
+            if (r.options[i].value === r.answer) c.classList.add('correct');
+          });
+        }
+        setTimeout(done, right ? 900 : 1900);
+      });
+      grid.append(btn);
+    });
+
+    // راهنمای خودکار بعد از مکث متناسب با سن
+    setTimeout(() => {
+      if (!answered) {
+        const target = [...grid.children][r.options.findIndex((o) => o.value === r.answer)];
+        if (target) target.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 700, iterations: 2 });
+      }
+    }, trk.hintDelayMs);
+
+    return [stage, grid].filter(Boolean);
+  }
+
+  function chip(label, unit) {
+    const COLORS = { قرمز: '#E4572E', آبی: '#2E86AB', زرد: '#F4B942', سبز: '#4CAF50' };
+    if (unit === 'color') return el('div', { class: 'chip', style: `background:${COLORS[label] || '#999'}` });
+    const glyph = { دایره: '●', مربع: '■', مثلث: '▲' }[label] || label;
+    return el('div', { class: 'chip', text: glyph });
+  }
+
+  function traceView(r, done) {
+    const canvas = el('canvas', { class: 'pad' });
+    const wrapEl = el('div', { class: 'trace-wrap' }, [
+      el('div', { class: 'trace-ghost', text: r.letter }),
+      canvas,
+    ]);
+    let drawn = 0;
+    let drawing = false;
+
+    requestAnimationFrame(() => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.clientWidth * dpr;
+      canvas.height = canvas.clientHeight * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#E4572E';
+
+      const pos = (e) => {
+        const b = canvas.getBoundingClientRect();
+        const t = e.touches?.[0] || e;
+        return { x: t.clientX - b.left, y: t.clientY - b.top };
+      };
+      const start = (e) => {
+        e.preventDefault();
+        drawing = true;
+        const p = pos(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+      };
+      const move = (e) => {
+        if (!drawing) return;
+        e.preventDefault();
+        const p = pos(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        drawn++;
+      };
+      const end = () => {
+        drawing = false;
+      };
+      canvas.addEventListener('pointerdown', start);
+      canvas.addEventListener('pointermove', move);
+      canvas.addEventListener('pointerup', end);
+      canvas.addEventListener('pointerleave', end);
+    });
+
+    const btns = el('div', { style: 'display:grid;gap:10px' }, [
+      el('button', {
+        class: 'btn',
+        text: 'تمام شد',
+        onClick: () => {
+          // خط کشیدن نمره‌دهی درست/غلط ندارد — تلاش کافی است.
+          if (drawn > 8) correct++;
+          sfx.correct();
+          done();
+        },
+      }),
+      el('button', { class: 'btn ghost', text: 'شنیدن دوباره', onClick: () => speak(r.speak) }),
+    ]);
+    return [wrapEl, btns];
+  }
+
+  function orderView(r, feedback, done) {
+    const chosen = [];
+    const slots = el('div', { class: 'order-slots' });
+    const tray = el('div', { class: 'order-tray' });
+
+    const refresh = () => {
+      slots.replaceChildren(
+        ...(chosen.length
+          ? chosen.map((c) => el('div', { class: 'order-item', text: c.label, style: `transform:scale(${c.scale})` }))
+          : [el('span', { class: 'muted', text: 'به ترتیب لمس کن' })]),
+      );
+    };
+    refresh();
+
+    r.items.forEach((it) => {
+      const b = el('button', {
+        class: 'order-item',
+        text: it.label,
+        style: `transform:scale(${it.scale})`,
+      });
+      b.addEventListener('click', () => {
+        if (b.classList.contains('picked')) return;
+        b.classList.add('picked');
+        chosen.push(it);
+        sfx.tap();
+        refresh();
+        if (chosen.length === r.items.length) {
+          const ok = chosen.every((c, i) => c.value === r.answer[i]);
+          if (ok) {
+            correct++;
+            sfx.correct();
+            feedback.className = 'feedback ok';
+            feedback.textContent = 'آفرین! درست چیدی.';
+            speak('آفرین!');
+          } else {
+            sfx.wrong();
+            feedback.className = 'feedback no';
+            feedback.textContent = 'ترتیب درست نبود — دوباره نگاه کن.';
+          }
+          setTimeout(done, ok ? 1000 : 1800);
+        }
+      });
+      tray.append(b);
+    });
+
+    return [slots, tray];
+  }
+
+  function memoryView(r, feedback, done) {
+    const grid = el('div', { class: 'memory-grid' });
+    let first = null;
+    let lock = false;
+    let found = 0;
+
+    r.cards.forEach((c) => {
+      const b = el('button', { class: 'card', text: c.icon });
+      b.dataset.icon = c.icon;
+      b.addEventListener('click', () => {
+        if (lock || b.classList.contains('up') || b.classList.contains('matched')) return;
+        b.classList.add('up');
+        sfx.tap();
+        if (!first) {
+          first = b;
+          return;
+        }
+        if (first.dataset.icon === b.dataset.icon) {
+          first.classList.add('matched');
+          b.classList.add('matched');
+          first = null;
+          found++;
+          sfx.correct();
+          if (found === r.pairs) {
+            correct++;
+            feedback.className = 'feedback ok';
+            feedback.textContent = 'همه را پیدا کردی!';
+            speak('آفرین! عالی بود.');
+            setTimeout(done, 1100);
+          }
+        } else {
+          lock = true;
+          const a = first;
+          first = null;
+          setTimeout(() => {
+            a.classList.remove('up');
+            b.classList.remove('up');
+            lock = false;
+          }, 800);
+        }
+      });
+      grid.append(b);
+    });
+
+    return [grid];
+  }
+
+  draw();
+  return wrap;
+}
+
+// ── پایان درس ───────────────────────────────────────────────────────────
+function doneScreen(lesson, correct, total, domainId) {
+  const pct = Math.round((correct / total) * 100);
+  const msg = pct >= 80 ? 'عالی بود!' : pct >= 50 ? 'خوب بود!' : 'تمرین بیشتر، بهتر!';
+  return el('div', { class: 'screen' }, [
+    topbar('پایان درس', () => render(domainScreen(domainId))),
+    el('div', { class: 'done-card' }, [
+      el('div', { class: 'big', text: pct >= 80 ? '🌟' : '👏' }),
+      el('h2', { text: msg }),
+      el('p', { class: 'muted', text: `${toFa(correct)} از ${toFa(total)} تمرین درست` }),
+    ]),
+    el('div', { class: 'note', text: `برای والدین: ${lesson.parentNote}` }),
+    el('button', { class: 'btn', text: 'درس بعدی', onClick: () => render(domainScreen(domainId)) }),
+    el('button', { class: 'btn ghost', text: 'خانه', onClick: () => render(homeScreen()) }),
+  ]);
+}
+
+// ── تنظیمات ─────────────────────────────────────────────────────────────
+function settingsScreen() {
+  const s = store.getState();
+  const name = el('input', { type: 'text', value: s.childName, placeholder: 'مثلاً سارا', maxlength: '20' });
+  const age = el('select');
+  for (let a = TARGET_AGE.min; a <= TARGET_AGE.max; a++) {
+    age.append(el('option', { value: String(a), text: `${toFa(a)} سال`, ...(a === s.age ? { selected: 'selected' } : {}) }));
+  }
+
+  const trackInfo = el('div', { class: 'muted' });
+  const updateInfo = () => {
+    const t = trackForAge(Number(age.value));
+    trackInfo.textContent = `در این سن: ${toFa(t.optionCount)} گزینه در هر پرسش، اعداد تا ${toFa(t.maxNumber)}، ${toFa(t.roundsPerLesson)} تمرین در هر درس.`;
+  };
+  age.addEventListener('change', updateInfo);
+  updateInfo();
+
+  return el('div', { class: 'screen' }, [
+    topbar('تنظیمات', () => render(homeScreen())),
+    el('label', { class: 'field' }, [el('span', { text: 'اسم کودک' }), name]),
+    el('label', { class: 'field' }, [el('span', { text: 'سن' }), age]),
+    trackInfo,
+    el('button', {
+      class: 'btn',
+      text: 'ذخیره',
+      onClick: () => {
+        store.setProfile({ childName: name.value, age: Number(age.value) });
+        render(homeScreen());
+      },
+    }),
+    el('div', { class: 'note', text: 'همهٔ اطلاعات فقط روی همین دستگاه ذخیره می‌شود و به هیچ سروری فرستاده نمی‌شود.' }),
+    el('button', {
+      class: 'btn ghost',
+      text: 'پاک کردن همهٔ پیشرفت',
+      onClick: () => {
+        if (confirm('همهٔ ستاره‌ها و پیشرفت پاک شود؟')) {
+          store.resetAll();
+          render(homeScreen());
+        }
+      },
+    }),
+  ]);
+}
+
+export { render };
