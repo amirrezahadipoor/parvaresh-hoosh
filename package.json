@@ -12,7 +12,8 @@
     "validate": "node scripts/validate.js",
     "test": "node scripts/validate.js && node scripts/test-rounds.js",
     "test:browser": "node scripts/test-browser.js",
-    "test:visual": "node scripts/test-visual.js"
+    "test:visual": "node scripts/test-visual.js",
+    "test:delight": "node scripts/test-delight.js"
   },
   "engines": {
     "node": ">=20"

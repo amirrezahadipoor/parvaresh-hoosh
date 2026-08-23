@@ -68,6 +68,24 @@ for (const trackId of TRACK_ORDER) {
           if (r.display?.kind === 'shadow' && !svgShape(r.display.value)) {
             errors.push(`${tag}: سایهٔ «${r.display.value}» شکل ندارد`);
           }
+          if (r.display?.kind === 'letter-pic' && !svgShape(r.display.icon)) {
+            errors.push(`${tag}: تصویر حرف «${r.display.icon}» وجود ندارد`);
+          }
+          if (r.display?.kind === 'pic-only' && !svgShape(r.display.icon)) {
+            errors.push(`${tag}: تصویر «${r.display.icon}» وجود ندارد`);
+          }
+
+          // ── لو رفتن پاسخ ────────────────────────────────────────
+          // اگر صحنه خودِ پاسخ را نشان دهد، گِرد چیزی نمی‌سنجد:
+          // کودک فقط از بالا کپی می‌کند. این دسته باگ با آزمون
+          // ساختاری دیده نمی‌شود چون همه‌چیز «معتبر» است.
+          const shown = [];
+          if (r.display?.kind === 'text') shown.push(String(r.display.value));
+          if (r.display?.kind === 'letter-pic') shown.push(String(r.display.letter));
+          if (r.display?.kind === 'dots') shown.push(String(r.display.times));
+          if (shown.includes(String(r.answer))) {
+            errors.push(`${tag}: صحنه پاسخ «${r.answer}» را لو می‌دهد`);
+          }
         }
 
         if (r.type === 'order') {

@@ -216,6 +216,28 @@ function playScreen(lessonId) {
         });
         stage.append(box);
       }
+      // حرف در کنار تصویرِ کلمه‌ای که با آن شروع می‌شود.
+      // پیوند «نشانه ↔ معنا» برای کودکی که هنوز نمی‌خواند.
+      if (r.display.kind === 'letter-pic') {
+        stage.append(
+          el('div', { class: 'letter-pic' }, [
+            el('span', { class: 'lp-letter', text: r.display.letter }),
+            el('span', { class: 'lp-ico ico', html: svgShape(r.display.icon) || '' }),
+          ]),
+        );
+      }
+      // فقط تصویر — بدون حرف، تا پاسخ لو نرود
+      if (r.display.kind === 'pic-only') {
+        stage.append(el('span', { class: 'lp-ico ico big-pic', html: svgShape(r.display.icon) || '' }));
+      }
+      // نقطه‌های شمردنی — پیوند «عدد ↔ مقدار»
+      if (r.display.kind === 'dots') {
+        const box = el('div', { class: 'dots' });
+        for (let k = 0; k < r.display.times; k++) {
+          box.append(el('span', { class: 'dot', style: `animation-delay:${k * 55}ms` }));
+        }
+        stage.append(box);
+      }
       if (r.display.kind === 'shadow') {
         stage.append(el('div', { class: 'ico shadow', html: svgShape(r.display.value) || '' }));
       }
@@ -242,6 +264,13 @@ function playScreen(lessonId) {
           g.append(el('span', { class: 'ico sm', html: svgShape(o.shapeRepeat.icon) || '' }));
         }
         btn.append(g);
+      } else if (o.dots) {
+        // عدد + نقطه‌های متناظرش روی خودِ گزینه: کودک پیوند
+        // «رقم ↔ مقدار» را می‌بیند بدون آنکه پاسخ لو برود.
+        btn.append(el('span', { class: 'opt-num', text: o.label }));
+        const dg = el('span', { class: 'opt-dots' });
+        for (let k = 0; k < o.dots; k++) dg.append(el('i', { class: 'dot sm' }));
+        btn.append(dg);
       } else if (o.swatch) {
         btn.append(el('div', { class: 'swatch', style: `background:${o.swatch}` }));
       } else {
@@ -490,6 +519,19 @@ function doneScreen(lesson, correct, total) {
     el('div', { class: 'done-card' }, [
       el('div', { class: 'big', text: pct >= 80 ? '🌟' : '👏' }),
       el('h2', { text: msg }),
+      // ستاره‌ها یکی‌یکی روشن می‌شوند — لحظهٔ جشن باید دیده شود،
+      // نه اینکه فقط یک عدد نوشته شود.
+      el(
+        'div',
+        { class: 'star-row', 'aria-hidden': 'true' },
+        [1, 2, 3].map((i) =>
+          el('span', {
+            class: `award${i <= Math.max(1, Math.round((pct / 100) * 3)) ? ' on' : ''}`,
+            style: `animation-delay:${140 + i * 190}ms`,
+            text: '★',
+          }),
+        ),
+      ),
       el('p', { class: 'muted', text: `${toFa(correct)} از ${toFa(total)} تمرین درست` }),
     ]),
     el('div', { class: 'note', text: `برای والدین: ${lesson.parentNote}` }),

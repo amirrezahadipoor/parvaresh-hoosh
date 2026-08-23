@@ -9,7 +9,7 @@
 import { ALPHABET } from '../data/alphabet.js';
 import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
-import { SHAPES, CATEGORIES, COLOR_HEX, GEO } from './svg.js';
+import { SHAPES, SHAPE_NAMES, CATEGORIES, COLOR_HEX, GEO } from './svg.js';
 
 const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 export const toFa = (n) => String(n).replace(/\d/g, (d) => faDigits[+d]);
@@ -51,6 +51,44 @@ const GEO_NAMES = Object.keys(GEO);
  * @param {object} track ردهٔ سنی (optionCount, maxNumber, ...)
  * @returns {object} گِرد قابل‌نمایش
  */
+
+// ── لنگر تصویری حروف ────────────────────────────────────────────────────
+// هر گِرد باید چیزی برای *دیدن* داشته باشد، وگرنه صفحه شبیه سند می‌شود.
+// برای حروفی که شکل متناظر داریم، تصویر واقعی نشان می‌دهیم؛ کودک پیش از
+// خواندن، از راه تصویر معنا می‌گیرد (کاهش بار شناختی برای پیش‌خوانا).
+const LETTER_PICTURE = Object.freeze({
+  'ا': 'انار',
+  'ب': 'ابر',
+  'د': 'درخت',
+  'م': 'ماهی',
+  'س': 'سیب',
+  'ت': 'توپ',
+  'ر': 'درخت',
+  'ن': 'خانه',
+  'ی': 'ماهی',
+  'ز': 'موز',
+  'ه': 'ماه',
+  'ش': 'خرگوش',
+  'ک': 'کتاب',
+  'گ': 'گل',
+  'پ': 'پرنده',
+  'خ': 'خورشید',
+  'ف': 'برف',
+  'ق': 'قایق',
+  'ل': 'گل',
+  'ج': 'کاج',
+  'و': 'موز',
+  'ع': 'شمع',
+  'ص': 'قیچی',
+  'ح': 'صحرا',
+});
+
+/** تصویر مرتبط با حرف، اگر شکلش را داشته باشیم. */
+function pictureFor(letter) {
+  const name = LETTER_PICTURE[letter];
+  return name && SHAPE_NAMES.includes(name) ? name : null;
+}
+
 export function buildRound(round, track) {
   const n = track.optionCount;
   // سقف عدد: کمینهٔ چیزی که درس می‌خواهد و چیزی که سن اجازه می‌دهد.
@@ -63,7 +101,12 @@ export function buildRound(round, track) {
         type: 'choice',
         prompt: round.prompt,
         speak: round.speak,
-        display: { kind: 'text', value: '🔊' },
+        // اموجی بلندگو چیزی یاد نمی‌دهد، ولی نشان دادن *خودِ حرف* هم
+        // پرسش را بی‌معنا می‌کند: کودک فقط کپی می‌کند. پس تنها تصویرِ
+        // کلمه را نشان می‌دهیم — کودک باید از صدا به حرف برسد.
+        display: pictureFor(round.answer)
+          ? { kind: 'pic-only', icon: pictureFor(round.answer) }
+          : null,
         options: buildOptions(round.answer, pool, n).map((v) => ({ label: v, value: v })),
         answer: round.answer,
       };
@@ -91,7 +134,9 @@ export function buildRound(round, track) {
       return {
         type: 'choice',
         prompt: round.prompt,
-        display: { kind: 'text', value: round.letter },
+        display: pictureFor(round.letter)
+          ? { kind: 'letter-pic', letter: round.letter, icon: pictureFor(round.letter) }
+          : { kind: 'text', value: round.letter },
         options: buildOptions(round.answer, wrong, n).map((v) => ({ label: v, value: v })),
         answer: round.answer,
       };
@@ -116,8 +161,16 @@ export function buildRound(round, track) {
       return {
         type: 'choice',
         prompt: round.prompt.replace('{n}', toFa(target)),
+        // اینجا عمداً هیچ نقطه‌ای نشان نمی‌دهیم: پرسش «کدام عدد ۳ است؟»
+        // با سه نقطه روی صحنه، دیگر پرسش نیست — کودک می‌شمارد و کپی
+        // می‌کند. صفحهٔ بی‌تصویر بد است، ولی گِردِ بی‌معنا بدتر.
+        // به‌جای آن، خودِ گزینه‌ها تصویری می‌شوند.
         display: null,
-        options: buildOptions(target, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        options: buildOptions(target, pool, n).map((v) => ({
+          label: toFa(v),
+          value: v,
+          dots: v,
+        })),
         answer: target,
       };
     }

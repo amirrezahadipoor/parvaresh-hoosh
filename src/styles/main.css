@@ -890,3 +890,106 @@ canvas.pad {
   width: 40px;
   height: 40px;
 }
+
+/* ── لنگر تصویری حرف ──────────────────────────────────────
+   حرف بزرگ کنار تصویر کلمه‌ای که با آن شروع می‌شود. */
+.letter-pic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s5);
+}
+
+.lp-letter {
+  font-size: 82px;
+  font-weight: 900;
+  color: var(--brand);
+  line-height: 1;
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.lp-ico {
+  width: 90px;
+  height: 90px;
+  animation: pop var(--base) 90ms var(--ease) backwards;
+}
+
+/* ── نقطه‌های شمردنی ──────────────────────────────────────
+   عدد به‌تنهایی انتزاعی است؛ نقطه‌ها مقدار را دیدنی می‌کنند. */
+.dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  justify-content: center;
+  max-width: 300px;
+}
+
+.dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--math);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+/* ── جشن پایان درس ────────────────────────────────────────
+   پاداش بیرونی (سکه و اقتصاد مجازی) عمداً ساخته نشده؛ نقد
+   پژوهشی به آن وارد است. اینجا فقط بازتاب تلاش کودک است. */
+.star-row {
+  display: flex;
+  gap: var(--s3);
+  justify-content: center;
+  margin-block: var(--s3);
+}
+
+.award {
+  font-size: 46px;
+  line-height: 1;
+  color: var(--line);
+  animation: award-in var(--slow) var(--ease) backwards;
+}
+
+.award.on {
+  color: #F4B942;
+}
+
+@keyframes award-in {
+  from { opacity: 0; transform: scale(0.3) rotate(-25deg); }
+  70%  { transform: scale(1.18) rotate(6deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+.done-card .big {
+  animation: cheer var(--slow) var(--ease) 120ms backwards;
+}
+
+.big-pic {
+  width: 120px;
+  height: 120px;
+}
+
+/* گزینهٔ عددی با نقطه‌های متناظر */
+.opt-num {
+  font-size: var(--t-huge);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.opt-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  max-width: 92px;
+  margin-top: var(--s2);
+}
+
+.dot.sm {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--math);
+  display: block;
+  animation: none;
+}
