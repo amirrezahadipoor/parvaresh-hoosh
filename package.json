@@ -1,0 +1,15 @@
+{
+  "name": "parvaresh-hoosh",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "description": "بازی آموزشی آفلاین فارسی برای کودکان ۵ تا ۸ سال",
+  "license": "MIT",
+  "scripts": {
+    "build:lessons": "node scripts/build-reading-lessons.js",
+    "validate": "node scripts/validate.js",
+    "test": "npm run validate",
+    "start": "python3 -m http.server 8080 --bind 0.0.0.0"
+  },
+  "engines": { "node": ">=20" }
+}
