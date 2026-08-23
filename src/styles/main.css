@@ -379,9 +379,11 @@ body {
 }
 
 /* دکمهٔ «بعدی» در پایان درس — زنجیره را نمی‌شکند */
-.next-btn {
+.btn.next-btn {
   display: grid;
   gap: 2px;
+  /* رنگ درس بعدی: کودک پیش از تپ می‌داند به کدام حوزه می‌رود.
+     بدون افزودن ویژگی، قاعدهٔ عمومی .btn این را بازنویسی می‌کرد. */
   background: var(--c, var(--brand));
   padding: var(--s4) var(--s5);
 }
@@ -1264,4 +1266,85 @@ canvas.pad {
   color: var(--muted);
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* ── هوشی، شخصیت راهنما ───────────────────────────────────
+   قاعده: هرگز همزمان با پرسش حرکت نمی‌کند. حرکت فقط در
+   لحظه‌های گذار — ورود به خانه و جشن پایان. هیچ انیمیشن
+   بی‌پایانی ندارد؛ حرکت دائمی توجه کودک را می‌دزدد. */
+.buddy {
+  display: inline-grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  flex: none;
+}
+
+.buddy svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.buddy-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.buddy-bubble {
+  background: var(--surface);
+  border-radius: 20px 20px 20px 6px;
+  box-shadow: var(--shadow);
+  padding: var(--s3) var(--s4);
+  font-size: var(--t-body);
+  font-weight: 800;
+  animation: bubble-in var(--base) var(--ease) 220ms backwards;
+}
+
+@keyframes bubble-in {
+  from { opacity: 0; transform: scale(0.7) translateX(10px); }
+}
+
+.buddy.wave {
+  animation: wave var(--slow) var(--ease) backwards;
+}
+
+@keyframes wave {
+  from { opacity: 0; transform: translateY(14px) scale(0.8); }
+  60%  { transform: translateY(-4px) scale(1.04); }
+  to   { opacity: 1; transform: none; }
+}
+
+.big-buddy {
+  width: 110px;
+  height: 110px;
+}
+
+.buddy.cheer {
+  animation: cheer-in 620ms var(--ease) backwards;
+}
+
+@keyframes cheer-in {
+  from { opacity: 0; transform: scale(0.4) rotate(-14deg); }
+  55%  { transform: scale(1.12) rotate(6deg); }
+  75%  { transform: scale(0.97) rotate(-3deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── انتقال بین صفحه‌ها ───────────────────────────────────
+   پرش ناگهانی گیج‌کننده است؛ کودک باید حس کند صفحه «آمد»،
+   نه اینکه ناگهان چیز دیگری جایش باشد. کوتاه نگه داشته شده
+   تا حس کندی ندهد: ۲۴۰ms زیر آستانهٔ ادراک انتظار است. */
+.screen {
+  animation: screen-in var(--base) var(--ease);
+}
+
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* صفحهٔ بازی نباید بلغزد — کودک وسط تمرین است */
+.screen:has(.prompt) {
+  animation: fade var(--fast) ease;
 }

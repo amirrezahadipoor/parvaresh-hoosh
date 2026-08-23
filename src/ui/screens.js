@@ -8,6 +8,7 @@ import { speak, sfx, setMuted, isMuted, stop as stopAudio } from '../core/audio.
 import { buildLesson, toFa } from '../core/rounds.js';
 import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../core/journey.js';
 import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
+import { buddy, line as buddyLine } from '../core/buddy.js';
 
 const el = (tag, props = {}, kids = []) => {
   const n = document.createElement(tag);
@@ -90,6 +91,10 @@ export function homeScreen() {
         },
       }),
       el('button', { class: 'icon-btn', 'aria-label': 'تنظیمات', text: '⚙', onClick: () => render(settingsScreen()) }),
+    ]),
+    el('div', { class: 'buddy-row' }, [
+      el('span', { class: 'buddy wave', html: buddy('happy', d.color) }),
+      el('span', { class: 'buddy-bubble', text: buddyLine('welcome') }),
     ]),
     play,
     el('div', { class: 'journey-row' }, [
@@ -583,7 +588,7 @@ function doneScreen(lesson, correct, total) {
   return el('div', { class: 'screen' }, [
     topbar('پایان درس', () => render(homeScreen())),
     el('div', { class: 'done-card' }, [
-      el('div', { class: 'big', text: pct >= 80 ? '🌟' : '👏' }),
+      el('span', { class: 'buddy big-buddy cheer', html: buddy(pct >= 50 ? 'happy' : 'encourage', nd.color) }),
       el('h2', { text: msg }),
       // ستاره‌ها یکی‌یکی روشن می‌شوند — لحظهٔ جشن باید دیده شود،
       // نه اینکه فقط یک عدد نوشته شود.

@@ -69,6 +69,39 @@ await page.locator('.play-btn').click();
 await page.waitForSelector('.prompt');
 notes.push(`تپ تا شروع بازی: ${LIMITS.maxTapsToPlay}`);
 
+// ── ۲.۵ شخصیت راهنما هست، ولی سر راه نیست ───────────────────────────────
+{
+  // هوشی باید در خانه باشد (لحظهٔ گذار)
+  await page.goBack().catch(() => {});
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.waitForSelector('.play-btn');
+  const home = await page.locator('.buddy').count();
+  check(home >= 1, 'شخصیت راهنما در صفحهٔ خانه نیست');
+  notes.push(`شخصیت راهنما در خانه: ${home}`);
+
+  await page.locator('.play-btn').click();
+  await page.waitForSelector('.prompt');
+  await page.waitForTimeout(900);
+
+  // ولی حین پرسش نباید چیزی بجنبد: انیمیشن همزمان با پرسش، توجه را
+  // از هدف درس می‌دزدد (نقد پژوهشی بر اپ‌های مشابه).
+  const moving = await page.evaluate(() => {
+    const out = [];
+    for (const e of document.querySelectorAll('.screen *')) {
+      const cs = getComputedStyle(e);
+      if (cs.animationName !== 'none' && cs.animationIterationCount === 'infinite') {
+        out.push(e.className || e.tagName);
+      }
+    }
+    return out;
+  });
+  check(
+    moving.length === 0,
+    `حین پرسش ${moving.length} عنصر انیمیشن بی‌پایان دارد: ${[...new Set(moving)].slice(0, 3).join('، ')}`,
+  );
+  notes.push('انیمیشن بی‌پایان حین پرسش: ۰');
+}
+
 // ── ۳. سرعت بازخورد: کودک باید فوراً اثر لمس را ببیند ───────────────────
 {
   await page.waitForSelector('.opt:not([disabled])');
@@ -168,7 +201,8 @@ if (await page.locator('.done-card').count()) {
       const a = getComputedStyle(e).animationName;
       return a && a !== 'none';
     }).length;
-    return { hasBig: !!c.querySelector('.big'), animated: anim };
+    // نشان جشن: یا هوشی، یا نشان بزرگ — چیزی که کودک ببیند نه بخواند
+    return { hasBig: !!c.querySelector('.big, .buddy, .star-row'), animated: anim };
   });
   check(celebration.hasBig, 'صفحهٔ پایان درس نشان بزرگ جشن ندارد');
   check(celebration.animated > 0, 'صفحهٔ پایان درس هیچ حرکتی ندارد — جشن باید دیده شود');
