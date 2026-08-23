@@ -6,6 +6,7 @@ import { lessonsByDomain, LESSONS } from '../data/lessons/index.js';
 import * as store from '../core/storage.js';
 import { speak, sfx, setMuted, isMuted, stop as stopAudio } from '../core/audio.js';
 import { buildLesson, toFa } from '../core/rounds.js';
+import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../core/journey.js';
 import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
 
 const el = (tag, props = {}, kids = []) => {
@@ -42,28 +43,36 @@ function topbar(title, onBack) {
 }
 
 // ── خانه ────────────────────────────────────────────────────────────────
+// یک تصمیم، نه سه تا. دکمهٔ بزرگ «بریم بازی» کودک را مستقیم به درس
+// درست می‌برد؛ برنامه خودش می‌داند کجا مانده است. نقشهٔ سفر و تنظیمات
+// در دسترس‌اند ولی سر راه نیستند.
 export function homeScreen() {
   const s = store.getState();
   const greeting = s.childName ? `سلام ${s.childName}!` : 'پرورش هوش';
+  const { step, mode } = nextStep();
+  const d = DOMAINS.find((x) => x.id === step.domainId);
+  const p = progress();
 
-  const cards = DOMAINS.map((d) => {
-    const list = lessonsByDomain(d.id);
-    const done = list.filter((l) => store.isCompleted(l.id)).length;
-    return el(
-      'button',
-      { class: 'domain-card', style: `--c:${d.color}`, onClick: () => render(domainScreen(d.id)) },
-      [
-        el('h2', { text: d.title }),
-        el('p', { text: d.description }),
-        el('div', {
-          class: 'domain-meta',
-          text: `${toFa(done)} از ${toFa(list.length)} درس انجام شده`,
-        }),
-      ],
-    );
-  });
+  const play = el(
+    'button',
+    { class: 'play-btn', style: `--c:${d.color}`, onClick: () => render(playScreen(step.lesson.id)) },
+    [
+      el('span', { class: 'play-kicker', text: mode === 'review' ? 'بیا مرور کنیم' : 'بریم بازی' }),
+      el('span', { class: 'play-title', text: step.lesson.title }),
+      el('span', { class: 'play-meta' }, [
+        el('span', { text: d.title }),
+        el('span', { class: 'sep', 'aria-hidden': 'true' }),
+        el('span', { text: `${toFa(step.lesson.minutes)} دقیقه` }),
+      ]),
+    ],
+  );
 
-  return el('div', { class: 'screen' }, [
+  // نوار پیشرفت سفر — کودک ببیند کجای راه است
+  const bar = el('div', { class: 'journey-bar', 'aria-hidden': 'true' }, [
+    el('div', { class: 'journey-fill', style: `width:${p.percent}%;--c:${d.color}` }),
+  ]);
+
+  return el('div', { class: 'screen home' }, [
     el('div', { class: 'topbar' }, [
       el('h1', { text: greeting }),
       el('button', {
@@ -78,46 +87,60 @@ export function homeScreen() {
       }),
       el('button', { class: 'icon-btn', 'aria-label': 'تنظیمات', text: '⚙', onClick: () => render(settingsScreen()) }),
     ]),
+    play,
+    el('div', { class: 'journey-row' }, [
+      bar,
+      el('span', { class: 'journey-label', text: `${toFa(p.done)} از ${toFa(p.total)} درس` }),
+    ]),
     el('div', { class: 'stars', text: `⭐ ${toFa(s.stars)} ستاره` }),
-    el('div', { class: 'domain-grid' }, cards),
+    el('button', { class: 'btn ghost', text: 'نقشهٔ سفر', onClick: () => render(mapScreen()) }),
   ]);
 }
 
-// ── فهرست درس‌های یک حوزه ───────────────────────────────────────────────
-function domainScreen(domainId) {
-  const d = DOMAINS.find((x) => x.id === domainId);
-  const list = lessonsByDomain(domainId);
-
-  const cards = list.map((l, i) => {
-    const p = store.lessonProgress(l.id);
+// ── نقشهٔ سفر ────────────────────────────────────────────────────────────
+// همهٔ درس‌ها یک‌جا، به ترتیب مسیر. جایگزین منوی دوطبقهٔ قبلی:
+// اینجا برای مرور و دیدن کل راه است، نه مانعی سر راه بازی.
+function mapScreen() {
+  const p = progress();
+  const cards = SEQUENCE.map((st) => {
+    const d = DOMAINS.find((x) => x.id === st.domainId);
+    const pr = store.lessonProgress(st.lesson.id);
+    const locked = isLocked(st.lesson.id);
+    const doneMark = pr.completions ? '✓' : toFa(st.order + 1);
     return el(
       'button',
       {
-        class: `lesson-card${p.completions ? ' done' : ''}`,
-        onClick: () => render(playScreen(l.id, domainId)),
+        class: `map-item${pr.completions ? ' done' : ''}${locked ? ' locked' : ''}`,
+        style: `--c:${d.color}`,
+        disabled: locked ? '' : null,
+        'aria-label': locked ? `${st.lesson.title} — هنوز باز نشده` : st.lesson.title,
+        onClick: locked ? null : () => render(playScreen(st.lesson.id)),
       },
       [
-        el('div', { class: 'lesson-num', text: p.completions ? '✓' : toFa(i + 1) }),
-        el('div', { class: 'lesson-body' }, [
-          el('strong', { text: l.title }),
-          el('span', {
-            text: p.completions
-              ? `بهترین نتیجه: ${toFa(p.bestScore)}٪ • ${toFa(l.minutes)} دقیقه`
-              : `${toFa(l.rounds.length)} تمرین • ${toFa(l.minutes)} دقیقه`,
-          }),
+        el('div', { class: 'map-dot', text: locked ? '🔒' : doneMark }),
+        el('div', { class: 'map-body' }, [
+          el('strong', { text: st.lesson.title }),
+          el('span', { class: 'map-meta' }, [
+            el('span', { text: d.title }),
+            el('span', { class: 'sep', 'aria-hidden': 'true' }),
+            el('span', {
+              text: pr.completions ? `بهترین: ${toFa(pr.bestScore)}٪` : `${toFa(st.lesson.minutes)} دقیقه`,
+            }),
+          ]),
         ]),
       ],
     );
   });
 
   return el('div', { class: 'screen' }, [
-    topbar(d.title, () => render(homeScreen())),
-    el('div', { class: 'lesson-list' }, cards),
+    topbar('نقشهٔ سفر', () => render(homeScreen())),
+    el('div', { class: 'map-summary', text: `${toFa(p.done)} از ${toFa(p.total)} درس انجام شده` }),
+    el('div', { class: 'map-list' }, cards),
   ]);
 }
 
 // ── بازی ────────────────────────────────────────────────────────────────
-function playScreen(lessonId, domainId) {
+function playScreen(lessonId) {
   const lesson = LESSONS.find((l) => l.id === lessonId);
   const state = store.getState();
   const track = trackForAge(state.age);
@@ -130,7 +153,7 @@ function playScreen(lessonId, domainId) {
   const finish = () => {
     store.recordLesson(lessonId, { correct, total: rounds.length });
     sfx.win();
-    render(doneScreen(lesson, correct, rounds.length, domainId));
+    render(doneScreen(lesson, correct, rounds.length));
   };
 
   const next = () => {
@@ -156,7 +179,7 @@ function playScreen(lessonId, domainId) {
             : memoryView(r, feedback, next);
 
     wrap.replaceChildren(
-      topbar(lesson.title, () => render(domainScreen(domainId))),
+      topbar(lesson.title, () => render(homeScreen())),
       bar,
       el('div', { class: 'muted', text: `تمرین ${toFa(idx + 1)} از ${toFa(rounds.length)}` }),
       el('p', { class: 'prompt', text: r.prompt }),
@@ -453,18 +476,31 @@ function playScreen(lessonId, domainId) {
 }
 
 // ── پایان درس ───────────────────────────────────────────────────────────
-function doneScreen(lesson, correct, total, domainId) {
+function doneScreen(lesson, correct, total) {
   const pct = Math.round((correct / total) * 100);
   const msg = pct >= 80 ? 'عالی بود!' : pct >= 50 ? 'خوب بود!' : 'تمرین بیشتر، بهتر!';
+
+  // زنجیرهٔ بازی: درس بعدی مستقیم شروع می‌شود، بدون برگشت به منو.
+  // این همان جایی است که در طرح قبلی جریان بازی می‌شکست.
+  const nxt = stepAfter(lesson.id);
+  const nd = DOMAINS.find((x) => x.id === nxt.domainId);
+
   return el('div', { class: 'screen' }, [
-    topbar('پایان درس', () => render(domainScreen(domainId))),
+    topbar('پایان درس', () => render(homeScreen())),
     el('div', { class: 'done-card' }, [
       el('div', { class: 'big', text: pct >= 80 ? '🌟' : '👏' }),
       el('h2', { text: msg }),
       el('p', { class: 'muted', text: `${toFa(correct)} از ${toFa(total)} تمرین درست` }),
     ]),
     el('div', { class: 'note', text: `برای والدین: ${lesson.parentNote}` }),
-    el('button', { class: 'btn', text: 'درس بعدی', onClick: () => render(domainScreen(domainId)) }),
+    el(
+      'button',
+      { class: 'btn next-btn', style: `--c:${nd.color}`, onClick: () => render(playScreen(nxt.lesson.id)) },
+      [
+        el('span', { class: 'next-kicker', text: 'بعدی' }),
+        el('span', { class: 'next-title', text: nxt.lesson.title }),
+      ],
+    ),
     el('button', { class: 'btn ghost', text: 'خانه', onClick: () => render(homeScreen()) }),
   ]);
 }

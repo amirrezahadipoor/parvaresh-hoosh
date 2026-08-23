@@ -120,6 +120,12 @@ for (const rel of shell) {
 
 // ── گزارش ───────────────────────────────────────────────────────────────
 const roundTotal = LESSONS.reduce((s, l) => s + (l.rounds?.length || 0), 0);
+// ── سلامت مسیر سفر ──────────────────────────────────────────────────────
+// مسیر باید همهٔ درس‌ها را دقیقاً یک بار داشته باشد، ترتیب داخلی هیچ حوزه‌ای
+// را نشکند، و بین حوزه‌ها بچرخد تا کودک از یکنواختی خسته نشود.
+const { auditSequence, SEQUENCE } = await import('../src/core/journey.js');
+for (const problem of auditSequence()) errors.push(`مسیر سفر: ${problem}`);
+
 console.log('── اعتبارسنجی پرورش هوش ──');
 console.log(`حوزه‌ها: ${DOMAINS.length}`);
 for (const d of DOMAINS) {
@@ -128,6 +134,7 @@ for (const d of DOMAINS) {
 }
 console.log(`مجموع: ${LESSONS.length} درس، ${roundTotal} گِرد`);
 console.log(`صدا: ${Object.keys(NARRATION).length} خط گفتاری، ${audioFiles.size} فایل`);
+console.log(`مسیر سفر: ${SEQUENCE.length} قدم پیوسته`);
 
 if (warnings.length) {
   console.log(`\nهشدار (${warnings.length}):`);

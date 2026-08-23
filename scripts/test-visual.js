@@ -48,7 +48,8 @@ async function audit(page, label, vp) {
       const b = el.getBoundingClientRect();
       if (b.width === 0 && b.height === 0) continue; // پنهان — مشکلی نیست
       const tag = el.className?.split?.(' ')[0] || el.tagName;
-      if (b.height < minTap || b.width < minTap) {
+      // مقایسهٔ مرزی: ۵۶ دقیقاً مجاز است، پس کمی رواداری برای گِردکردن زیرپیکسلی
+      if (b.height < minTap - 0.5 || b.width < minTap - 0.5) {
         out.small.push(`${tag} ${Math.round(b.width)}×${Math.round(b.height)}`);
       }
       boxes.push({ tag, b });
@@ -72,6 +73,18 @@ async function audit(page, label, vp) {
       }
     }
 
+    // ── دام دوجهته (bidi) ────────────────────────────────
+    // نویسه‌های خنثی مثل • | / - کنار عدد فارسی جابه‌جا می‌شوند و
+    // عدد را تحریف می‌کنند: «۶ دقیقه» به چشم «۶۰ دقیقه» می‌آید.
+    // این دسته باگ در فارسی بسیار رایج و با چشم سخت‌یاب است.
+    out.bidi = [];
+    const NEUTRAL = /[۰-۹]\s*[•|/·−–—]\s*|[•|/·−–—]\s*[۰-۹]/;
+    for (const el of document.querySelectorAll('span, p, strong, .prompt, h1, h2, .muted')) {
+      if (el.children.length) continue; // فقط برگ‌ها، تا متن دوبار شمرده نشود
+      const t = (el.textContent || '').trim();
+      if (t && NEUTRAL.test(t)) out.bidi.push(`«${t.slice(0, 30)}»`);
+    }
+
     // متن نامرئی (رنگ متن = رنگ پس‌زمینه)
     for (const el of document.querySelectorAll('h1, h2, p, .prompt, .opt, .btn')) {
       const cs = getComputedStyle(el);
@@ -88,6 +101,9 @@ async function audit(page, label, vp) {
   if (r.overlaps.length) errors.push(`${tag}: هم‌پوشانی — ${[...new Set(r.overlaps)].slice(0, 3).join('، ')}`);
   if (r.clipped.length) errors.push(`${tag}: متن بریده — ${[...new Set(r.clipped)].slice(0, 3).join('، ')}`);
   if (r.invisible.length) errors.push(`${tag}: متن نامرئی — ${[...new Set(r.invisible)].join('، ')}`);
+  if (r.bidi?.length) {
+    errors.push(`${tag}: دام دوجهته کنار عدد — ${[...new Set(r.bidi)].slice(0, 3).join('، ')}`);
+  }
 }
 
 for (const vp of VIEWPORTS) {
@@ -96,26 +112,57 @@ for (const vp of VIEWPORTS) {
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
 
-  await page.waitForSelector('.domain-card');
+  await page.waitForSelector('.play-btn');
   await audit(page, 'خانه', vp);
 
-  // هر حوزه: فهرست درس + یک درس بازی‌شونده
-  const domainCount = await page.locator('.domain-card').count();
-  for (let d = 0; d < domainCount; d++) {
-    await page.locator('.domain-card').nth(d).click();
-    await page.waitForSelector('.lesson-card');
-    const title = (await page.locator('.topbar h1').textContent())?.trim();
-    await audit(page, `فهرست ${title}`, vp);
+  // نقشهٔ سفر — طولانی‌ترین فهرست برنامه، بیشترین احتمال سرریز
+  await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).click();
+  await page.waitForSelector('.map-item');
+  await audit(page, 'نقشهٔ سفر', vp);
+  await page.locator('.icon-btn[aria-label="بازگشت"]').click();
+  await page.waitForSelector('.play-btn');
 
-    await page.locator('.lesson-card').first().click();
+  // هر درسِ بازِ مسیر را می‌سنجیم — نه فقط یکی از هر حوزه.
+  // درس‌ها یکی‌یکی باز می‌شوند، پس با بازی کردن جلو می‌رویم.
+  let played = 0;
+  for (let step = 0; step < 6; step++) {
+    await page.waitForSelector('.play-btn');
+    const title = (await page.locator('.play-title').textContent())?.trim();
+    await page.locator('.play-btn').click();
     await page.waitForSelector('.prompt');
     await page.waitForTimeout(420); // پایان انیمیشن ورود
     await audit(page, `بازی ${title}`, vp);
 
-    await page.locator('.icon-btn[aria-label="بازگشت"]').click();
-    await page.waitForSelector('.lesson-card');
-    await page.locator('.icon-btn[aria-label="بازگشت"]').click();
-    await page.waitForSelector('.domain-card');
+    // درس را تا پایان بازی می‌کنیم تا درس بعدی باز شود
+    for (let i = 0; i < 14; i++) {
+      if (await page.locator('.done-card').count()) break;
+      const opt = page.locator('.opt:not([disabled])').first();
+      const order = page.locator('.order-item:not(.picked)').first();
+      const canvas = page.locator('canvas').first();
+      if (await opt.count()) await opt.click({ timeout: 4000 }).catch(() => {});
+      else if (await order.count()) await order.click({ timeout: 4000 }).catch(() => {});
+      else if (await canvas.count()) {
+        const b = await canvas.boundingBox();
+        if (b) {
+          await page.mouse.move(b.x + 20, b.y + 20);
+          await page.mouse.down();
+          for (let k = 0; k < 12; k++) await page.mouse.move(b.x + 20 + k * 6, b.y + 30 + k * 3);
+          await page.mouse.up();
+        }
+        const nx = page.locator('.btn', { hasText: 'تمام شد' }).first();
+        if (await nx.count()) await nx.click();
+      } else break;
+      await page.waitForTimeout(2100);
+    }
+
+    if (await page.locator('.done-card').count()) {
+      await audit(page, `پایان ${title}`, vp);
+      played++;
+      await page.locator('.btn.ghost', { hasText: 'خانه' }).click();
+    } else {
+      await page.locator('.icon-btn[aria-label="بازگشت"]').click();
+    }
+    await page.waitForSelector('.play-btn');
   }
 
   // تنظیمات
@@ -123,7 +170,7 @@ for (const vp of VIEWPORTS) {
   await page.waitForSelector('select');
   await audit(page, 'تنظیمات', vp);
 
-  notes.push(`${vp.name} (${vp.width}px): ${domainCount} حوزه بررسی شد`);
+  notes.push(`${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس کامل بررسی شد`);
   await page.close();
 }
 

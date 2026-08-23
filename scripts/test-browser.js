@@ -30,25 +30,25 @@ const check = (cond, msg) => {
 
 await page.goto(BASE, { waitUntil: 'networkidle' });
 
-// ── خانه ────────────────────────────────────────────────────────────────
-await page.waitForSelector('.domain-card', { timeout: 5000 });
-const domains = await page.locator('.domain-card').count();
-check(domains === 4, `صفحهٔ خانه باید ۴ حوزه داشته باشد، ${domains} دارد`);
-console.log(`✓ خانه: ${domains} حوزه`);
+// ── خانه: یک دکمهٔ بازی، نه منوی حوزه‌ها ────────────────────────────────
+// قرارداد جدید: کودک با *یک* تپ به بازی می‌رسد. اگر روزی دوباره
+// منوی چندطبقه برگردد، این آزمون می‌شکند — و باید بشکند.
+await page.waitForSelector('.play-btn', { timeout: 5000 });
+const playBtns = await page.locator('.play-btn').count();
+check(playBtns === 1, `خانه باید دقیقاً یک دکمهٔ بازی داشته باشد، ${playBtns} دارد`);
 
-// عنوان‌ها واقعاً فارسی رندر شده‌اند؟
-const firstTitle = await page.locator('.domain-card h2').first().textContent();
-check(/[\u0600-\u06FF]/.test(firstTitle), 'عنوان حوزه فارسی نیست');
+const playTitle = await page.locator('.play-title').textContent();
+check(/[\u0600-\u06FF]/.test(playTitle), 'عنوان درس روی دکمهٔ بازی فارسی نیست');
+console.log(`✓ خانه: یک تپ تا بازی — «${playTitle.trim()}»`);
 
-// ── ورود به حوزهٔ ریاضی و بازی یک درس ───────────────────────────────────
-await page.locator('.domain-card', { hasText: 'ریاضی' }).click();
-await page.waitForSelector('.lesson-card');
-const lessons = await page.locator('.lesson-card').count();
-check(lessons === 5, `ریاضی باید ۵ درس داشته باشد، ${lessons} دارد`);
-console.log(`✓ ریاضی: ${lessons} درس`);
+// شمارش تصمیم‌های لازم برای رسیدن به بازی
+const decisions = await page.locator('.screen button:not(.icon-btn)').count();
+check(decisions <= 2, `خانه نباید بیش از ۲ دکمه داشته باشد، ${decisions} دارد`);
 
-await page.locator('.lesson-card').first().click();
+// ── یک تپ و بازی شروع می‌شود ────────────────────────────────────────────
+await page.locator('.play-btn').click();
 await page.waitForSelector('.prompt');
+console.log('✓ بازی با یک تپ شروع شد');
 
 // یک درس کامل را بازی می‌کنیم؛ همیشه گزینهٔ اول را می‌زنیم.
 let rounds = 0;
@@ -77,6 +77,25 @@ for (let i = 0; i < 12; i++) {
     await page.waitForTimeout(1900);
     continue;
   }
+  // گِرد خط‌کشیدن: با انگشت روی بوم می‌کشیم.
+  // امتیاز بر پایهٔ تلاش است، پس باید بیش از ۸ نمونهٔ حرکت بفرستیم.
+  const canvas = page.locator('canvas').first();
+  if (await canvas.count()) {
+    rounds++;
+    const b = await canvas.boundingBox();
+    if (b) {
+      await page.mouse.move(b.x + b.width * 0.3, b.y + b.height * 0.25);
+      await page.mouse.down();
+      for (let k = 0; k < 16; k++) {
+        await page.mouse.move(b.x + b.width * (0.3 + k * 0.025), b.y + b.height * (0.25 + k * 0.03));
+      }
+      await page.mouse.up();
+    }
+    const doneBtn = page.locator('.btn', { hasText: 'تمام شد' }).first();
+    if (await doneBtn.count()) await doneBtn.click();
+    await page.waitForTimeout(900);
+    continue;
+  }
   break;
 }
 check(rounds >= 3, `باید دست‌کم ۳ گِرد بازی می‌شد، ${rounds} شد`);
@@ -89,15 +108,14 @@ console.log('✓ صفحهٔ پایان درس نمایش داده شد');
 
 // ── تنظیمات: تغییر سن باید تعداد گزینه‌ها را عوض کند ────────────────────
 await page.locator('.btn.ghost', { hasText: 'خانه' }).click();
-await page.waitForSelector('.domain-card');
+await page.waitForSelector('.play-btn');
 await page.locator('.icon-btn[aria-label="تنظیمات"]').click();
 await page.waitForSelector('select');
 await page.selectOption('select', '5');
 await page.locator('.btn', { hasText: 'ذخیره' }).click();
-await page.waitForSelector('.domain-card');
+await page.waitForSelector('.play-btn');
 
-await page.locator('.domain-card', { hasText: 'ریاضی' }).click();
-await page.locator('.lesson-card').first().click();
+await page.locator('.play-btn').click();
 await page.waitForSelector('.opt');
 const optsAge5 = await page.locator('.opt').count();
 check(optsAge5 === 2, `کودک ۵ ساله باید ۲ گزینه ببیند، ${optsAge5} دید`);
@@ -108,13 +126,20 @@ const stars = await page.locator('.stars').first().textContent();
 check(/[۰-۹]/.test(stars), 'شمارندهٔ ستاره عدد فارسی ندارد');
 console.log(`✓ ستاره‌ها: ${stars.trim()}`);
 
-// ── حوزهٔ خواندن: صدا و بوم خط‌کشیدن ────────────────────────────────────
+// ── نقشهٔ سفر: کل مجموعه یک‌جا ──────────────────────────────────────────
 await page.locator('.icon-btn[aria-label="بازگشت"]').click();
-await page.waitForSelector('.lesson-card');
-await page.locator('.icon-btn[aria-label="بازگشت"]').click();
-await page.waitForSelector('.domain-card');
-await page.locator('.domain-card', { hasText: 'خواندن' }).click();
-await page.locator('.lesson-card').first().click();
+await page.waitForSelector('.play-btn');
+await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).click();
+await page.waitForSelector('.map-item');
+const mapItems = await page.locator('.map-item').count();
+check(mapItems === 23, `نقشه باید همهٔ ۲۳ درس را یک‌جا نشان دهد، ${mapItems} نشان داد`);
+const lockedCount = await page.locator('.map-item.locked').count();
+check(lockedCount > 0, 'نقشه باید درس‌های باز نشده را قفل نشان دهد');
+check(lockedCount < mapItems, 'همهٔ درس‌ها قفل‌اند — مسیر پیش نمی‌رود');
+console.log(`✓ نقشهٔ سفر: ${mapItems} درس یک‌جا، ${lockedCount} هنوز قفل`);
+
+// درس خواندن را از نقشه باز می‌کنیم (اولین درس مسیر، همیشه باز)
+await page.locator('.map-item:not(.locked)').first().click();
 await page.waitForSelector('.prompt');
 const audioOk = await page.evaluate(async () => {
   const r = await fetch('assets/audio/kid/letter-alef.mp3');
@@ -123,14 +148,12 @@ const audioOk = await page.evaluate(async () => {
 check(audioOk, 'فایل صوتی letter-alef.mp3 در دسترس نیست');
 console.log('✓ فایل صوتی از خود برنامه قابل واکشی است');
 
-// ── حوزهٔ تصویری: شکل‌های SVG باید واقعاً رندر شوند ─────────────────────
+// ── درس تصویری: شکل‌های SVG باید واقعاً رندر شوند ───────────────────────
 await page.locator('.icon-btn[aria-label="بازگشت"]').click();
-await page.waitForSelector('.lesson-card');
-await page.locator('.icon-btn[aria-label="بازگشت"]').click();
-await page.waitForSelector('.domain-card');
-await page.locator('.domain-card', { hasText: 'تماشا' }).click();
-await page.waitForSelector('.lesson-card');
-await page.locator('.lesson-card').first().click();
+await page.waitForSelector('.play-btn');
+await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).click();
+await page.waitForSelector('.map-item');
+await page.locator('.map-item:not(.locked)', { hasText: 'حیوان' }).first().click();
 await page.waitForSelector('.opt');
 
 const svgCount = await page.locator('.opt svg').count();

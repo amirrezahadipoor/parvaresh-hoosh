@@ -169,47 +169,232 @@ body {
 }
 
 /* ── کارت‌های حوزه ─────────────────────────────────────── */
-.domain-grid {
-  display: grid;
-  gap: 14px;
+/* ── خانه: یک دکمه، نه یک منو ─────────────────────────────
+   کودک ۵ ساله نمی‌خواهد انتخاب کند، می‌خواهد بازی کند.
+   دکمهٔ اصلی باید بی‌رقیب باشد تا هیچ تردیدی نماند. */
+.home {
+  gap: var(--s5);
 }
 
-.domain-card {
+/* دکمهٔ بازی فضای آزاد را می‌گیرد و در آن وسط می‌ایستد،
+   ولی نوار بالا سر جای خودش می‌ماند. */
+.home .play-btn {
+  margin-block: auto;
+}
+
+/* جداکنندهٔ نقطه‌ای — به‌جای نویسهٔ «•» در متن.
+   نویسهٔ خنثی کنار عدد فارسی جابه‌جا می‌شد و «۶ دقیقه» را
+   شبیه «۶۰ دقیقه» نشان می‌داد. */
+.sep {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+  margin-inline: 8px;
+  vertical-align: middle;
+}
+
+.play-meta,
+.map-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.map-meta {
+  justify-content: flex-start;
+}
+
+.play-btn {
+  border: none;
+  border-radius: 32px;
+  background: var(--c, var(--brand));
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  padding: var(--s6) var(--s5);
+  min-height: 190px;
+  display: grid;
+  place-content: center;
+  gap: var(--s2);
+  text-align: center;
+  box-shadow: var(--shadow-lift);
+  transition: transform var(--fast);
+  /* تپش آرام: سه بار دعوت به لمس، بعد آرام می‌گیرد.
+     حرکت بی‌پایان روی صفحه بیش‌تحریکی است و توجه کودک را از
+     محتوا می‌دزدد؛ اشاره کافی است، نه اصرار. */
+  animation: breathe 2.6s ease-in-out 0.6s 3 backwards;
+}
+
+.play-btn:active {
+  transform: scale(0.97);
+  animation: none;
+}
+
+@keyframes breathe {
+  50% { transform: scale(1.018); }
+}
+
+.play-kicker {
+  font-size: var(--t-body);
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.play-title {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.play-meta {
+  font-size: var(--t-small);
+  opacity: 0.85;
+}
+
+/* نوار پیشرفت سفر */
+.journey-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.journey-bar {
+  flex: 1;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.journey-fill {
+  height: 100%;
+  border-radius: 7px;
+  background: var(--c, var(--brand));
+  transition: width var(--slow) var(--ease);
+}
+
+.journey-label {
+  font-size: var(--t-small);
+  color: var(--muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── نقشهٔ سفر: کل مجموعه یک‌جا ───────────────────────────
+   جایگزین منوی دوطبقهٔ قبلی. خط عمودی مسیر را پیوسته نشان
+   می‌دهد تا حس «مجموعه» بدهد، نه «فهرست پراکنده». */
+.map-summary {
+  font-size: var(--t-small);
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.map-list {
+  display: grid;
+  gap: var(--s3);
+  position: relative;
+  padding-right: 34px;
+}
+
+.map-list::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  right: 15px;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.map-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
   background: var(--surface);
   border: none;
-  border-right: 8px solid var(--c, var(--brand));
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 18px;
+  padding: var(--s3) var(--s4);
+  min-height: var(--tap);
+  width: 100%;
   text-align: right;
-  cursor: pointer;
   font-family: inherit;
   color: inherit;
-  min-height: var(--tap);
+  cursor: pointer;
+  transition: transform var(--fast);
 }
 
-.domain-card:active {
-  transform: scale(0.98);
+.map-item:active:not(:disabled) {
+  transform: scale(0.985);
 }
 
-.domain-card h2 {
-  margin: 0 0 6px;
-  font-size: 1.15rem;
+.map-dot {
+  position: absolute;
+  right: -34px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c, var(--brand));
+  color: #fff;
+  font-size: var(--t-small);
   font-weight: 900;
+  box-shadow: 0 0 0 4px var(--bg);
 }
 
-.domain-card p {
-  margin: 0;
+.map-item.locked {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.map-item.locked .map-dot {
+  background: var(--muted);
+}
+
+.map-item.done .map-dot {
+  background: var(--ok);
+}
+
+.map-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.map-body strong {
+  font-size: var(--t-body);
+  font-weight: 800;
+}
+
+.map-body span {
+  font-size: var(--t-small);
   color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
 }
 
-.domain-meta {
-  margin-top: 10px;
-  font-size: 0.85rem;
-  color: var(--c);
+/* دکمهٔ «بعدی» در پایان درس — زنجیره را نمی‌شکند */
+.next-btn {
+  display: grid;
+  gap: 2px;
+  background: var(--c, var(--brand));
+  padding: var(--s4) var(--s5);
+}
+
+.next-kicker {
+  font-size: var(--t-small);
+  opacity: 0.9;
   font-weight: 700;
+}
+
+.next-title {
+  font-size: var(--t-title);
+  font-weight: 900;
 }
 
 /* ── فهرست درس ─────────────────────────────────────────── */
