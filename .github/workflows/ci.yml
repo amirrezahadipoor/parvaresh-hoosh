@@ -33,9 +33,10 @@ jobs:
         run: |
           npm run build:lessons
           npm run sync:narration
-          if ! git diff --quiet -- src/data; then
-            echo "::error::فایل‌های تولیدشده با منبع هم‌خوان نیستند. build:lessons و sync:narration را اجرا و کامیت کنید."
-            git diff --stat -- src/data
+          npm run sync:sw
+          if ! git diff --quiet -- src/data sw.js; then
+            echo "::error::فایل‌های تولیدشده با منبع هم‌خوان نیستند. build:lessons و sync:narration و sync:sw را اجرا و کامیت کنید."
+            git diff --stat -- src/data sw.js
             exit 1
           fi
 

@@ -9,8 +9,9 @@
     "start": "python3 -m http.server 8080 --bind 0.0.0.0",
     "build:lessons": "node scripts/build-reading-lessons.js",
     "sync:narration": "node scripts/sync-narration.js",
+    "sync:sw": "node scripts/sync-sw.js",
     "validate": "node scripts/validate.js",
-    "test": "node scripts/validate.js && node scripts/test-rounds.js",
+    "test": "node scripts/validate.js && node scripts/sync-sw.js --check && node scripts/test-rounds.js",
     "test:browser": "node scripts/test-browser.js",
     "test:visual": "node scripts/test-visual.js",
     "test:delight": "node scripts/test-delight.js"
