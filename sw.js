@@ -8,7 +8,7 @@
 // دلیل: این برنامه آفلاین است، هیچ API ای ندارد، و محتوایش فقط هنگام
 // انتشار نسخهٔ جدید عوض می‌شود. برای به‌روزرسانی، CACHE را عوض کنید.
 
-const CACHE = 'parvaresh-hoosh-v4.0.0';
+const CACHE = 'parvaresh-hoosh-v4.1.0';
 
 const SHELL = [
   './',
@@ -19,9 +19,12 @@ const SHELL = [
   './src/ui/screens.js',
   './src/core/audio.js',
   './src/core/rounds.js',
+  './src/core/svg.js',
   './src/core/storage.js',
   './src/data/curriculum.js',
   './src/data/narration.js',
+  './src/data/neshaneh.js',
+  './src/data/word-bank.js',
   './src/data/alphabet.js',
   './src/data/words.js',
   './src/data/math-data.js',
@@ -29,6 +32,7 @@ const SHELL = [
   './src/data/lessons/reading.js',
   './src/data/lessons/math.js',
   './src/data/lessons/logic.js',
+  './src/data/lessons/science.js',
   './assets/fonts/Vazirmatn-Regular.woff2',
   './assets/fonts/Vazirmatn-Bold.woff2',
   './assets/fonts/Vazirmatn-Black.woff2',

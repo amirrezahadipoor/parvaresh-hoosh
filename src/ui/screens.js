@@ -6,6 +6,7 @@ import { lessonsByDomain, LESSONS } from '../data/lessons/index.js';
 import * as store from '../core/storage.js';
 import { speak, sfx, setMuted, isMuted, stop as stopAudio } from '../core/audio.js';
 import { buildLesson, toFa } from '../core/rounds.js';
+import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
 
 const el = (tag, props = {}, kids = []) => {
   const n = document.createElement(tag);
@@ -171,7 +172,29 @@ function playScreen(lessonId, domainId) {
     if (stage) {
       if (r.display.kind === 'text') stage.textContent = r.display.value;
       if (r.display.kind === 'repeat') {
-        stage.append(el('div', { class: 'repeat', text: r.display.icon.repeat(r.display.times) }));
+        const row = el('div', { class: 'repeat' });
+        for (let k = 0; k < r.display.times; k++) {
+          row.append(el('span', { class: 'ico', html: svgShape(r.display.icon) || '' }));
+        }
+        stage.append(row);
+      }
+      if (r.display.kind === 'scatter') {
+        // چیدمان پراکنده ولی بدون هم‌پوشانی: شبکهٔ نامنظمِ از پیش محاسبه‌شده.
+        const box = el('div', { class: 'scatter' });
+        const slots = scatterSlots(r.display.times);
+        slots.forEach((p) => {
+          box.append(
+            el('span', {
+              class: 'ico',
+              style: `left:${p.x}%;top:${p.y}%;transform:rotate(${p.r}deg)`,
+              html: svgShape(r.display.icon) || '',
+            }),
+          );
+        });
+        stage.append(box);
+      }
+      if (r.display.kind === 'shadow') {
+        stage.append(el('div', { class: 'ico shadow', html: svgShape(r.display.value) || '' }));
       }
       if (r.display.kind === 'sequence') {
         const seq = el('div', { class: 'seq' });
@@ -186,8 +209,21 @@ function playScreen(lessonId, domainId) {
 
     r.options.forEach((o) => {
       const btn = el('button', { class: `opt${o.big ? ' big' : ''}` });
-      if (o.swatch) btn.append(el('div', { class: 'swatch', style: `background:${o.swatch}` }));
-      else btn.append(document.createTextNode(o.label));
+      if (o.pic) {
+        btn.append(el('span', { class: 'ico lg', html: svgShape(o.pic) || '' }));
+      } else if (o.geo) {
+        btn.append(el('span', { class: 'ico lg', html: svgGeo(o.geo.name, o.geo.color) || '' }));
+      } else if (o.shapeRepeat) {
+        const g = el('span', { class: 'grp' });
+        for (let k = 0; k < o.shapeRepeat.times; k++) {
+          g.append(el('span', { class: 'ico sm', html: svgShape(o.shapeRepeat.icon) || '' }));
+        }
+        btn.append(g);
+      } else if (o.swatch) {
+        btn.append(el('div', { class: 'swatch', style: `background:${o.swatch}` }));
+      } else {
+        btn.append(document.createTextNode(o.label));
+      }
 
       btn.addEventListener('click', () => {
         if (answered) return;
@@ -229,10 +265,27 @@ function playScreen(lessonId, domainId) {
   }
 
   function chip(label, unit) {
-    const COLORS = { قرمز: '#E4572E', آبی: '#2E86AB', زرد: '#F4B942', سبز: '#4CAF50' };
-    if (unit === 'color') return el('div', { class: 'chip', style: `background:${COLORS[label] || '#999'}` });
-    const glyph = { دایره: '●', مربع: '■', مثلث: '▲' }[label] || label;
-    return el('div', { class: 'chip', text: glyph });
+    if (unit === 'color') {
+      return el('div', { class: 'chip', style: `background:${COLOR_HEX[label] || '#999'}` });
+    }
+    return el('div', { class: 'chip plain', html: svgGeo(label, '#2D2A32') || label });
+  }
+
+  // جای‌های پراکنده ولی بدون هم‌پوشانی، برای بازی شمردن.
+  function scatterSlots(count) {
+    const cols = count <= 4 ? 2 : 3;
+    const rows = Math.ceil(count / cols);
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      const cx = i % cols;
+      const cy = Math.floor(i / cols);
+      out.push({
+        x: (cx + 0.5) * (100 / cols) - 9 + (Math.random() * 8 - 4),
+        y: (cy + 0.5) * (100 / rows) - 9 + (Math.random() * 8 - 4),
+        r: Math.random() * 24 - 12,
+      });
+    }
+    return out;
   }
 
   function traceView(r, done) {

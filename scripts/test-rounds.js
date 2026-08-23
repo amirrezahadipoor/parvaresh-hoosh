@@ -6,6 +6,7 @@
 import { LESSONS } from '../src/data/lessons/index.js';
 import { AGE_TRACKS, TRACK_ORDER } from '../src/data/curriculum.js';
 import { buildRound } from '../src/core/rounds.js';
+import { shape as svgShape, geo as svgGeo } from '../src/core/svg.js';
 
 let checks = 0;
 const errors = [];
@@ -36,6 +37,8 @@ for (const trackId of TRACK_ORDER) {
             errors.push(`${tag}: پاسخ ${r.answer} بین گزینه‌ها نیست (${vals.join(',')})`);
           }
           if (new Set(vals).size !== vals.length) errors.push(`${tag}: گزینهٔ تکراری`);
+          // هر گزینه باید یا برچسب متنی داشته باشد یا یک نمایش دیداری،
+          // ولی برچسب متنی همیشه لازم است (خوانندهٔ صفحه و آزمون).
           if (r.options.some((o) => o.label === undefined || o.label === '')) {
             errors.push(`${tag}: گزینهٔ بدون برچسب`);
           }
@@ -44,6 +47,26 @@ for (const trackId of TRACK_ORDER) {
             if (typeof v === 'number' && v > track.maxNumber + 2) {
               errors.push(`${tag}: عدد ${v} از سقف سنی ${track.maxNumber} بیشتر است`);
             }
+          }
+
+          // هر گزینهٔ تصویری باید واقعاً یک SVG بسازد — نه شکل گمشده.
+          for (const o of r.options) {
+            if (o.pic && !svgShape(o.pic)) errors.push(`${tag}: شکل «${o.pic}» وجود ندارد`);
+            if (o.geo && !svgGeo(o.geo.name, o.geo.color)) {
+              errors.push(`${tag}: شکل هندسی «${o.geo.name}» وجود ندارد`);
+            }
+            if (o.shapeRepeat && !svgShape(o.shapeRepeat.icon)) {
+              errors.push(`${tag}: شکل «${o.shapeRepeat.icon}» وجود ندارد`);
+            }
+          }
+          if (r.display?.kind === 'scatter' && !svgShape(r.display.icon)) {
+            errors.push(`${tag}: شکل پراکنده «${r.display.icon}» وجود ندارد`);
+          }
+          if (r.display?.kind === 'repeat' && !svgShape(r.display.icon)) {
+            errors.push(`${tag}: شکل تکرارشونده «${r.display.icon}» وجود ندارد`);
+          }
+          if (r.display?.kind === 'shadow' && !svgShape(r.display.value)) {
+            errors.push(`${tag}: سایهٔ «${r.display.value}» شکل ندارد`);
           }
         }
 

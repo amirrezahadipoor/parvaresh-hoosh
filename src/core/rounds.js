@@ -7,10 +7,15 @@
 // یعنی خطا — نه حدس زدن.
 
 import { ALPHABET } from '../data/alphabet.js';
-import { FREQUENT_WORDS } from '../data/words.js';
+import { STAGED_WORDS } from '../data/word-bank.js';
+import { teachRank } from '../data/neshaneh.js';
+import { SHAPES, CATEGORIES, COLOR_HEX, GEO } from './svg.js';
 
 const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 export const toFa = (n) => String(n).replace(/\d/g, (d) => faDigits[+d]);
+
+// حرکت‌ها و نیم‌فاصله در سنجش «خواندنی بودن» شمرده نمی‌شوند.
+const SKIP_CHARS = new Set(['آ', 'ء', 'ٔ', '\u200c', 'ـ', 'َ', 'ِ', 'ُ', 'ّ', 'ْ']);
 
 const rand = (n) => Math.floor(Math.random() * n);
 const pick = (arr) => arr[rand(arr.length)];
@@ -35,14 +40,10 @@ function buildOptions(answer, pool, count) {
   return shuffle([...opts]);
 }
 
-const EMOJI = ['🍎', '🍌', '⭐', '🐟', '🌸', '🎈', '🐞', '🍇'];
-const COLORS = {
-  قرمز: '#E4572E',
-  آبی: '#2E86AB',
-  زرد: '#F4B942',
-  سبز: '#4CAF50',
-};
-const SHAPES = ['دایره', 'مربع', 'مثلث'];
+// نام شکل‌های SVG که برای شمردن استفاده می‌شوند (به‌جای اموجی، که روی
+// هر دستگاه شکل متفاوتی دارد).
+const COUNTABLES = ['سیب', 'ستاره', 'ماهی', 'گل', 'توپ', 'موز', 'انار', 'پرنده'];
+const GEO_NAMES = Object.keys(GEO);
 
 /**
  * یک گِرد را برای یک ردهٔ سنی مشخص می‌سازد.
@@ -77,7 +78,16 @@ export function buildRound(round, track) {
       };
 
     case 'letter-word': {
-      const wrong = FREQUENT_WORDS.filter((w) => !w.startsWith(round.letter));
+      // گزینه‌های نادرست هم باید خواندنی باشند: فقط حروفی که تا این درس
+      // آموزش داده شده. وگرنه کودک کلمه‌ای می‌بیند که هنوز بلد نیست بخواند.
+      const limit = teachRank(round.letter);
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const wrong = STAGED_WORDS.filter((w) => !w.startsWith(round.letter) && readable(w));
       return {
         type: 'choice',
         prompt: round.prompt,
@@ -89,7 +99,7 @@ export function buildRound(round, track) {
 
     case 'count-objects': {
       const count = 1 + rand(Math.max(1, cap));
-      const icon = pick(EMOJI);
+      const icon = pick(COUNTABLES);
       const pool = Array.from({ length: cap }, (_, i) => i + 1);
       return {
         type: 'choice',
@@ -126,7 +136,7 @@ export function buildRound(round, track) {
     }
 
     case 'compare-groups': {
-      const icon = pick(EMOJI);
+      const icon = pick(COUNTABLES);
       let a = 1 + rand(cap);
       let b = 1 + rand(cap);
       while (a === b) b = 1 + rand(cap);
@@ -137,9 +147,11 @@ export function buildRound(round, track) {
         display: null,
         layout: 'groups',
         options: shuffle([a, b]).map((v) => ({
-          label: icon.repeat(v),
+          // برچسب متنی برای دسترس‌پذیری و آزمون‌ها لازم است، حتی وقتی
+          // نمایشِ دیداری گروهی از شکل‌هاست.
+          label: toFa(v),
+          shapeRepeat: { icon, times: v },
           value: v,
-          big: true,
         })),
         answer,
       };
@@ -188,7 +200,7 @@ export function buildRound(round, track) {
     }
 
     case 'pattern-next': {
-      const pool = round.unit === 'color' ? Object.keys(COLORS) : SHAPES;
+      const pool = round.unit === 'color' ? Object.keys(COLOR_HEX) : GEO_NAMES;
       return {
         type: 'choice',
         prompt: round.prompt,
@@ -196,7 +208,7 @@ export function buildRound(round, track) {
         options: buildOptions(round.answer, pool, Math.min(n, pool.length)).map((v) => ({
           label: v,
           value: v,
-          swatch: round.unit === 'color' ? COLORS[v] : null,
+          swatch: round.unit === 'color' ? COLOR_HEX[v] : null,
           shape: round.unit === 'shape' ? v : null,
         })),
         answer: round.answer,
@@ -214,7 +226,7 @@ export function buildRound(round, track) {
       };
 
     case 'order-size': {
-      const icon = pick(EMOJI);
+      const icon = pick(COUNTABLES);
       const sizes = shuffle(Array.from({ length: round.count }, (_, i) => i + 1));
       return {
         type: 'order',
@@ -238,12 +250,83 @@ export function buildRound(round, track) {
     }
 
     case 'memory-pairs': {
-      const icons = shuffle(EMOJI).slice(0, round.pairs);
+      const icons = shuffle(COUNTABLES).slice(0, round.pairs);
       return {
         type: 'memory',
         prompt: round.prompt,
         cards: shuffle([...icons, ...icons]).map((icon, i) => ({ id: i, icon })),
         pairs: round.pairs,
+      };
+    }
+
+    // ── بازی‌های تصویری (SVG) ──────────────────────────────────────────
+    case 'shape-color': {
+      // «کدام دایرهٔ آبی است؟» — رنگ و شکل هم‌زمان، تمرین توجه انتخابی.
+      const shapeName = round.shape || pick(GEO_NAMES);
+      const colorName = round.color || pick(Object.keys(COLOR_HEX));
+      const others = Object.keys(COLOR_HEX).filter((c) => c !== colorName);
+      const colors = shuffle([colorName, ...shuffle(others).slice(0, n - 1)]);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{shape}', shapeName).replace('{color}', colorName),
+        display: null,
+        options: colors.map((c) => ({
+          label: c,
+          value: c,
+          geo: { name: shapeName, color: c },
+        })),
+        answer: colorName,
+      };
+    }
+
+    case 'category': {
+      // «کدام حیوان است؟» — دسته‌بندی معنایی با تصویر واقعی.
+      const catName = round.category || pick(Object.keys(CATEGORIES));
+      const inCat = CATEGORIES[catName];
+      const outCat = Object.entries(CATEGORIES)
+        .filter(([k]) => k !== catName)
+        .flatMap(([, v]) => v);
+      const answer = pick(inCat);
+      const wrong = shuffle(outCat).slice(0, n - 1);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{cat}', catName),
+        display: null,
+        options: shuffle([answer, ...wrong]).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+        })),
+        answer,
+        because: `${answer} ${catName} است.`,
+      };
+    }
+
+    case 'shadow': {
+      // «سایهٔ کدام است؟» — تطبیق شکل با سایه‌اش، ادراک دیداری.
+      const answer = round.item || pick(Object.keys(SHAPES));
+      const wrong = shuffle(Object.keys(SHAPES).filter((x) => x !== answer)).slice(0, n - 1);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'shadow', value: answer },
+        options: shuffle([answer, ...wrong]).map((v) => ({ label: v, value: v, pic: v })),
+        answer,
+      };
+    }
+
+    case 'count-shapes': {
+      // شمردن با شکل‌های برداری در چیدمان پراکنده — سخت‌تر از ردیف منظم،
+      // چون کودک باید واقعاً بشمارد نه الگو را حفظ کند.
+      const count = 1 + rand(Math.max(1, Math.min(cap, 9)));
+      const icon = round.icon || pick(COUNTABLES);
+      const pool = Array.from({ length: Math.max(cap, count + 2) }, (_, i) => i + 1);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'scatter', icon, times: count },
+        options: buildOptions(count, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer: count,
       };
     }
 

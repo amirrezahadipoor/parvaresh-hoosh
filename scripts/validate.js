@@ -111,6 +111,13 @@ for (const d of DOMAINS) {
   if (n === 0) fail(`حوزهٔ «${d.title}» هیچ درسی ندارد — یا درس اضافه کنید یا حوزه را حذف کنید`);
 }
 
+// ── ۶. پوستهٔ آفلاین: هر فایلی که sw.js کش می‌کند باید وجود داشته باشد ──
+const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+const shell = [...sw.matchAll(/'\.\/([^']+)'/g)].map((m) => m[1]).filter((p) => p && !p.endsWith('/'));
+for (const rel of shell) {
+  if (!fs.existsSync(path.join(ROOT, rel))) fail(`پوستهٔ آفلاین: فایل «${rel}» وجود ندارد`);
+}
+
 // ── گزارش ───────────────────────────────────────────────────────────────
 const roundTotal = LESSONS.reduce((s, l) => s + (l.rounds?.length || 0), 0);
 console.log('── اعتبارسنجی پرورش هوش ──');

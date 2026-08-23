@@ -61,6 +61,13 @@ export const DOMAINS = Object.freeze([
     icon: 'numbers',
   }),
   Object.freeze({
+    id: 'science',
+    title: 'تماشا و شناخت',
+    description: 'دسته‌بندی، شکل و رنگ، و شمردن با تصویر',
+    color: '#4CAF50',
+    icon: 'leaf',
+  }),
+  Object.freeze({
     id: 'logic',
     title: 'منطق و الگو',
     description: 'الگویابی، دسته‌بندی و حل مسئله',

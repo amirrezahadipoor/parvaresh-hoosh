@@ -33,7 +33,7 @@ await page.goto(BASE, { waitUntil: 'networkidle' });
 // ── خانه ────────────────────────────────────────────────────────────────
 await page.waitForSelector('.domain-card', { timeout: 5000 });
 const domains = await page.locator('.domain-card').count();
-check(domains === 3, `صفحهٔ خانه باید ۳ حوزه داشته باشد، ${domains} دارد`);
+check(domains === 4, `صفحهٔ خانه باید ۴ حوزه داشته باشد، ${domains} دارد`);
 console.log(`✓ خانه: ${domains} حوزه`);
 
 // عنوان‌ها واقعاً فارسی رندر شده‌اند؟
@@ -122,6 +122,32 @@ const audioOk = await page.evaluate(async () => {
 });
 check(audioOk, 'فایل صوتی letter-alef.mp3 در دسترس نیست');
 console.log('✓ فایل صوتی از خود برنامه قابل واکشی است');
+
+// ── حوزهٔ تصویری: شکل‌های SVG باید واقعاً رندر شوند ─────────────────────
+await page.locator('.icon-btn[aria-label="بازگشت"]').click();
+await page.waitForSelector('.lesson-card');
+await page.locator('.icon-btn[aria-label="بازگشت"]').click();
+await page.waitForSelector('.domain-card');
+await page.locator('.domain-card', { hasText: 'تماشا' }).click();
+await page.waitForSelector('.lesson-card');
+await page.locator('.lesson-card').first().click();
+await page.waitForSelector('.opt');
+
+const svgCount = await page.locator('.opt svg').count();
+check(svgCount >= 2, `گزینه‌ها باید شکل SVG داشته باشند، ${svgCount} پیدا شد`);
+// SVG باید ابعاد واقعی داشته باشد، نه صفر (شکل خالی)
+const boxes = await page.locator('.opt svg').evaluateAll((els) =>
+  els.map((e) => { const r = e.getBoundingClientRect(); return { w: r.width, h: r.height }; }),
+);
+const collapsed = boxes.filter((b) => b.w < 8 || b.h < 8).length;
+check(collapsed === 0, `${collapsed} شکل SVG ابعاد صفر دارد (خالی رندر شده)`);
+console.log(`✓ بازی تصویری: ${svgCount} شکل SVG با ابعاد درست`);
+
+// شکل‌ها باید محتوای واقعی داشته باشند (path/circle/rect)، نه svg خالی
+const empties = await page.locator('.opt svg').evaluateAll(
+  (els) => els.filter((e) => e.children.length === 0).length,
+);
+check(empties === 0, `${empties} شکل SVG بدون محتواست`);
 
 await browser.close();
 

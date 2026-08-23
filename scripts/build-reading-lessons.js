@@ -10,8 +10,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ALPHABET } from '../src/data/alphabet.js';
 import { NARRATION } from '../src/data/narration.js';
+import { NESHANEH_LESSONS, teachRank } from '../src/data/neshaneh.js';
+import { STAGED_WORDS } from '../src/data/word-bank.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+// حرکت‌ها و نیم‌فاصله در سنجش «خواندنی بودن» شمرده نمی‌شوند.
+const SKIP_CHARS = new Set(['آ', 'ء', 'ٔ', '\u200c', 'ـ', 'َ', 'ِ', 'ُ', 'ّ', 'ْ']);
+const skippedWordRounds = [];
 
 const soundLine = (a) => `صدای حرف ${a.name}`;
 const traceLine = (a) => `با انگشت روی حرف ${a.letter} بکش`;
@@ -20,12 +26,26 @@ const traceLine = (a) => `با انگشت روی حرف ${a.letter} بکش`;
 const usable = ALPHABET.filter((a) => NARRATION[soundLine(a)] && NARRATION[traceLine(a)]);
 const skipped = ALPHABET.filter((a) => !(NARRATION[soundLine(a)] && NARRATION[traceLine(a)]));
 
-// چهار حرف در هر درس: کودک ۵ ساله بیش از این را در یک نشست نگه نمی‌دارد.
-const GROUP = 4;
+// گروه‌بندی بر اساس درس‌های واقعی کتاب فارسی اول، نه ترتیب الفبا.
+// کتاب در هر درس ۱ تا ۲ نشانه می‌دهد؛ ما دو درس کتاب را در یک درس بازی
+// ادغام می‌کنیم تا نشست ۵-۶ دقیقه‌ای پر شود، ولی ترتیب حفظ می‌شود.
+const byLetter = new Map(usable.map((a) => [a.letter, a]));
+const ordered = [];
+for (const nl of NESHANEH_LESSONS) {
+  const have = nl.letters.map((l) => byLetter.get(l)).filter(Boolean);
+  if (have.length) ordered.push({ letters: have, label: nl.label });
+}
 const groups = [];
-for (let i = 0; i < usable.length; i += GROUP) groups.push(usable.slice(i, i + GROUP));
+for (let i = 0; i < ordered.length; i += 2) {
+  const chunk = ordered.slice(i, i + 2);
+  groups.push({
+    letters: chunk.flatMap((c) => c.letters),
+    labels: chunk.map((c) => c.label),
+  });
+}
 
-const lessons = groups.map((group, gi) => {
+const lessons = groups.map((grp, gi) => {
+  const group = grp.letters;
   const letters = group.map((a) => a.letter);
   const id = `reading-letters-${String(gi + 1).padStart(2, '0')}`;
 
@@ -52,15 +72,32 @@ const lessons = groups.map((group, gi) => {
       speak: traceLine(a),
     });
   }
+  // گِرد «کدام کلمه با این حرف شروع می‌شود؟» فقط وقتی ساخته می‌شود که
+  // کلمه‌ای پیدا شود که *همهٔ حروفش* تا این درس آموزش داده شده باشد.
+  // کودکی که هنوز «ش» را ندیده، نباید «ورزش» را به‌عنوان گزینه ببیند.
+  const taughtSoFar = Math.max(...letters.map(teachRank));
+  const readable = (w) =>
+    [...w].every((ch) => {
+      if (SKIP_CHARS.has(ch)) return true;
+      const r = teachRank(ch);
+      return r === 999 || r <= taughtSoFar;
+    });
+
   for (const a of group) {
-    if (!a.words || !a.words.length) continue;
+    // کلمه از واژگان مرحله‌ای انتخاب می‌شود، نه از فهرست عمومی.
+    const candidates = STAGED_WORDS.filter((w) => w.startsWith(a.letter));
+    const ok = candidates.filter(readable);
+    if (!ok.length) {
+      skippedWordRounds.push(`${a.letter} (درس ${gi + 1})`);
+      continue;
+    }
     rounds.push({
       kind: 'letter-word',
       letter: a.letter,
       name: a.name,
       prompt: `کدام کلمه با حرف «${a.letter}» شروع می‌شود؟`,
-      answer: a.words[0],
-      options: a.words.slice(0, 3),
+      answer: ok[0],
+      readablePool: true,
       distractorPool: 'words',
     });
   }
@@ -69,7 +106,8 @@ const lessons = groups.map((group, gi) => {
     id,
     domain: 'reading',
     order: gi + 1,
-    title: `حرف‌های ${letters.join(' ')}`,
+    title: `نشانه‌های ${letters.join(' ')}`,
+    schoolLessons: grp.labels,
     goal: `کودک صدای حرف‌های ${letters.join('، ')} را می‌شناسد و شکلشان را می‌نویسد.`,
     letters,
     minutes: 6,
@@ -96,4 +134,7 @@ fs.writeFileSync(path.join(ROOT, 'src/data/lessons/reading.js'), out);
 
 const roundCount = lessons.reduce((s, l) => s + l.rounds.length, 0);
 console.log(`نوشته شد: ${lessons.length} درس خواندن، ${roundCount} گِرد، از ${usable.length} حرف.`);
+if (skippedWordRounds.length) {
+  console.log(`گِرد کلمه ساخته نشد (کلمهٔ خواندنی نبود): ${skippedWordRounds.join('، ')}`);
+}
 if (skipped.length) console.log(`رد شد (بدون صدا): ${skipped.map((s) => s.letter).join(' ')}`);
