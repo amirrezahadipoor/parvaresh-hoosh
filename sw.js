@@ -8,7 +8,7 @@
 // دلیل: این برنامه آفلاین است، هیچ API ای ندارد، و محتوایش فقط هنگام
 // انتشار نسخهٔ جدید عوض می‌شود. برای به‌روزرسانی، CACHE را عوض کنید.
 
-const CACHE = 'parvaresh-hoosh-v4.1.0';
+const CACHE = 'parvaresh-hoosh-v1';
 
 const SHELL = [
   './',

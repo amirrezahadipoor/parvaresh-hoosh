@@ -1,6 +1,6 @@
 {
   "name": "parvaresh-hoosh",
-  "version": "4.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "بازی آموزشی آفلاین فارسی برای کودکان ۵ تا ۸ سال",
@@ -11,7 +11,8 @@
     "sync:narration": "node scripts/sync-narration.js",
     "validate": "node scripts/validate.js",
     "test": "node scripts/validate.js && node scripts/test-rounds.js",
-    "test:browser": "node scripts/test-browser.js"
+    "test:browser": "node scripts/test-browser.js",
+    "test:visual": "node scripts/test-visual.js"
   },
   "engines": {
     "node": ">=20"

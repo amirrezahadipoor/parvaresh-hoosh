@@ -21,20 +21,59 @@
 }
 
 :root {
-  --bg: #fdf6ec;
-  --surface: #ffffff;
-  --ink: #2d2a32;
-  --muted: #6f6a7a;
-  --line: #e8e0d5;
-  --brand: #e4572e;
-  --ok: #4caf50;
-  --no: #d94f4f;
-  --reading: #e4572e;
-  --math: #2e86ab;
-  --logic: #7b4b94;
-  --radius: 20px;
-  --tap: 64px;
-  --shadow: 0 4px 14px rgba(45, 42, 50, 0.1);
+  /* ── توکن‌های طراحی ───────────────────────────────────────
+     همهٔ اعداد از پژوهش طراحی برای کودک ۵–۸ سال می‌آیند.
+     جزئیات و منابع در ROADMAP.md §۱.۱ — دست‌کاری بدون دلیل ممنوع. */
+
+  /* رنگ: هر رنگ دقیقاً یک معنی دارد و همه‌جا همان می‌ماند. */
+  --bg: #FBF6EF;
+  --surface: #FFFFFF;
+  --ink: #2B2A33;
+  --muted: #6E6A78;
+  --line: #E7DFD4;
+  --brand: #E4572E;
+  --ok: #3D9A50;
+  --no: #D14343;
+
+  /* رنگ حوزه‌ها */
+  --reading: #E4572E;
+  --math: #2E86AB;
+  --logic: #7B4B94;
+  --science: #3D9A50;
+  --life: #E08A1E;
+  --english: #C2185B;
+
+  /* هدف لمسی: NN/g برای کودک خردسال ۲cm×۲cm ≈ ۷۶px پیشنهاد می‌دهد
+     (چهار برابر ۱cm بزرگسال). هیچ عنصر تعاملی کوچک‌تر از این نباشد. */
+  --tap: 76px;
+  --tap-min: 56px;
+
+  /* فاصله — مقیاس ۴px تا چیدمان قابل پیش‌بینی بماند */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+
+  /* تایپوگرافی: بدنه ۲۰px (پژوهش: حداقل ۲۰px برای این سن) */
+  --t-body: 20px;
+  --t-small: 16px;
+  --t-title: 24px;
+  --t-prompt: 27px;
+  --t-huge: 44px;
+
+  --radius: 22px;
+  --radius-sm: 16px;
+  --shadow: 0 3px 12px rgba(43, 42, 51, 0.09);
+  --shadow-lift: 0 6px 20px rgba(43, 42, 51, 0.14);
+
+  /* حرکت: کوتاه و هدفمند. انیمیشن تزئینی بار شناختی اضافه می‌کند
+     و کودک را از هدف درس دور می‌کند (نقد Khan Kids). */
+  --fast: 140ms;
+  --base: 240ms;
+  --slow: 420ms;
+  --ease: cubic-bezier(0.34, 1.26, 0.64, 1);
 }
 
 * {
@@ -51,6 +90,7 @@ body {
 
 body {
   font-family: 'Vazirmatn', system-ui, sans-serif;
+  font-size: var(--t-body);
   background: var(--bg);
   color: var(--ink);
   direction: rtl;
@@ -74,9 +114,9 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  gap: 16px;
-  animation: fade 0.25s ease;
+  padding: var(--s4);
+  gap: var(--s4);
+  animation: fade var(--base) ease;
 }
 
 @keyframes fade {
@@ -95,20 +135,20 @@ body {
 }
 
 .topbar h1 {
-  font-size: 1.25rem;
+  font-size: var(--t-title);
   font-weight: 900;
   margin: 0;
   flex: 1;
 }
 
 .icon-btn {
-  width: 48px;
-  height: 48px;
+  width: var(--tap-min);
+  height: var(--tap-min);
   border: none;
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   box-shadow: var(--shadow);
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -181,18 +221,19 @@ body {
 .lesson-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--s4);
   background: var(--surface);
   border: 2px solid transparent;
-  border-radius: 16px;
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 16px;
+  padding: var(--s4);
   cursor: pointer;
   font-family: inherit;
   color: inherit;
   text-align: right;
   width: 100%;
   min-height: var(--tap);
+  transition: transform var(--fast), box-shadow var(--fast);
 }
 
 .lesson-card:active {
@@ -253,7 +294,7 @@ body {
 }
 
 .prompt {
-  font-size: 1.4rem;
+  font-size: var(--t-prompt);
   font-weight: 700;
   text-align: center;
   line-height: 1.7;
@@ -309,7 +350,9 @@ body {
 .options {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  /* فاصلهٔ سخاوتمندانه: پژوهش می‌گوید دکمه‌های نزدیک باعث لمس اشتباه
+     می‌شوند، چون مهارت حرکتی ظریف کودک هنوز کامل نیست. */
+  gap: var(--s4);
 }
 
 .options.cols-3 {
@@ -317,20 +360,32 @@ body {
 }
 
 .opt {
-  min-height: 76px;
+  min-height: var(--tap);
   border: 3px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--shadow);
   font-family: inherit;
-  font-size: 1.5rem;
+  font-size: var(--t-huge);
   font-weight: 700;
   color: inherit;
   cursor: pointer;
-  padding: 12px;
+  padding: var(--s3);
   display: grid;
   place-items: center;
-  transition: transform 0.12s, border-color 0.12s;
+  transition: transform var(--fast), border-color var(--fast), box-shadow var(--fast);
   word-break: break-word;
+  /* ورود نرم: کودک باید ببیند گزینه‌ها «آمدند»، نه اینکه ناگهان بپرند */
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.opt:nth-child(1) { animation-delay: 0ms; }
+.opt:nth-child(2) { animation-delay: 45ms; }
+.opt:nth-child(3) { animation-delay: 90ms; }
+.opt:nth-child(4) { animation-delay: 135ms; }
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.88); }
 }
 
 .opt.big {
@@ -338,18 +393,24 @@ body {
 }
 
 .opt:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
+  box-shadow: none;
 }
 
 .opt.correct {
   border-color: var(--ok);
-  background: #eaf7ea;
+  background: #E8F5EA;
+  animation: cheer var(--slow) var(--ease);
+}
+
+@keyframes cheer {
+  40% { transform: scale(1.07); }
 }
 
 .opt.wrong {
   border-color: var(--no);
-  background: #fdeaea;
-  animation: shake 0.3s;
+  background: #FBEAEA;
+  animation: shake var(--base);
 }
 
 .opt[disabled] {
@@ -490,14 +551,15 @@ canvas.pad {
 /* ── دکمه‌ها و پایان ───────────────────────────────────── */
 .btn {
   border: none;
-  border-radius: 16px;
+  border-radius: var(--radius);
   background: var(--brand);
   color: #fff;
   font-family: inherit;
-  font-size: 1.1rem;
+  font-size: var(--t-body);
   font-weight: 700;
-  padding: 16px 24px;
+  padding: var(--s4) var(--s5);
   min-height: var(--tap);
+  box-shadow: var(--shadow);
   cursor: pointer;
   width: 100%;
 }
