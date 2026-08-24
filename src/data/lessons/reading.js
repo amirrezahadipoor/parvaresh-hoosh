@@ -2467,9 +2467,85 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-15",
+    "id": "reading-sentence-01",
     "domain": "reading",
     "order": 30,
+    "title": "جمله بخوان ۱",
+    "goal": "کودک جملهٔ ساده را می‌خواند و معنایش را به تصویر وصل می‌کند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "sentence-pic",
+        "letter": "ژ",
+        "parts": 2,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      },
+      {
+        "kind": "sentence-pic",
+        "letter": "ژ",
+        "parts": 2,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      },
+      {
+        "kind": "pic-sentence",
+        "letter": "ژ",
+        "prompt": "کدام جمله درست است؟"
+      },
+      {
+        "kind": "sentence-build",
+        "letter": "ژ",
+        "parts": 2,
+        "prompt": "کلمه‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "sentence-build",
+        "letter": "ژ",
+        "parts": 3,
+        "prompt": "کلمه‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "sentence-pic",
+        "letter": "ژ",
+        "parts": 3,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      }
+    ],
+    "parentNote": "اولین جمله‌خوانی. گزینه‌های نادرست عمداً واژهٔ مشترک دارند («سگ دوید» کنار «سگ خوابید») تا کودک مجبور شود کل جمله را بخواند، نه اینکه از روی کلمهٔ اول حدس بزند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-15",
+    "domain": "reading",
+    "order": 31,
     "title": "نشانه‌های ص ذ",
     "schoolLessons": [
       "صـ ص ــ ذ"
@@ -2579,7 +2655,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-13",
     "domain": "reading",
-    "order": 31,
+    "order": 32,
     "title": "خواندن تا ص ذ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -2665,7 +2741,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-16",
     "domain": "reading",
-    "order": 32,
+    "order": 33,
     "title": "نشانه‌های ع ث",
     "schoolLessons": [
       "عـ ع ــ ثـ ث"
@@ -2766,7 +2842,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-14",
     "domain": "reading",
-    "order": 33,
+    "order": 34,
     "title": "خواندن تا ع ث",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -2854,7 +2930,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-17",
     "domain": "reading",
-    "order": 34,
+    "order": 35,
     "title": "نشانه‌های ح",
     "schoolLessons": [
       "حـ ح"
@@ -2941,7 +3017,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-15",
     "domain": "reading",
-    "order": 35,
+    "order": 36,
     "title": "خواندن تا ح",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -3030,7 +3106,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-review-04",
     "domain": "reading",
-    "order": 36,
+    "order": 37,
     "title": "مرور چ ژ ص ذ ع ث ح",
     "goal": "کودک نشانه‌هایی را که چند درس پیش آموخته دوباره مرور می‌کند.",
     "letters": [
@@ -3121,9 +3197,90 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-sentence-02",
+    "domain": "reading",
+    "order": 38,
+    "title": "جمله بخوان ۲",
+    "goal": "کودک جملهٔ ساده را می‌خواند و معنایش را به تصویر وصل می‌کند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث",
+      "ح"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "sentence-pic",
+        "letter": "ح",
+        "parts": 2,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      },
+      {
+        "kind": "sentence-pic",
+        "letter": "ح",
+        "parts": 2,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      },
+      {
+        "kind": "pic-sentence",
+        "letter": "ح",
+        "prompt": "کدام جمله درست است؟"
+      },
+      {
+        "kind": "sentence-build",
+        "letter": "ح",
+        "parts": 2,
+        "prompt": "کلمه‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "sentence-build",
+        "letter": "ح",
+        "parts": 3,
+        "prompt": "کلمه‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "sentence-pic",
+        "letter": "ح",
+        "parts": 3,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      }
+    ],
+    "parentNote": "اولین جمله‌خوانی. گزینه‌های نادرست عمداً واژهٔ مشترک دارند («سگ دوید» کنار «سگ خوابید») تا کودک مجبور شود کل جمله را بخواند، نه اینکه از روی کلمهٔ اول حدس بزند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-18",
     "domain": "reading",
-    "order": 37,
+    "order": 39,
     "title": "نشانه‌های ض ط",
     "schoolLessons": [
       "ضـ ض ــ ط"
@@ -3233,7 +3390,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-16",
     "domain": "reading",
-    "order": 38,
+    "order": 40,
     "title": "خواندن تا ض ط",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -3324,7 +3481,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-19",
     "domain": "reading",
-    "order": 39,
+    "order": 41,
     "title": "نشانه‌های غ",
     "schoolLessons": [
       "غـ غ"
@@ -3402,7 +3559,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-17",
     "domain": "reading",
-    "order": 40,
+    "order": 42,
     "title": "خواندن تا غ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -3494,7 +3651,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-20",
     "domain": "reading",
-    "order": 41,
+    "order": 43,
     "title": "نشانه‌های ظ",
     "schoolLessons": [
       "ظ"
@@ -3581,7 +3738,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-18",
     "domain": "reading",
-    "order": 42,
+    "order": 44,
     "title": "خواندن تا ظ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -3665,6 +3822,91 @@ export const READING_LESSONS = [
       }
     ],
     "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-sentence-03",
+    "domain": "reading",
+    "order": 45,
+    "title": "جمله بخوان ۳",
+    "goal": "کودک جملهٔ ساده را می‌خواند و معنایش را به تصویر وصل می‌کند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث",
+      "ح",
+      "ض",
+      "ط",
+      "غ",
+      "ظ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "sentence-pic",
+        "letter": "ظ",
+        "parts": 2,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      },
+      {
+        "kind": "sentence-pic",
+        "letter": "ظ",
+        "parts": 2,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      },
+      {
+        "kind": "pic-sentence",
+        "letter": "ظ",
+        "prompt": "کدام جمله درست است؟"
+      },
+      {
+        "kind": "sentence-build",
+        "letter": "ظ",
+        "parts": 2,
+        "prompt": "کلمه‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "sentence-build",
+        "letter": "ظ",
+        "parts": 3,
+        "prompt": "کلمه‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "sentence-pic",
+        "letter": "ظ",
+        "parts": 3,
+        "prompt": "کدام تصویر به این جمله می‌خورد؟"
+      }
+    ],
+    "parentNote": "اولین جمله‌خوانی. گزینه‌های نادرست عمداً واژهٔ مشترک دارند («سگ دوید» کنار «سگ خوابید») تا کودک مجبور شود کل جمله را بخواند، نه اینکه از روی کلمهٔ اول حدس بزند.",
     "reviewDays": [
       1,
       3,

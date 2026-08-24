@@ -39,6 +39,7 @@ const SHELL = [
   './src/data/neshaneh.js',
   './src/data/phonics.js',
   './src/data/science-data.js',
+  './src/data/sentences.js',
   './src/data/word-bank.js',
   './src/data/words.js',
   './src/main.js',

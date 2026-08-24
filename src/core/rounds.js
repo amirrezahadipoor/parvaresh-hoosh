@@ -30,6 +30,7 @@ import {
   LIVING, NON_LIVING, LIFE_CYCLES, SEASONS, SENSES, FLOATS, SINKS,
   WEATHER, WEATHER_CHOICE, NEEDS, HABITATS,
 } from '../data/science-data.js';
+import { pickSentences, nearMisses } from '../data/sentences.js';
 
 const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 export const toFa = (n) => String(n).replace(/\d/g, (d) => faDigits[+d]);
@@ -894,6 +895,88 @@ function buildRoundInner(round, track) {
         display: { kind: 'text', value: target.word },
         options: buildOptions(count, nums, n).map((v) => ({ label: toFa(v), value: v })),
         answer: count,
+      };
+    }
+
+    case 'sentence-pic': {
+      // جمله را بخوان، تصویرِ درست را انتخاب کن.
+      //
+      // ⚠ بدل‌ها از nearMisses می‌آیند، یعنی با پاسخ واژهٔ مشترک
+      // دارند. اگر بدل‌ها بی‌ربط باشند کودک از روی واژهٔ اول حدس
+      // می‌زند و ما خیال می‌کنیم دارد جمله می‌خواند. (FCRR)
+      const pool = pickSentences({ maxRank: teachRank(round.letter ?? 'ا'), parts: round.parts });
+      if (pool.length < n) return null;
+      const target = pick(pool);
+      const near = nearMisses(target, pool);
+      // تصویرِ بدل باید با تصویرِ پاسخ فرق کند، وگرنه دو گزینه یکی
+      // به نظر می‌رسند و پاسخ عملاً دوتا می‌شود.
+      const wrong = [];
+      const usedPics = new Set([target.pic]);
+      for (const cand of near) {
+        if (usedPics.has(cand.pic)) continue;
+        usedPics.add(cand.pic);
+        wrong.push(cand.pic);
+        if (wrong.length >= n - 1) break;
+      }
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'text', value: target.text },
+        options: buildOptions(target.pic, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+        })),
+        answer: target.pic,
+      };
+    }
+
+    case 'pic-sentence': {
+      // عکسِ گِرد بالا: تصویر را ببین، جملهٔ درست را انتخاب کن.
+      // اینجا خواندن اجباری است چون همهٔ گزینه‌ها متن‌اند و
+      // تصویرشان یکی است.
+      const pool = pickSentences({ maxRank: teachRank(round.letter ?? 'ا'), parts: round.parts });
+      if (pool.length < n) return null;
+      // فقط جمله‌هایی که دست‌کم n-1 بدلِ هم‌تصویر دارند: بدل باید
+      // همان تصویر را داشته باشد وگرنه از روی تصویر قابل حدس است.
+      const byPic = pool.filter((c) => c.pic);
+      const groups = new Map();
+      for (const c of byPic) {
+        if (!groups.has(c.pic)) groups.set(c.pic, []);
+        groups.get(c.pic).push(c);
+      }
+      const usable = [...groups.values()].filter((g) => g.length >= n);
+      if (!usable.length) return null;
+      const group = pick(usable);
+      const target = pick(group);
+      const wrong = group.filter((c) => c.text !== target.text).map((c) => c.text);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: target.pic },
+        options: buildOptions(target.text, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          big: true,
+        })),
+        answer: target.text,
+      };
+    }
+
+    case 'sentence-build': {
+      // واژه‌های درهم را به ترتیب بچین تا جمله بسازد.
+      // فعل در فارسی همیشه آخر می‌آید — همین قاعده چیزی است که
+      // کودک اینجا کشف می‌کند.
+      const pool = pickSentences({ maxRank: teachRank(round.letter ?? 'ا'), parts: round.parts });
+      if (!pool.length) return null;
+      const target = pick(pool);
+      return {
+        type: 'order',
+        prompt: round.prompt,
+        items: target.parts.map((w, i) => ({ label: w, value: i })),
+        answer: target.parts.map((_, i) => i),
+        because: `در فارسی فعل («${target.verb}») آخرِ جمله می‌آید.`,
       };
     }
 

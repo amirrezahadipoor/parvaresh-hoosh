@@ -12,6 +12,7 @@ import { ALPHABET } from '../src/data/alphabet.js';
 import { NARRATION } from '../src/data/narration.js';
 import { NESHANEH_LESSONS, teachRank } from '../src/data/neshaneh.js';
 import { STAGED_WORDS } from '../src/data/word-bank.js';
+import { pickSentences } from '../src/data/sentences.js';
 import { pickWords } from '../src/data/phonics.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -20,6 +21,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // بیشترین تعداد گزینه در بین رده‌های سنی (۷ تا ۸ سال = ۴).
 // هر فیلتر داده باید به این گره بخورد، نه به عددی دلخواه.
 const MAX_OPTIONS = 4;
+
+const FA_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+const toFaNum = (x) => String(x).replace(/\d/g, (d) => FA_DIGITS[+d]);
 
 const SKIP_CHARS = new Set(['آ', 'ء', 'ٔ', '\u200c', 'ـ', 'َ', 'ِ', 'ُ', 'ّ', 'ْ']);
 const skippedWordRounds = [];
@@ -375,7 +379,55 @@ for (let end = 5; end < groups.length; end += 4) {
   });
 }
 
-const all = [...lessons, ...practice, ...review].sort((a, b) => a.order - b.order);
+// ── درس‌های جمله ────────────────────────────────────────────────────
+// پل میان کلمه‌خوانی و درک مطلب. تا اینجا بزرگ‌ترین واحدی که کودک
+// می‌خواند «کلمه» بود؛ ولی خواندن یعنی رسیدن به معنا و معنا در جمله
+// ساخته می‌شود.
+//
+// این درس‌ها فقط جایی ساخته می‌شوند که جملهٔ خواندنیِ کافی وجود داشته
+// باشد — یعنی از حدود نشانهٔ چهاردهم به بعد، وقتی نام جانوران
+// خواندنی می‌شود. زودتر از آن، جمله‌ای برای خواندن نیست.
+const sentences = [];
+for (let end = 14; end <= groups.length; end += 3) {
+  const letters = groups.slice(0, end).flatMap((g) => g.letters.map((a) => a.letter));
+  const last = letters[letters.length - 1];
+  const two = pickSentences({ maxRank: teachRank(last), parts: 2 });
+  const three = pickSentences({ maxRank: teachRank(last), parts: 3 });
+
+  const rounds = [];
+  // تطبیق جمله با تصویر، در هر دو جهت. هر دو لازم است: شناختن با
+  // تولید یکی نیست.
+  if (two.length >= MAX_OPTIONS) {
+    rounds.push({ kind: 'sentence-pic', letter: last, parts: 2, prompt: 'کدام تصویر به این جمله می‌خورد؟' });
+    rounds.push({ kind: 'sentence-pic', letter: last, parts: 2, prompt: 'کدام تصویر به این جمله می‌خورد؟' });
+    rounds.push({ kind: 'pic-sentence', letter: last, prompt: 'کدام جمله درست است؟' });
+  }
+  // چیدن واژه‌ها: قاعدهٔ «فعل آخر می‌آید» را کودک خودش کشف می‌کند.
+  if (two.length >= 3) {
+    rounds.push({ kind: 'sentence-build', letter: last, parts: 2, prompt: 'کلمه‌ها را به ترتیب بچین' });
+  }
+  if (three.length >= 2) {
+    rounds.push({ kind: 'sentence-build', letter: last, parts: 3, prompt: 'کلمه‌ها را به ترتیب بچین' });
+    rounds.push({ kind: 'sentence-pic', letter: last, parts: 3, prompt: 'کدام تصویر به این جمله می‌خورد؟' });
+  }
+  if (rounds.length < 4) continue;
+
+  sentences.push({
+    id: `reading-sentence-${String(sentences.length + 1).padStart(2, '0')}`,
+    domain: 'reading',
+    order: end + 0.75 + (sentences.length + 1) / 1000,
+    title: `جمله بخوان ${toFaNum(sentences.length + 1)}`,
+    goal: 'کودک جملهٔ ساده را می‌خواند و معنایش را به تصویر وصل می‌کند.',
+    letters,
+    minutes: 6,
+    rounds,
+    parentNote:
+      'اولین جمله‌خوانی. گزینه‌های نادرست عمداً واژهٔ مشترک دارند («سگ دوید» کنار «سگ خوابید») تا کودک مجبور شود کل جمله را بخواند، نه اینکه از روی کلمهٔ اول حدس بزند.',
+    reviewDays: [1, 3, 7],
+  });
+}
+
+const all = [...lessons, ...practice, ...review, ...sentences].sort((a, b) => a.order - b.order);
 // شماره‌گذاری دوباره، تا مسیر سفر پیوسته بماند.
 all.forEach((l, i) => {
   l.order = i + 1;
@@ -394,7 +446,7 @@ fs.mkdirSync(path.join(ROOT, 'src/data/lessons'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'src/data/lessons/reading.js'), out);
 
 const roundCount = all.reduce((s, l) => s + l.rounds.length, 0);
-console.log(`نوشته شد: ${all.length} درس خواندن (${lessons.length} نشانه + ${practice.length} تمرین + ${review.length} مرور)، ${roundCount} گِرد، از ${usable.length} حرف.`);
+console.log(`نوشته شد: ${all.length} درس خواندن (${lessons.length} نشانه + ${practice.length} تمرین + ${review.length} مرور + ${sentences.length} جمله)، ${roundCount} گِرد، از ${usable.length} حرف.`);
 if (skippedWordRounds.length) {
   console.log(`گِرد کلمه ساخته نشد (کلمهٔ خواندنی نبود): ${skippedWordRounds.join('، ')}`);
 }
