@@ -811,15 +811,23 @@ function buildRoundInner(round, track) {
       // گوشه‌ها را بشمار (تم ۴). کتاب صریح توصیه می‌کند واژهٔ
       // «ضلع» و «رأس» به کار نرود؛ «گوشه» برای این سن فهمیدنی‌تر
       // است — پس در متن درس هم همان آمده.
-      const CORNERS = { مثلث: 3, مربع: 4, ستاره: 5, دایره: 0, لوزی: 4 };
-      const names = Object.keys(CORNERS).filter((k) => CORNERS[k] > 0);
+      // ⚠ ستاره ۵ گوشه ندارد؛ نقشِ رسم‌شده ۱۰ رأس دارد (پنج نوک و
+      // پنج فرورفتگی). پاسخ ۵ یعنی کودکی که واقعاً می‌شمارد ۱۰
+      // می‌گیرد و «غلط» می‌شود — بدترین نوع باگ آموزشی. یا باید
+      // پاسخ با تصویر بخواند یا ستاره کنار برود.
+      const CORNERS = { مثلث: 3, مربع: 4, مستطیل: 4, لوزی: 4, ستاره: 10, دایره: 0 };
+      // دایره گوشه ندارد، پس پرسش برایش بی‌معناست.
+      let names = ['مثلث', 'مربع', 'مستطیل', 'لوزی'];
+      // ستاره فقط وقتی می‌آید که کودک تا ۱۰ می‌شمارد.
+      if (cap >= 10) names = names.concat('ستاره');
       const name = pick(names);
       const answer = CORNERS[name];
+      const pool = answer >= 10 ? [5, 8, 10, 12] : [3, 4, 5, 6];
       return {
         type: 'choice',
         prompt: round.prompt,
         display: { kind: 'geo-big', name },
-        options: buildOptions(answer, [3, 4, 5, 6], n).map((v) => ({ label: toFa(v), value: v, dots: v })),
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v, dots: v })),
         answer,
       };
     }
