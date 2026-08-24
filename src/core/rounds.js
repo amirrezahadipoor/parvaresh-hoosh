@@ -850,6 +850,118 @@ function buildRoundInner(round, track) {
       };
     }
 
+    case 'number-line': {
+      // محور اعداد (تم ۱۷). کتاب صریح می‌گوید هدف جمعِ ذهنی نیست:
+      // کودک باید «قدم برداشتن» روی محور را ببیند. پس فلش‌ها را
+      // نشان می‌دهیم و او فقط جای فرود را می‌خواند.
+      // ⚠ محور باید کوتاه بماند وگرنه در ۳۲۰ پیکسل سرریز می‌کند؛
+      // ده خانه بیشترین چیزی است که جا می‌شود.
+      const span = Math.min(10, cap);
+      const from = rand(Math.max(1, span - 3));
+      const steps = 1 + rand(Math.min(4, span - from));
+      const answer = from + steps;
+      const pool = [answer, answer + 1, answer - 1, answer + 2].filter((v) => v >= 0 && v <= span);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{a}', toFa(from)).replaceAll('{b}', toFa(steps)),
+        // ⚠ مقصد را رنگی نمی‌کنیم! نسخهٔ اول نقطهٔ فرود را نارنجی
+        // می‌کرد، یعنی پاسخ روی محور نوشته شده بود و کودک فقط
+        // عددِ رنگی را می‌خواند. حالا فقط نقطهٔ شروع و کمانِ
+        // قدم‌ها را می‌بیند و خودش باید بشمارد.
+        display: { kind: 'number-line', span, from, steps, hideTo: true },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+      };
+    }
+
+    case 'between': {
+      // مفهوم «بین» (تم ۱۷، صفحهٔ ۱۱۳). در کتاب کنار چپ/راست و
+      // جلو/پشت می‌آید — یعنی مفهومی فضایی است، نه فقط عددی.
+      // اینجا شکل عددی‌اش را می‌سازیم چون روی محور دیدنی است.
+      const span = Math.min(10, cap);
+      const left = rand(Math.max(1, span - 2));
+      const answer = left + 1;
+      const right = left + 2;
+      const pool = [answer, left, right, answer + 2].filter((v) => v >= 0 && v <= span);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{a}', toFa(left)).replaceAll('{b}', toFa(right)),
+        display: { kind: 'number-line', span, mark: [left, right] },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+      };
+    }
+
+    case 'teen-build': {
+      // اعداد ۱۱ تا ۱۹ (تم ۱۶). این عددها در فارسی هم بی‌قاعده‌اند
+      // («یازده»، نه «ده‌ویک») پس باید دیده شوند، نه شنیده.
+      // ⚠ ذاتاً دورقمی است: برای کودکی که تا ۱۰ می‌شمارد بی‌معناست.
+      // به‌جای کلمپِ بی‌فایده، پرسش را به «یک ده‌تایی و چند تا؟»
+      // تغییر می‌دهیم که همان مفهوم است ولی پاسخش تک‌رقمی.
+      const ones = 1 + rand(9);
+      const total = 10 + ones;
+      const askOnes = cap < total;
+      const answer = askOnes ? ones : total;
+      const pool = askOnes
+        ? [ones, ones + 1, ones - 1, ones + 2].filter((v) => v > 0 && v <= 9)
+        : [total, total + 1, total - 1, total + 10].filter((v) => v > 0 && v <= cap);
+      return {
+        type: 'choice',
+        prompt: askOnes ? 'چند تا تک‌تکی کنار دستهٔ ده‌تایی است؟' : round.prompt,
+        display: { kind: 'place-value', tens: 1, ones },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+      };
+    }
+
+    case 'measure-units': {
+      // اندازه‌گیری با واحد غیراستاندارد (تم ۱۸، صفحهٔ ۱۱۸). کتاب
+      // می‌خواهد کودک با گیره و پاک‌کن اندازه بگیرد، نه با خط‌کش —
+      // چون مفهومِ «واحد» مهم‌تر از سانتی‌متر است.
+      const unit = pick(['گیره', 'مداد', 'پاک‌کن']);
+      // ⚠ سقف ۸ تا: بیشتر از این در ۳۲۰ پیکسل جا نمی‌شود و چون
+      // نوار باید *دقیقاً* هم‌اندازهٔ واحدها بماند، نمی‌شود بریدش.
+      const len = 3 + rand(Math.min(5, Math.max(1, Math.min(cap, 8) - 2)));
+      const pool = [len, len + 1, len - 1, len + 2].filter((v) => v > 0 && v <= cap);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{u}', unit),
+        display: { kind: 'measure', unit, len },
+        options: buildOptions(len, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer: len,
+      };
+    }
+
+    case 'ordinal': {
+      // عددهای ترتیبی (تم ۱۸). «سوم» با «سه تا» فرق دارد و همین
+      // تفاوت است که کودک را گیج می‌کند — پس صفِ دیدنی می‌سازیم.
+      // ⚠ ترتیب در فارسی از راست شروع می‌شود؛ نمایش باید RTL بماند
+      // وگرنه «اولی» را از چپ می‌شمارد و همیشه غلط می‌دهد.
+      const NAMES = ['اول', 'دوم', 'سوم', 'چهارم', 'پنجم'];
+      // ⚠ صف باید در *یک خط* بماند. با ۶ تا در ۳۹۰ پیکسل به خط دوم
+      // می‌شکند و «اولی» بی‌معنا می‌شود — کودک نمی‌داند از کجا
+      // بشمارد. چهار تا بیشترین چیزی است که همیشه جا می‌شود.
+      const len = 4;
+      const idx = rand(Math.min(len, NAMES.length));
+      const items = [];
+      const bag = shuffle(COUNTABLES.slice());
+      for (let i = 0; i < len; i++) items.push(bag[i % bag.length]);
+      const answer = items[idx];
+      const pool = items.filter((v, i) => i !== idx);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{p}', NAMES[idx]),
+        display: { kind: 'queue', items },
+        options: buildOptions(answer, pool, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: v,
+        })),
+        answer,
+      };
+    }
+
     case 'missing-addend': {
       // «۵ و چند تا می‌شود ۷؟» — سطح Find Change +/- در مسیر
       // یادگیری Clements & Sarama، پلِ میان شمردن و جمع.

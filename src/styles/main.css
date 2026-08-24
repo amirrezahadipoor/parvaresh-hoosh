@@ -1919,6 +1919,12 @@ canvas.pad {
   max-inline-size: 190px;
 }
 
+/* ⚠ وقتی فقط یک دستهٔ ده‌تایی هست (عددهای ۱۱ تا ۱۹)، هر دو ظرف
+   ۱۹۰ پیکسل پهنا می‌گیرند و میله و یکی‌ها به دو سرِ صحنه پرت
+   می‌شوند. کودک باید «یک دسته + چند تا کنارش» را یکجا ببیند،
+   نه دو جزیرهٔ جدا. پس ظرف را به اندازهٔ محتوایش می‌کنیم. */
+.pv-tens { max-inline-size: max-content; }
+
 .pv-rod {
   display: flex;
   flex-direction: column;
@@ -1944,6 +1950,180 @@ canvas.pad {
   background: #F4B942;
   display: block;
   animation: pop var(--base) var(--ease) backwards;
+}
+
+/* محور اعداد — خانه‌های مساوی، نقطهٔ شروع و فرود */
+.nline {
+  display: flex;
+  /* ⚠ محور مفهومش «ترتیب» است. جهت را به صفحه نمی‌سپاریم:
+     عددها همیشه از کوچک به بزرگ، چپ به راست — مثل خط‌کش و
+     مثل کتاب. اگر RTL شود، ۰ سمت راست می‌افتد و فلشِ «جلو
+     رفتن» عقب‌گرد دیده می‌شود. */
+  direction: ltr;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  inline-size: 100%;
+  padding-block: var(--s3);
+}
+
+.nl-tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  /* هر خانه سهم مساوی می‌گیرد و کمینه ندارد، پس محورِ ۱۰تایی
+     در ۳۲۰ پیکسل هم سرریز نمی‌کند. */
+  flex: 1 1 0;
+  min-inline-size: 0;
+  position: relative;
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.nl-tick::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 9px;
+  inset-inline: -50% 50%;
+  block-size: 3px;
+  background: var(--line);
+}
+
+.nl-tick:first-child::before { display: none; }
+
+.nl-dot {
+  inline-size: 20px;
+  block-size: 20px;
+  border-radius: 50%;
+  background: #FFF;
+  border: 3px solid var(--line);
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.nl-num {
+  font-size: var(--t-small);
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* کمانِ هر قدم — روی خانه‌ای که پرش روی آن فرود می‌آید */
+.nl-arc {
+  position: absolute;
+  inset-block-start: -9px;
+  inset-inline-end: 50%;
+  inline-size: 100%;
+  block-size: 16px;
+  border: 3px solid #E08A1E;
+  border-block-end: none;
+  border-start-start-radius: 999px;
+  border-start-end-radius: 999px;
+  display: block;
+  pointer-events: none;
+}
+
+.nl-tick.from .nl-dot { background: #2E86AB; border-color: #2E86AB; }
+.nl-tick.from .nl-num { color: #2E86AB; }
+.nl-tick.to .nl-dot,
+.nl-tick.mark .nl-dot { background: #F4B942; border-color: #E08A1E; }
+.nl-tick.to .nl-num,
+.nl-tick.mark .nl-num { color: #E08A1E; }
+
+/* اندازه‌گیری با واحد غیراستاندارد */
+.measure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.ms-bar {
+  block-size: 18px;
+  border-radius: 9px;
+  background: linear-gradient(90deg, #2E86AB, #58B4D1);
+  /* نوار دقیقاً هم‌اندازهٔ n واحد است — اندازه باید راست باشد،
+     وگرنه کودک درست می‌شمارد و جواب با تصویر نمی‌خواند.
+     ⚠ max-inline-size اینجا ممنوع است: اگر نوار بریده شود ولی
+     واحدها نه، طول با شمارش نمی‌خواند و همان باگِ «داده با
+     تصویر جور نیست» برمی‌گردد. به‌جایش واحد را کوچک می‌کنیم. */
+  inline-size: calc(var(--n) * var(--ms-u));
+  display: block;
+}
+
+.ms-units {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.ms-unit {
+  inline-size: var(--ms-u);
+  block-size: var(--ms-u);
+  flex: 0 0 var(--ms-u);
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+/* واحد در صفحهٔ باریک کوچک‌تر می‌شود تا ۸ تا هم جا شود.
+   ۳۲۰ − حاشیه‌ها ≈ ۲۷۲ پیکسل، پس ۸ × ۳۲ = ۲۵۶ جا می‌شود. */
+.measure { --ms-u: 44px; }
+
+@media (max-width: 400px) {
+  .measure { --ms-u: 32px; }
+}
+
+/* صفِ ترتیبی — اول، دوم، سوم */
+.queue {
+  display: flex;
+  gap: var(--s2);
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.q-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 58px;
+  block-size: 58px;
+  border-radius: var(--radius-sm, 16px);
+  background: #FFF;
+  border: 2px solid var(--line);
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.q-pic { inline-size: 42px; block-size: 42px; }
+
+.queue-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s2);
+}
+
+/* پرچمِ شروع — مثلثی که به اولین نفر صف اشاره می‌کند */
+.q-start {
+  inline-size: 0;
+  block-size: 0;
+  /* مثلثِ توپُر با border ساخته می‌شود، پس inline/block-size صفرند
+     ولی جعبه‌اش واقعاً ۱۴×۲۰ است — عنصر نامرئی نیست. */
+  border-block: 10px solid transparent;
+  border-inline-end: 14px solid #E08A1E;
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+.q-hint {
+  font-size: var(--t-small);
+  color: #E08A1E;
+  font-weight: 700;
+  /* ⚠ align-self: flex-end در ستونِ RTL برچسب را سمت *چپ* برد،
+     یعنی درست زیر آخرین نفر صف — عکسِ چیزی که می‌گفت. محور
+     عمودی است، پس باید با start/end افقی کار کرد، نه flex-end. */
+  align-self: start;
+  padding-inline-start: var(--s2);
 }
 
 /* تقارن — شکل، خط آینه، بازتاب */

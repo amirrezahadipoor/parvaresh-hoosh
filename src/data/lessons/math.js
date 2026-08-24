@@ -336,4 +336,123 @@ export const MATH_LESSONS = [
     ],
   },
 
+  // ── دستهٔ دوم: تم‌های ۱۶ تا ۱۹ ─────────────────────────────────
+  // محور، «بین»، اعداد ۱۱–۱۹، اندازه‌گیری و ترتیب. اینها همان
+  // مفاهیمی‌اند که کتاب اول دبستان بعد از ارزش مکانی می‌آورد.
+
+  {
+    id: 'math-teen-01',
+    domain: 'math',
+    order: 18,
+    title: 'عددهای ۱۱ تا ۱۹',
+    goal: 'کودک می‌بیند که هر عدد ۱۱ تا ۱۹ یک دستهٔ ده‌تایی است و چند تک‌تکی.',
+    minutes: 6,
+    parentNote:
+      'نام این عددها در فارسی بی‌قاعده است: «یازده» شبیه «ده و یک» نیست. پس به‌جای تکرار نام، ده تا نخود در یک کاسه بگذارید و چند تا کنارش — بگذارید ساختار را ببیند.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'teen-build', prompt: 'روی هم چند تا هست؟' },
+      { kind: 'teen-build', prompt: 'روی هم چند تا هست؟' },
+      { kind: 'place-value', mode: 'ones', prompt: 'چند تا تک‌تکی کنار دسته‌هاست؟' },
+      { kind: 'teen-build', prompt: 'روی هم چند تا هست؟' },
+      { kind: 'teen-build', prompt: 'روی هم چند تا هست؟' },
+      { kind: 'count-objects', max: 10, prompt: 'چند تا هست؟' },
+    ],
+  },
+  {
+    id: 'math-line-01',
+    domain: 'math',
+    order: 19,
+    title: 'قدم زدن روی محور',
+    goal: 'کودک جمع را به‌صورت قدم برداشتن روی محور اعداد می‌بیند.',
+    minutes: 6,
+    parentNote:
+      'کتاب پیشنهاد می‌کند محور را روی زمین بکشید و کودک واقعاً قدم بردارد: سه قدم، بعد پنج قدم. حرکتِ بدن مفهوم را جا می‌اندازد.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'number-line', prompt: 'از {a} شروع کن و {b} قدم جلو برو. کجا می‌رسی؟' },
+      { kind: 'number-line', prompt: 'از {a} شروع کن و {b} قدم جلو برو. کجا می‌رسی؟' },
+      { kind: 'number-line', prompt: 'از {a} شروع کن و {b} قدم جلو برو. کجا می‌رسی؟' },
+      { kind: 'next-number', max: 10, prompt: 'بعد از {n} چه عددی می‌آید؟' },
+      { kind: 'number-line', prompt: 'از {a} شروع کن و {b} قدم جلو برو. کجا می‌رسی؟' },
+      { kind: 'add', max: 10, prompt: '{a} + {b} چند می‌شود؟' },
+    ],
+  },
+  {
+    id: 'math-between-01',
+    domain: 'math',
+    order: 20,
+    title: 'کدام عدد بین آن‌هاست؟',
+    goal: 'کودک مفهوم «بین» را روی محور اعداد پیدا می‌کند.',
+    minutes: 5,
+    parentNote:
+      'در کتاب، «بین» کنار چپ و راست و جلو و پشت می‌آید — یعنی اول مفهومی مکانی است. سر میز بپرسید: «چه کسی بین من و بابا نشسته؟»',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'between', prompt: 'کدام عدد بین {a} و {b} است؟' },
+      { kind: 'between', prompt: 'کدام عدد بین {a} و {b} است؟' },
+      { kind: 'between', prompt: 'کدام عدد بین {a} و {b} است؟' },
+      { kind: 'compare-numbers', max: 10, mode: 'more', prompt: 'کدام عدد بزرگ‌تر است؟' },
+      { kind: 'between', prompt: 'کدام عدد بین {a} و {b} است؟' },
+      { kind: 'next-number', max: 10, prompt: 'بعد از {n} چه عددی می‌آید؟' },
+    ],
+  },
+  {
+    id: 'math-measure-01',
+    domain: 'math',
+    order: 21,
+    title: 'با چند تا اندازه می‌شود؟',
+    goal: 'کودک طول را با واحد غیراستاندارد اندازه می‌گیرد و مفهوم واحد را می‌فهمد.',
+    minutes: 5,
+    parentNote:
+      'قبل از خط‌کش، با گیره و پاک‌کن اندازه بگیرید. مهم این است که بفهمد اندازه یعنی «چند تا از این واحد» — نه عددی که روی خط‌کش نوشته شده.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'measure-units', prompt: 'این نوار چند تا {u} است؟' },
+      { kind: 'measure-units', prompt: 'این نوار چند تا {u} است؟' },
+      { kind: 'measure-units', prompt: 'این نوار چند تا {u} است؟' },
+      { kind: 'order-size', count: 3, prompt: 'از کوچک به بزرگ بچین.' },
+      { kind: 'measure-units', prompt: 'این نوار چند تا {u} است؟' },
+      { kind: 'count-objects', max: 10, prompt: 'چند تا هست؟' },
+    ],
+  },
+  {
+    id: 'math-ordinal-01',
+    domain: 'math',
+    order: 22,
+    title: 'اولی، دومی، سومی',
+    goal: 'کودک عددهای ترتیبی را از عددهای شمارشی جدا می‌کند.',
+    minutes: 5,
+    parentNote:
+      '«سه تا» با «سومی» فرق دارد و همین کودک را گیج می‌کند. موقع صف بستن یا چیدن کفش‌ها بپرسید: «کدام اولی است؟»',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'ordinal', prompt: 'کدام {p} است؟' },
+      { kind: 'ordinal', prompt: 'کدام {p} است؟' },
+      { kind: 'ordinal', prompt: 'کدام {p} است؟' },
+      { kind: 'count-objects', max: 10, prompt: 'چند تا هست؟' },
+      { kind: 'ordinal', prompt: 'کدام {p} است؟' },
+      { kind: 'ordinal', prompt: 'کدام {p} است؟' },
+    ],
+  },
+  {
+    id: 'math-mixed-02',
+    domain: 'math',
+    order: 23,
+    title: 'مرور بزرگ',
+    goal: 'کودک مفاهیم دستهٔ دوم را با هم مرور می‌کند.',
+    minutes: 7,
+    parentNote:
+      'اگر جایی گیر کرد، همان یک درس را دوباره بازی کنید. تکرار فاصله‌دار از تمرین طولانیِ یک‌باره بهتر است.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'teen-build', prompt: 'روی هم چند تا هست؟' },
+      { kind: 'number-line', prompt: 'از {a} شروع کن و {b} قدم جلو برو. کجا می‌رسی؟' },
+      { kind: 'between', prompt: 'کدام عدد بین {a} و {b} است؟' },
+      { kind: 'ordinal', prompt: 'کدام {p} است؟' },
+      { kind: 'measure-units', prompt: 'این نوار چند تا {u} است؟' },
+      { kind: 'skip-count', step: 5, prompt: '{s} تا {s} تا بشمار. بعدی چند است؟' },
+    ],
+  },
+
 ];

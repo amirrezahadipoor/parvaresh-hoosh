@@ -442,6 +442,74 @@ function playScreen(lessonId) {
         stage.append(box);
       }
 
+      // محور اعداد: خانه‌های مساوی + فلشِ قدم‌ها.
+      //
+      // ⚠ کتاب هشدار می‌دهد «رسم محور با فاصلهٔ مساوی ممکن است زود
+      // باشد» — پس خانه‌ها را درشت و شماره‌دار نگه می‌داریم و قدم را
+      // با کمانِ دیدنی نشان می‌دهیم، نه با فلشِ نازکِ ریاضی‌وار.
+      if (r.display.kind === 'number-line') {
+        const d = r.display;
+        const line = el('div', { class: 'nline' });
+        for (let v = 0; v <= d.span; v++) {
+          const isFrom = d.from === v;
+          // مقصد فقط وقتی رنگی می‌شود که پرسش دربارهٔ آن نباشد.
+          const isTo = !d.hideTo && d.steps != null && d.from + d.steps === v;
+          const marked = Array.isArray(d.mark) && d.mark.includes(v);
+          // خانه‌هایی که قدم روی‌شان می‌افتد، کمانِ پرش می‌گیرند —
+          // کودک باید قدم‌ها را بشمارد، نه عددِ آخر را بخواند.
+          const hop = d.steps != null && v > d.from && v <= d.from + d.steps;
+          const tick = el('span', {
+            class: `nl-tick${isFrom ? ' from' : ''}${isTo ? ' to' : ''}${marked ? ' mark' : ''}${hop ? ' hop' : ''}`,
+            style: `animation-delay:${v * 40}ms`,
+          });
+          if (hop) tick.append(el('i', { class: 'nl-arc', 'aria-hidden': 'true' }));
+          tick.append(el('i', { class: 'nl-dot' }));
+          tick.append(el('b', { class: 'nl-num', text: toFa(v) }));
+          line.append(tick);
+        }
+        stage.append(line);
+      }
+
+      // اندازه‌گیری با واحد غیراستاندارد: نوار کنار n واحدِ چیده‌شده.
+      if (r.display.kind === 'measure') {
+        const box = el('div', { class: 'measure' });
+        box.append(el('span', { class: 'ms-bar', style: `--n:${r.display.len}` }));
+        const row = el('div', { class: 'ms-units' });
+        for (let i = 0; i < r.display.len; i++) {
+          row.append(
+            el('span', {
+              class: 'ico ms-unit',
+              style: `animation-delay:${i * 70}ms`,
+              html: svgShape(r.display.unit) || '',
+            }),
+          );
+        }
+        box.append(row);
+        stage.append(box);
+      }
+
+      // صفِ ترتیبی: اولی، دومی، سومی…
+      //
+      // ⚠ فارسی راست‌به‌چپ است و «اولی» باید سمت راست باشد. ترتیب
+      // DOM را دست نمی‌زنیم و چیدمان را به جهتِ صفحه می‌سپاریم؛
+      // row-reverse اینجا همان اشتباهی است که در .sounds کردیم.
+      if (r.display.kind === 'queue') {
+        const wrap = el('div', { class: 'queue-wrap' });
+        const row = el('div', { class: 'queue' });
+        // ⚠ بدون نشانهٔ شروع، «اولی» حدس است: کودک نمی‌داند از راست
+        // بشمارد یا از چپ. پرچمِ شروع سمت راست (جهت خواندن فارسی)
+        // می‌گذاریم تا صف مبدأ داشته باشد.
+        row.append(el('span', { class: 'q-start', 'aria-hidden': 'true' }));
+        r.display.items.forEach((name, i) => {
+          const cell = el('span', { class: 'q-cell', style: `animation-delay:${i * 80}ms` });
+          cell.append(el('span', { class: 'ico q-pic', html: svgShape(name) || '' }));
+          row.append(cell);
+        });
+        wrap.append(row);
+        wrap.append(el('span', { class: 'q-hint', text: 'شروع صف' }));
+        stage.append(wrap);
+      }
+
       // شکل هندسی بزرگ با گوشه‌های برجسته
       if (r.display.kind === 'geo-big') {
         stage.append(el('span', { class: 'ico big-pic', html: svgGeo(r.display.name, '#2E86AB') || '' }));

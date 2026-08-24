@@ -120,6 +120,23 @@ export const SHAPES = {
     <path d="M44 54 L78 76" stroke="#F4B942" stroke-width="8" stroke-linecap="round"/>
     <path d="M66 68 l6 -10 M74 74 l6 -10" stroke="#F4B942" stroke-width="6" stroke-linecap="round"/></g>`),
 
+  // ابزار مدرسه — برای اندازه‌گیری با واحد غیراستاندارد (تم ۱۸).
+  // عمداً عمودی کشیده شده‌اند تا وقتی کنار هم می‌چینیم، طولِ نوار
+  // را نشان بدهند نه پهنا را.
+  مداد: () =>
+    svg(`<g><rect x="40" y="20" width="20" height="52" rx="3" fill="#F4B942"/>
+    <rect x="40" y="20" width="20" height="8" rx="3" fill="#E08A1E"/>
+    <path d="M40 72 L50 88 L60 72 Z" fill="#E8C39E"/>
+    <path d="M45 79 L50 88 L55 79 Z" fill="#2B2A33"/></g>`),
+
+  گیره: () =>
+    svg(`<g><path d="M38 22 v46 a12 12 0 0 0 24 0 v-38 a7 7 0 0 0 -14 0 v36"
+    fill="none" stroke="#7B8794" stroke-width="7" stroke-linecap="round"/></g>`),
+
+  'پاک‌کن': () =>
+    svg(`<g><rect x="30" y="34" width="40" height="34" rx="5" fill="#E4572E"/>
+    <rect x="30" y="34" width="40" height="12" rx="5" fill="#F2F0EC"/></g>`),
+
   گربه: () =>
     svg(`<g><ellipse cx="50" cy="62" rx="26" ry="24" fill="#F4A259"/>
     <path d="M28 44 L24 22 L42 34 Z" fill="#F4A259"/><path d="M72 44 L76 22 L58 34 Z" fill="#F4A259"/>
