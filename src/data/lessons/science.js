@@ -134,4 +134,124 @@ export const SCIENCE_LESSONS = [
     ],
   },
 
+  // ── دستهٔ دوم: واحدهای استاندارد علوم پیش‌دبستان ──────────────────
+  // منبع: NGSS K-LS1/K-PS2 و واحدهایی که در تقریباً همهٔ برنامه‌های
+  // پیش‌دبستان تکرار می‌شوند — یعنی اجماع آموزشی روی‌شان هست:
+  // زنده/غیرزنده، چرخهٔ زندگی، حواس پنج‌گانه، فصل‌ها، شناور و غرق.
+
+  {
+    id: 'science-living-01',
+    domain: 'science',
+    order: 8,
+    title: 'زنده یا غیرزنده؟',
+    goal: 'کودک موجود زنده را از غیرزنده تشخیص می‌دهد.',
+    minutes: 6,
+    parentNote:
+      'کودک این سن «زنده» را با «حرکت» اشتباه می‌گیرد و ماشین را زنده می‌داند. معیار درست را بپرسید: آیا رشد می‌کند؟ غذا می‌خورد؟ بچه می‌آورد؟ ماشین هیچ‌کدام را ندارد.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'living', want: 'living', prompt: 'کدام‌یک زنده است؟' },
+      { kind: 'living', want: 'living', prompt: 'کدام‌یک زنده است؟' },
+      { kind: 'living', want: 'non', prompt: 'کدام‌یک زنده نیست؟' },
+      { kind: 'living', want: 'living', prompt: 'کدام‌یک زنده است؟' },
+      { kind: 'living', want: 'non', prompt: 'کدام‌یک زنده نیست؟' },
+      { kind: 'living', want: 'living', prompt: 'کدام‌یک زنده است؟' },
+    ],
+  },
+  {
+    id: 'science-cycle-01',
+    domain: 'science',
+    order: 9,
+    title: 'چرخهٔ زندگی',
+    goal: 'کودک مرحله‌های رشد یک موجود زنده را به ترتیب می‌چیند.',
+    minutes: 7,
+    parentNote:
+      'ترتیب خودِ مفهوم است: هیچ موجودی از وسط شروع نمی‌کند. اگر گلدان دارید، هر هفته با هم نگاه کنید و تغییر را ببینید — چرخه وقتی دیده شود، فهمیده می‌شود.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'life-cycle-next', prompt: 'بعد از این چه می‌شود؟' },
+      { kind: 'life-cycle', cycle: 'plant', prompt: 'رشد {c} را به ترتیب بچین.' },
+      { kind: 'life-cycle-next', prompt: 'بعد از این چه می‌شود؟' },
+      { kind: 'life-cycle', cycle: 'chicken', prompt: 'رشد {c} را به ترتیب بچین.' },
+      { kind: 'life-cycle-next', prompt: 'بعد از این چه می‌شود؟' },
+      { kind: 'life-cycle', cycle: 'butterfly', prompt: 'رشد {c} را به ترتیب بچین.' },
+    ],
+  },
+  {
+    id: 'science-sense-01',
+    domain: 'science',
+    order: 10,
+    title: 'حواس پنج‌گانه',
+    goal: 'کودک می‌داند هر چیزی را با کدام عضو بدن درک می‌کند.',
+    minutes: 6,
+    parentNote:
+      'در خانه بازی کنید: چشم‌ها را ببندد و حدس بزند چه چیزی را لمس کرده یا بو کرده است. حواس وقتی جدا شوند، بهتر شناخته می‌شوند.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'sense', prompt: '{x} را با چه چیزی می‌فهمی؟' },
+      { kind: 'sense', prompt: '{x} را با چه چیزی می‌فهمی؟' },
+      { kind: 'sense', prompt: '{x} را با چه چیزی می‌فهمی؟' },
+      { kind: 'sense', prompt: '{x} را با چه چیزی می‌فهمی؟' },
+      { kind: 'sense', prompt: '{x} را با چه چیزی می‌فهمی؟' },
+      { kind: 'sense', prompt: '{x} را با چه چیزی می‌فهمی؟' },
+    ],
+  },
+  {
+    id: 'science-season-01',
+    domain: 'science',
+    order: 11,
+    title: 'چهار فصل',
+    goal: 'کودک چهار فصل را با نشانه‌های طبیعی‌شان می‌شناسد.',
+    minutes: 6,
+    parentNote:
+      'سال ایرانی با بهار شروع می‌شود. از پنجره نگاه کنید و بپرسید الان کدام فصل است و از کجا فهمیدی — نشانه مهم‌تر از نام است.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'season', prompt: 'کدام تصویر به {f} می‌خورد؟' },
+      { kind: 'season', prompt: 'کدام تصویر به {f} می‌خورد؟' },
+      { kind: 'season', prompt: 'کدام تصویر به {f} می‌خورد؟' },
+      { kind: 'season', prompt: 'کدام تصویر به {f} می‌خورد؟' },
+      { kind: 'season', prompt: 'کدام تصویر به {f} می‌خورد؟' },
+      { kind: 'season', prompt: 'کدام تصویر به {f} می‌خورد؟' },
+    ],
+  },
+  {
+    id: 'science-float-01',
+    domain: 'science',
+    order: 12,
+    title: 'روی آب یا ته آب؟',
+    goal: 'کودک پیش‌بینی می‌کند چه چیزی روی آب می‌ماند و چه چیزی ته می‌رود.',
+    minutes: 6,
+    parentNote:
+      'این آزمایش را واقعاً انجام دهید: یک کاسه آب و چند شیء. اول حدس بزند، بعد امتحان کنید. توجه: «سنگین غرق می‌شود» درست نیست — کشتی سنگین است و شناور می‌ماند؛ پس فقط مشاهده کنید و قانون نسازید.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'float-sink', want: 'float', prompt: 'کدام روی آب می‌ماند؟' },
+      { kind: 'float-sink', want: 'sink', prompt: 'کدام ته آب می‌رود؟' },
+      { kind: 'float-sink', want: 'float', prompt: 'کدام روی آب می‌ماند؟' },
+      { kind: 'float-sink', want: 'sink', prompt: 'کدام ته آب می‌رود؟' },
+      { kind: 'float-sink', want: 'float', prompt: 'کدام روی آب می‌ماند؟' },
+      { kind: 'float-sink', want: 'sink', prompt: 'کدام ته آب می‌رود؟' },
+    ],
+  },
+  {
+    id: 'science-mixed-01',
+    domain: 'science',
+    order: 13,
+    title: 'دانشمند کوچک',
+    goal: 'کودک همهٔ آموخته‌های علوم را در یک درس مرور می‌کند.',
+    minutes: 7,
+    parentNote:
+      'درس مرور. اگر جایی گیر کرد، همان درس را دوباره بازی کنید — تکرار فاصله‌دار از تمرین طولانیِ یک‌باره بهتر است.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'living', want: 'living', prompt: 'کدام‌یک زنده است؟' },
+      { kind: 'sense', prompt: '{x} را با چه چیزی می‌فهمی؟' },
+      { kind: 'season', prompt: 'کدام تصویر به {f} می‌خورد؟' },
+      { kind: 'life-cycle-next', prompt: 'بعد از این چه می‌شود؟' },
+      { kind: 'float-sink', want: 'float', prompt: 'کدام روی آب می‌ماند؟' },
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+    ],
+  },
+
 ];

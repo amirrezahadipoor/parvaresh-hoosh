@@ -84,6 +84,15 @@ const KIND_ACTION = Object.freeze({
   'en-number': ACTIONS.count,
   'en-cvc': ACTIONS.pick,
   'en-translate': ACTIONS.pick,
+  'en-sight-find': ACTIONS.pick,
+  'en-rime-build': ACTIONS.blend,
+  // علوم — «چیدن» فقط برای چرخهٔ زندگی که واقعاً ترتیبی است.
+  living: ACTIONS.pick,
+  'life-cycle': ACTIONS.order,
+  'life-cycle-next': ACTIONS.next,
+  season: ACTIONS.pick,
+  sense: ACTIONS.pick,
+  'float-sink': ACTIONS.pick,
   // مهارت زندگی — «انتخاب کن» درست است: کودک از میان چند تصویر یکی
   // را برمی‌گزیند. «چیدن» فقط برای گِردِ سه‌گامیِ ایمنی.
   'feel-face': ACTIONS.pick,

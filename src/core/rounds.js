@@ -22,9 +22,13 @@ import {
   EN_COLORS,
   EN_NUMBERS,
   CVC_FAMILIES,
+  SIGHT_WORDS,
   SIGHT_WORD_FA,
   TRANSLATABLE_SIGHT_WORDS,
 } from '../data/english.js';
+import {
+  LIVING, NON_LIVING, LIFE_CYCLES, SEASONS, SENSES, FLOATS, SINKS,
+} from '../data/science-data.js';
 
 const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 export const toFa = (n) => String(n).replace(/\d/g, (d) => faDigits[+d]);
@@ -280,6 +284,181 @@ function buildRoundInner(round, track) {
           dots: v,
         })),
         answer: target.n,
+      };
+    }
+
+    case 'en-sight-find': {
+      // عکسِ گِرد بالا: معنی فارسی را می‌بیند، واژهٔ انگلیسی را پیدا کند.
+      // هر دو جهت لازم است — شناختن با تولید یکی نیست.
+      const target = pick(TRANSLATABLE_SIGHT_WORDS);
+      const wrong = TRANSLATABLE_SIGHT_WORDS.filter(
+        (w) => w !== target && SIGHT_WORD_FA[w] !== SIGHT_WORD_FA[target],
+      );
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{w}', SIGHT_WORD_FA[target]),
+        display: { kind: 'text', value: SIGHT_WORD_FA[target] },
+        options: buildOptions(target, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          latin: true,
+        })),
+        answer: target,
+      };
+    }
+
+    case 'en-rime-build': {
+      // ساختِ واژه: حرف اول را بگذار تا واژه کامل شود.
+      // کودک می‌بیند با عوض کردن یک حرف واژهٔ تازه می‌سازد — کشف
+      // الگو، نه حفظ کردن. (Herlambang & Hendar: ترکیب پیش از تجزیه.)
+      const fam = pick(CVC_FAMILIES.filter((f) => f.words.some((w) => w.length === 3)));
+      const target = pick(fam.words.filter((w) => w.length === 3));
+      const first = target[0];
+      // حرف‌های نادرست باید واژهٔ واقعیِ همان خانواده نسازند، وگرنه
+      // دو گزینه هر دو درست‌اند و کودک به‌ناحق «اشتباه» می‌شود.
+      const realFirsts = new Set(fam.words.map((w) => w[0]));
+      const pool = 'bcdfghjklmnprstvwz'.split('').filter((c) => !realFirsts.has(c));
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{r}', `-${fam.rime}`),
+        display: { kind: 'latin', value: `_${fam.rime}` },
+        options: buildOptions(first, pool, n).map((v) => ({
+          label: v,
+          value: v,
+          latin: true,
+        })),
+        answer: first,
+      };
+    }
+
+    // ── علوم: واحدهای استاندارد پیش‌دبستان ─────────────────────────
+
+    case 'living': {
+      // زنده یا غیرزنده؟
+      // ⚠ اشتباه رایج کودک ۵ ساله: «حرکت می‌کند پس زنده است» — ماشین
+      // را زنده می‌داند. برای همین در گزینه‌های نادرست عمداً چیزهای
+      // متحرک/آشنا می‌آید تا درس همان بدفهمی را هدف بگیرد.
+      const wantLiving = round.want !== 'non';
+      const from = wantLiving ? LIVING : NON_LIVING;
+      const other = wantLiving ? NON_LIVING : LIVING;
+      const target = pick(from);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        // «زنده» تصویرِ یگانه ندارد؛ هر نمونه‌ای که در صحنه بگذاریم
+        // یا پاسخ را لو می‌دهد یا گمراه می‌کند. پس صحنه خالی می‌ماند و
+        // خودِ گزینه‌ها تصویری‌اند — مثل گِرد category که همین کار را
+        // می‌کند. نقشکِ کار بالای پرسش نشان می‌دهد باید یکی را برگزیند.
+        display: null,
+        options: buildOptions(target, other.filter((x) => x !== target), n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+        })),
+        answer: target,
+      };
+    }
+
+    case 'life-cycle': {
+      // چرخهٔ زندگی را به ترتیب بچین. خودِ ترتیب همان مفهوم است،
+      // پس این گِرد از نوع order است نه choice.
+      const cyc = round.cycle
+        ? LIFE_CYCLES.find((c) => c.id === round.cycle)
+        : pick(LIFE_CYCLES);
+      const steps = cyc.steps;
+      const mixed = shuffle(steps.map((name, i) => ({ name, order: i + 1 })));
+      return {
+        type: 'order',
+        prompt: round.prompt.replaceAll('{c}', cyc.title),
+        items: mixed.map((m) => ({ label: m.name, value: m.order, scale: 1, pic: m.name })),
+        answer: steps.map((_, i) => i + 1),
+      };
+    }
+
+    case 'life-cycle-next': {
+      // مرحلهٔ بعدی چیست؟ — سبک‌تر از چیدن کل چرخه، برای سن پایین‌تر.
+      const cyc = pick(LIFE_CYCLES);
+      const i = rand(0, cyc.steps.length - 2);
+      const shown = cyc.steps[i];
+      const answer = cyc.steps[i + 1];
+      // ⚠ «تخم» هم سرِ چرخهٔ پروانه است هم چرخهٔ جوجه. اگر تخم نشان
+      // داده شود و «جوجه» هم گزینه باشد، کودکی که جوجه را انتخاب
+      // می‌کند **درست** گفته ولی «اشتباه» می‌شود. پس هر مرحله‌ای که
+      // در چرخهٔ دیگری هم بعد از همین تصویر می‌آید باید از گزینه‌های
+      // نادرست حذف شود.
+      const alsoValid = new Set(
+        LIFE_CYCLES.flatMap((c) => {
+          const k = c.steps.indexOf(shown);
+          return k >= 0 && k < c.steps.length - 1 ? [c.steps[k + 1]] : [];
+        }),
+      );
+      const wrong = LIFE_CYCLES.flatMap((c) => c.steps).filter(
+        (x) => x !== shown && !alsoValid.has(x),
+      );
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: cyc.steps[i] },
+        options: buildOptions(answer, [...new Set(wrong)], n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+        })),
+        answer,
+      };
+    }
+
+    case 'season': {
+      // کدام تصویر به این فصل می‌خورد؟
+      const target = pick(SEASONS);
+      const wrong = SEASONS.filter((x) => x.name !== target.name).map((x) => x.sign);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{f}', target.name),
+        display: { kind: 'pic-only', icon: target.name },
+        options: buildOptions(target.sign, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+        })),
+        answer: target.sign,
+      };
+    }
+
+    case 'sense': {
+      // با کدام عضو این را می‌فهمی؟
+      const target = pick(SENSES.filter((x) => x.examples.length));
+      const thing = pick(target.examples);
+      const wrong = SENSES.filter((x) => x.organ !== target.organ).map((x) => x.organ);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{x}', thing),
+        display: { kind: 'pic-only', icon: thing },
+        options: buildOptions(target.organ, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+        })),
+        answer: target.organ,
+      };
+    }
+
+    case 'float-sink': {
+      // روی آب می‌ماند یا ته می‌رود؟
+      // ⚠ درس ادعای قانون نمی‌کند («سنگین غرق می‌شود» غلط است —
+      // کشتی سنگین است و شناور می‌ماند). فقط مشاهده را تمرین می‌دهد،
+      // و نمونه‌ها عمداً بی‌ابهام‌اند.
+      const wantFloat = round.want !== 'sink';
+      const from = wantFloat ? FLOATS : SINKS;
+      const other = wantFloat ? SINKS : FLOATS;
+      const target = pick(from);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        // تصویرِ صحنه، نه واژه: کودک پیش‌خوان باید ببیند چه پرسیده شده.
+        display: { kind: 'pic-only', icon: wantFloat ? 'روی‌آب' : 'ته‌آب' },
+        options: buildOptions(target, other, n).map((v) => ({ label: v, value: v, pic: v })),
+        answer: target,
       };
     }
 
