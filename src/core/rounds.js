@@ -28,7 +28,7 @@ import {
 } from '../data/english.js';
 import {
   LIVING, NON_LIVING, LIFE_CYCLES, SEASONS, SENSES, FLOATS, SINKS,
-  WEATHER, WEATHER_CHOICE, NEEDS, HABITATS,
+  WEATHER, WEATHER_CHOICE, NEEDS, HABITATS, FORCES, MATERIALS, LIGHT_FACTS,
 } from '../data/science-data.js';
 import { pickSentences, nearMisses } from '../data/sentences.js';
 
@@ -478,6 +478,72 @@ function buildRoundInner(round, track) {
           pic: v,
         })),
         answer: target.sign,
+      };
+    }
+
+    case 'push-pull': {
+      // NGSS K-PS2-1 — حرکت از نیرو می‌آید، و نیرو دو جهت دارد.
+      // فقط دو پاسخ ممکن است، پس این گِرد همیشه دوگزینه‌ای است
+      // (بیشتر از دو گزینه یعنی گزینهٔ سوم آشکارا بی‌ربط باشد).
+      const target = pick(FORCES);
+      const other = target.force === 'کشیدن' ? 'هل دادن' : 'کشیدن';
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{k}', target.action),
+        display: { kind: 'pic-only', icon: target.pic },
+        // پیکان جهت نیرو را نشان می‌دهد — بدون آن گزینه‌ها واژهٔ خالی
+        // بودند و کودک پیش‌خوان نمی‌توانست حل کند.
+        options: shuffle([target.force, other]).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.force,
+        because: target.why,
+      };
+    }
+
+    case 'made-of': {
+      // جنس چیزها. جهت پرسش از شیء به جنس است و هر دو تصویر دارند.
+      const target = pick(MATERIALS);
+      const wrong = MATERIALS.filter((m) => m.matPic !== target.matPic).map((m) => m.matPic);
+      if (wrong.length < n - 1) {
+        wrong.push(...['برف', 'برگ', 'سکه'].filter((x) => x !== target.matPic));
+      }
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{c}', target.thing),
+        display: { kind: 'pic-only', icon: target.pic },
+        options: buildOptions(target.matPic, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.matPic,
+        because: `${target.thing} از ${target.material} ساخته شده.`,
+      };
+    }
+
+    case 'light-shadow': {
+      // NGSS K-PS3 — نور، سایه، روز و شب.
+      // ⚠ پرسش هر بند در خودِ داده است، ولی validate از هر گِرد
+      // انتظار prompt ناخالی دارد (و به‌درستی — گِرد بی‌پرسش یعنی
+      // چیزی از قلم افتاده). پس درس جای‌نگهدار {q} می‌فرستد و
+      // پرسشِ واقعی جایش می‌نشیند.
+      const target = pick(LIGHT_FACTS);
+      return {
+        type: 'choice',
+        prompt: (round.prompt || '{q}').replaceAll('{q}', target.q),
+        options: buildOptions(target.answer, target.wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.answer,
+        because: target.why,
       };
     }
 

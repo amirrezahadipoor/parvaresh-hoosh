@@ -13,6 +13,21 @@ const svg = (body, vb = '0 0 100 100') =>
 
 // ── حیوان‌ها ────────────────────────────────────────────────────────────
 export const SHAPES = {
+  // ── نشانهٔ جهت نیرو ───────────────────────────────────────────────
+  // ⚠ گِرد push-pull فقط دو پاسخ متنی دارد («هل دادن»/«کشیدن») و گارد
+  // درست ردش کرد: کودک پیش‌خوان نمی‌تواند بخواند. برای نیرو نمی‌شود
+  // «شیء» کشید، پس جهتش را می‌کشیم: دستی که جعبه را از خود دور
+  // می‌کند، و دستی که آن را به‌سوی خود می‌آورد.
+  'هل دادن': () =>
+    svg(`<rect x="52" y="34" width="34" height="34" rx="5" fill="#E8DCC8" stroke="#C9BFB0" stroke-width="3"/>
+    <path d="M14 51 h30" stroke="#E4572E" stroke-width="7" stroke-linecap="round"/>
+    <path d="M38 40 l12 11 l-12 11" fill="none" stroke="#E4572E" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`),
+
+  'کشیدن': () =>
+    svg(`<rect x="14" y="34" width="34" height="34" rx="5" fill="#E8DCC8" stroke="#C9BFB0" stroke-width="3"/>
+    <path d="M86 51 h-30" stroke="#2E86AB" stroke-width="7" stroke-linecap="round"/>
+    <path d="M62 40 l-12 11 l12 11" fill="none" stroke="#2E86AB" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`),
+
   // ── افزودهٔ فاز ۳: گسترش دسته‌ها ──────────────────────────────────
   // علوم و منطق به تنوع تصویری نیاز دارند؛ با ۱۸ شکل نمی‌شد درس تازه
   // ساخت بدون تکرار. همان سبک: viewBox ۱۰۰×۱۰۰، بدون ارجاع بیرونی.
