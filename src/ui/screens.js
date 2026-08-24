@@ -584,7 +584,10 @@ function playScreen(lessonId) {
         }
         btn.append(g);
       } else if (o.latin) {
-        btn.append(el('span', { class: 'latin-opt', dir: 'ltr', lang: 'en', text: o.label }));
+        // کلاس طول، تا واژهٔ بلند به‌جای شکستن، کوچک‌تر نوشته شود.
+        const len = String(o.label).length;
+        const sz = len >= 9 ? ' len-9' : len >= 7 ? ' len-7' : '';
+        btn.append(el('span', { class: `latin-opt${sz}`, dir: 'ltr', lang: 'en', text: o.label }));
       } else if (o.dots) {
         // عدد + نقطه‌های متناظرش روی خودِ گزینه: کودک پیوند
         // «رقم ↔ مقدار» را می‌بیند بدون آنکه پاسخ لو برود.

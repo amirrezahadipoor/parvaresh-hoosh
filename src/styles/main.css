@@ -1207,10 +1207,26 @@ canvas.pad {
 }
 
 .latin-opt {
+  /* ⚠ «rainbow» در دکمهٔ دوستونی به «rainbo / w» می‌شکست. یک واژهٔ
+     انگلیسیِ نصف‌شده برای نوآموز اصلاً خوانا نیست، پس شکستن ممنوع
+     است و در عوض اندازهٔ قلم با طول واژه کم می‌شود. آستانه‌ها از روی
+     بلندترین واژه‌های داده گرفته شده‌اند: rainbow/۷، umbrella/۸،
+     butterfly/۹. حتی در ۳۲۰px هم جا می‌شوند. */
+  display: block;
+  white-space: nowrap;
   font-size: 30px;
   font-weight: 800;
   font-family: system-ui, sans-serif;
   letter-spacing: 1px;
+}
+
+.latin-opt.len-7 { font-size: 25px; letter-spacing: 0; }
+.latin-opt.len-9 { font-size: 21px; letter-spacing: 0; }
+
+@media (max-width: 380px) {
+  .latin-opt { font-size: 26px; }
+  .latin-opt.len-7 { font-size: 22px; }
+  .latin-opt.len-9 { font-size: 18px; }
 }
 
 .pic-label {

@@ -170,6 +170,24 @@ function withCues(built, round) {
 // تا شمردنی باشد.
 const NUM_WORD = { یک: 1, دو: 2, سه: 3, چهار: 4, پنج: 5, شش: 6, هفت: 7, هشت: 8, نه: 9, ده: 10 };
 
+/**
+ * استخر واژگان انگلیسی برای یک موضوع.
+ *
+ * دو نقش جدا دارد و این تفکیک مهم است:
+ *  • targets — همیشه فقط از خود موضوع. اگر درس نامش «لباس‌ها» است،
+ *    پرسش باید دربارهٔ لباس باشد، وگرنه عنوان درس دروغ می‌شود.
+ *  • pool — استخر بدل‌ها. اگر موضوع کوچک‌تر از تعداد گزینه بود
+ *    (مثلاً پوشیدنی فقط سه شکل دارد)، بدل از بیرونِ موضوع پر می‌شود.
+ *    این هم آموزشی‌تر است: «کدام کفش است» بین کفش و قاشق، تمرین
+ *    واقعی‌تری است تا بین سه پوشیدنی.
+ */
+function enPool(group) {
+  if (!group) return { targets: EN_PICTURE_WORDS, pool: EN_PICTURE_WORDS };
+  const sub = EN_PICTURE_WORDS.filter((w) => w.group === group);
+  if (!sub.length) return { targets: EN_PICTURE_WORDS, pool: EN_PICTURE_WORDS };
+  return { targets: sub, pool: EN_PICTURE_WORDS };
+}
+
 export function buildRound(round, track) {
   const built = buildRoundInner(round, track);
   // ⚠ چند گِردِ منطق وقتی دادهٔ کافی نیست null برمی‌گردانند (مثلاً
@@ -231,8 +249,12 @@ function buildRoundInner(round, track) {
 
     case 'en-word-pic': {
       // تصویر را ببین، واژهٔ انگلیسی درست را انتخاب کن.
-      const target = pick(EN_PICTURE_WORDS);
-      const wrong = EN_PICTURE_WORDS.filter((w) => w.en !== target.en).map((w) => w.en);
+      // round.group موضوع را محدود می‌کند (animals / food / …) تا هر درس
+      // یک میدان معنایی داشته باشد؛ بدل‌ها هم از همان موضوع می‌آیند و
+      // انتخاب واقعاً «کدام حیوان» می‌شود، نه «کدام تصویر».
+      const wp = enPool(round.group);
+      const target = pick(wp.targets);
+      const wrong = wp.pool.filter((w) => w.en !== target.en).map((w) => w.en);
       return {
         type: 'choice',
         prompt: round.prompt,
@@ -244,14 +266,15 @@ function buildRoundInner(round, track) {
 
     case 'en-pic-word': {
       // عکسِ گِرد بالا: واژه را ببین، تصویر درست را انتخاب کن.
-      const target = pick(EN_PICTURE_WORDS);
-      const wrong = EN_PICTURE_WORDS.filter((w) => w.en !== target.en).map((w) => w.pic);
+      const pw = enPool(round.group);
+      const target = pick(pw.targets);
+      const wrong = pw.pool.filter((w) => w.en !== target.en).map((w) => w.pic);
       return {
         type: 'choice',
         prompt: round.prompt.replace('{w}', target.en),
         display: { kind: 'latin', value: target.en },
         options: buildOptions(target.pic, wrong, n).map((v) => ({
-          label: EN_PICTURE_WORDS.find((w) => w.pic === v)?.en ?? v,
+          label: pw.pool.find((w) => w.pic === v)?.en ?? v,
           value: v,
           pic: v,
           latinLabel: true,
