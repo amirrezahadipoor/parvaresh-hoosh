@@ -217,9 +217,66 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-04",
+    "id": "reading-read-01",
     "domain": "reading",
     "order": 4,
+    "title": "خواندن تا م س",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "س",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "س",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "س",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "س",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "س",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-04",
+    "domain": "reading",
+    "order": 5,
     "title": "نشانه‌های و ت",
     "schoolLessons": [
       "او و ــ تـ ت"
@@ -318,9 +375,77 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-02",
+    "domain": "reading",
+    "order": 6,
+    "title": "خواندن تا و ت",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ت",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ت",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ت",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ت",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ت",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ت",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-05",
     "domain": "reading",
-    "order": 5,
+    "order": 7,
     "title": "نشانه‌های ر ن",
     "schoolLessons": [
       "ر ــ نـ ن"
@@ -419,9 +544,79 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-03",
+    "domain": "reading",
+    "order": 8,
+    "title": "خواندن تا ر ن",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ن",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ن",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ن",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ن",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ن",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ن",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-06",
     "domain": "reading",
-    "order": 6,
+    "order": 9,
     "title": "نشانه‌های ی ز",
     "schoolLessons": [
       "ایـ یـ ی ــ ز"
@@ -520,9 +715,81 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-04",
+    "domain": "reading",
+    "order": 10,
+    "title": "خواندن تا ی ز",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ز",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ز",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ز",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ز",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ز",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ز",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-07",
     "domain": "reading",
-    "order": 7,
+    "order": 11,
     "title": "نشانه‌های ه ش",
     "schoolLessons": [
       "اِ ـه ه ــ شـ ش"
@@ -639,9 +906,83 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-05",
+    "domain": "reading",
+    "order": 12,
+    "title": "خواندن تا ه ش",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ش",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ش",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ش",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ش",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ش",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ش",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-08",
     "domain": "reading",
-    "order": 8,
+    "order": 13,
     "title": "نشانه‌های ک",
     "schoolLessons": [
       "کـ ک ــ و"
@@ -726,9 +1067,84 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-06",
+    "domain": "reading",
+    "order": 14,
+    "title": "خواندن تا ک",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ک",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ک",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ک",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ک",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ک",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ک",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-09",
     "domain": "reading",
-    "order": 9,
+    "order": 15,
     "title": "نشانه‌های پ گ",
     "schoolLessons": [
       "پـ پ ــ گـ گ"
@@ -845,9 +1261,86 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-07",
+    "domain": "reading",
+    "order": 16,
+    "title": "خواندن تا پ گ",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "گ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "گ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "گ",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "گ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "گ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "گ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-10",
     "domain": "reading",
-    "order": 10,
+    "order": 17,
     "title": "نشانه‌های ف خ",
     "schoolLessons": [
       "فـ ف ــ خـ خ"
@@ -955,9 +1448,88 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-08",
+    "domain": "reading",
+    "order": 18,
+    "title": "خواندن تا ف خ",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "خ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "خ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "خ",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "خ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "خ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "خ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-11",
     "domain": "reading",
-    "order": 11,
+    "order": 19,
     "title": "نشانه‌های ق ل",
     "schoolLessons": [
       "قـ ق ــ لـ ل"
@@ -1074,9 +1646,90 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-09",
+    "domain": "reading",
+    "order": 20,
+    "title": "خواندن تا ق ل",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ل",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ل",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ل",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ل",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ل",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ل",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-12",
     "domain": "reading",
-    "order": 12,
+    "order": 21,
     "title": "نشانه‌های ج",
     "schoolLessons": [
       "جـ ج"
@@ -1161,9 +1814,91 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-10",
+    "domain": "reading",
+    "order": 22,
+    "title": "خواندن تا ج",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ج",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ج",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ج",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ج",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ج",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ج",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-13",
     "domain": "reading",
-    "order": 13,
+    "order": 23,
     "title": "نشانه‌های چ",
     "schoolLessons": [
       "هـ ه ــ چـ چ"
@@ -1248,9 +1983,92 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-11",
+    "domain": "reading",
+    "order": 24,
+    "title": "خواندن تا چ",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "چ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "چ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "چ",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "چ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "چ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "چ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-14",
     "domain": "reading",
-    "order": 14,
+    "order": 25,
     "title": "نشانه‌های ژ",
     "schoolLessons": [
       "ژ ــ خوا"
@@ -1335,9 +2153,93 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-12",
+    "domain": "reading",
+    "order": 26,
+    "title": "خواندن تا ژ",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ژ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ژ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ژ",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ژ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ژ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ژ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-15",
     "domain": "reading",
-    "order": 15,
+    "order": 27,
     "title": "نشانه‌های ص ذ",
     "schoolLessons": [
       "صـ ص ــ ذ"
@@ -1445,9 +2347,95 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-13",
+    "domain": "reading",
+    "order": 28,
+    "title": "خواندن تا ص ذ",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ذ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ذ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ذ",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ذ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ذ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ذ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-16",
     "domain": "reading",
-    "order": 16,
+    "order": 29,
     "title": "نشانه‌های ع ث",
     "schoolLessons": [
       "عـ ع ــ ثـ ث"
@@ -1546,9 +2534,97 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-14",
+    "domain": "reading",
+    "order": 30,
+    "title": "خواندن تا ع ث",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ث",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ث",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ث",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ث",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ث",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ث",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-17",
     "domain": "reading",
-    "order": 17,
+    "order": 31,
     "title": "نشانه‌های ح",
     "schoolLessons": [
       "حـ ح"
@@ -1633,9 +2709,98 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-15",
+    "domain": "reading",
+    "order": 32,
+    "title": "خواندن تا ح",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث",
+      "ح"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ح",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ح",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ح",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ح",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ح",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ح",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-18",
     "domain": "reading",
-    "order": 18,
+    "order": 33,
     "title": "نشانه‌های ض ط",
     "schoolLessons": [
       "ضـ ض ــ ط"
@@ -1743,9 +2908,100 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-16",
+    "domain": "reading",
+    "order": 34,
+    "title": "خواندن تا ض ط",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث",
+      "ح",
+      "ض",
+      "ط"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ط",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ط",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ط",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ط",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ط",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ط",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-19",
     "domain": "reading",
-    "order": 19,
+    "order": 35,
     "title": "نشانه‌های غ",
     "schoolLessons": [
       "غـ غ"
@@ -1821,9 +3077,101 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-read-17",
+    "domain": "reading",
+    "order": 36,
+    "title": "خواندن تا غ",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث",
+      "ح",
+      "ض",
+      "ط",
+      "غ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "غ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "غ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "غ",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "غ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "غ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "غ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-20",
     "domain": "reading",
-    "order": 20,
+    "order": 37,
     "title": "نشانه‌های ظ",
     "schoolLessons": [
       "ظ"
@@ -1901,6 +3249,99 @@ export const READING_LESSONS = [
       }
     ],
     "parentNote": "بعد از بازی، دنبال چیزهایی در خانه بگردید که با «ظ» شروع می‌شوند.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-read-18",
+    "domain": "reading",
+    "order": 38,
+    "title": "خواندن تا ظ",
+    "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث",
+      "ح",
+      "ض",
+      "ط",
+      "غ",
+      "ظ"
+    ],
+    "minutes": 6,
+    "rounds": [
+      {
+        "kind": "blend-word",
+        "letter": "ظ",
+        "maxSounds": 3,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": true,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ظ",
+        "maxSounds": 4,
+        "maxSyllables": 1,
+        "minSyllables": 1,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ظ",
+        "maxSounds": 6,
+        "maxSyllables": 2,
+        "minSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      },
+      {
+        "kind": "syllable-build",
+        "letter": "ظ",
+        "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "segment-count",
+        "letter": "ظ",
+        "maxSounds": 5,
+        "prompt": "این کلمه چند صدا دارد؟"
+      },
+      {
+        "kind": "count-letters",
+        "letter": "ظ",
+        "prompt": "کلمهٔ {w} چند حرف دارد؟"
+      }
+    ],
+    "parentNote": "این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.",
     "reviewDays": [
       1,
       3,

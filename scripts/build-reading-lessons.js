@@ -221,6 +221,78 @@ const lessons = groups.map((grp, gi) => {
   };
 });
 
+// ── درس‌های تمرینِ خواندن ────────────────────────────────────────
+//
+// چرا لازم است: تعداد درس‌های نشانه به کتاب گره خورده (۲۰ نشانه) و
+// بیشتر نمی‌شود. ولی کودک بعد از یادگیری نشانه باید *بخواند* — و
+// خواندن با تکرارِ فاصله‌دار جا می‌افتد، نه با یک بار دیدن.
+//
+// هر درس تمرین روی حروفِ تا آن نقطه تکیه می‌کند و فقط صداکشی،
+// بخش‌کردن و شمردن صدا دارد — بدون معرفی حرف تازه. مولد هر درسی را
+// که واژگان کافی نداشته باشد رد می‌کند، مثل بقیهٔ پروژه.
+const practice = [];
+// گام ۱ یعنی پس از *هر* نشانه یک تمرین. با گام ۲ نصف درس‌ها ساخته
+// نمی‌شد و بین دو تمرین چهار نشانهٔ تازه فاصله می‌افتاد.
+for (let after = 2; after < groups.length; after += 1) {
+  const letters = groups.slice(0, after + 1).flatMap((g) => g.letters.map((a) => a.letter));
+  const limit = Math.max(...letters.map(teachRank));
+  const readableHere = (w) =>
+    [...w].every((ch) => {
+      if (SKIP_CHARS.has(ch)) return true;
+      const r = teachRank(ch);
+      return r === 999 || r <= limit;
+    });
+
+  const rounds = [];
+  // سه سطح سختی، هر کدام فقط اگر واژهٔ کافی باشد.
+  const specs = [
+    { maxSounds: 3, maxSyllables: 1, minSyllables: 1, longVowelOnly: true },
+    { maxSounds: 4, maxSyllables: 1, minSyllables: 1, longVowelOnly: false },
+    { maxSounds: 6, maxSyllables: 2, minSyllables: 2, longVowelOnly: false },
+  ];
+  for (const spec of specs) {
+    if (pickWords({ ...spec, readable: readableHere }).length >= 4) {
+      rounds.push({ kind: 'blend-word', letter: letters[letters.length - 1], ...spec, prompt: 'کدام کلمه می‌شود؟' });
+    }
+  }
+  const syl = pickWords({ maxSyllables: 3, readable: readableHere }).filter((w) => w.syllables.length >= 2);
+  if (syl.length >= 3) {
+    rounds.push({ kind: 'syllable-build', letter: letters[letters.length - 1], prompt: 'بخش‌ها را به ترتیب بچین' });
+  }
+  if (pickWords({ maxSounds: 5, readable: readableHere }).length >= 6) {
+    rounds.push({ kind: 'segment-count', letter: letters[letters.length - 1], maxSounds: 5, prompt: 'این کلمه چند صدا دارد؟' });
+  }
+  const wordPool = STAGED_WORDS.filter(readableHere);
+  if (wordPool.filter((w) => w.length >= 2 && w.length <= 6).length >= 6) {
+    rounds.push({ kind: 'count-letters', letter: letters[letters.length - 1], prompt: 'کلمهٔ {w} چند حرف دارد؟' });
+  }
+
+  // درسِ سه‌گِردی ارزش یک قدم روی نقشه را ندارد.
+  if (rounds.length < 4) continue;
+
+  const shown = groups[after].letters.map((a) => a.letter).join(' ');
+  practice.push({
+    id: `reading-read-${String(practice.length + 1).padStart(2, '0')}`,
+    domain: 'reading',
+    // پس از درسِ نشانهٔ متناظر می‌نشیند.
+    order: after + 1 + (practice.length + 1) / 100,
+    title: `خواندن تا ${shown}`,
+    goal: `کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.`,
+    letters,
+    minutes: 6,
+    rounds,
+    parentNote:
+      'این درس حرف تازه‌ای ندارد؛ تمرین خواندن است. اگر کند می‌خواند اشکالی ندارد — سرعت بعد از دقت می‌آید.',
+    reviewDays: [1, 3, 7],
+  });
+}
+
+const all = [...lessons, ...practice].sort((a, b) => a.order - b.order);
+// شماره‌گذاری دوباره، تا مسیر سفر پیوسته بماند.
+all.forEach((l, i) => {
+  l.order = i + 1;
+});
+
 const header = `// تولیدشده با scripts/build-reading-lessons.js — دستی ویرایش نکنید.
 //
 // هر درس فقط از حروفی ساخته شده که کلیپ صوتی واقعی دارند.
@@ -228,13 +300,13 @@ const header = `// تولیدشده با scripts/build-reading-lessons.js — د
 
 `;
 
-const out = `${header}export const READING_LESSONS = ${JSON.stringify(lessons, null, 2)};\n`;
+const out = `${header}export const READING_LESSONS = ${JSON.stringify(all, null, 2)};\n`;
 
 fs.mkdirSync(path.join(ROOT, 'src/data/lessons'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'src/data/lessons/reading.js'), out);
 
-const roundCount = lessons.reduce((s, l) => s + l.rounds.length, 0);
-console.log(`نوشته شد: ${lessons.length} درس خواندن، ${roundCount} گِرد، از ${usable.length} حرف.`);
+const roundCount = all.reduce((s, l) => s + l.rounds.length, 0);
+console.log(`نوشته شد: ${all.length} درس خواندن (${lessons.length} نشانه + ${practice.length} تمرین)، ${roundCount} گِرد، از ${usable.length} حرف.`);
 if (skippedWordRounds.length) {
   console.log(`گِرد کلمه ساخته نشد (کلمهٔ خواندنی نبود): ${skippedWordRounds.join('، ')}`);
 }
