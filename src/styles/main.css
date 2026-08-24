@@ -899,6 +899,36 @@ canvas.pad {
   margin: 0 0 8px;
 }
 
+/* یادداشت تاشوی والدین در صفحهٔ پایان */
+.note-fold > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #8a6d3b;
+  /* مثلثِ پیش‌فرض مرورگر در RTL بد می‌نشیند؛ خودمان می‌گذاریم. */
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-block-size: 24px;
+}
+
+.note-fold > summary::-webkit-details-marker { display: none; }
+
+.note-fold > summary::after {
+  content: '';
+  inline-size: 0;
+  block-size: 0;
+  border-inline: 5px solid transparent;
+  border-block-start: 6px solid #8a6d3b;
+  transition: transform var(--fast) var(--ease);
+}
+
+.note-fold[open] > summary::after { transform: rotate(180deg); }
+
+.note-fold > p {
+  margin-block: var(--s2) 0;
+}
+
 .note {
   background: #fff8e8;
   border-radius: 14px;
@@ -1513,6 +1543,19 @@ canvas.pad {
   animation: fade var(--fast) ease;
 }
 
+/* ⚠ صفحهٔ پایان فقط با @media (max-height) فشرده می‌شد، یعنی فرض
+   می‌کرد بلندی محتوا ثابت است. ولی در ۳۲۰ پیکسل عنوانِ بلند
+   (مثل «پایان حرف‌های انگلیسی») دو خط می‌شود و دکمهٔ «بعدی» زیر
+   لبه می‌رود — باگی که با عرض می‌آید، نه با ارتفاع.
+   به‌جای فشرده‌سازیِ بیشتر (که متن را ریز و ناخوانا می‌کند)
+   صفحه را قابل‌پیمایش می‌کنیم: دکمه همیشه دست‌یافتنی می‌ماند. */
+.screen.done {
+  overflow-y: auto;
+  /* فضای امنِ پایین گوشی‌های دارای نوار خانه */
+  padding-block-end: calc(var(--s4) + env(safe-area-inset-bottom));
+}
+
+
 /* نشان مرور روی نقشهٔ سفر */
 .map-item.due .map-dot {
   background: var(--life);
@@ -1804,6 +1847,14 @@ canvas.pad {
     font-size: var(--t-title);
   }
 
+  /* ⚠ عنوانِ بلند («پایان حرف‌های انگلیسی») در ۳۲۰px به خط دوم
+     می‌رود و همان ۱۱px کسری را می‌سازد. در باریک‌ترین صفحه یک
+     پله کوچک‌تر می‌شود — هنوز از متن بدنه درشت‌تر است. */
+  @media (max-width: 340px) {
+    .done-card h2 { font-size: var(--t-prompt); }
+    .done-card { padding: var(--s3); }
+  }
+
   .award {
     inline-size: 34px;
     block-size: 34px;
@@ -1821,6 +1872,15 @@ canvas.pad {
     padding: var(--s3);
     font-size: var(--t-small);
     line-height: 1.5;
+    /* ⚠ بریدن متن با max-height و mask هر دو رد شدند: والد باید
+       کل توصیه را بخواند. راه‌حل در screens.js است — یادداشت
+       <details> شد و بسته می‌ماند. اینجا فقط فشرده‌اش می‌کنیم. */
+  }
+
+  /* دکمهٔ ادامه هرگز دو خط نشود — ۹۷px برای یک دکمه زیادی است. */
+  .btn.next-btn {
+    white-space: nowrap;
+    padding-block: var(--s3);
   }
 }
 

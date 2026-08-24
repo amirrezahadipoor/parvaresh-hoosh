@@ -936,7 +936,16 @@ function doneScreen(lesson, correct, total) {
       ),
       el('p', { class: 'muted', text: `${toFa(correct)} از ${toFa(total)} تمرین درست` }),
     ]),
-    el('div', { class: 'note', text: `برای والدین: ${lesson.parentNote}` }),
+    // ⚠ یادداشت والدین گاهی ۳۰۰ نویسه است و در گوشیِ ۳۲۰×۵۶۸
+    // دکمهٔ «بعدی» را زیر لبه می‌بُرد. بریدن متن هم رد شد: والد
+    // باید کل توصیه را ببیند. پس تاشو می‌شود — بسته، فقط یک خط
+    // می‌گیرد؛ باز، همهٔ متن هست. کودک دکمه‌اش را دارد.
+    (() => {
+      const box = el('details', { class: 'note note-fold' });
+      box.append(el('summary', { text: 'برای والدین' }));
+      box.append(el('p', { text: lesson.parentNote }));
+      return box;
+    })(),
     el(
       'button',
       { class: 'btn next-btn', style: `--c:${nd.color}`, onClick: () => render(playScreen(nxt.lesson.id)) },

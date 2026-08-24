@@ -275,7 +275,14 @@ for (const vp of VIEWPORTS) {
         return {
           below: Math.round(r.bottom - window.innerHeight),
           tap: Math.round(r.height),
-          noteClipped: note ? note.scrollHeight > note.clientHeight + 1 : false,
+          // یادداشتِ تاشو (<details> بسته) بریده نیست — والد با یک
+          // تپ بازش می‌کند و کل متن هست. فقط یادداشتِ *باز* که
+          // متنش جا نشده باگ است.
+          noteClipped:
+            note && !(note.tagName === 'DETAILS' && !note.open)
+              ? note.scrollHeight > note.clientHeight + 1
+              : false,
+          noteFoldable: note ? note.tagName === 'DETAILS' : false,
         };
       });
       if (!done) {

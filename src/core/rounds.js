@@ -1086,7 +1086,7 @@ function buildRoundInner(round, track) {
         : [total, total + 1, total - 1, total + 10].filter((v) => v > 0 && v <= cap);
       return {
         type: 'choice',
-        prompt: askOnes ? 'چند تا تک‌تکی کنار دستهٔ ده‌تایی است؟' : round.prompt,
+        prompt: askOnes ? 'چند تا تک‌تکی کنار دسته است؟' : round.prompt,
         display: { kind: 'place-value', tens: 1, ones },
         options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
         answer,
