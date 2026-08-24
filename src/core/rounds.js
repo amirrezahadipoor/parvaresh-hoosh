@@ -13,7 +13,7 @@ import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
 import { pickWords, soundsOf, flatSounds, syllableText, SOUND_MAP } from '../data/phonics.js';
 import {
-  SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, COLOR_HEX, GEO,
+  SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, TRAIT_NEGATIVE, TRAIT_PHRASE, EVERYDAY_NAMES, COLOR_HEX, GEO,
   FACES, SITUATIONS, HAZARDS, SAFETY_STEPS, SCENES, hasPicture,
 } from './svg.js';
 import {
@@ -171,7 +171,15 @@ function withCues(built, round) {
 const NUM_WORD = { یک: 1, دو: 2, سه: 3, چهار: 4, پنج: 5, شش: 6, هفت: 7, هشت: 8, نه: 9, ده: 10 };
 
 export function buildRound(round, track) {
-  return withCues(buildRoundInner(round, track), round);
+  const built = buildRoundInner(round, track);
+  // ⚠ چند گِردِ منطق وقتی دادهٔ کافی نیست null برمی‌گردانند (مثلاً
+  // ویژگی‌ای که فقط یک عضو تصویردار دارد). null بی‌سروصدا از
+  // withCues رد می‌شد و به رابط می‌رسید — یعنی صحنهٔ خالی برای
+  // کودک. بهتر است آزمون بترکد تا بازی خراب شود.
+  if (!built) {
+    throw new Error(`گِرد «${round.kind}» دادهٔ کافی برای ساخت نداشت`);
+  }
+  return withCues(built, round);
 }
 
 function buildRoundInner(round, track) {
@@ -497,13 +505,16 @@ function buildRoundInner(round, track) {
       const trait = pick(names);
       const members = TRAITS[trait];
       const answer = pick(members);
-      const others = SHAPE_NAMES.filter((x) => !members.includes(x));
+      // فریب از اشیای روزمره، نه از هر شکلی که تصویر دارد.
+      const others = EVERYDAY_NAMES.filter((x) => !members.includes(x));
       if (others.length < n - 1) return null;
       return {
         type: 'choice',
         prompt: round.prompt.replace('{t}', trait),
         display: null,
-        options: buildOptions(answer, others, n).map((v) => ({ label: v, value: v, pic: v })),
+        // برچسب لازم است: در گِردِ منطق نامِ شیء پاسخ را لو نمی‌دهد
+        // (پرسش دربارهٔ ویژگی است) ولی نبودش دکمه را بی‌متن می‌کند.
+        options: buildOptions(answer, others, n).map((v) => ({ label: v, value: v, pic: v, picLabel: true })),
         answer,
         because: `${answer} ${trait}.`,
       };
@@ -1265,6 +1276,96 @@ function buildRoundInner(round, track) {
       };
     }
 
+    case 'two-rule': {
+      // دسته‌بندی با دو معیار همزمان (منطقِ AND).
+      //
+      // پژوهش: کودک ۵ ساله یک معیار را خوب می‌گیرد، ولی نگه‌داشتن
+      // *دو* معیار در ذهن جهشِ بعدی است — پایهٔ انعطاف شناختی.
+      //
+      // ⚠ تلاش اول از TRAITS × CATEGORIES ساخته شد و شکست خورد:
+      // ویژگی‌ها زیرمجموعهٔ دسته‌ها هستند (هر پرنده حیوان است)، پس
+      // «فقط‌ویژگی» تقریباً همیشه خالی می‌ماند و از شش ترکیب فقط
+      // یکی می‌ساخت — یعنی یک پرسشِ تکراری برای کل درس.
+      // AND واقعی دو محورِ *مستقل* می‌خواهد: شکل و رنگ.
+      const shapeName = pick(GEO_NAMES);
+      const colorName = pick(Object.keys(COLOR_HEX));
+      const otherShapes = GEO_NAMES.filter((x) => x !== shapeName);
+      const otherColors = Object.keys(COLOR_HEX).filter((c) => c !== colorName);
+
+      // پاسخ: هر دو شرط. فریب‌ها: دقیقاً یکی از دو شرط — اگر هیچ
+      // شرطی نداشته باشند، کودک بدون فهمیدن AND هم برنده می‌شود.
+      const answer = { shape: shapeName, color: colorName };
+      const decoys = [
+        { shape: shapeName, color: pick(otherColors) },
+        { shape: pick(otherShapes), color: colorName },
+        { shape: shuffle(otherShapes)[1] ?? pick(otherShapes), color: shuffle(otherColors)[1] ?? pick(otherColors) },
+      ];
+      const opts = shuffle([answer, ...decoys.slice(0, n - 1)]);
+      return {
+        type: 'choice',
+        prompt: `کدام ${shapeName} ${colorName} است؟`,
+        display: null,
+        options: opts.map((o) => ({
+          // برچسب هر دو ویژگی را می‌گوید تا انتخاب مبهم نماند.
+          // ⚠ geoLabel لازم است وگرنه رابط دکمه را بی‌متن می‌سازد و
+          // قانونِ «هر گزینه متن دارد» می‌شکند.
+          label: `${o.shape} ${o.color}`,
+          value: `${o.shape}|${o.color}`,
+          geo: { name: o.shape, color: COLOR_HEX[o.color] },
+          geoLabel: true,
+        })),
+        answer: `${answer.shape}|${answer.color}`,
+      };
+    }
+
+    case 'not-rule': {
+      // منطقِ NOT — «کدام پرواز نمی‌کند؟»
+      //
+      // نفی برای این سن سخت‌تر از اثبات است چون باید قاعده را
+      // بسازد و بعد واژگونش کند. ولی همان چیزی است که «همهٔ … جز
+      // …» را ممکن می‌کند.
+      // ⚠ همهٔ فریب‌ها باید *در* آن ویژگی باشند، پس ویژگی باید دست‌کم
+      // n−1 عضو تصویردار داشته باشد. «چرخ دارد» فقط ماشین را دارد و
+      // برای ردهٔ ۸ ساله (۴ گزینه) کم می‌آورد — آزمون همین را گرفت.
+      const usable = Object.entries(TRAITS).filter(
+        ([, items]) => items.filter(hasPicture).length >= n - 1,
+      );
+      if (!usable.length) return null;
+      const [trait, rawItems] = pick(usable);
+      const inTrait = rawItems.filter(hasPicture);
+      // بیرونی‌ها باید تصویر داشته باشند و در آن ویژگی نباشند.
+      // ⚠ فریب از EVERYDAY_NAMES می‌آید، نه SHAPE_NAMES: دومی
+      // «روی‌آب»، «پیله» و اجزای بدن را هم دارد که بیرون از درس
+      // علوم بی‌معنا هستند و پرسش را مسخره می‌کنند.
+      const outside = EVERYDAY_NAMES.filter((x) => !inTrait.includes(x) && hasPicture(x));
+      if (!outside.length) return null;
+      // ⚠ «کدام گیاه نیست؟ → سیب» ساخته می‌شد، چون سیب در فهرست
+      // «گیاه است» نیست ولی *واقعاً* از گیاه می‌آید. عضویتِ نبودن
+      // در یک فهرست با نبودنِ واقعی یکی نیست. برای ویژگی‌هایی که
+      // مرز مبهم دارند، بیرونی‌ها را صریح محدود می‌کنیم.
+      const AMBIGUOUS = {
+        'گیاه است': ['گربه', 'سگ', 'ماهی', 'پرنده', 'خرگوش', 'جوجه', 'گاو', 'توپ', 'کتاب', 'خانه', 'ماشین', 'کفش', 'کلاه', 'ساعت', 'کلید', 'مداد', 'چتر'],
+        'خوردنی است': ['توپ', 'کتاب', 'خانه', 'ماشین', 'کفش', 'کلاه', 'پیراهن', 'ساعت', 'کلید', 'مداد', 'چتر', 'کوه', 'ماه', 'ستاره'],
+      };
+      const safeOutside = AMBIGUOUS[trait]
+        ? outside.filter((x) => AMBIGUOUS[trait].includes(x))
+        : outside;
+      if (!safeOutside.length) return null;
+      const answer = pick(safeOutside);
+      // ⚠ همهٔ فریب‌ها باید *در* آن ویژگی باشند، وگرنه چند پاسخ
+      // درست می‌شود و گِرد شکسته است.
+      const wrong = shuffle(inTrait).slice(0, n - 1);
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: `کدام ${TRAIT_NEGATIVE[trait]}؟`,
+        display: null,
+        options: shuffle([answer, ...wrong]).map((v) => ({ label: v, value: v, pic: v, picLabel: true })),
+        answer,
+        because: `${answer} ${trait} نیست.`,
+      };
+    }
+
     case 'category': {
       // «کدام حیوان است؟» — دسته‌بندی معنایی با تصویر واقعی.
       const catName = round.category || pick(Object.keys(CATEGORIES));
@@ -1282,6 +1383,7 @@ function buildRoundInner(round, track) {
           label: v,
           value: v,
           pic: v,
+          picLabel: true,
         })),
         answer,
         because: `${answer} ${catName} است.`,
@@ -1445,6 +1547,106 @@ function buildRoundInner(round, track) {
           pic: m.name,
         })),
         answer: [1, 2, 3],
+      };
+    }
+
+    case 'event-order': {
+      // توالی رویداد روزمره — «اول چه کار می‌کنی؟»
+      //
+      // پژوهش این را پایهٔ درکِ داستان و علت‌ومعلول می‌داند: کودکی
+      // که ترتیب را می‌فهمد، متن را هم دنبال می‌کند.
+      // ⚠ فقط توالی‌هایی که *ذاتاً* یک‌طرفه‌اند. اگر جای دو گام را
+      // بشود عوض کرد و باز منطقی بماند، گِرد چند پاسخ درست دارد.
+      const CHAINS = [
+        { name: 'شست‌وشو', steps: ['آب‌خوردن', 'دست‌شستن', 'غذا'], labels: ['آب', 'دست بشور', 'غذا بخور'] },
+        { name: 'شب', steps: ['غذا', 'مسواک', 'خواب'], labels: ['شام', 'مسواک', 'خواب'] },
+        { name: 'زخم', steps: ['زانوی‌زخمی', 'دستمال', 'کمک‌کردن'], labels: ['زخم شد', 'تمیز کن', 'کمک بگیر'] },
+      ];
+      const usable = CHAINS.filter((c) => c.steps.every(hasPicture));
+      if (!usable.length) return null;
+      const chain = pick(usable);
+      const mixed = shuffle(chain.steps.map((name, i) => ({ name, order: i + 1, label: chain.labels[i] })));
+      return {
+        type: 'order',
+        prompt: round.prompt,
+        items: mixed.map((m) => ({ label: m.label, value: m.order, scale: 1, pic: m.name })),
+        answer: [1, 2, 3],
+      };
+    }
+
+    case 'what-if': {
+      // استدلال علت و معلول — «اگر … چه می‌شود؟»
+      //
+      // این تنها گِردِ منطق است که پاسخش روی صفحه *نیست*: کودک
+      // باید نتیجه را پیش‌بینی کند. برای همین متنِ کوتاه دارد ولی
+      // هر گزینه تصویر دارد تا پیش‌خوان هم بتواند بازی کند.
+      // ⚠ کلیدهای SHAPES نامِ داخلی‌اند («کمک‌کردن»، «کتاب‌خواندن») و
+      // برای *نمایش* ساخته نشده‌اند: در دکمهٔ باریک وسطِ نیم‌فاصله
+      // می‌شکنند و «کمک‌کرد / ن» می‌شود. پس هر گزینه برچسبِ کوتاهِ
+      // خودش را دارد.
+      const LABEL = {
+        'کمک‌کردن': 'کمک',
+        'کتاب‌خواندن': 'کتاب',
+        دستمال: 'تمیز کن',
+        خواب: 'خواب',
+        غذا: 'غذا',
+        دویدن: 'دویدن',
+        توپ: 'بازی',
+        خانه: 'خانه',
+      };
+      const CASES = [
+        { if: 'برج‌خراب', then: 'کمک‌کردن', wrong: ['خواب', 'غذا'], q: 'برج خراب شد. بعد چه کار خوبی است؟' },
+        { if: 'بستنی‌افتاده', then: 'دستمال', wrong: ['دویدن', 'کتاب‌خواندن'], q: 'بستنی افتاد. اول چه کار می‌کنی؟' },
+        { if: 'زانوی‌زخمی', then: 'کمک‌کردن', wrong: ['دویدن', 'توپ'], q: 'زانویت زخم شد. چه کار می‌کنی؟' },
+        { if: 'رعدوبرق', then: 'خانه', wrong: ['دویدن', 'توپ'], q: 'رعد و برق شد. کجا می‌روی؟' },
+      ];
+      const usable = CASES.filter(
+        (c) => hasPicture(c.if) && hasPicture(c.then) && c.wrong.every(hasPicture),
+      );
+      if (!usable.length) return null;
+      const c = pick(usable);
+      const wrong = shuffle(c.wrong.slice()).slice(0, n - 1);
+      return {
+        type: 'choice',
+        prompt: c.q,
+        display: { kind: 'pic-only', icon: c.if },
+        options: shuffle([c.then, ...wrong]).map((v) => ({
+          label: LABEL[v] ?? v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: c.then,
+      };
+    }
+
+    case 'same-different': {
+      // «کدام دو تا شبیه هم‌اند؟» — پایهٔ مقایسه و تعمیم.
+      //
+      // ⚠ شباهت باید *یک* دلیل روشن داشته باشد، وگرنه چند جواب
+      // درست می‌شود. پس از TRAITS استفاده می‌کنیم: دو عضو یک
+      // ویژگی، کنار یکی که آن ویژگی را ندارد.
+      // اینجا فقط ۲ عضو لازم است (یکی نمایش، یکی پاسخ) چون فریب‌ها
+      // از بیرونِ ویژگی می‌آیند، نه از داخلش.
+      const usable = Object.entries(TRAITS).filter(
+        ([, items]) => items.filter(hasPicture).length >= 2,
+      );
+      if (!usable.length) return null;
+      const [trait, rawItems] = pick(usable);
+      const inTrait = shuffle(rawItems.filter(hasPicture));
+      const shown = inTrait[0];
+      const answer = inTrait[1];
+      const outside = shuffle(
+        EVERYDAY_NAMES.filter((x) => !rawItems.includes(x) && hasPicture(x)),
+      ).slice(0, n - 1);
+      if (outside.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: `کدام مثل این ${trait}؟`,
+        display: { kind: 'pic-only', icon: shown },
+        options: shuffle([answer, ...outside]).map((v) => ({ label: v, value: v, pic: v, picLabel: true })),
+        answer,
+        because: `${shown} و ${answer} هر دو ${trait}.`,
       };
     }
 

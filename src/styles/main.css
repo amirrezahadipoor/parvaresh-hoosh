@@ -593,6 +593,28 @@ body {
   grid-template-columns: repeat(3, 1fr);
 }
 
+/* ⚠ سه ستون در ۳۲۰ پیکسل: ۳۲۰ − ۲×۱۶ حاشیه − ۲×۱۶ فاصله = ۲۵۶،
+   یعنی هر ستون ۸۵px. ولی .ico.lg عرضِ ثابت ۶۲px دارد و با padding
+   دکمه (۲×۱۴) و border (۲×۳) می‌شود ۹۶px — گرید نمی‌تواند کوچک‌تر
+   از محتوا شود، پس دکمه‌ها از دو طرف بیرون می‌زدند.
+   min-inline-size:0 به گرید اجازهٔ کوچک شدن می‌دهد و تصویر هم
+   نسبی می‌شود. */
+@media (max-width: 380px) {
+  .options.cols-3 > .opt {
+    min-inline-size: 0;
+    padding-inline: var(--s2);
+  }
+
+  .options.cols-3 .ico.lg {
+    inline-size: 46px;
+    block-size: 46px;
+  }
+
+  .options.cols-3 .pic-label {
+    font-size: 15px;
+  }
+}
+
 .opt {
   min-height: var(--tap);
   border: 3px solid var(--line);
@@ -1194,6 +1216,12 @@ canvas.pad {
 .pic-label {
   display: block;
   margin-top: var(--s2);
+  /* ⚠ نام‌های نیم‌فاصله‌دار («کمک‌کردن») وسطِ خودشان می‌شکستند و
+     «کمک‌کرد / ن» می‌شد. نیم‌فاصله نقطهٔ شکست مجاز است، ولی برای
+     کودکی که تازه می‌خواند، واژهٔ نصف‌شده خواندنی نیست. */
+  overflow-wrap: normal;
+  word-break: keep-all;
+  hyphens: none;
   font-size: 19px;
   font-weight: 800;
   font-family: system-ui, sans-serif;

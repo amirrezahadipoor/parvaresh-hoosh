@@ -142,4 +142,125 @@ export const LOGIC_LESSONS = [
     ],
   },
 
+  // ── دستهٔ دوم: از ادراک به استدلال ─────────────────────────────
+  // هشت درس اول همه ادراکی بودند (الگو، سایه، حافظه). اینها
+  // استدلال می‌خواهند: دو معیار همزمان، نفی، علت و معلول، توالی.
+  // منبع: راهنمای رشد شناختی پیش‌دبستان (طبقه‌بندی با یک، دو و سه
+  // ویژگی) و پژوهش کارکردهای اجرایی.
+
+  {
+    id: 'logic-same-01',
+    domain: 'logic',
+    order: 9,
+    title: 'کدام شبیه است؟',
+    goal: 'کودک دو چیز را بر پایهٔ یک ویژگی مشترک کنار هم می‌گذارد.',
+    minutes: 5,
+    parentNote:
+      'بپرسید «این دو تا چه شباهتی دارند؟» و منتظر دلیل بمانید. گفتنِ دلیل، فکر را از حدس جدا می‌کند.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'same-different', prompt: 'کدام شبیه این است؟' },
+      { kind: 'same-different', prompt: 'کدام شبیه این است؟' },
+      { kind: 'category', prompt: 'کدام {cat} است؟' },
+      { kind: 'same-different', prompt: 'کدام شبیه این است؟' },
+      { kind: 'same-different', prompt: 'کدام شبیه این است؟' },
+      { kind: 'odd-one-out', items: ['سیب', 'موز', 'گیلاس', 'کفش'], answer: 'کفش', because: 'بقیه میوه هستند.', prompt: 'کدام یکی فرق دارد؟' },
+    ],
+  },
+  {
+    id: 'logic-two-rule-01',
+    domain: 'logic',
+    order: 10,
+    title: 'هم این، هم آن',
+    goal: 'کودک دو شرط را همزمان در ذهن نگه می‌دارد و چیزی را می‌یابد که هر دو را دارد.',
+    minutes: 6,
+    parentNote:
+      'نگه‌داشتن دو شرط با هم جهش بزرگی است. سر کمد بپرسید: «کدام هم قرمز است و هم آستین‌دار؟»',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'category', prompt: 'کدام {cat} است؟' },
+      { kind: 'two-rule', prompt: 'کدام هر دو را دارد؟' },
+      { kind: 'two-rule', prompt: 'کدام هر دو را دارد؟' },
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+      { kind: 'two-rule', prompt: 'کدام هر دو را دارد؟' },
+      { kind: 'two-rule', prompt: 'کدام هر دو را دارد؟' },
+    ],
+  },
+  {
+    id: 'logic-not-01',
+    domain: 'logic',
+    order: 11,
+    title: 'کدام نیست؟',
+    goal: 'کودک قاعده را می‌سازد و بعد واژگونش می‌کند — منطقِ «نه».',
+    minutes: 6,
+    parentNote:
+      'نفی از اثبات سخت‌تر است: کودک باید اول قاعده را بفهمد، بعد خلافش را پیدا کند. اگر گیر کرد، اول بپرسید «اینها چه شباهتی دارند؟»',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'trait', prompt: 'کدام {t}؟' },
+      { kind: 'not-rule', prompt: 'کدام نیست؟' },
+      { kind: 'not-rule', prompt: 'کدام نیست؟' },
+      { kind: 'odd-one-out', items: ['پرنده', 'پروانه', 'زنبور', 'ماهی'], answer: 'ماهی', because: 'بقیه پرواز می‌کنند.', prompt: 'کدام یکی فرق دارد؟' },
+      { kind: 'not-rule', prompt: 'کدام نیست؟' },
+      { kind: 'not-rule', prompt: 'کدام نیست؟' },
+    ],
+  },
+  {
+    id: 'logic-event-01',
+    domain: 'logic',
+    order: 12,
+    title: 'اول، بعد، آخر',
+    goal: 'کودک کارهای روزمره را به ترتیب درست می‌چیند.',
+    minutes: 6,
+    parentNote:
+      'ترتیب رویداد پایهٔ فهم داستان است. موقع خواب بپرسید «امروز اول چه کار کردیم؟ بعدش؟»',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'event-order', prompt: 'به ترتیب بچین: اول چه کار می‌کنی؟' },
+      { kind: 'event-order', prompt: 'به ترتیب بچین: اول چه کار می‌کنی؟' },
+      { kind: 'order-size', count: 3, prompt: 'از کوچک به بزرگ بچین' },
+      { kind: 'event-order', prompt: 'به ترتیب بچین: اول چه کار می‌کنی؟' },
+      { kind: 'event-order', prompt: 'به ترتیب بچین: اول چه کار می‌کنی؟' },
+      { kind: 'order-number', count: 3, prompt: 'از کم به زیاد بچین' },
+    ],
+  },
+  {
+    id: 'logic-whatif-01',
+    domain: 'logic',
+    order: 13,
+    title: 'بعدش چه می‌شود؟',
+    goal: 'کودک نتیجهٔ یک اتفاق را پیش‌بینی می‌کند.',
+    minutes: 6,
+    parentNote:
+      'این تنها تمرینی است که پاسخش روی صفحه نیست؛ کودک باید نتیجه را در ذهنش بسازد. وسط قصه مکث کنید و بپرسید «حالا چه می‌شود؟»',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'what-if', prompt: 'بعدش چه می‌شود؟' },
+      { kind: 'what-if', prompt: 'بعدش چه می‌شود؟' },
+      { kind: 'event-order', prompt: 'به ترتیب بچین: اول چه کار می‌کنی؟' },
+      { kind: 'what-if', prompt: 'بعدش چه می‌شود؟' },
+      { kind: 'what-if', prompt: 'بعدش چه می‌شود؟' },
+      { kind: 'same-different', prompt: 'کدام شبیه این است؟' },
+    ],
+  },
+  {
+    id: 'logic-mixed-01',
+    domain: 'logic',
+    order: 14,
+    title: 'مرور فکرها',
+    goal: 'کودک همهٔ مهارت‌های استدلالی این مسیر را با هم مرور می‌کند.',
+    minutes: 7,
+    parentNote:
+      'درس مرور. اگر جایی گیر کرد، همان درس را دوباره بازی کنید؛ تکرار فاصله‌دار از تمرین طولانیِ یک‌باره بهتر است.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'two-rule', prompt: 'کدام هر دو را دارد؟' },
+      { kind: 'not-rule', prompt: 'کدام نیست؟' },
+      { kind: 'event-order', prompt: 'به ترتیب بچین: اول چه کار می‌کنی؟' },
+      { kind: 'what-if', prompt: 'بعدش چه می‌شود؟' },
+      { kind: 'same-different', prompt: 'کدام شبیه این است؟' },
+      { kind: 'pattern-next', unit: 'shape', sequence: ['ستاره', 'قلب', 'ستاره', 'قلب'], answer: 'ستاره', prompt: 'شکل بعدی کدام است؟' },
+    ],
+  },
+
 ];

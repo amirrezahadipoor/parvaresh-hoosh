@@ -29,7 +29,12 @@ for (const trackId of TRACK_ORDER) {
         checks++;
 
         if (!r.prompt || !String(r.prompt).trim()) errors.push(`${tag}: پرسش خالی`);
-        if (/\{[a-z]\}/.test(r.prompt)) errors.push(`${tag}: جای‌نگهدار پر نشده: ${r.prompt}`);
+        // ⚠ الگوی قبلی {[a-z]} فقط جای‌نگهدارِ تک‌حرفی را می‌گرفت، پس
+        // «کدام {trait}؟» بی‌سروصدا رد شد و تا صفحهٔ کودک رسید.
+        // هر {…} پر نشده باگ است، چند حرفی هم که باشد.
+        if (/\{[a-zA-Z]+\}/.test(r.prompt)) {
+          errors.push(`${tag}: جای‌نگهدار پر نشده: ${r.prompt}`);
+        }
 
         if (r.type === 'choice') {
           if (!r.options?.length) errors.push(`${tag}: بدون گزینه`);

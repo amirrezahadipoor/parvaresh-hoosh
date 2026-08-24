@@ -571,6 +571,12 @@ function playScreen(lessonId) {
         }
       } else if (o.geo) {
         btn.append(el('span', { class: 'ico lg', html: svgGeo(o.geo.name, o.geo.color) || '' }));
+        // در گِردِ دو معیاره، شکل تنها کافی نیست: کودک باید ببیند
+        // گزینه «قلب قرمز» است نه فقط یک قلب. برچسب هر دو شرط را
+        // می‌گوید و انتخاب را از حدس جدا می‌کند.
+        if (o.geoLabel) {
+          btn.append(el('span', { class: 'pic-label', text: o.label }));
+        }
       } else if (o.shapeRepeat) {
         const g = el('span', { class: 'grp' });
         for (let k = 0; k < o.shapeRepeat.times; k++) {
