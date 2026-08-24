@@ -242,6 +242,59 @@ check(empties === 0, `${empties} شکل SVG بدون محتواست`);
   }
 }
 
+// ── نمودار هفتگی والدین ─────────────────────────────────────────────────
+// ⚠ باگ: ستون‌های بلند بریده می‌شدند (۷۷٪ و ۱۰۰٪ هر دو ۷۲px) چون
+// درصدِ ارتفاع در برابر کل ستون شامل برچسب روز حساب می‌شد. نمودار
+// دروغ می‌گفت. اینجا نسبتِ واقعیِ پیکسل‌ها سنجیده می‌شود، نه فقط
+// وجودِ نمودار.
+{
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.evaluate(() => {
+    const playLog = {};
+    const mins = [8, 14, 5, 22, 11, 17, 9];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const p2 = (x) => String(x).padStart(2, '0');
+      playLog[`${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`] = mins[i];
+    }
+    const s = JSON.parse(localStorage.getItem('parvaresh-hoosh/v4') || '{}');
+    localStorage.setItem('parvaresh-hoosh/v4', JSON.stringify({ ...s, playLog }));
+  });
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+
+  const pass = async (sel) => {
+    const q = await page.locator('.gate .prompt').textContent();
+    const m2 = q.match(/(\d+)\s*×\s*(\d+)/);
+    await page.locator('.gate input').fill(String(Number(m2[1]) * Number(m2[2])));
+    await page.locator('.gate button').click();
+    await page.waitForTimeout(350);
+  };
+  await page.locator('.icon-btn[aria-label="تنظیمات"]').first().click();
+  await page.waitForTimeout(350);
+  await pass();
+  await page.locator('.btn.ghost', { hasText: 'بخش والدین' }).click();
+  await page.waitForTimeout(350);
+  if (await page.locator('.gate').count()) await pass();
+
+  const bars = await page.evaluate(() =>
+    [...document.querySelectorAll('.chart .bar')].map((b) => ({
+      pct: parseFloat(b.style.height),
+      px: b.getBoundingClientRect().height,
+    })),
+  );
+  check(bars.length === 7, `نمودار هفته باید ۷ ستون داشته باشد، ${bars.length} دارد`);
+  if (bars.length === 7) {
+    const tallest = bars.reduce((a, b) => (b.pct > a.pct ? b : a));
+    const clipped = bars.filter((b) => b.pct < tallest.pct - 5 && b.px >= tallest.px - 1);
+    check(
+      clipped.length === 0,
+      `${clipped.length} ستون نمودار بریده شده — ارتفاع با درصدش نمی‌خواند`,
+    );
+    console.log('✓ نمودار هفتگی: ارتفاع ستون‌ها با داده می‌خواند');
+  }
+}
+
 await browser.close();
 
 // ── گزارش ───────────────────────────────────────────────────────────────

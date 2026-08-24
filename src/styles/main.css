@@ -1314,12 +1314,18 @@ canvas.pad {
   padding: var(--s3);
 }
 
+/* ⚠ باگ: ستون‌های بلند بریده می‌شدند. ارتفاع ستون درصدی است و در
+   چیدمان flex در برابر *کل* ستون (میله + برچسب روز) حساب می‌شد، پس
+   ۷۷٪ و ۱۰۰٪ هر دو به یک ارتفاعِ بریده می‌رسیدند و نمودار دروغ
+   می‌گفت — والد نمی‌فهمید کدام روز بیشتر بازی شده.
+   با grid، ردیف ۱fr فقط جای میله است و درصد در برابر همان حساب
+   می‌شود؛ برچسب ردیف جداگانه دارد و ارتفاع را نمی‌خورد. */
 .bar-wrap {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: end;
+  justify-items: center;
   height: 100%;
   gap: 4px;
 }
