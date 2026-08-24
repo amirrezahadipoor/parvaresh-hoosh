@@ -114,6 +114,23 @@ console.log('✓ صفحهٔ پایان درس نمایش داده شد');
 await page.locator('.btn.ghost', { hasText: 'خانه' }).click();
 await page.waitForSelector('.play-btn');
 await page.locator('.icon-btn[aria-label="تنظیمات"]').click();
+// تنظیمات پشت دروازهٔ ضرب است (تا کودک نتواند پیشرفتش را پاک کند).
+// ⚠ waitForSelector بدون catch کل آزمون را با TimeoutErrorِ بی‌معنی
+// می‌کشد و علت واقعی پنهان می‌ماند. خطای نام‌دار می‌دهیم.
+{
+  const gateShown = await page
+    .waitForSelector('.gate', { timeout: 5000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!gateShown) {
+    errors.push('صفحهٔ تنظیمات دروازه ندارد — کودک به پاک‌کردن پیشرفت دسترسی دارد');
+  } else {
+    const q = await page.locator('.gate .prompt').textContent();
+    const m = q.match(/(\d+)\s*×\s*(\d+)/);
+    await page.locator('.gate input').fill(String(Number(m[1]) * Number(m[2])));
+    await page.locator('.gate button').click();
+  }
+}
 await page.waitForSelector('select');
 await page.selectOption('select', '5');
 await page.locator('.btn', { hasText: 'ذخیره' }).click();
@@ -175,6 +192,55 @@ const empties = await page.locator('.opt svg').evaluateAll(
   (els) => els.filter((e) => e.children.length === 0).length,
 );
 check(empties === 0, `${empties} شکل SVG بدون محتواست`);
+
+// ── دروازهٔ والدین ───────────────────────────────────────────────────────
+// ⚠ باگ واقعی: صفحهٔ تنظیمات پشت دروازه نبود و دکمهٔ «پاک کردن همهٔ
+// پیشرفت» با یک تپ روی چرخ‌دنده در دسترس کودک بود. confirm() محافظ
+// نیست — کودکِ پیش‌خوان متنش را نمی‌خواند و تأیید می‌زند.
+// این محافظ می‌پاید که هیچ کارِ ویرانگری بی‌دروازه نماند.
+{
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.locator('.icon-btn[aria-label="تنظیمات"]').first().click();
+  await page.waitForTimeout(400);
+
+  const gated = await page.evaluate(() => ({
+    gate: !!document.querySelector('.gate'),
+    danger: [...document.querySelectorAll('button')].some((b) => /پاک کردن/.test(b.textContent)),
+    q: document.querySelector('.gate .prompt')?.textContent || '',
+  }));
+  check(gated.gate, 'تپ روی چرخ‌دنده مستقیم وارد تنظیمات می‌شود — دروازه ندارد');
+  check(!gated.danger, 'دکمهٔ «پاک کردن همهٔ پیشرفت» پیش از دروازه دیده می‌شود');
+
+  // ⚠ اگر دروازه نبود، ادامهٔ بررسی‌ها بی‌معنی است و locatorها با
+  // TimeoutErrorِ خام کل آزمون را می‌کشند. خطا ثبت شده؛ رد می‌شویم.
+  const m = gated.gate ? gated.q.match(/(\d+)\s*×\s*(\d+)/) : null;
+  if (gated.gate) {
+    // پاسخ غلط نباید رد شود
+    await page.locator('.gate input').fill('1');
+    await page.locator('.gate button').click();
+    await page.waitForTimeout(300);
+    check(
+      await page.evaluate(() => !!document.querySelector('.gate')),
+      'دروازه با پاسخ غلط باز شد',
+    );
+  }
+
+  // پاسخ درست باید رد شود
+  if (m) {
+    await page.locator('.gate input').fill(String(Number(m[1]) * Number(m[2])));
+    await page.locator('.gate button').click();
+    await page.waitForTimeout(400);
+    check(
+      await page.evaluate(() =>
+        [...document.querySelectorAll('button')].some((b) => /پاک کردن/.test(b.textContent)),
+      ),
+      'دروازه با پاسخ درست باز نشد',
+    );
+    console.log('✓ دروازهٔ والدین: تنظیمات و پاک‌کردن پیشرفت محافظت شده‌اند');
+  } else if (gated.gate) {
+    errors.push('پرسش دروازه خوانده نشد');
+  }
+}
 
 await browser.close();
 

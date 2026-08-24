@@ -107,7 +107,8 @@ export function homeScreen() {
         class: 'icon-btn',
         'aria-label': 'تنظیمات',
         html: gearIcon(),
-        onClick: () => render(settingsScreen()),
+        // اول دروازه: تنظیمات سن و پاک‌کردن پیشرفت کار والد است.
+        onClick: () => render(parentGate(settingsScreen)),
       }),
     ]),
     el('div', { class: 'buddy-row' }, [
@@ -795,14 +796,20 @@ function timeUpScreen() {
 // یک ضرب ساده. کودک ۵ تا ۸ ساله نمی‌تواند از آن بگذرد، ولی والد در دو
 // ثانیه رد می‌شود. رمز واقعی برای برنامه‌ای که هیچ خریدی درونش نیست
 // زیاده‌روی است و فقط والد را آزار می‌دهد.
-function parentGate() {
+//
+// ⚠ این دروازه اول فقط جلوی «گزارش پیشرفت» بود، ولی صفحهٔ تنظیمات —
+// با دکمهٔ «پاک کردن همهٔ پیشرفت» — پشت آن نبود و کودک با یک تپ روی
+// چرخ‌دنده به آن می‌رسید. confirm() هم محافظ نیست: کودکی که خواندن
+// بلد نیست متنش را نمی‌فهمد و «تأیید» را می‌زند. حالا هر چیزی که
+// حال برنامه را تغییر می‌دهد پشت دروازه است.
+function parentGate(next = parentScreen) {
   const a = 3 + Math.floor(Math.random() * 7);
   const b = 3 + Math.floor(Math.random() * 7);
   const input = el('input', { type: 'number', inputmode: 'numeric', placeholder: '؟' });
   const err = el('div', { class: 'muted' });
 
   const submit = () => {
-    if (Number(input.value) === a * b) render(parentScreen());
+    if (Number(input.value) === a * b) render(next());
     else {
       err.textContent = 'درست نیست. دوباره تلاش کنید.';
       input.value = '';
@@ -810,7 +817,7 @@ function parentGate() {
   };
 
   return el('div', { class: 'screen' }, [
-    topbar('بخش والدین', () => render(homeScreen())),
+    topbar(next === settingsScreen ? 'تنظیمات' : 'بخش والدین', () => render(homeScreen())),
     el('div', { class: 'gate' }, [
       el('p', { class: 'prompt', dir: 'ltr', text: `${a} × ${b} = ?` }),
       input,
