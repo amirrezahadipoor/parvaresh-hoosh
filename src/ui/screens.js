@@ -383,6 +383,100 @@ function playScreen(lessonId) {
       if (r.display.kind === 'shadow') {
         stage.append(el('div', { class: 'ico shadow', html: svgShape(r.display.value) || '' }));
       }
+      // ── نمایش‌های ریاضیِ دور دوم ─────────────────────────────
+      // ⚠ درس گرفته‌شده: کلیدی که این‌جا شاخه نداشته باشد بی‌سروصدا
+      // نادیده گرفته می‌شود و صفحه خالی می‌ماند. هر kind تازه در
+      // rounds.js باید این‌جا هم شاخه بگیرد.
+
+      // چوب‌خط: دسته‌های ۵تایی، پنجمی مورب روی چهارتای قبل
+      if (r.display.kind === 'tally') {
+        const box = el('div', { class: 'tally' });
+        const groups = Math.floor(r.display.times / 5);
+        const rest = r.display.times % 5;
+        for (let g = 0; g < groups; g++) {
+          box.append(
+            el('span', { class: 'tally-g full', style: `animation-delay:${g * 70}ms` }, [
+              ...Array.from({ length: 4 }, () => el('i', { class: 'tick' })),
+              el('i', { class: 'tick cross' }),
+            ]),
+          );
+        }
+        if (rest) {
+          box.append(
+            el('span', { class: 'tally-g', style: `animation-delay:${groups * 70}ms` },
+              Array.from({ length: rest }, () => el('i', { class: 'tick' }))),
+          );
+        }
+        stage.append(box);
+      }
+
+      // رشتهٔ عددی برای شمردن چندتایی: ۲ ۴ ۶ ؟
+      if (r.display.kind === 'number-seq') {
+        const seq = el('div', { class: 'num-seq' });
+        r.display.items.forEach((v, i) =>
+          seq.append(el('span', { class: 'num-chip', style: `animation-delay:${i * 80}ms`, text: v })),
+        );
+        seq.append(el('span', { class: 'num-chip q', text: '؟' }));
+        stage.append(seq);
+      }
+
+      // ارزش مکانی: دسته‌های ده‌تایی کنار یکی‌ها
+      if (r.display.kind === 'place-value') {
+        const box = el('div', { class: 'pv' });
+        const tens = el('div', { class: 'pv-tens' });
+        for (let t = 0; t < r.display.tens; t++) {
+          const rod = el('span', { class: 'pv-rod', style: `animation-delay:${t * 70}ms` });
+          for (let k = 0; k < 10; k++) rod.append(el('i', { class: 'pv-bead' }));
+          tens.append(rod);
+        }
+        box.append(tens);
+        // ⚠ وقتی یکی‌ها صفرند، ظرفِ خالی با padding/gap باقی می‌ماند و
+        // یک جعبهٔ نامرئی کنار دسته‌ها می‌سازد. اصلاً نسازش.
+        if (r.display.ones > 0) {
+          const ones = el('div', { class: 'pv-ones' });
+          for (let o = 0; o < r.display.ones; o++) {
+            ones.append(el('i', { class: 'pv-one', style: `animation-delay:${(r.display.tens + o) * 50}ms` }));
+          }
+          box.append(ones);
+        }
+        stage.append(box);
+      }
+
+      // شکل هندسی بزرگ با گوشه‌های برجسته
+      if (r.display.kind === 'geo-big') {
+        stage.append(el('span', { class: 'ico big-pic', html: svgGeo(r.display.name, '#2E86AB') || '' }));
+      }
+
+      // تقارن: فقط *نیمهٔ* شکل کنار خط آینه.
+      //
+      // ⚠ نسخهٔ اول شکل کامل و بازتابش را کنار هم می‌گذاشت — یعنی
+      // پاسخ را مستقیم نشان می‌داد و کودک فقط شکلِ دیده‌شده را
+      // می‌زد. هیچ تقارنی آموخته نمی‌شد. حالا نیمه را می‌بیند و
+      // باید در ذهن کاملش کند.
+      if (r.display.kind === 'mirror') {
+        stage.append(
+          el('div', { class: 'mirror' }, [
+            el('span', { class: 'ico mr-half', html: svgGeo(r.display.name, '#2E86AB') || '' }),
+            el('span', { class: 'mr-line', 'aria-hidden': 'true' }),
+          ]),
+        );
+      }
+
+      // جمع با جای خالی: ۵ + ؟ = ۷ به‌صورت دیدنی
+      if (r.display.kind === 'missing') {
+        const box = el('div', { class: 'missing' });
+        // هر دو گروه نقطهٔ هم‌اندازه دارند: اگر یکی درشت و دیگری
+        // ریز باشد، کودک اندازه را با تعداد اشتباه می‌گیرد.
+        const known = el('span', { class: 'ms-group' });
+        for (let k = 0; k < r.display.part; k++) known.append(el('i', { class: 'dot sm' }));
+        box.append(known, el('span', { class: 'ms-plus', text: '+' }), el('span', { class: 'ms-q', text: '؟' }));
+        box.append(el('span', { class: 'ms-eq', text: '=' }));
+        const goal = el('span', { class: 'ms-group goal' });
+        for (let k = 0; k < r.display.total; k++) goal.append(el('i', { class: 'dot sm' }));
+        box.append(goal);
+        stage.append(box);
+      }
+
       if (r.display.kind === 'sequence') {
         const seq = el('div', { class: 'seq' });
         r.display.items.forEach((it) => seq.append(chip(it, r.display.unit)));

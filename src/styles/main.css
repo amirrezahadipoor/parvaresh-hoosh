@@ -1833,3 +1833,192 @@ canvas.pad {
   }
 
 }
+
+/* ── نمایش‌های ریاضیِ دور دوم ─────────────────────────────────
+   چوب‌خط، رشتهٔ عددی، ارزش مکانی، تقارن و جمعِ جای‌خالی.
+   همه با توکن‌های موجود ساخته شده‌اند تا یک‌دست بمانند. */
+
+/* چوب‌خط — دستهٔ ۵تایی که پنجمی مورب روی چهارتای قبل می‌افتد */
+.tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s5);
+  justify-content: center;
+  align-items: center;
+  padding: var(--s3);
+}
+
+.tally-g {
+  position: relative;
+  display: flex;
+  gap: 7px;
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.tally .tick {
+  inline-size: 5px;
+  block-size: 46px;
+  border-radius: 3px;
+  background: var(--math, #2E86AB);
+  display: block;
+}
+
+/* پنجمی: مورب روی چهارتای قبل — همان چیزی که کتاب می‌خواهد */
+.tally .tick.cross {
+  position: absolute;
+  inset-inline-start: -4px;
+  inset-block-start: 0;
+  inline-size: 5px;
+  block-size: 46px;
+  transform: rotate(-58deg);
+  transform-origin: center;
+}
+
+/* رشتهٔ عددی برای شمردن چندتایی */
+.num-seq {
+  display: flex;
+  gap: var(--s3);
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.num-chip {
+  min-inline-size: 46px;
+  padding: var(--s3) var(--s2);
+  border-radius: 14px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  font-size: var(--t-title);
+  font-weight: 800;
+  text-align: center;
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.num-chip.q {
+  border-style: dashed;
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+/* ارزش مکانی — میله‌های ده‌تایی و مهره‌های یکی */
+.pv {
+  display: flex;
+  gap: var(--s5);
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.pv-tens,
+.pv-ones {
+  display: flex;
+  gap: var(--s2);
+  flex-wrap: wrap;
+  justify-content: center;
+  max-inline-size: 190px;
+}
+
+.pv-rod {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 8px;
+  background: #E8F1F6;
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.pv-bead {
+  inline-size: 12px;
+  block-size: 6px;
+  border-radius: 2px;
+  background: #2E86AB;
+  display: block;
+}
+
+.pv-one {
+  inline-size: 14px;
+  block-size: 14px;
+  border-radius: 4px;
+  background: #F4B942;
+  display: block;
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+/* تقارن — شکل، خط آینه، بازتاب */
+.mirror {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+/* فقط نیمهٔ شکل دیده می‌شود؛ نیمهٔ دیگر را کودک باید تصور کند.
+   بریدن با clip-path انجام می‌شود تا جعبهٔ چیدمان دست‌نخورده
+   بماند (scale جعبه را کوچک نمی‌کند و سرریز می‌سازد). */
+.mirror .mr-half {
+  inline-size: 96px;
+  block-size: 96px;
+  clip-path: inset(0 0 0 50%);
+  /* بریدن، جعبه را کوچک نمی‌کند؛ پس نیمهٔ خالی با حاشیهٔ منفی
+     جمع می‌شود تا لبهٔ بریده به خطِ آینه بچسبد. */
+  margin-inline-end: -48px;
+}
+
+.mirror .mr-line {
+  inline-size: 3px;
+  block-size: 84px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--brand) 0 8px,
+    transparent 8px 15px
+  );
+  display: block;
+}
+
+/* جمع با جای خالی: گروه معلوم + ؟ = گروه هدف */
+.missing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s3);
+  flex-wrap: wrap;
+}
+
+.ms-group {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-inline-size: 110px;
+  padding: var(--s2);
+  border-radius: 12px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+}
+
+.ms-group.goal {
+  border-style: dashed;
+  border-color: var(--math, #2E86AB);
+}
+
+.ms-plus,
+.ms-eq {
+  font-size: var(--t-title);
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.ms-q {
+  inline-size: 42px;
+  block-size: 42px;
+  border-radius: 12px;
+  border: 2px dashed var(--brand);
+  color: var(--brand);
+  font-size: var(--t-title);
+  font-weight: 800;
+  display: grid;
+  place-content: center;
+}

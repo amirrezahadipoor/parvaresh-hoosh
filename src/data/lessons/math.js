@@ -156,4 +156,184 @@ export const MATH_LESSONS = [
     ],
   },
 
+  // ── دور دوم: بر پایهٔ کتاب ریاضی اول دبستان ایران ──────────────────
+  //
+  // تم‌های کتاب که تا اینجا پوشش نداشتند: چوب‌خط (تم ۴)، نوشتن رقم
+  // (تم‌های ۷ تا ۱۲)، تقارن (تم ۹)، گوشه و لبه (تم ۴)، دسته‌بندی و
+  // ارزش مکانی (تم ۱۵)، عددهای دو رقمی (تم ۱۶)، شمردن چندتایی (تم ۱۸).
+  //
+  // کتاب صریح توصیه می‌کند واژه‌های «ضلع» و «رأس» به کار نرود و
+  // «گوشه» جایشان بنشیند — در متن درس‌ها همان رعایت شده.
+
+  {
+    id: 'math-write-01',
+    domain: 'math',
+    order: 9,
+    title: 'نوشتن ۱ تا ۵',
+    goal: 'کودک رقم‌های ۱ تا ۵ را با انگشت می‌نویسد و شکلشان را می‌شناسد.',
+    minutes: 5,
+    parentNote:
+      'نوشتن رقم با انگشت پیش از قلم می‌آید. حافظهٔ حرکتی شکل رقم را بهتر از نگاه‌کردن ثبت می‌کند؛ روی شن یا بخار شیشه هم تمرین کنید.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'digit-trace', digit: 1, prompt: 'با انگشت روی ۱ بکش' },
+      { kind: 'digit-trace', digit: 2, prompt: 'با انگشت روی ۲ بکش' },
+      { kind: 'digit-trace', digit: 3, prompt: 'با انگشت روی ۳ بکش' },
+      { kind: 'pick-number', max: 5, prompt: 'کدام عدد {n} است؟' },
+      { kind: 'digit-trace', digit: 4, prompt: 'با انگشت روی ۴ بکش' },
+      { kind: 'digit-trace', digit: 5, prompt: 'با انگشت روی ۵ بکش' },
+    ],
+  },
+  {
+    id: 'math-write-02',
+    domain: 'math',
+    order: 10,
+    title: 'نوشتن ۶ تا ۹',
+    goal: 'کودک رقم‌های ۶ تا ۹ و صفر را می‌نویسد.',
+    minutes: 5,
+    parentNote: 'اگر رقمی را وارونه نوشت نگران نشوید؛ در این سن طبیعی است و با تکرار درست می‌شود.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'digit-trace', digit: 6, prompt: 'با انگشت روی ۶ بکش' },
+      { kind: 'digit-trace', digit: 7, prompt: 'با انگشت روی ۷ بکش' },
+      { kind: 'digit-trace', digit: 8, prompt: 'با انگشت روی ۸ بکش' },
+      { kind: 'pick-number', max: 10, prompt: 'کدام عدد {n} است؟' },
+      { kind: 'digit-trace', digit: 9, prompt: 'با انگشت روی ۹ بکش' },
+      { kind: 'digit-trace', digit: 0, prompt: 'با انگشت روی ۰ بکش' },
+    ],
+  },
+  {
+    id: 'math-tally-01',
+    domain: 'math',
+    order: 11,
+    title: 'چوب‌خط',
+    goal: 'کودک با چوب‌خط می‌شمارد و دستهٔ پنج‌تایی را می‌شناسد.',
+    minutes: 5,
+    parentNote:
+      'چوب‌خط روش شمارش آدم‌های قدیم بود. دستهٔ پنج‌تایی (چهار خط و یکی مورب) پایهٔ فهم «ده‌تایی» است که بعداً می‌آید.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'tally', max: 5, prompt: 'چند تا چوب‌خط هست؟' },
+      { kind: 'tally', max: 8, prompt: 'چند تا چوب‌خط هست؟' },
+      { kind: 'tally', max: 10, prompt: 'چند تا چوب‌خط هست؟' },
+      { kind: 'tally', max: 12, prompt: 'چند تا چوب‌خط هست؟' },
+      { kind: 'count-objects', max: 10, prompt: 'چند تا هست؟' },
+      { kind: 'tally', max: 12, prompt: 'چند تا چوب‌خط هست؟' },
+    ],
+  },
+  {
+    id: 'math-corner-01',
+    domain: 'math',
+    order: 12,
+    title: 'گوشه‌ها را بشمار',
+    goal: 'کودک گوشه‌های شکل‌های هندسی را می‌شمارد و شکل‌ها را از هم جدا می‌کند.',
+    minutes: 5,
+    parentNote:
+      'به‌جای «ضلع» و «رأس» بگویید «گوشه» — کتاب درسی هم همین را توصیه می‌کند. در خانه گوشه‌های میز و کتاب را بشمارید.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'shape-corners', prompt: 'این شکل چند گوشه دارد؟' },
+      { kind: 'shape-corners', prompt: 'این شکل چند گوشه دارد؟' },
+      { kind: 'shape-color', shape: 'مربع', prompt: 'کدام {shape} {color} است؟' },
+      { kind: 'shape-corners', prompt: 'این شکل چند گوشه دارد؟' },
+      { kind: 'count-shapes', max: 9, prompt: 'چند تا هست؟' },
+      { kind: 'shape-corners', prompt: 'این شکل چند گوشه دارد؟' },
+    ],
+  },
+  {
+    id: 'math-symmetry-01',
+    domain: 'math',
+    order: 13,
+    title: 'آینه و تقارن',
+    goal: 'کودک شکل قرینه را می‌شناسد — پایهٔ تفکر فضایی.',
+    minutes: 5,
+    parentNote:
+      'تقارن را با آینه نشان دهید: نصف شکل را بکشید و آینه را کنارش بگذارید. توانایی فضایی، ریاضی سال‌های بعد را پیش‌بینی می‌کند.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'symmetry', prompt: 'کدام شکل را در آینه می‌بینی؟' },
+      { kind: 'symmetry', prompt: 'کدام شکل را در آینه می‌بینی؟' },
+      { kind: 'shadow', prompt: 'این سایهٔ کدام است؟' },
+      { kind: 'symmetry', prompt: 'کدام شکل را در آینه می‌بینی؟' },
+      { kind: 'shadow', prompt: 'این سایهٔ کدام است؟' },
+      { kind: 'symmetry', prompt: 'کدام شکل را در آینه می‌بینی؟' },
+    ],
+  },
+  {
+    id: 'math-skip-01',
+    domain: 'math',
+    order: 14,
+    title: 'دوتا دوتا بشمار',
+    goal: 'کودک دوتایی و پنج‌تایی می‌شمارد — پایهٔ ضرب.',
+    minutes: 5,
+    parentNote:
+      'موقع پوشیدن جوراب دوتا دوتا بشمارید و انگشتان دست را پنج‌تا پنج‌تا. شمردن چندتایی راه رسیدن به ضرب است.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'skip-count', step: 2, prompt: '{s} تا {s} تا بشمار. بعدی چند است؟' },
+      { kind: 'skip-count', step: 2, prompt: '{s} تا {s} تا بشمار. بعدی چند است؟' },
+      { kind: 'skip-count', step: 5, prompt: '{s} تا {s} تا بشمار. بعدی چند است؟' },
+      { kind: 'next-number', max: 20, prompt: 'بعد از {n} چه عددی می‌آید؟' },
+      { kind: 'skip-count', step: 5, prompt: '{s} تا {s} تا بشمار. بعدی چند است؟' },
+      { kind: 'skip-count', step: 10, prompt: '{s} تا {s} تا بشمار. بعدی چند است؟' },
+    ],
+  },
+  {
+    id: 'math-place-01',
+    domain: 'math',
+    order: 15,
+    title: 'ده‌تایی و یکی',
+    goal: 'کودک عدد دو رقمی را به دستهٔ ده‌تایی و یکی می‌شکند.',
+    minutes: 6,
+    parentNote:
+      'ارزش مکانی سخت‌ترین مفهوم این سال است. با دسته‌های ده‌تایی مداد یا نخود تمرین کنید تا «۲۳ یعنی دو دسته و سه تا» دیدنی شود.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'place-value', mode: 'tens', prompt: 'چند دستهٔ ده‌تایی می‌بینی؟' },
+      { kind: 'place-value', prompt: 'روی هم چند تا هست؟' },
+      { kind: 'place-value', mode: 'tens', prompt: 'چند دستهٔ ده‌تایی می‌بینی؟' },
+      { kind: 'place-value', prompt: 'روی هم چند تا هست؟' },
+      { kind: 'compare-numbers', max: 50, mode: 'more', prompt: 'کدام عدد بزرگ‌تر است؟' },
+      { kind: 'place-value', prompt: 'روی هم چند تا هست؟' },
+    ],
+  },
+  {
+    id: 'math-missing-01',
+    domain: 'math',
+    order: 16,
+    title: 'چند تا کم داریم؟',
+    goal: 'کودک جمع با جای خالی را حل می‌کند — پل میان شمردن و جمع.',
+    minutes: 6,
+    parentNote:
+      '«۵ تا داری و باید ۷ تا بشود، چند تا کم داری؟» این پرسش از خودِ جمع مهم‌تر است: کودک را وادار می‌کند رابطهٔ عددها را بفهمد.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'missing-addend', max: 6, prompt: '{p} و چند تا می‌شود {t}؟' },
+      { kind: 'missing-addend', max: 6, prompt: '{p} و چند تا می‌شود {t}؟' },
+      { kind: 'missing-addend', max: 8, prompt: '{p} و چند تا می‌شود {t}؟' },
+      { kind: 'add', max: 10, prompt: '{a} + {b} چند می‌شود؟' },
+      { kind: 'missing-addend', max: 10, prompt: '{p} و چند تا می‌شود {t}؟' },
+      { kind: 'missing-addend', max: 10, prompt: '{p} و چند تا می‌شود {t}؟' },
+    ],
+  },
+  {
+    id: 'math-mixed-01',
+    domain: 'math',
+    order: 17,
+    title: 'همه‌چیز با هم',
+    goal: 'کودک همهٔ مهارت‌های ریاضی این مسیر را در یک درس مرور می‌کند.',
+    minutes: 7,
+    parentNote:
+      'درس مرور. اگر جایی گیر کرد، همان درس را دوباره بازی کنید — تکرار فاصله‌دار بهتر از تمرین طولانیِ یک‌باره است.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'subitize', max: 5, prompt: 'چند تا؟ سریع بگو!' },
+      { kind: 'tally', max: 10, prompt: 'چند تا چوب‌خط هست؟' },
+      { kind: 'missing-addend', max: 8, prompt: '{p} و چند تا می‌شود {t}؟' },
+      { kind: 'skip-count', step: 2, prompt: '{s} تا {s} تا بشمار. بعدی چند است؟' },
+      { kind: 'shape-corners', prompt: 'این شکل چند گوشه دارد؟' },
+      { kind: 'place-value', mode: 'tens', prompt: 'چند دستهٔ ده‌تایی می‌بینی؟' },
+    ],
+  },
+
 ];

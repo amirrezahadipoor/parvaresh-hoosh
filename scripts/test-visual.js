@@ -489,8 +489,105 @@ for (const vp of VIEWPORTS) {
     await page.goto(BASE, { waitUntil: 'networkidle' });
   }
 
+  // ── نمایش‌های ریاضی ─────────────────────────────────────────────
+  // خزشِ بازی فقط ۶ درس اول مسیر را می‌بیند، پس درس‌های ریاضیِ دور
+  // دوم (چوب‌خط، ارزش مکانی، تقارن…) هرگز بازرسی نمی‌شدند. اینجا
+  // مستقیم از نقشهٔ سفر بازشان می‌کنیم و هر گِرد را می‌سنجیم.
+  {
+    const MATH_LESSONS = [
+      'چوب‌خط',
+      'گوشه‌ها را بشمار',
+      'آینه و تقارن',
+      'دوتا دوتا بشمار',
+      'ده‌تایی و یکی',
+      'چند تا کم داریم؟',
+    ];
+    // ⚠ نمایهٔ آزمون هیچ درسی را باز نکرده، پس درس‌های ریاضیِ دور
+    // دوم روی نقشه قفل‌اند و کلیک روی‌شان با TimeoutError می‌ماند.
+    // همه را باز می‌کنیم — فقط برای همین بخش.
+    await page.evaluate(async () => {
+      const L = await import('/src/data/lessons/index.js');
+      const KEY = 'parvaresh-hoosh/v4';
+      const st = JSON.parse(localStorage.getItem(KEY) || '{}');
+      st.lessons = st.lessons || {};
+      for (const l of L.LESSONS) {
+        st.lessons[l.id] = { completions: 1, bestScore: 90, lastPlayed: new Date().toISOString() };
+      }
+      st.dailyLimitMin = 300;
+      localStorage.setItem(KEY, JSON.stringify(st));
+    });
+
+    for (const title of MATH_LESSONS) {
+      await page.goto(BASE, { waitUntil: 'networkidle' });
+      await page.evaluate(async () => {
+        await document.fonts.ready;
+      });
+      await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).first().click();
+      await page.waitForTimeout(250);
+      const item = page.locator('.map-item', { hasText: title }).first();
+      if (!(await item.count())) {
+        errors.push(`${vp.name}: درس «${title}» در نقشه پیدا نشد`);
+        continue;
+      }
+      await item.click();
+      const opened = await page
+        .waitForSelector('.prompt', { timeout: 8000 })
+        .then(() => true)
+        .catch(() => false);
+      if (!opened) {
+        errors.push(`${vp.name}: درس «${title}» باز نشد`);
+        continue;
+      }
+
+      for (let step = 0; step < 6; step++) {
+        if (await page.locator('.done-card').count()) break;
+        await page.evaluate(async () => {
+          await document.fonts.ready;
+        });
+        await page.waitForTimeout(240);
+        const bad = await page.evaluate((vw) => {
+          const out = [];
+          const stage = document.querySelector('.stage');
+          if (stage) {
+            if (stage.scrollWidth > stage.clientWidth + 2) {
+              out.push(`سرریز افقی ${stage.scrollWidth - stage.clientWidth}px`);
+            }
+            const sb = stage.getBoundingClientRect();
+            if (sb.right > vw + 1 || sb.left < -1) out.push('صحنه از کادر بیرون زده');
+            // عنصرِ دیدنی با ابعاد صفر = جعبهٔ خالی یا شکل ناپدید
+            for (const e of stage.querySelectorAll('div,span,i')) {
+              const r = e.getBoundingClientRect();
+              const cs = getComputedStyle(e);
+              if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+              if (r.width < 1 || r.height < 1) {
+                out.push(`عنصر نامرئی .${String(e.className)}`);
+                break;
+              }
+            }
+          }
+          for (const o of document.querySelectorAll('.opt')) {
+            const r = o.getBoundingClientRect();
+            if (r.right > vw + 1 || r.left < -1) out.push('گزینه از کادر بیرون زده');
+          }
+          return [...new Set(out)];
+        }, vp.width);
+        if (bad.length) {
+          const q = (await page.locator('.prompt').textContent().catch(() => ''))?.trim();
+          errors.push(`${vp.name}/«${title}» [${q}]: ${bad.join('؛ ')}`);
+        }
+
+        const opt = page.locator('.opt:not([disabled])').first();
+        if (await opt.count()) {
+          await opt.click().catch(() => {});
+          await page.waitForTimeout(1900);
+        } else break;
+      }
+    }
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+  }
+
   notes.push(
-    `${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس + ترتیب صداکشی + چیدن ایمنی بررسی شد`,
+    `${vp.name} (${vp.width}px): خانه + نقشه + ${played} درس + ترتیب صداکشی + چیدن ایمنی + نمایش ریاضی بررسی شد`,
   );
   await page.close();
 }

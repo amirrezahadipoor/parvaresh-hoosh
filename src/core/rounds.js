@@ -710,6 +710,154 @@ function buildRoundInner(round, track) {
       };
     }
 
+    // ── ریاضی، دور دوم ─────────────────────────────────────────────
+    // منبع: مسیرهای یادگیری Clements & Sarama و کتاب ریاضی اول
+    // دبستان ایران (تم‌های ۴، ۱۵، ۱۸: چوب‌خط، ارزش مکانی، شمردن
+    // چندتایی) — یعنی هم پژوهش جهانی و هم چیزی که کودک ایرانی
+    // در مدرسه می‌بیند.
+
+    case 'digit-trace':
+      // نوشتن رقم بخشی از برنامهٔ رسمی اول دبستان است. صفحهٔ
+      // خط‌کشیدن همان است که برای حروف کار می‌کند و r.letter را
+      // می‌کشد، پس رقم را در همان کلید می‌فرستیم.
+      return {
+        type: 'trace',
+        prompt: round.prompt,
+        letter: toFa(round.digit),
+      };
+
+    case 'tally': {
+      // چوب‌خط: دسته‌های ۵تایی که پنجمی روی چهارتای قبل مورب
+      // کشیده می‌شود. کتاب اول دبستان (تم ۴) این را پیش از عدد
+      // دو رقمی می‌آورد، چون «دستهٔ ۵تایی» پایهٔ ارزش مکانی است.
+      const top = Math.min(12, Math.max(3, cap));
+      const count = 3 + rand(Math.max(1, top - 2));
+      // گزینه‌های نادرست هم باید زیر سقف سنی بمانند.
+      const pool = Array.from({ length: top }, (_, i) => i + 1);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'tally', times: count },
+        // ⚠ نقطه فقط برای بعضی گزینه‌ها = گِرد نیمه‌تصویری، و
+        // نگهبان test-rounds درست می‌گیردش. اینجا خودِ چوب‌خط
+        // بالای صفحه شمردنی است، پس گزینه‌ها رقم خالی می‌مانند.
+        options: buildOptions(count, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer: count,
+      };
+    }
+
+    case 'skip-count': {
+      // شمردن چندتایی (تم ۱۸): ۲تا۲تا، ۵تا۵تا، ۱۰تا۱۰تا.
+      // پایهٔ ضرب و درک ساختار عدد.
+      // ⚠ گام باید با سقف سنی بخواند: ردهٔ ۵–۶ تا ۱۰ می‌شمارد، پس
+      // «۱۰تا۱۰تا» برایش بی‌معناست. گام را به سقف می‌چسبانیم و
+      // رشته را کوتاه می‌کنیم تا آخرین عدد از سقف نگذرد.
+      let step = round.step || 2;
+      while (step > 2 && step * 4 > cap) step = step === 10 ? 5 : 2;
+      // آخرین عددِ رشته (start + 3×step) باید زیر سقف بماند، وگرنه
+      // گزینهٔ درست خودش از دامنهٔ سنی بیرون می‌زند.
+      const maxStart = Math.max(step, cap - step * 3);
+      const start = step * (1 + rand(Math.max(1, Math.floor(maxStart / step) - 1)));
+      const seen = [start, start + step, start + step * 2];
+      const answer = start + step * 3;
+      const pool = [answer, answer + step, answer - step, answer + 1, answer - 1].filter(
+        (v) => v > 0 && v <= cap,
+      );
+      return {
+        type: 'choice',
+        // ⚠ replace فقط اولین جای‌نگهدار را عوض می‌کند و پرسش
+        // «۲ تا {s} تا بشمار» نیمه‌خام می‌ماند. باید همه را گرفت.
+        prompt: round.prompt.replaceAll('{s}', toFa(step)),
+        // رشتهٔ عددها را با نقطه‌های شمردنی نشان نمی‌دهیم چون
+        // بلند می‌شود؛ خودِ عددها اینجا درس‌اند و کودک این سن
+        // رقم فارسی را می‌خواند.
+        display: { kind: 'number-seq', items: seen.map((v) => toFa(v)) },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+      };
+    }
+
+    case 'place-value': {
+      // ارزش مکانی (تم ۱۵ و ۱۶): عدد دو رقمی = چند دستهٔ ده‌تایی
+      // و چند یکی. با دسته‌های دیدنی، نه با تعریف کلامی.
+      // تعداد دسته‌ها با سقف سنی محدود می‌شود تا عددِ ساخته‌شده از
+      // دامنهٔ رده بیرون نزند (ردهٔ ۶–۷ سقف ۲۰ دارد → حداکثر یک دسته).
+      const maxTens = Math.max(1, Math.floor((cap - 1) / 10));
+      const tens = 1 + rand(maxTens);
+      const ones = rand(Math.min(10, Math.max(1, cap - tens * 10 + 1)));
+      const total = tens * 10 + ones;
+      // ⚠ عدد دو رقمی ذاتاً از سقف ردهٔ ۵–۶ (۱۰) بالاتر است. برای آن
+      // رده فقط «چند دسته؟» پرسیده می‌شود — پاسخ تک‌رقمی است و
+      // خودِ مفهومِ دسته‌بندی هم همان است. رده‌های بالاتر کل عدد را
+      // می‌گویند.
+      const askTens = round.mode === 'tens' || cap <= 10;
+      const answer = askTens ? tens : total;
+      // ⚠ گزینه‌های نادرست هم باید در دامنهٔ سنی بمانند، وگرنه کودک
+      // عددی می‌بیند که هنوز یاد نگرفته. (`total + 10` از سقف می‌زد.)
+      const pool = askTens
+        ? [1, 2, 3, 4, 5, 6].filter((v) => v <= maxTens + 2)
+        : [total, total + 10, total - 10, total + 1, total - 1, tens * 10]
+            .filter((v) => v > 0 && v <= cap);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'place-value', tens, ones },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+      };
+    }
+
+    case 'shape-corners': {
+      // گوشه‌ها را بشمار (تم ۴). کتاب صریح توصیه می‌کند واژهٔ
+      // «ضلع» و «رأس» به کار نرود؛ «گوشه» برای این سن فهمیدنی‌تر
+      // است — پس در متن درس هم همان آمده.
+      const CORNERS = { مثلث: 3, مربع: 4, ستاره: 5, دایره: 0, لوزی: 4 };
+      const names = Object.keys(CORNERS).filter((k) => CORNERS[k] > 0);
+      const name = pick(names);
+      const answer = CORNERS[name];
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'geo-big', name },
+        options: buildOptions(answer, [3, 4, 5, 6], n).map((v) => ({ label: toFa(v), value: v, dots: v })),
+        answer,
+      };
+    }
+
+    case 'symmetry': {
+      // تقارن (تم ۹): کدام شکل آینه‌ای است؟ توانایی فضایی که
+      // پژوهش آن را پیش‌بینی‌کنندهٔ ریاضی بعدی می‌داند.
+      const SYMMETRIC = ['مربع', 'دایره', 'مثلث', 'ستاره', 'قلب', 'لوزی'];
+      const answer = pick(SYMMETRIC);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'mirror', name: answer },
+        options: buildOptions(answer, SYMMETRIC, Math.min(n, SYMMETRIC.length)).map((v) => ({
+          label: v,
+          value: v,
+          geo: { name: v, color: '#2E86AB' },
+        })),
+        answer,
+      };
+    }
+
+    case 'missing-addend': {
+      // «۵ و چند تا می‌شود ۷؟» — سطح Find Change +/- در مسیر
+      // یادگیری Clements & Sarama، پلِ میان شمردن و جمع.
+      const total = 4 + rand(Math.min(7, Math.max(2, cap - 3)));
+      const part = 1 + rand(total - 2);
+      const answer = total - part;
+      const pool = Array.from({ length: Math.max(5, total) }, (_, i) => i + 1);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replace('{p}', toFa(part)).replace('{t}', toFa(total)),
+        display: { kind: 'missing', part, total },
+        options: buildOptions(answer, pool, n).map((v) => ({ label: toFa(v), value: v, dots: v })),
+        answer,
+      };
+    }
+
     case 'pattern-next': {
       const pool = round.unit === 'color' ? Object.keys(COLOR_HEX) : GEO_NAMES;
       return {
