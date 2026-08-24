@@ -31,7 +31,7 @@ export const LOGIC_LESSONS = [
     reviewDays: [1, 3, 7],
     rounds: [
       { kind: 'odd-one-out', items: ['سیب', 'موز', 'پرتقال', 'ماشین'], answer: 'ماشین', because: 'بقیه میوه هستند.', prompt: 'کدام یکی فرق دارد؟' },
-      { kind: 'odd-one-out', items: ['گربه', 'سگ', 'اسب', 'درخت'], answer: 'درخت', because: 'بقیه حیوان هستند.', prompt: 'کدام یکی فرق دارد؟' },
+      { kind: 'odd-one-out', items: ['گربه', 'سگ', 'خرگوش', 'درخت'], answer: 'درخت', because: 'بقیه حیوان هستند.', prompt: 'کدام یکی فرق دارد؟' },
       { kind: 'odd-one-out', items: ['قرمز', 'آبی', 'سبز', 'دایره'], answer: 'دایره', because: 'بقیه رنگ هستند.', prompt: 'کدام یکی فرق دارد؟' },
       { kind: 'odd-one-out', items: ['کفش', 'کلاه', 'پیراهن', 'نان'], answer: 'نان', because: 'بقیه پوشیدنی هستند.', prompt: 'کدام یکی فرق دارد؟' },
       { kind: 'odd-one-out', items: ['یک', 'دو', 'سه', 'گل'], answer: 'گل', because: 'بقیه عدد هستند.', prompt: 'کدام یکی فرق دارد؟' },

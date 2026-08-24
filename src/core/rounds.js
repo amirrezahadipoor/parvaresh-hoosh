@@ -14,7 +14,7 @@ import { teachRank } from '../data/neshaneh.js';
 import { pickWords, soundsOf, flatSounds, syllableText, SOUND_MAP } from '../data/phonics.js';
 import {
   SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, COLOR_HEX, GEO,
-  FACES, SITUATIONS, HAZARDS, SAFETY_STEPS, SCENES,
+  FACES, SITUATIONS, HAZARDS, SAFETY_STEPS, SCENES, hasPicture,
 } from './svg.js';
 import {
   EN_ALPHABET,
@@ -160,6 +160,11 @@ function withCues(built, round) {
   built.kindName = round.kind;
   return built;
 }
+
+// نامِ عدد به‌صورت واژه نوشته می‌شود («یک»، «دو») و کودکِ پیش‌خوان
+// نمی‌خواندش. در گِرد «کدام فرق دارد؟» همان تعداد نقطه را نشان می‌دهیم
+// تا شمردنی باشد.
+const NUM_WORD = { یک: 1, دو: 2, سه: 3, چهار: 4, پنج: 5, شش: 6, هفت: 7, هشت: 8, نه: 9, ده: 10 };
 
 export function buildRound(round, track) {
   return withCues(buildRoundInner(round, track), round);
@@ -335,7 +340,14 @@ function buildRoundInner(round, track) {
         type: 'choice',
         prompt: round.prompt,
         display: { kind: 'pic-only', icon: item },
-        options: buildOptions(cat, wrong, n).map((v) => ({ label: v, value: v })),
+        // نامِ دسته («میوه») خودش تصویر ندارد. اگر فقط واژه بیاید،
+        // کودکِ پیش‌خوان نمی‌تواند انتخاب کند. پس هر گزینه یک نمونهٔ
+        // تصویری از همان دسته نشان می‌دهد — نمونه‌ای غیر از چیزی که
+        // بالای صفحه پرسیده شده، وگرنه پاسخ لو می‌رود.
+        options: buildOptions(cat, wrong, n).map((v) => {
+          const sample = pick(CATEGORIES[v].filter((x) => x !== item)) || CATEGORIES[v][0];
+          return { label: v, value: v, pic: sample, picLabel: true };
+        }),
         answer: cat,
         because: `${item} یک ${cat} است.`,
       };
@@ -704,11 +716,15 @@ function buildRoundInner(round, track) {
         type: 'choice',
         prompt: round.prompt,
         display: { kind: 'sequence', unit: round.unit, items: round.sequence },
+        // ⚠ باگ: کلید `shape` را می‌فرستاد ولی رابط کاربری فقط `geo`
+        // را می‌شناسد. نتیجه: الگوی شکلی گزینه‌هایش واژهٔ خالی بود
+        // («مثلث»، «لوزی») و کودکِ پیش‌خوان نمی‌توانست حلش کند —
+        // در حالی که خودِ الگو بالای صفحه تصویری نشان داده می‌شد.
         options: buildOptions(round.answer, pool, Math.min(n, pool.length)).map((v) => ({
           label: v,
           value: v,
           swatch: round.unit === 'color' ? COLOR_HEX[v] : null,
-          shape: round.unit === 'shape' ? v : null,
+          geo: round.unit === 'shape' ? { name: v, color: '#2E86AB' } : null,
         })),
         answer: round.answer,
       };
@@ -726,7 +742,23 @@ function buildRoundInner(round, track) {
         type: 'choice',
         prompt: round.prompt,
         display: null,
-        options: items.map((v) => ({ label: v, value: v })),
+        // آیتم‌های این گِرد نامِ شکل‌اند («پروانه»، «هویج»). پیش‌تر
+        // فقط برچسبِ متنی می‌گرفتند و کودکِ پیش‌خوان بازی را
+        // نمی‌فهمید. حالا تصویر می‌آید و برچسب زیرش می‌ماند.
+        // سه حالت: نامِ شکل تصویر می‌گیرد، نامِ رنگ لکهٔ رنگی، و
+        // نامِ شکل هندسی («دایره») شکلِ هندسی. اگر هیچ‌کدام نبود
+        // برچسب متنی می‌ماند — ولی چنین آیتمی در درس‌ها نداریم.
+        options: items.map((v) => {
+          if (hasPicture(v)) return { label: v, value: v, pic: v, picLabel: true };
+          if (COLOR_HEX[v]) return { label: v, value: v, swatch: COLOR_HEX[v] };
+          // ⚠ رنگِ شکل نباید با هیچ‌کدام از لکه‌های رنگیِ همان گِرد یکی
+          // باشد: «دایرهٔ آبی» کنار لکهٔ «آبی» کودک را دودل می‌کند که
+          // پرسش دربارهٔ رنگ است یا شکل. خاکستریِ خنثی هیچ نامِ رنگی
+          // در درس‌ها ندارد.
+          if (GEO[v]) return { label: v, value: v, geo: { name: v, color: '#6E6A78' } };
+          if (NUM_WORD[v]) return { label: v, value: v, dots: NUM_WORD[v] };
+          return { label: v, value: v };
+        }),
         answer: round.answer,
         because: round.because,
       };
@@ -860,8 +892,34 @@ function buildRoundInner(round, track) {
     }
 
     case 'name-face': {
-      // عکسِ گِرد بالا: چهره را می‌بیند، نامش را می‌گوید. تشخیص و
-      // نام‌گذاری دو مهارت جدا هستند و هر دو باید تمرین شوند.
+      // چهره را می‌بیند، نامش را می‌گوید.
+      //
+      // ⚠ اینجا عمداً گزینه‌ها تصویر ندارند: اگر هر گزینه هم چهره
+      // باشد، کودک فقط دو تصویر را با هم تطبیق می‌دهد و نامِ احساس
+      // را یاد نمی‌گیرد — همان کاری که گِرد feel-face می‌کند. هدف
+      // این گِرد پیوند «چهره ↔ واژه» است.
+      //
+      // چون واژه‌خوانی لازم می‌شود، این تنها گِرد مهارت زندگی است که
+      // برای کودکِ کاملاً پیش‌خوان مناسب نیست. پس فقط در ردهٔ سنی
+      // بالاتر می‌آید و برای ۵–۶ ساله به feel-face تبدیل می‌شود.
+      if (track.optionCount <= 2) {
+        const sit = pick(Object.keys(SITUATION_FEELING));
+        const ansE = SITUATION_FEELING[sit];
+        const wrongE = FACE_NAMES.filter((f) => f !== ansE);
+        return {
+          type: 'choice',
+          prompt: round.prompt,
+          display: { kind: 'pic-only', icon: sit },
+          options: buildOptions(ansE, wrongE, n).map((v) => ({
+            label: v,
+            value: v,
+            pic: v,
+            picLabel: true,
+          })),
+          answer: ansE,
+          because: `او ${ansE} است.`,
+        };
+      }
       const answer = round.emotion || pick(FACE_NAMES);
       const wrong = FACE_NAMES.filter((f) => f !== answer);
       return {

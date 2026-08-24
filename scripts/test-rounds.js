@@ -117,6 +117,85 @@ for (const trackId of TRACK_ORDER) {
   }
 }
 
+// ── هر گِرد باید بدون خواندن حل شود ─────────────────────────────────────
+//
+// قانون الزامی برنامه: کودک ۵ ساله خواندن بلد نیست. اگر همهٔ
+// گزینه‌های یک گِرد فقط واژهٔ فارسی باشند، آن گِرد برای مخاطب اصلی
+// غیرقابل‌حل است.
+//
+// ⚠ سه باگ واقعی با همین بررسی پیدا شد:
+//   pattern-next  کلید `shape` می‌فرستاد که رابط کاربری نمی‌شناخت
+//   which-group   نام دسته‌ها را بدون هیچ نمونهٔ تصویری نشان می‌داد
+//   odd-one-out   «کفش/کلاه/نان» شکل نداشتند و واژه می‌ماندند
+//
+// استثناها: گِردهای خواندن و انگلیسی که *هدفشان* خواندن واژه است، و
+// گزینه‌های عددی (رقم فارسی را کودک این سن می‌خواند).
+{
+  const READING_KINDS = new Set([
+    'letter-sound',
+    'letter-word',
+    'letter-in-word',
+    'blend-word',
+    'en-translate',
+    // name-face پیوند «چهره ↔ واژه» را می‌آموزد و برای ردهٔ سنی
+    // پایین خودش به feel-face تبدیل می‌شود.
+    'name-face',
+  ]);
+  const isNumeric = (v) => /^[۰-۹0-9\s+\-−=]+$/.test(String(v ?? ''));
+  const wordOnly = new Map();
+  const mixed = new Map();
+
+  for (const lesson of LESSONS) {
+    for (const rd of lesson.rounds) {
+      if (READING_KINDS.has(rd.kind)) continue;
+      for (const t of TRACK_ORDER) {
+        for (let i = 0; i < 8; i++) {
+          let r;
+          try {
+            r = buildRound(rd, AGE_TRACKS[t]);
+          } catch {
+            continue;
+          }
+          if (!r || r.type !== 'choice' || !r.options) continue;
+          const bare = r.options.filter(
+            (o) => !o.pic && !o.geo && !o.shapeRepeat && !o.latin && !o.dots && !o.swatch,
+          );
+          const words = bare.filter((o) => !isNumeric(o.label));
+          if (words.length === r.options.length && !wordOnly.has(rd.kind)) {
+            wordOnly.set(rd.kind, r.options.map((o) => o.label).join('/'));
+          }
+          // ⚠ گِرد «نیمه‌تصویری» بدتر از گِرد تمام-واژه‌ای است: وقتی سه
+          // گزینه تصویر دارند و یکی واژهٔ خالی است، همان یکی «فرق‌دار»
+          // به‌نظر می‌رسد و پاسخ لو می‌رود. («سگ 🖼 / اسب 📝 / درخت 🖼»)
+          const cuedCount = r.options.length - bare.length;
+          if (cuedCount > 0 && bare.length > 0) {
+            const key = `${lesson.id}/${rd.kind}`;
+            if (!mixed.has(key)) {
+              mixed.set(
+                key,
+                r.options.map((o) => (bare.includes(o) ? `«${o.label}»` : o.label)).join(' '),
+              );
+            }
+          }
+          // گزینهٔ بی‌برچسب یعنی دکمهٔ خالی — کودک چیزی برای انتخاب نمی‌بیند.
+          if (r.options.some((o) => o.label === undefined || o.label === null || o.label === '')) {
+            errors.push(`${lesson.id}/${rd.kind}: گزینهٔ بدون برچسب`);
+          }
+        }
+      }
+    }
+  }
+  for (const [kind, sampleOpts] of wordOnly) {
+    errors.push(`${kind}: همهٔ گزینه‌ها فقط واژه‌اند (${sampleOpts}) — کودک پیش‌خوان نمی‌تواند حل کند`);
+  }
+  for (const [where, sampleOpts] of mixed) {
+    errors.push(`${where}: بعضی گزینه‌ها تصویر دارند و بعضی فقط واژه (${sampleOpts}) — پاسخ لو می‌رود`);
+  }
+  if (!wordOnly.size && !mixed.size) {
+    console.log('✓ هیچ گِردی فقط با واژه پرسیده نمی‌شود و هیچ گِردی نیمه‌تصویری نیست.');
+  }
+}
+
 // ردهٔ سنی باید واقعاً اثر داشته باشد: تعداد گزینه‌ها باید فرق کند.
 const sample = LESSONS.flatMap((l) => l.rounds).find((r) => r.kind === 'count-objects');
 if (sample) {

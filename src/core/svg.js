@@ -243,6 +243,44 @@ export const SHAPES = {
   ابر: () =>
     svg(`<g fill="#BFD9E8"><circle cx="36" cy="56" r="16"/><circle cx="54" cy="48" r="20"/>
     <circle cx="70" cy="58" r="14"/><rect x="34" y="58" width="38" height="16" rx="8"/></g>`),
+
+// ── پوشیدنی و خوراکی (برای بازی «کدام فرق دارد؟») ────────────────────
+// ⚠ درس منطق آیتم‌های «کفش، کلاه، پیراهن، نان» داشت که هیچ‌کدام شکل
+// نداشتند، پس گزینه‌ها فقط واژه بودند و کودکِ پیش‌خوان نمی‌توانست
+// بازی کند. هر آیتمی که در درسی می‌آید باید تصویر داشته باشد.
+
+  // ⚠ نسخهٔ اول جعبهٔ آبیِ تخت خوانده می‌شد. کفش از نیم‌رخ نشانه‌های
+  // یکتا دارد: پنجهٔ بالاآمده، قوسِ زیرِ کف، مچ، و بندها.
+  کفش: () =>
+    svg(`<path d="M12 70 q0 -8 8 -9 l16 -2 q6 -1 10 -6 l10 -12 q4 -5 10 -3 q7 2 8 10
+      l2 14 q1 8 9 10 q7 2 7 8 v4 h-80 z"
+      fill="#3D6FA8" stroke="#274F79" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M10 78 h82 q3 0 3 4 t-3 4 h-82 q-3 0 -3 -4 t3 -4z" fill="#2B2A33"/>
+    <path d="M56 44 l10 5 M53 52 l12 5 M51 60 l14 4" stroke="#FFF" stroke-width="3" stroke-linecap="round"/>
+    <path d="M66 38 q8 6 9 16" fill="none" stroke="#274F79" stroke-width="2.4"/>`),
+
+
+  کلاه: () =>
+    svg(`<path d="M28 56 q0 -30 22 -30 t22 30 z" fill="#E4572E" stroke="#C04521" stroke-width="2.5"/>
+    <path d="M12 58 h76 q4 0 4 5 t-4 5 h-76 q-4 0 -4 -5 t4 -5z" fill="#F4B942" stroke="#D99C1F" stroke-width="2.5"/>
+    <path d="M50 26 v30" stroke="#C04521" stroke-width="2.2"/>
+    <circle cx="50" cy="24" r="5" fill="#F4B942" stroke="#D99C1F" stroke-width="2"/>`),
+
+  پیراهن: () =>
+    svg(`<path d="M34 22 h32 l18 12 -10 14 -6 -4 v40 h-36 v-40 l-6 4 -10 -14 z"
+      fill="#3D9A50" stroke="#2E7A3D" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M34 22 q16 12 32 0" fill="none" stroke="#2E7A3D" stroke-width="2.5"/>
+    <circle cx="50" cy="46" r="2.6" fill="#2E7A3D"/>
+    <circle cx="50" cy="58" r="2.6" fill="#2E7A3D"/>`),
+
+  نان: () =>
+    svg(`<ellipse cx="50" cy="54" rx="36" ry="26" fill="#E0A94B" stroke="#B8863A" stroke-width="2.5"/>
+    <ellipse cx="50" cy="50" rx="28" ry="18" fill="#F0C377"/>
+    <circle cx="38" cy="48" r="2.4" fill="#B8863A"/>
+    <circle cx="52" cy="44" r="2.4" fill="#B8863A"/>
+    <circle cx="60" cy="54" r="2.4" fill="#B8863A"/>
+    <circle cx="44" cy="58" r="2.4" fill="#B8863A"/>`),
+
 };
 
 // ── شکل‌های هندسی ───────────────────────────────────────────────────────
@@ -681,6 +719,7 @@ export const CATEGORIES = Object.freeze({
   میوه: ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس'],
   طبیعت: ['گل', 'درخت', 'خورشید', 'ماه', 'ابر', 'ستاره', 'کوه', 'رودخانه', 'برف'],
   وسیله: ['توپ', 'کتاب', 'خانه', 'ماشین', 'چتر', 'ساعت', 'کلید'],
+  پوشیدنی: ['کفش', 'کلاه', 'پیراهن'],
 });
 
 /**
