@@ -124,4 +124,124 @@ export const ENGLISH_LESSONS = Object.freeze([
       { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
     ],
   },
+  // ── دستهٔ دوم: واژه‌های دیداری و ساخت واژه ────────────────────────
+  // دادهٔ Dolch و خانواده‌های CVC از قبل در english.js بود ولی هیچ
+  // درسی از آن استفاده نمی‌کرد — یعنی نیمی از سرمایهٔ این حوزه بی‌کار
+  // مانده بود. این شش درس همان را به کار می‌گیرد.
+
+  {
+    id: 'en-sight-01',
+    domain: 'english',
+    order: 7,
+    title: 'واژه‌های پرکاربرد',
+    goal: 'کودک نخستین واژه‌های دیداری انگلیسی را می‌شناسد.',
+    minutes: 6,
+    parentNote:
+      'واژه‌های دیداری (sight words) را نمی‌شود صدا کشید؛ باید مثل یک تصویر شناخته شوند. همین ۴۰ واژه حدود نیمی از متن کتاب‌های کودک انگلیسی را می‌سازند.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
+      { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+      { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+      { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
+    ],
+  },
+  {
+    id: 'en-sight-02',
+    domain: 'english',
+    order: 8,
+    title: 'واژه‌ها را پیدا کن',
+    goal: 'کودک از معنی فارسی به واژهٔ انگلیسی می‌رسد.',
+    minutes: 6,
+    parentNote:
+      'شناختن با تولید یکی نیست: کودکی که «big» را می‌فهمد لزوماً نمی‌تواند از «بزرگ» به «big» برسد. هر دو جهت باید تمرین شود.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+      { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+    ],
+  },
+  {
+    id: 'en-build-01',
+    domain: 'english',
+    order: 9,
+    title: 'واژه بساز',
+    goal: 'کودک با گذاشتن حرف اول، واژهٔ انگلیسی می‌سازد.',
+    minutes: 6,
+    parentNote:
+      'این مهم‌ترین کشف آواشناسی است: با عوض کردن یک حرف، واژهٔ تازه ساخته می‌شود. cat ← bat ← hat. پژوهش نشان می‌دهد ترکیب (blending) پیش از تجزیه یاد گرفته می‌شود.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'en-rime-build', prompt: 'کدام حرف؟ {r}' },
+      { kind: 'en-rime-build', prompt: 'کدام حرف؟ {r}' },
+      { kind: 'en-cvc', prompt: 'کدام‌یک {r} دارد؟' },
+      { kind: 'en-rime-build', prompt: 'کدام حرف؟ {r}' },
+      { kind: 'en-cvc', prompt: 'کدام‌یک {r} دارد؟' },
+      { kind: 'en-rime-build', prompt: 'کدام حرف؟ {r}' },
+    ],
+  },
+  {
+    id: 'en-abc-02',
+    domain: 'english',
+    order: 10,
+    title: 'حرف‌ها و واژه‌ها',
+    goal: 'کودک حرف آغازین واژه‌های انگلیسی را تشخیص می‌دهد.',
+    minutes: 6,
+    parentNote:
+      'حرف انگلیسی دو شکل دارد (A و a) و کودک باید هر دو را یکی بداند. در نوشته‌های اطراف دنبال حرف‌ها بگردید.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'en-letter-pic', prompt: 'کدام تصویر با حرف {L} شروع می‌شود؟' },
+      { kind: 'en-word-pic', prompt: 'این چیست؟' },
+      { kind: 'en-letter-pic', prompt: 'کدام تصویر با حرف {L} شروع می‌شود؟' },
+      { kind: 'en-pic-word', prompt: '{w} کدام است؟' },
+      { kind: 'en-letter-pic', prompt: 'کدام تصویر با حرف {L} شروع می‌شود؟' },
+      { kind: 'en-word-pic', prompt: 'این چیست؟' },
+    ],
+  },
+  {
+    id: 'en-words-02',
+    domain: 'english',
+    order: 11,
+    title: 'واژه‌های بیشتر',
+    goal: 'کودک دایرهٔ واژگان تصویری انگلیسی را گسترش می‌دهد.',
+    minutes: 6,
+    parentNote:
+      'واژه‌ای که تصویر دارد در ذهن می‌ماند؛ واژه‌ای که فقط ترجمه شده، فراموش می‌شود. برای همین همهٔ واژه‌های این درس تصویر دارند.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'en-word-pic', prompt: 'این چیست؟' },
+      { kind: 'en-pic-word', prompt: '{w} کدام است؟' },
+      { kind: 'en-word-pic', prompt: 'این چیست؟' },
+      { kind: 'en-pic-word', prompt: '{w} کدام است؟' },
+      { kind: 'en-number', max: 10, prompt: '{w} یعنی چند؟' },
+      { kind: 'en-color', prompt: '{w} کدام رنگ است؟' },
+    ],
+  },
+  {
+    id: 'en-mixed-01',
+    domain: 'english',
+    order: 12,
+    title: 'همه‌چیز به انگلیسی',
+    goal: 'کودک همهٔ آموخته‌های انگلیسی را در یک درس مرور می‌کند.',
+    minutes: 7,
+    parentNote:
+      'درس مرور. انگلیسی این برنامه بدون صداست و کاملاً دیداری — پس تلفظ را شما بگویید تا کودک بشنود.',
+    reviewDays: [1, 3, 7],
+    rounds: [
+      { kind: 'en-translate', prompt: '{w} یعنی چه؟' },
+      { kind: 'en-word-pic', prompt: 'این چیست؟' },
+      { kind: 'en-rime-build', prompt: 'کدام حرف؟ {r}' },
+      { kind: 'en-color', prompt: '{w} کدام رنگ است؟' },
+      { kind: 'en-sight-find', prompt: '«{w}» به انگلیسی کدام است؟' },
+      { kind: 'en-number', max: 10, prompt: '{w} یعنی چند؟' },
+    ],
+  },
+
 ]);

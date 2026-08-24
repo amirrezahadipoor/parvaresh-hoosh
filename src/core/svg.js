@@ -372,6 +372,32 @@ export const SHAPES = {
     svg(`<path d="M34 88 v-30 q-8 2 -10 -6 q-2 -8 6 -10 l4 -1 v-24 q0 -6 6 -6 t6 6 v20 h3 v-26 q0 -6 6 -6 t6 6 v26 h3 v-20 q0 -6 6 -6 t6 6 v34 q0 24 -18 37z"
       fill="#F7C9A8" stroke="#C99B7A" stroke-width="3" stroke-linejoin="round"/>`),
 
+  // ── صحنه‌های پرسش ─────────────────────────────────────────────────
+  // ⚠ این‌ها «تصویرِ خودِ پرسش»اند، نه گزینه. گِردهای زنده/غیرزنده و
+  // شناور/غرق اول فقط واژهٔ «زنده» یا «روی آب می‌ماند» را در صحنه
+  // می‌گذاشتند — یعنی کودکِ پیش‌خوان اصلاً نمی‌فهمید چه پرسیده شده.
+  // قانون پروژه: بدون صدا و بدون خواندن هم باید حل‌شدنی باشد.
+
+  'روی‌آب': () =>
+    svg(`<rect x="6" y="52" width="88" height="42" rx="8" fill="#BFE3F2"/>
+    <path d="M6 56 q11 -7 22 0 t22 0 t22 0 t22 0" fill="none" stroke="#7FC4E0" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="50" cy="49" rx="20" ry="8" fill="#E4572E"/>
+    <path d="M30 49 q20 14 40 0" fill="#C4451F"/>
+    <path d="M50 41 v-18" stroke="#8B6F47" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M52 24 l18 8 -18 8z" fill="#F4B942"/>`),
+
+  'ته‌آب': () =>
+    svg(`<rect x="6" y="20" width="88" height="74" rx="8" fill="#BFE3F2"/>
+    <path d="M6 24 q11 -7 22 0 t22 0 t22 0 t22 0" fill="none" stroke="#7FC4E0" stroke-width="4" stroke-linecap="round"/>
+    <path d="M6 84 q22 -8 44 0 t44 0 v10 h-88z" fill="#D9CDB4"/>
+    <path d="M56 34 q10 -6 18 2" fill="none" stroke="#8FB8CC" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+    <circle cx="62" cy="46" r="3.5" fill="#FFF" opacity=".7"/>
+    <circle cx="70" cy="58" r="2.5" fill="#FFF" opacity=".6"/>
+    <ellipse cx="46" cy="78" rx="17" ry="12" fill="#9A9490" stroke="#6E6A66" stroke-width="2.5"/>
+    <path d="M36 74 q10 -6 20 -1" fill="none" stroke="#7E7A76" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M46 30 v30" stroke="#6E6A66" stroke-width="3" stroke-dasharray="4 5" stroke-linecap="round" opacity=".7"/>
+    <path d="M40 56 l6 8 6 -8" fill="none" stroke="#6E6A66" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>`),
+
   // ── شناور/غرق و چند شیء پایه ──────────────────────────────────────
   // ⚠ نسخهٔ اول برگ دو برگچه روی ساقه بود — یعنی عملاً همان «گیاه».
   // چون هر دو می‌توانند گزینهٔ یک پرسش باشند، باید در یک نگاه از هم

@@ -3,6 +3,7 @@
 // هدف: مطمئن شویم هیچ گِردی خطا نمی‌دهد، پاسخ درست همیشه بین گزینه‌هاست،
 // و ردهٔ سنی واقعاً روی خروجی اثر می‌گذارد.
 
+import { LIFE_CYCLES } from '../src/data/science-data.js';
 import { LESSONS } from '../src/data/lessons/index.js';
 import { AGE_TRACKS, TRACK_ORDER } from '../src/data/curriculum.js';
 import { buildRound } from '../src/core/rounds.js';
@@ -193,6 +194,43 @@ for (const trackId of TRACK_ORDER) {
   }
   if (!wordOnly.size && !mixed.size) {
     console.log('✓ هیچ گِردی فقط با واژه پرسیده نمی‌شود و هیچ گِردی نیمه‌تصویری نیست.');
+  }
+}
+
+// ── گزینهٔ «نادرست»ی که در واقع درست است ────────────────────────────
+//
+// این باگ را هیچ‌کدام از بررسی‌های بالا نمی‌گیرد: گِرد ساختار سالمی
+// دارد، پاسخ در گزینه‌ها هست، همه تصویر دارند — ولی یک گزینهٔ دیگر
+// هم واقعاً درست است و کودکی که آن را می‌زند به‌ناحق «اشتباه» می‌شود.
+//
+// نمونهٔ واقعی: در life-cycle-next تصویر «تخم» نشان داده می‌شد و
+// «جوجه» جزو گزینه‌های نادرست بود — در حالی که تخم سرِ چرخهٔ جوجه هم
+// هست. کودکی که جوجه را انتخاب می‌کرد درست گفته بود.
+{
+  const nextStages = (shown) =>
+    new Set(
+      LIFE_CYCLES.flatMap((c) => {
+        const k = c.steps.indexOf(shown);
+        return k >= 0 && k < c.steps.length - 1 ? [c.steps[k + 1]] : [];
+      }),
+    );
+  const found = new Set();
+  const rd = { kind: 'life-cycle-next', prompt: 'بعد از این چه می‌شود؟' };
+  for (const track of TRACK_ORDER) {
+    for (let i = 0; i < 600; i++) {
+      const r = buildRound(rd, AGE_TRACKS[track]);
+      const valid = nextStages(r.display.icon);
+      for (const o of r.options) {
+        if (o.value !== r.answer && valid.has(o.value)) {
+          found.add(`${r.display.icon}: پاسخ «${r.answer}» ولی «${o.value}» هم درست است`);
+        }
+      }
+    }
+  }
+  if (found.size) {
+    [...found].forEach((f) => errors.push(`life-cycle-next: ${f}`));
+  } else {
+    console.log('✓ چرخهٔ زندگی: هیچ گزینهٔ نادرستی در واقع درست نیست.');
   }
 }
 
