@@ -160,6 +160,46 @@ for (const vp of VIEWPORTS) {
   await page.waitForSelector('.play-btn');
   await audit(page, 'خانه', vp);
 
+  // ── خانه باید یک‌صفحه‌ای بماند ───────────────────────────────
+  // ⚠ در ۳۲۰×۵۶۸ دکمهٔ «نقشهٔ سفر» ۲۷px زیر لبهٔ صفحه می‌افتاد.
+  // کودک اسکرول را کشف نمی‌کند؛ چیزی که نمی‌بیند برایش نیست.
+  // در سوی دیگر، دکمهٔ بازی روی ارتفاع ثابت می‌ماند و در گوشیِ
+  // بلند دو حفرهٔ ~۱۴۰px می‌ساخت. هر دو سرِ طیف بررسی می‌شود.
+  {
+    const home = await page.evaluate(() => {
+      const q = (sel) => {
+        const e = document.querySelector(sel);
+        return e ? e.getBoundingClientRect() : null;
+      };
+      const ghost = q('.btn.ghost');
+      const play = q('.play-btn');
+      const buddy = q('.buddy-row');
+      const bar = q('.journey-bar');
+      if (!ghost || !play) return null;
+      return {
+        overflow: Math.round(ghost.bottom - window.innerHeight),
+        gapUp: buddy ? Math.round(play.top - buddy.bottom) : 0,
+        gapDown: bar ? Math.round(bar.top - play.bottom) : 0,
+        tap: Math.round(ghost.height),
+      };
+    });
+    if (!home) {
+      errors.push(`${vp.name}/خانه: دکمهٔ بازی یا «نقشهٔ سفر» پیدا نشد`);
+    } else {
+      if (home.overflow > 0) {
+        errors.push(`${vp.name}/خانه: «نقشهٔ سفر» ${home.overflow}px زیر لبهٔ صفحه است`);
+      }
+      // حفرهٔ بزرگ‌تر از ۱۲۰px یعنی صفحه بی‌مرکز و خالی دیده می‌شود.
+      const hole = Math.max(home.gapUp, home.gapDown);
+      if (hole > 120) {
+        errors.push(`${vp.name}/خانه: فضای مردهٔ ${hole}px دور دکمهٔ بازی`);
+      }
+      if (home.tap < 56) {
+        errors.push(`${vp.name}/خانه: هدف لمسی «نقشهٔ سفر» فقط ${home.tap}px است`);
+      }
+    }
+  }
+
   // نقشهٔ سفر — طولانی‌ترین فهرست برنامه، بیشترین احتمال سرریز
   await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).click();
   await page.waitForSelector('.map-item');
