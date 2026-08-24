@@ -28,6 +28,7 @@ import {
 } from '../data/english.js';
 import {
   LIVING, NON_LIVING, LIFE_CYCLES, SEASONS, SENSES, FLOATS, SINKS,
+  WEATHER, WEATHER_CHOICE, NEEDS, HABITATS,
 } from '../data/science-data.js';
 
 const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
@@ -453,6 +454,98 @@ function buildRoundInner(round, track) {
           pic: v,
         })),
         answer: target.sign,
+      };
+    }
+
+    case 'weather-need': {
+      // NGSS K-ESS3-2 — پیش‌بینی هوا به چه درد می‌خورد؟
+      // پرسش دربارهٔ نامِ هوا نیست، دربارهٔ کاری است که در آن هوا می‌کنیم.
+      const target = pick(WEATHER_CHOICE);
+      const wrong = ['توپ', 'کتاب', 'قاشق', 'کلید', 'ساعت', 'مداد'].filter(
+        (x) => x !== target.need,
+      );
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{h}', target.weather),
+        display: { kind: 'pic-only', icon: target.pic },
+        options: buildOptions(target.need, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.need,
+        because: target.why,
+      };
+    }
+
+    case 'weather-name': {
+      // نام هوا از روی نشانه‌اش — پایهٔ الگویابی هوا (K-ESS2-1).
+      //
+      // ⚠ نسخهٔ اول گزینه‌ها را واژهٔ خالی می‌گذاشت («آفتابی/برفی») و گارد
+      // درست ردش کرد: کودک پیش‌خوانِ ۵ ساله نمی‌تواند بخواند. پس جهت
+      // پرسش برعکس شد — نامِ هوا در صورتِ پرسش می‌آید (والد می‌خواند یا
+      // کودک بزرگ‌تر خودش) و گزینه‌ها تصویرِ هوا هستند.
+      const target = pick(WEATHER);
+      const wrong = WEATHER.filter((w) => w.name !== target.name).map((w) => w.pic);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{h}', target.name),
+        options: buildOptions(target.pic, wrong, n).map((v) => ({
+          label: WEATHER.find((w) => w.pic === v)?.name ?? v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.pic,
+      };
+    }
+
+    case 'needs': {
+      // NGSS K-LS1-1 — جانور غذا می‌خورد، گیاه نمی‌خورد؛ هر دو آب و نور
+      // می‌خواهند. همین تفاوت هستهٔ درس است.
+      const isPlant = Math.random() < 0.5;
+      const who = isPlant ? 'plant' : 'animal';
+      const subject = isPlant ? pick(['گل', 'درخت', 'گیاه']) : pick(['گربه', 'سگ', 'خرگوش', 'پرنده']);
+      const ok = NEEDS.filter((x) => x.who === 'both' || x.who === who);
+      const target = pick(ok);
+      const wrongPool = ['توپ', 'کتاب', 'ماشین', 'کلید', 'ساعت', 'کفش', 'سکه'];
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{j}', subject),
+        display: { kind: 'pic-only', icon: subject },
+        options: buildOptions(target.pic, wrongPool, n).map((v) => ({
+          label: v === target.pic ? target.text : v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.pic,
+        because: isPlant
+          ? 'گیاه غذا نمی‌خورد، ولی به آب و نور خورشید و خاک نیاز دارد.'
+          : 'هر جانوری برای زنده ماندن به آب و غذا نیاز دارد.',
+      };
+    }
+
+    case 'habitat': {
+      // NGSS K-ESS3-1 — هر جاندار کجا زندگی می‌کند و چرا آنجا.
+      const target = pick(HABITATS);
+      const wrong = HABITATS.filter((h) => h.placePic !== target.placePic).map((h) => h.placePic);
+      if (wrong.length < n - 1) {
+        wrong.push(...['خانه', 'کوه', 'برف', 'کتاب'].filter((x) => x !== target.placePic));
+      }
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{j}', target.animal),
+        display: { kind: 'pic-only', icon: target.pic },
+        options: buildOptions(target.placePic, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.placePic,
+        because: target.why,
       };
     }
 

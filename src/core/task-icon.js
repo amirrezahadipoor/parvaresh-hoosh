@@ -96,6 +96,10 @@ const KIND_ACTION = Object.freeze({
   'life-cycle': ACTIONS.order,
   'life-cycle-next': ACTIONS.next,
   season: ACTIONS.pick,
+  'weather-need': ACTIONS.pick,
+  'weather-name': ACTIONS.pick,
+  needs: ACTIONS.pick,
+  habitat: ACTIONS.pick,
   sense: ACTIONS.pick,
   'float-sink': ACTIONS.pick,
   // مهارت زندگی — «انتخاب کن» درست است: کودک از میان چند تصویر یکی
