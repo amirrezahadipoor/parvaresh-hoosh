@@ -242,6 +242,64 @@ check(empties === 0, `${empties} شکل SVG بدون محتواست`);
   }
 }
 
+// ── بازی حافظه: تصویر، نه واژه ──────────────────────────────────────────
+// ⚠ باگ جدی: کارت‌ها با `text: c.icon` ساخته می‌شدند و c.icon نامِ
+// شکل است. کودکِ پیش‌خوان بازی را با واژه‌های «سیب» و «ماهی» می‌دید
+// و اصلاً نمی‌توانست انجامش دهد. قانون الزامی: هر گِرد بدون خواندن.
+{
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.evaluate(async () => {
+    const L = await import('/src/data/lessons/index.js');
+    const lessons = {};
+    for (const l of L.LESSONS) {
+      lessons[l.id] = { completions: 1, bestScore: 90, lastPlayed: new Date().toISOString() };
+    }
+    const s = JSON.parse(localStorage.getItem('parvaresh-hoosh/v4') || '{}');
+    localStorage.setItem('parvaresh-hoosh/v4', JSON.stringify({ ...s, lessons, age: 8 }));
+  });
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.locator('.btn.ghost', { hasText: 'نقشهٔ سفر' }).first().click();
+  await page.waitForTimeout(350);
+  await page.locator('.map-item', { hasText: 'حافظهٔ قوی' }).first().click();
+
+  const shown = await page
+    .waitForSelector('.card', { timeout: 8000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!shown) {
+    errors.push('بازی حافظه باز نشد');
+  } else {
+    const back = await page.evaluate(() => {
+      const c = document.querySelector('.card');
+      const ico = c.querySelector('.card-ico');
+      return {
+        svg: !!ico?.querySelector('svg'),
+        hidden: ico ? getComputedStyle(ico).visibility === 'hidden' : false,
+      };
+    });
+    check(back.svg, 'کارت حافظه تصویر SVG ندارد — کودک پیش‌خوان نمی‌تواند بازی کند');
+    check(back.hidden, 'تصویر کارت حافظه پیش از برگشتن دیده می‌شود — بازی لو می‌رود');
+
+    await page.locator('.card').nth(0).click();
+    await page.waitForTimeout(300);
+    // ⚠ اگر .card-ico اصلاً نباشد (همان باگی که می‌پاییم)، فراخوانی
+    // getComputedStyle روی null کل آزمون را با استثنا می‌کشد و هیچ
+    // پیام مفیدی نمی‌دهد. پس نبودنش هم یک نتیجهٔ معتبر است.
+    const up = await page.evaluate(() => {
+      const c = document.querySelector('.card.up, .card.matched');
+      if (!c) return null;
+      const ico = c.querySelector('.card-ico');
+      if (!ico) return { svg: false, visible: false };
+      return {
+        svg: !!ico.querySelector('svg'),
+        visible: getComputedStyle(ico).visibility === 'visible',
+      };
+    });
+    check(up?.svg && up?.visible, 'کارتِ برگشته تصویر نشان نمی‌دهد');
+    console.log('✓ بازی حافظه: تصویری است، نه واژه‌ای');
+  }
+}
+
 // ── نمودار هفتگی والدین ─────────────────────────────────────────────────
 // ⚠ باگ: ستون‌های بلند بریده می‌شدند (۷۷٪ و ۱۰۰٪ هر دو ۷۲px) چون
 // درصدِ ارتفاع در برابر کل ستون شامل برچسب روز حساب می‌شد. نمودار

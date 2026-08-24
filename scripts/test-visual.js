@@ -237,8 +237,16 @@ for (const vp of VIEWPORTS) {
     });
   }
 
-  // تنظیمات
+  // تنظیمات — پشت دروازهٔ ضرب است (تا کودک پیشرفتش را پاک نکند).
   await page.locator('.icon-btn[aria-label="تنظیمات"]').click();
+  await page.waitForSelector('.gate');
+  await audit(page, 'دروازهٔ تنظیمات', vp);
+  {
+    const q0 = await page.locator('.gate .prompt').textContent();
+    const [a0, b0] = (q0 || '').match(/\d+/g).map(Number);
+    await page.locator('.gate input').fill(String(a0 * b0));
+    await page.locator('.btn', { hasText: 'ورود' }).click();
+  }
   await page.waitForSelector('select');
   await audit(page, 'تنظیمات', vp);
 

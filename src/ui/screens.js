@@ -652,7 +652,18 @@ function playScreen(lessonId) {
     let found = 0;
 
     r.cards.forEach((c) => {
-      const b = el('button', { class: 'card', text: c.icon });
+      // ⚠ باگ جدی: پیش از این کارت با `text: c.icon` ساخته می‌شد و
+      // c.icon نامِ شکل است، نه تصویرش. یعنی کودکِ پیش‌خوان بازی
+      // حافظه را با واژه‌های «سیب» و «ماهی» می‌دید — بازی‌ای که
+      // اصلاً نمی‌توانست انجام دهد. قانون الزامی برنامه این است که
+      // هر گِرد بدون خواندن حل شود.
+      //
+      // برچسب متنی زیر تصویر می‌ماند (قانون: هر گزینه برچسب دارد)
+      // ولی تصویر است که بازی را ممکن می‌کند.
+      const b = el('button', { class: 'card' }, [
+        el('span', { class: 'ico card-ico', html: svgShape(c.icon) || '' }),
+        el('span', { class: 'card-label', text: c.icon }),
+      ]);
       b.dataset.icon = c.icon;
       b.addEventListener('click', () => {
         if (lock || b.classList.contains('up') || b.classList.contains('matched')) return;

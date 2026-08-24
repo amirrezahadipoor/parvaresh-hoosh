@@ -773,29 +773,63 @@ canvas.pad {
   gap: 10px;
 }
 
+/* ── بازی حافظه ───────────────────────────────────────────
+   پشتِ کارت نقشِ نقطه‌چین دارد، نه مستطیلِ تخت: کودک باید ببیند
+   چیزی آنجا پنهان است. تصویر و برچسب تا لحظهٔ برگشتن پنهان‌اند —
+   با visibility، نه با color، چون حالا محتوا SVG است و رنگِ شفاف
+   شکل را پنهان نمی‌کند. */
 .card {
   aspect-ratio: 1;
   border-radius: 16px;
   border: none;
-  background: var(--brand);
-  color: transparent;
-  font-size: 2.1rem;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.22) 0 18%, transparent 18%),
+    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.18) 0 14%, transparent 14%),
+    var(--brand);
   cursor: pointer;
   display: grid;
   place-items: center;
+  gap: 2px;
   min-height: var(--tap);
+  padding: 6px;
+  transition: background var(--fast) var(--ease);
 }
 
-.card.up {
+.card .card-ico,
+.card .card-label {
+  visibility: hidden;
+}
+
+.card .card-ico {
+  width: 100%;
+  max-width: 52px;
+  aspect-ratio: 1;
+  display: block;
+}
+
+.card .card-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+  line-height: 1.1;
+}
+
+.card.up,
+.card.matched {
   background: var(--surface);
   border: 3px solid var(--line);
-  color: inherit;
+}
+
+.card.up .card-ico,
+.card.up .card-label,
+.card.matched .card-ico,
+.card.matched .card-label {
+  visibility: visible;
 }
 
 .card.matched {
   background: #eaf7ea;
   border: 3px solid var(--ok);
-  color: inherit;
 }
 
 /* ── دکمه‌ها و پایان ───────────────────────────────────── */
