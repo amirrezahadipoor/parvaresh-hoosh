@@ -94,6 +94,29 @@ const GOOD_HABITS = ['دست‌شستن', 'مسواک', 'دستمال', 'خوا�
 // کارهای درستِ اجتماعی — از صلاحیت «مهارت‌های ارتباطی» CASEL.
 const KIND_ACTS = ['کمک‌کردن', 'نوبت'];
 
+// موقعیت‌های روزمره و بهترین کار — CASEL «تصمیم‌گیری مسئولانه».
+// هر موقعیت باید یک پاسخِ آشکارا بهتر داشته باشد، وگرنه کودک را
+// سردرگم می‌کند. منبع: راهنمای مهارت زندگی بهزیستی + Second Step K–3.
+const PROBLEMS = Object.freeze([
+  // `label` برچسبِ کوتاهِ زیر تصویر است و `situation` متنِ کاملِ
+  // موقعیت. جدا نگه داشتنشان لازم است: «اسباب‌بازی‌ات شکسته» زیر
+  // دکمه دو خط می‌شد. همان درسی که در what-if گرفتیم.
+  { situation: 'اسباب‌بازی‌ات شکسته', label: 'خرابی', best: 'به بزرگ‌تر بگو', pic: 'توپ', why: 'وقتی چیزی خراب می‌شود، گفتنش به بزرگ‌تر بهترین کار است.' },
+  { situation: 'گم شده‌ای', label: 'گم شدن', best: 'همان‌جا بمان', pic: 'خانه', why: 'اگر گم شدی، راه نرو؛ همان‌جا بمان تا پیدایت کنند.' },
+  { situation: 'کسی اذیتت می‌کند', label: 'اذیت', best: 'محکم بگو نه', pic: 'دست', why: 'گفتنِ محکمِ «نه» اولین کار است.' },
+  { situation: 'زمین خورده‌ای و زخمی شدی', label: 'زخم', best: 'کمک بخواه', pic: 'قرص', why: 'برای زخم باید از بزرگ‌تر کمک بخواهی؛ خودت سراغ دارو نرو.' },
+  { situation: 'تشنگی', label: 'تشنگی', best: 'آب بخور', pic: 'رودخانه', why: 'بدن ما هر روز به آب نیاز دارد.' },
+  { situation: 'خستگی', label: 'خستگی', best: 'کمی بخواب', pic: 'ماه', why: 'خواب کافی، بدن و مغز را دوباره پر از انرژی می‌کند.' },
+]);
+
+// حسِ سخت → کاری که آرام می‌کند. CASEL «خودمدیریتی».
+const CALM_MOVES = Object.freeze([
+  { feeling: 'عصبانی', move: 'نفس عمیق بکش', why: 'نفس عمیق به بدن پیام آرامش می‌دهد.' },
+  { feeling: 'ترسیده', move: 'دست بزرگ‌تر را بگیر', why: 'کنار آدم مطمئن بودن، ترس را کم می‌کند.' },
+  { feeling: 'غمگین', move: 'با کسی حرف بزن', why: 'گفتن غم به کسی که دوستت دارد، سبکش می‌کند.' },
+  { feeling: 'خسته', move: 'کمی استراحت کن', why: 'بدن خسته به استراحت نیاز دارد، نه به زور بیشتر.' },
+]);
+
 const HAZARD_NAMES_L = Object.keys(HAZARDS);
 const FACE_NAMES = Object.keys(FACES);
 
@@ -715,6 +738,81 @@ function buildRoundInner(round, track) {
       };
     }
 
+    case 'make-ten': {
+      // ترکیب‌های ده — CCSS K.OA.A.4: «برای هر عدد از ۱ تا ۹، چه عددی
+      // با آن ده می‌شود؟» این پایهٔ محاسبهٔ ذهنی دبستان است.
+      // ⚠ فقط وقتی معنا دارد که سقف ردهٔ سنی به ۱۰ برسد.
+      if (cap < 10) return null;
+      const a = 1 + rand(9);
+      const answer = 10 - a;
+      // ⚠ صفر را از بدل‌ها بیرون می‌گذاریم: `dots: 0` هیچ نقطه‌ای
+      // نمی‌کشد، پس گزینهٔ صفر تنها گزینهٔ بی‌تصویر می‌شود و خودش را
+      // لو می‌دهد. پاسخ هم هرگز صفر نیست (a از ۱ تا ۹).
+      const wrong = [];
+      for (let d = 1; d <= 10; d += 1) if (d !== answer) wrong.push(d);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{a}', toFa(a)),
+        display: { kind: 'ten-frame', filled: a },
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: toFa(v),
+          value: v,
+          dots: v,
+        })),
+        answer,
+        because: `${toFa(a)} و ${toFa(answer)} با هم ${toFa(10)} می‌شوند.`,
+      };
+    }
+
+    case 'story-problem': {
+      // مسئلهٔ کلامیِ یک‌مرحله‌ای — CCSS K.OA.A.2.
+      // اعداد کوچک نگه داشته می‌شوند تا بار محاسبه، بارِ فهمِ مسئله را
+      // نپوشاند: چیزی که سنجیده می‌شود «جمع است یا تفریق»، نه حساب.
+      const unit = pick(COUNTABLES);
+      const plus = round.op !== 'sub';
+      const limit = Math.min(cap, 10);
+      let a; let b;
+      if (plus) {
+        a = 1 + rand(Math.max(1, limit - 2));
+        b = 1 + rand(Math.max(1, limit - a));
+      } else {
+        a = 2 + rand(Math.max(1, limit - 2));
+        b = 1 + rand(a - 1);
+      }
+      const answer = plus ? a + b : a - b;
+      // ⚠ همان تلهٔ make-ten: صفر با `dots` تصویری ندارد. در تفریق b را
+      // اکیداً کوچک‌تر از a گرفته‌ایم، پس پاسخ همیشه دست‌کم ۱ است.
+      const wrong = [];
+      for (let d = 1; d <= limit; d += 1) if (d !== answer) wrong.push(d);
+      // ⚠ متنِ کامل برای ردهٔ ۵ ساله بیش از ۳۴ نویسه می‌شد و گارد
+      // ردش کرد. مسئلهٔ کلامی ذاتاً متن لازم دارد، پس به‌جای کوتاه
+      // کردنِ آستانه، خودِ جمله برای خردسال فشرده می‌شود: صحنه
+      // همچنان a تا را نشان می‌دهد، پس عدد اول تکرار نمی‌خواهد.
+      const terse = track.optionCount <= 2;
+      const text = terse
+        ? `${toFa(b)} تا ${plus ? 'دیگر' : 'برداشتیم'}`
+        : plus
+          ? `${toFa(a)} ${unit} داری. ${toFa(b)} تای دیگر می‌گیری.`
+          : `${toFa(a)} ${unit} داری. ${toFa(b)} تا را می‌دهی.`;
+      return {
+        type: 'choice',
+        prompt: `${text} ${round.prompt}`,
+        // ⚠ کلید count-pic وجود ندارد؛ رابط فقط scatter را می‌شناسد و
+        // کلیدِ ناشناخته بی‌صدا هیچ نمی‌کشد. صحنه وضعیتِ *آغازین* را
+        // نشان می‌دهد (a تا)، و کودک باید تغییر را خودش حساب کند.
+        display: { kind: 'scatter', icon: unit, times: a },
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: toFa(v),
+          value: v,
+          dots: v,
+        })),
+        answer,
+        because: plus
+          ? `${toFa(a)} به‌علاوهٔ ${toFa(b)} می‌شود ${toFa(answer)}.`
+          : `${toFa(a)} منهای ${toFa(b)} می‌شود ${toFa(answer)}.`,
+      };
+    }
+
     case 'number-bond': {
       // تجزیهٔ عدد: «۵ می‌شود ۳ و چند؟» — subitizing مفهومی که
       // پژوهش آن را پل به جمع و تفریق می‌داند.
@@ -1304,6 +1402,78 @@ function buildRoundInner(round, track) {
       };
     }
 
+    case 'pattern-make': {
+      // الگوی خودزا — بر خلاف pattern-next که دنباله‌اش در فایل درس
+      // نوشته شده، اینجا خودِ موتور الگو می‌سازد. پس تعداد الگوها
+      // به دادهٔ دستی گره نمی‌خورد.
+      //
+      // منبع: پژوهش الگویابی اوایل کودکی (Clements & Sarama) —
+      // ترتیب رشدی AB → AAB/ABB → ABBA → ABC. کودک باید «واحد تکرار»
+      // را ببیند، نه فقط عنصر بعدی را حدس بزند.
+      const kinds = {
+        AB: ['A', 'B', 'A', 'B', 'A', 'B'],
+        AAB: ['A', 'A', 'B', 'A', 'A', 'B'],
+        ABB: ['A', 'B', 'B', 'A', 'B', 'B'],
+        ABBA: ['A', 'B', 'B', 'A', 'A', 'B', 'B', 'A'],
+        ABC: ['A', 'B', 'C', 'A', 'B', 'C'],
+      };
+      const key = round.pattern && kinds[round.pattern] ? round.pattern : 'AB';
+      const shape = round.unit === 'color';
+      const pool = shape ? Object.keys(COLOR_HEX) : GEO_NAMES;
+      const need = key === 'ABC' ? 3 : 2;
+      const chosen = shuffle([...pool]).slice(0, need);
+      const map = { A: chosen[0], B: chosen[1], C: chosen[2] };
+      // دنباله را کوتاه می‌کنیم تا آخرین عنصر پرسش باشد.
+      const full = kinds[key].map((c) => map[c]);
+      const shown = full.slice(0, full.length - 1);
+      const answer = full[full.length - 1];
+      const wrong = pool.filter((v) => v !== answer);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'sequence', unit: shape ? 'color' : 'shape', items: shown },
+        options: buildOptions(answer, wrong, Math.min(n, pool.length)).map((v) => ({
+          label: v,
+          value: v,
+          swatch: shape ? COLOR_HEX[v] : null,
+          geo: shape ? null : { name: v, color: '#2E86AB' },
+          geoLabel: shape ? null : v,
+        })),
+        answer,
+      };
+    }
+
+    case 'bigger-smaller': {
+      // مقایسهٔ اندازه بین چیزهای آشنا — استدلال دربارهٔ جهانِ واقعی،
+      // نه دربارهٔ تصویرِ روی صفحه (تصویرها همه یک اندازه‌اند).
+      // منبع: ردیف‌بندی (seriation) پیاژه — کودک پیش‌عملیاتی باید
+      // اندازهٔ واقعی را از اندازهٔ دیده‌شده جدا کند.
+      //
+      // ⚠ نسخهٔ اول پاسخِ یکتا نمی‌ساخت: برای «کدام کوچک‌تر است؟»
+      // سه چیز کوچک کنار هم می‌گذاشت و هر سه درست بودند. حالا دقیقاً
+      // یک عضو از دستهٔ هدف می‌آید و بقیه از دستهٔ مقابل.
+      const BIG = ['خانه', 'درخت', 'کوه', 'ماشین', 'گاو'];
+      const SMALL = ['زنبور', 'پروانه', 'سکه', 'دانه', 'کلید', 'گیلاس'];
+      const wantBig = round.want !== 'small';
+      const answer = pick(wantBig ? BIG : SMALL);
+      const others = shuffle(wantBig ? SMALL : BIG).slice(0, n - 1);
+      if (others.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        options: shuffle([answer, ...others]).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer,
+        because: wantBig
+          ? `در دنیای واقعی ${answer} از بقیه بزرگ‌تر است.`
+          : `در دنیای واقعی ${answer} از بقیه کوچک‌تر است.`,
+      };
+    }
+
     case 'odd-one-out': {
       // این گِرد تنها جایی بود که قانون «تعداد گزینه بر حسب سن» را
       // دور می‌زد و به کودک ۵ ساله ۴ گزینه می‌داد. پژوهش دانشگاه
@@ -1593,6 +1763,61 @@ function buildRoundInner(round, track) {
         display: { kind: 'pic-only', icon: answer },
         options: buildOptions(answer, wrong, n).map((v) => ({ label: v, value: v })),
         answer,
+      };
+    }
+
+    case 'problem-solve': {
+      // CASEL — «تصمیم‌گیری مسئولانه». موقعیت روزمره، و بهترین کاری
+      // که می‌شود کرد. هر موقعیت یک پاسخِ آشکارا بهتر دارد؛
+      // موقعیت‌های دوپهلو عمداً نیامده‌اند.
+      //
+      // ⚠ گزینه‌ها اینجا *کار*اند نه شیء، و شکل SVG برای «کار» نداریم.
+      // پس این گِرد از تصویرِ موقعیت در صحنه استفاده می‌کند و گزینه‌ها
+      // متن‌اند — یعنی برای ردهٔ خردسال مناسب نیست و درس‌هایش با
+      // minAge علامت خورده‌اند.
+      // ⚠ نسخهٔ اول کارها را در گزینه می‌گذاشت («به بزرگ‌تر بگو») و
+      // گارد درست ردش کرد: کودک پیش‌خوان نمی‌تواند بخواند و شکل SVG
+      // برای «کار» نداریم. پس جهت برعکس شد — کارِ درست در صورتِ پرسش
+      // می‌آید و کودک تصویرِ موقعیتی را انتخاب می‌کند که آن کار به
+      // دردش می‌خورد. هر تصویر فقط یک بار در PROBLEMS آمده تا پاسخ
+      // یکتا بماند.
+      const target = pick(PROBLEMS);
+      const wrong = PROBLEMS.filter((x) => x.pic !== target.pic).map((x) => x.pic);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{b}', target.best),
+        options: buildOptions(target.pic, wrong, n).map((v) => ({
+          label: PROBLEMS.find((x) => x.pic === v)?.label ?? v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.pic,
+        because: target.why,
+      };
+    }
+
+    case 'feeling-fix': {
+      // CASEL — «خودمدیریتی». حسِ سخت را می‌بیند و راهِ آرام شدن را
+      // انتخاب می‌کند.
+      //
+      // ⚠ نسخهٔ اول گزینه‌ها را متنِ خالی می‌گذاشت و گارد درست ردش کرد:
+      // کودک پیش‌خوان نمی‌تواند «نفس عمیق بکش» را بخواند. پس جهت
+      // پرسش برعکس شد — راهِ آرام شدن در صورتِ پرسش می‌آید و کودک
+      // باید صورتکِ حسی را انتخاب کند که آن کار به دردش می‌خورد.
+      const target = pick(CALM_MOVES);
+      const wrong = CALM_MOVES.filter((x) => x.feeling !== target.feeling).map((x) => x.feeling);
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{m}', target.move),
+        options: buildOptions(target.feeling, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer: target.feeling,
+        because: target.why,
       };
     }
 

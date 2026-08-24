@@ -614,9 +614,71 @@ export const READING_LESSONS = [
     ]
   },
   {
-    "id": "reading-letters-06",
+    "id": "reading-review-01",
     "domain": "reading",
     "order": 9,
+    "title": "مرور ا ب د م س و ت ر ن",
+    "goal": "کودک نشانه‌هایی را که چند درس پیش آموخته دوباره مرور می‌کند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن"
+    ],
+    "minutes": 5,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "ا",
+        "name": "الف",
+        "prompt": "کدام یکی حرف «الف» است؟",
+        "speak": "صدای حرف الف",
+        "answer": "ا",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "ب",
+        "name": "بِ",
+        "prompt": "کدام یکی حرف «بِ» است؟",
+        "speak": "صدای حرف بِ",
+        "answer": "ب",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "د",
+        "name": "دال",
+        "prompt": "کدام یکی حرف «دال» است؟",
+        "speak": "صدای حرف دال",
+        "answer": "د",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ن",
+        "maxSounds": 4,
+        "maxSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      }
+    ],
+    "parentNote": "درس مرور. حرفی که چند هفته پیش یاد گرفته اگر دوباره دیده نشود فراموش می‌شود — به همین دلیل این درس عمداً سراغ حرف‌های قدیمی‌تر می‌رود.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
+    "id": "reading-letters-06",
+    "domain": "reading",
+    "order": 10,
     "title": "نشانه‌های ی ز",
     "schoolLessons": [
       "ایـ یـ ی ــ ز"
@@ -717,7 +779,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-04",
     "domain": "reading",
-    "order": 10,
+    "order": 11,
     "title": "خواندن تا ی ز",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -789,7 +851,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-07",
     "domain": "reading",
-    "order": 11,
+    "order": 12,
     "title": "نشانه‌های ه ش",
     "schoolLessons": [
       "اِ ـه ه ــ شـ ش"
@@ -908,7 +970,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-05",
     "domain": "reading",
-    "order": 12,
+    "order": 13,
     "title": "خواندن تا ه ش",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -982,7 +1044,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-08",
     "domain": "reading",
-    "order": 13,
+    "order": 14,
     "title": "نشانه‌های ک",
     "schoolLessons": [
       "کـ ک ــ و"
@@ -1069,7 +1131,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-06",
     "domain": "reading",
-    "order": 14,
+    "order": 15,
     "title": "خواندن تا ک",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -1144,7 +1206,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-09",
     "domain": "reading",
-    "order": 15,
+    "order": 16,
     "title": "نشانه‌های پ گ",
     "schoolLessons": [
       "پـ پ ــ گـ گ"
@@ -1263,7 +1325,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-07",
     "domain": "reading",
-    "order": 16,
+    "order": 17,
     "title": "خواندن تا پ گ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -1338,9 +1400,90 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-review-02",
+    "domain": "reading",
+    "order": 18,
+    "title": "مرور ر ن ی ز ه ش ک پ گ",
+    "goal": "کودک نشانه‌هایی را که چند درس پیش آموخته دوباره مرور می‌کند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ"
+    ],
+    "minutes": 5,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "ر",
+        "name": "رِ",
+        "prompt": "کدام یکی حرف «رِ» است؟",
+        "speak": "صدای حرف رِ",
+        "answer": "ر",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "ن",
+        "name": "نون",
+        "prompt": "کدام یکی حرف «نون» است؟",
+        "speak": "صدای حرف نون",
+        "answer": "ن",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "ی",
+        "name": "یِ",
+        "prompt": "کدام یکی حرف «یِ» است؟",
+        "speak": "صدای حرف یِ",
+        "answer": "ی",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ر",
+        "name": "رِ",
+        "prompt": "کدام کلمه حرف «ر» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ن",
+        "name": "نون",
+        "prompt": "کدام کلمه حرف «ن» را دارد؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "گ",
+        "maxSounds": 4,
+        "maxSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      }
+    ],
+    "parentNote": "درس مرور. حرفی که چند هفته پیش یاد گرفته اگر دوباره دیده نشود فراموش می‌شود — به همین دلیل این درس عمداً سراغ حرف‌های قدیمی‌تر می‌رود.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-10",
     "domain": "reading",
-    "order": 17,
+    "order": 19,
     "title": "نشانه‌های ف خ",
     "schoolLessons": [
       "فـ ف ــ خـ خ"
@@ -1450,7 +1593,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-08",
     "domain": "reading",
-    "order": 18,
+    "order": 20,
     "title": "خواندن تا ف خ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -1529,7 +1672,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-11",
     "domain": "reading",
-    "order": 19,
+    "order": 21,
     "title": "نشانه‌های ق ل",
     "schoolLessons": [
       "قـ ق ــ لـ ل"
@@ -1648,7 +1791,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-09",
     "domain": "reading",
-    "order": 20,
+    "order": 22,
     "title": "خواندن تا ق ل",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -1729,7 +1872,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-12",
     "domain": "reading",
-    "order": 21,
+    "order": 23,
     "title": "نشانه‌های ج",
     "schoolLessons": [
       "جـ ج"
@@ -1816,7 +1959,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-10",
     "domain": "reading",
-    "order": 22,
+    "order": 24,
     "title": "خواندن تا ج",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -1898,7 +2041,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-13",
     "domain": "reading",
-    "order": 23,
+    "order": 25,
     "title": "نشانه‌های چ",
     "schoolLessons": [
       "هـ ه ــ چـ چ"
@@ -1985,7 +2128,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-11",
     "domain": "reading",
-    "order": 24,
+    "order": 26,
     "title": "خواندن تا چ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -2066,9 +2209,96 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-review-03",
+    "domain": "reading",
+    "order": 27,
+    "title": "مرور پ گ ف خ ق ل ج چ",
+    "goal": "کودک نشانه‌هایی را که چند درس پیش آموخته دوباره مرور می‌کند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ"
+    ],
+    "minutes": 5,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "پ",
+        "name": "پِ",
+        "prompt": "کدام یکی حرف «پِ» است؟",
+        "speak": "صدای حرف پِ",
+        "answer": "پ",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "گ",
+        "name": "گاف",
+        "prompt": "کدام یکی حرف «گاف» است؟",
+        "speak": "صدای حرف گاف",
+        "answer": "گ",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "ف",
+        "name": "فِ",
+        "prompt": "کدام یکی حرف «فِ» است؟",
+        "speak": "صدای حرف فِ",
+        "answer": "ف",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "پ",
+        "name": "پِ",
+        "prompt": "کدام کلمه حرف «پ» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "گ",
+        "name": "گاف",
+        "prompt": "کدام کلمه حرف «گ» را دارد؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "چ",
+        "maxSounds": 4,
+        "maxSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      }
+    ],
+    "parentNote": "درس مرور. حرفی که چند هفته پیش یاد گرفته اگر دوباره دیده نشود فراموش می‌شود — به همین دلیل این درس عمداً سراغ حرف‌های قدیمی‌تر می‌رود.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-14",
     "domain": "reading",
-    "order": 25,
+    "order": 28,
     "title": "نشانه‌های ژ",
     "schoolLessons": [
       "ژ ــ خوا"
@@ -2155,7 +2385,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-12",
     "domain": "reading",
-    "order": 26,
+    "order": 29,
     "title": "خواندن تا ژ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -2239,7 +2469,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-15",
     "domain": "reading",
-    "order": 27,
+    "order": 30,
     "title": "نشانه‌های ص ذ",
     "schoolLessons": [
       "صـ ص ــ ذ"
@@ -2349,7 +2579,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-13",
     "domain": "reading",
-    "order": 28,
+    "order": 31,
     "title": "خواندن تا ص ذ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -2435,7 +2665,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-16",
     "domain": "reading",
-    "order": 29,
+    "order": 32,
     "title": "نشانه‌های ع ث",
     "schoolLessons": [
       "عـ ع ــ ثـ ث"
@@ -2536,7 +2766,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-14",
     "domain": "reading",
-    "order": 30,
+    "order": 33,
     "title": "خواندن تا ع ث",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -2624,7 +2854,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-17",
     "domain": "reading",
-    "order": 31,
+    "order": 34,
     "title": "نشانه‌های ح",
     "schoolLessons": [
       "حـ ح"
@@ -2711,7 +2941,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-15",
     "domain": "reading",
-    "order": 32,
+    "order": 35,
     "title": "خواندن تا ح",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -2798,9 +3028,102 @@ export const READING_LESSONS = [
     ]
   },
   {
+    "id": "reading-review-04",
+    "domain": "reading",
+    "order": 36,
+    "title": "مرور چ ژ ص ذ ع ث ح",
+    "goal": "کودک نشانه‌هایی را که چند درس پیش آموخته دوباره مرور می‌کند.",
+    "letters": [
+      "ا",
+      "ب",
+      "د",
+      "م",
+      "س",
+      "و",
+      "ت",
+      "ر",
+      "ن",
+      "ی",
+      "ز",
+      "ه",
+      "ش",
+      "ک",
+      "پ",
+      "گ",
+      "ف",
+      "خ",
+      "ق",
+      "ل",
+      "ج",
+      "چ",
+      "ژ",
+      "ص",
+      "ذ",
+      "ع",
+      "ث",
+      "ح"
+    ],
+    "minutes": 5,
+    "rounds": [
+      {
+        "kind": "letter-sound",
+        "letter": "چ",
+        "name": "چِه",
+        "prompt": "کدام یکی حرف «چِه» است؟",
+        "speak": "صدای حرف چِه",
+        "answer": "چ",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "ژ",
+        "name": "ژِ",
+        "prompt": "کدام یکی حرف «ژِ» است؟",
+        "speak": "صدای حرف ژِ",
+        "answer": "ژ",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-sound",
+        "letter": "ص",
+        "name": "صاد",
+        "prompt": "کدام یکی حرف «صاد» است؟",
+        "speak": "صدای حرف صاد",
+        "answer": "ص",
+        "distractorPool": "letters"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "چ",
+        "name": "چِه",
+        "prompt": "کدام کلمه حرف «چ» را دارد؟"
+      },
+      {
+        "kind": "letter-in-word",
+        "letter": "ژ",
+        "name": "ژِ",
+        "prompt": "کدام کلمه حرف «ژ» را دارد؟"
+      },
+      {
+        "kind": "blend-word",
+        "letter": "ح",
+        "maxSounds": 4,
+        "maxSyllables": 2,
+        "longVowelOnly": false,
+        "prompt": "کدام کلمه می‌شود؟"
+      }
+    ],
+    "parentNote": "درس مرور. حرفی که چند هفته پیش یاد گرفته اگر دوباره دیده نشود فراموش می‌شود — به همین دلیل این درس عمداً سراغ حرف‌های قدیمی‌تر می‌رود.",
+    "reviewDays": [
+      1,
+      3,
+      7
+    ]
+  },
+  {
     "id": "reading-letters-18",
     "domain": "reading",
-    "order": 33,
+    "order": 37,
     "title": "نشانه‌های ض ط",
     "schoolLessons": [
       "ضـ ض ــ ط"
@@ -2910,7 +3233,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-16",
     "domain": "reading",
-    "order": 34,
+    "order": 38,
     "title": "خواندن تا ض ط",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -3001,7 +3324,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-19",
     "domain": "reading",
-    "order": 35,
+    "order": 39,
     "title": "نشانه‌های غ",
     "schoolLessons": [
       "غـ غ"
@@ -3079,7 +3402,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-17",
     "domain": "reading",
-    "order": 36,
+    "order": 40,
     "title": "خواندن تا غ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [
@@ -3171,7 +3494,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-letters-20",
     "domain": "reading",
-    "order": 37,
+    "order": 41,
     "title": "نشانه‌های ظ",
     "schoolLessons": [
       "ظ"
@@ -3258,7 +3581,7 @@ export const READING_LESSONS = [
   {
     "id": "reading-read-18",
     "domain": "reading",
-    "order": 38,
+    "order": 42,
     "title": "خواندن تا ظ",
     "goal": "کودک با حرف‌هایی که تا اینجا آموخته کلمه‌های تازه می‌خواند.",
     "letters": [

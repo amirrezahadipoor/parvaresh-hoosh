@@ -17,6 +17,10 @@ import { pickWords } from '../src/data/phonics.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 // حرکت‌ها و نیم‌فاصله در سنجش «خواندنی بودن» شمرده نمی‌شوند.
+// بیشترین تعداد گزینه در بین رده‌های سنی (۷ تا ۸ سال = ۴).
+// هر فیلتر داده باید به این گره بخورد، نه به عددی دلخواه.
+const MAX_OPTIONS = 4;
+
 const SKIP_CHARS = new Set(['آ', 'ء', 'ٔ', '\u200c', 'ـ', 'َ', 'ِ', 'ُ', 'ّ', 'ْ']);
 const skippedWordRounds = [];
 
@@ -287,7 +291,91 @@ for (let after = 2; after < groups.length; after += 1) {
   });
 }
 
-const all = [...lessons, ...practice].sort((a, b) => a.order - b.order);
+// ── درس‌های مرور ────────────────────────────────────────────────────
+// تکرار فاصله‌دار (spaced repetition): نشانه‌ای که ده درس پیش آموخته
+// شده اگر دوباره دیده نشود فراموش می‌شود. درس‌های تمرین بالا فقط
+// «خواندن با حروف تا اینجا» هستند و ممکن است سراغ حرف‌های قدیمی
+// نروند؛ این درس‌ها عمداً روی یک پنجرهٔ مشخص از نشانه‌های *گذشته*
+// تمرکز می‌کنند.
+const review = [];
+for (let end = 5; end < groups.length; end += 4) {
+  // پنجرهٔ مرور: پنج نشانهٔ پیش از این نقطه.
+  const start = Math.max(0, end - 5);
+  const windowGroups = groups.slice(start, end);
+  // شیءِ کاملِ حرف لازم است، نه فقط نویسه: letter-sound به name و
+  // speak و answer هم نیاز دارد (همان‌طور که درس‌های نشانه می‌سازند).
+  const windowAlpha = windowGroups.flatMap((g) => g.letters);
+  const letters = groups.slice(0, end).flatMap((g) => g.letters.map((a) => a.letter));
+  const readableHere = (w) =>
+    [...w].every((ch) => SKIP_CHARS.has(ch) || teachRank(ch) === 999 || letters.includes(ch));
+
+  const rounds = [];
+  // یک گِرد صدا و یک گِرد کلمه برای هر حرفِ داخل پنجره — تا حرف‌های
+  // قدیمی دوباره جلوی چشم بیایند.
+  for (const a of windowAlpha.slice(0, 3)) {
+    rounds.push({
+      kind: 'letter-sound',
+      letter: a.letter,
+      name: a.name,
+      // ⚠ letter-sound هیچ جای‌نگهداری جایگزین نمی‌کند؛ متن باید
+      // همین‌جا کامل ساخته شود.
+      prompt: `کدام یکی حرف «${a.name}» است؟`,
+      speak: soundLine(a),
+      answer: a.letter,
+      distractorPool: 'letters',
+    });
+  }
+  for (const a of windowAlpha.slice(0, 2)) {
+    const letter = a.letter;
+    // ⚠ سازندهٔ letter-in-word استخر را با teachRank(letter) محدود
+    // می‌کند، نه با حروف آموخته‌شده تا اینجا. برای حرفی که رتبه‌اش
+    // پایین است استخر بسیار کوچک می‌شود، پس همان منطق باید اینجا
+    // بازتاب پیدا کند وگرنه buildRound سر ردهٔ چهارگزینه‌ای پرتاب
+    // می‌کند. آستانه به بیشترین تعداد گزینه (۴) گره خورده، نه عدد دلخواه.
+    const rank = teachRank(letter);
+    const inRank = (w) =>
+      [...w].every((ch) => SKIP_CHARS.has(ch) || teachRank(ch) === 999 || teachRank(ch) <= rank);
+    const pool = STAGED_WORDS.filter(inRank);
+    const withL = pool.filter((w) => w.includes(letter));
+    const without = pool.filter((w) => !w.includes(letter));
+    if (withL.length >= 1 && without.length >= MAX_OPTIONS - 1) {
+      rounds.push({
+        kind: 'letter-in-word',
+        letter,
+        name: a.name,
+        prompt: `کدام کلمه حرف «${letter}» را دارد؟`,
+      });
+    }
+  }
+  if (pickWords({ maxSounds: 4, maxSyllables: 2, readable: readableHere }).length >= 6) {
+    rounds.push({
+      kind: 'blend-word',
+      letter: letters[letters.length - 1],
+      maxSounds: 4,
+      maxSyllables: 2,
+      longVowelOnly: false,
+      prompt: 'کدام کلمه می‌شود؟',
+    });
+  }
+  if (rounds.length < 4) continue;
+
+  const shown = windowGroups.map((g) => g.letters.map((a) => a.letter).join(' ')).join(' ');
+  review.push({
+    id: `reading-review-${String(review.length + 1).padStart(2, '0')}`,
+    domain: 'reading',
+    order: end + 0.5 + (review.length + 1) / 1000,
+    title: `مرور ${shown}`,
+    goal: 'کودک نشانه‌هایی را که چند درس پیش آموخته دوباره مرور می‌کند.',
+    letters,
+    minutes: 5,
+    rounds,
+    parentNote:
+      'درس مرور. حرفی که چند هفته پیش یاد گرفته اگر دوباره دیده نشود فراموش می‌شود — به همین دلیل این درس عمداً سراغ حرف‌های قدیمی‌تر می‌رود.',
+    reviewDays: [1, 3, 7],
+  });
+}
+
+const all = [...lessons, ...practice, ...review].sort((a, b) => a.order - b.order);
 // شماره‌گذاری دوباره، تا مسیر سفر پیوسته بماند.
 all.forEach((l, i) => {
   l.order = i + 1;
@@ -306,7 +394,7 @@ fs.mkdirSync(path.join(ROOT, 'src/data/lessons'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'src/data/lessons/reading.js'), out);
 
 const roundCount = all.reduce((s, l) => s + l.rounds.length, 0);
-console.log(`نوشته شد: ${all.length} درس خواندن (${lessons.length} نشانه + ${practice.length} تمرین)، ${roundCount} گِرد، از ${usable.length} حرف.`);
+console.log(`نوشته شد: ${all.length} درس خواندن (${lessons.length} نشانه + ${practice.length} تمرین + ${review.length} مرور)، ${roundCount} گِرد، از ${usable.length} حرف.`);
 if (skippedWordRounds.length) {
   console.log(`گِرد کلمه ساخته نشد (کلمهٔ خواندنی نبود): ${skippedWordRounds.join('، ')}`);
 }
