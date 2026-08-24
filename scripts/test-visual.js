@@ -262,8 +262,44 @@ for (const vp of VIEWPORTS) {
 
     if (await page.locator('.done-card').count()) {
       await audit(page, `پایان ${title}`, vp);
+
+      // ── جشن پایان باید یک‌جا دیده شود ─────────────────────────
+      // ⚠ در ۳۲۰×۵۶۸ کارت جشن + یادداشت والدین + دو دکمه ۲۰۱px
+      // بلندتر از صفحه می‌شدند و دکمهٔ «بعدی» — تنها راه ادامهٔ
+      // زنجیرهٔ بازی — کامل بیرون می‌افتاد.
+      const done = await page.evaluate(() => {
+        const next = document.querySelector('.btn.next-btn');
+        if (!next) return null;
+        const r = next.getBoundingClientRect();
+        const note = document.querySelector('.note');
+        return {
+          below: Math.round(r.bottom - window.innerHeight),
+          tap: Math.round(r.height),
+          noteClipped: note ? note.scrollHeight > note.clientHeight + 1 : false,
+        };
+      });
+      if (!done) {
+        errors.push(`${vp.name}/پایان ${title}: دکمهٔ «بعدی» پیدا نشد`);
+      } else {
+        if (done.below > 0) {
+          errors.push(`${vp.name}/پایان ${title}: دکمهٔ «بعدی» ${done.below}px زیر لبهٔ صفحه است`);
+        }
+        if (done.tap < 56) {
+          errors.push(`${vp.name}/پایان ${title}: هدف لمسی «بعدی» فقط ${done.tap}px است`);
+        }
+        if (done.noteClipped) {
+          errors.push(`${vp.name}/پایان ${title}: متن یادداشت والدین بریده شده`);
+        }
+      }
+
       played++;
-      await page.locator('.btn.ghost', { hasText: 'خانه' }).click();
+      // ⚠ دکمهٔ «خانه» در صفحهٔ کوتاه پنهان می‌شود (فلشِ نوار بالا
+      // همان کار را می‌کند)، پس نباید فرض کنیم همیشه هست.
+      // ⚠ count() عنصرِ display:none را هم می‌شمارد؛ باید دیدنی
+      // بودن را پرسید، وگرنه کلیک با TimeoutError می‌ماند.
+      const homeBtn = page.locator('.screen.done > .btn.ghost');
+      if (await homeBtn.isVisible().catch(() => false)) await homeBtn.click();
+      else await page.locator('.icon-btn[aria-label="بازگشت"]').first().click();
     } else {
       // درس تمام نشد (گِرد ناشناخته یا گیر). به‌جای شکست خاموش،
       // از راه خانه برمی‌گردیم تا گام‌های بعدی اجرا شوند.

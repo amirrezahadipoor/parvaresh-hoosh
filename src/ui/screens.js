@@ -754,7 +754,7 @@ function doneScreen(lesson, correct, total) {
   const nxt = stepAfter(lesson.id);
   const nd = DOMAINS.find((x) => x.id === nxt.domainId);
 
-  return el('div', { class: 'screen' }, [
+  return el('div', { class: 'screen done' }, [
     topbar('پایان درس', () => render(homeScreen())),
     el('div', { class: 'done-card' }, [
       el('span', { class: 'buddy big-buddy cheer', html: buddy(pct >= 50 ? 'happy' : 'encourage', nd.color) }),
