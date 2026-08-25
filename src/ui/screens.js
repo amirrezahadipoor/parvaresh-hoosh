@@ -15,7 +15,7 @@ import { taskIcon, actionLabel } from '../core/task-icon.js';
 import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
 import {
   starIcon, soundOnIcon, soundOffIcon, gearIcon,
-  lockIcon, checkIcon, reviewIcon, moonIcon, backIcon,
+  lockIcon, checkIcon, reviewIcon, moonIcon, backIcon, domainIcon,
 } from '../core/ui-icons.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
 import { playMusic, stopMusic, TRACKS } from '../core/music.js';
@@ -131,6 +131,12 @@ export function homeScreen() {
       onClick: () => render(store.limitReached() ? timeUpScreen() : playScreen(step.lesson.id)),
     },
     [
+      // ⚠ نشانِ حوزه، پیش از هر متنی.
+      // کارتِ اصلیِ خانه ۲۵۰ پیکسل ارتفاع داشت و فقط سه خط *متن* بود.
+      // برای کودکِ پنج‌ساله‌ای که خواندن بلد نیست، بزرگ‌ترین عنصرِ
+      // صفحه یعنی «یک مستطیلِ نارنجی» — هیچ. حالا نشان می‌گوید امروز
+      // چه چیزی در انتظار اوست، پیش از آنکه کسی چیزی بخواند.
+      el('span', { class: 'play-ico', html: domainIcon(d.icon), 'aria-hidden': 'true' }),
       el('span', { class: 'play-kicker', text: mode === 'review' ? 'بیا مرور کنیم' : 'بریم بازی' }),
       el('span', { class: 'play-title', text: step.lesson.title }),
       el('span', { class: 'play-meta' }, [
@@ -223,6 +229,12 @@ function mapScreen() {
         el('div', { class: 'map-body' }, [
           el('strong', { text: st.lesson.title }),
           el('span', { class: 'map-meta' }, [
+            // ⚠ نشانِ کوچکِ حوزه کنارِ نامش. در فهرستی به طولِ ۳۰۷
+            // سطر، متنِ «خواندن و نوشتن» و «تماشا و شناخت» در یک
+            // نگاه از هم جدا نمی‌شوند؛ شکل می‌شود. رنگِ حوزه هم
+            // هست، ولی قانونِ دسترس‌پذیریِ برنامه می‌گوید هرگز فقط
+            // با رنگ پیام نده — این نشان همان لایهٔ دومِ لازم است.
+            el('span', { class: 'map-dom-ico', html: domainIcon(d.icon), 'aria-hidden': 'true' }),
             el('span', { text: d.title }),
             el('span', { class: 'sep', 'aria-hidden': 'true' }),
             el('span', {

@@ -260,6 +260,37 @@ for (const problem of auditIcons(allKinds)) errors.push(`نشان تمرین: ${
   }
 }
 
+// ── نشانِ هر حوزه باید واقعاً وجود داشته باشد ───────────────────────
+//
+// ⚠ چرا این بررسی نوشته شد: فیلدِ `icon` هفت ماه در `curriculum.js`
+// بود («book»، «numbers»…) و **هیچ‌جا خوانده نمی‌شد**. دادهٔ مرده
+// هیچ خطایی نمی‌دهد؛ فقط بی‌صدا بی‌فایده می‌ماند و بعد یک نفر بر
+// اساسش تصمیم می‌گیرد که نشان‌ها «هستند».
+//
+// حالا که زنده شده، عکسِ آن خطر پیش می‌آید: کسی حوزه‌ای اضافه کند و
+// نامِ نشانی بنویسد که وجود ندارد. `domainIcon()` عمداً رشتهٔ خالی
+// برمی‌گرداند (نشانِ غلط بدتر از نبودِ نشان است)، پس صفحه سالم
+// می‌ماند و فقط یک جای خالی می‌افتد — دقیقاً همان باگِ خاموشی که
+// این پروژه بارها خورده. این بررسی جلویش را می‌گیرد.
+{
+  const { DOMAIN_ICON_NAMES } = await import('../src/core/ui-icons.js');
+  for (const d of DOMAINS) {
+    if (!d.icon) {
+      errors.push(`حوزهٔ «${d.title}» فیلد icon ندارد`);
+    } else if (!DOMAIN_ICON_NAMES.includes(d.icon)) {
+      errors.push(
+        `حوزهٔ «${d.title}» نشانِ «${d.icon}» را می‌خواهد که در ui-icons.js نیست`
+        + ` (موجود: ${DOMAIN_ICON_NAMES.join('، ')})`,
+      );
+    }
+  }
+  // نشانِ بی‌صاحب هم بی‌فایده است — همان دادهٔ مرده از سمتِ دیگر.
+  const used = new Set(DOMAINS.map((d) => d.icon));
+  for (const name of DOMAIN_ICON_NAMES) {
+    if (!used.has(name)) warnings.push(`نشانِ «${name}» ساخته شده ولی هیچ حوزه‌ای از آن استفاده نمی‌کند`);
+  }
+}
+
 console.log('── اعتبارسنجی پرورش هوش ──');
 console.log(`حوزه‌ها: ${DOMAINS.length}`);
 for (const d of DOMAINS) {

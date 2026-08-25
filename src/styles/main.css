@@ -241,6 +241,11 @@ body {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  /* ⚠ `gap` نداشت. تا وقتی محتوا فقط متن و جداکنندهٔ «•» بود، فاصلهٔ
+     بینِ کلمه‌ها را خودِ متن می‌ساخت و کسی متوجه نمی‌شد. با افزودنِ
+     نشانِ حوزه، اندازه‌گیری نشان داد فاصله دقیقاً **۰ پیکسل** است و
+     نشان به واژه چسبیده. فلکس فاصله را رایگان نمی‌دهد. */
+  gap: 6px;
 }
 
 .map-meta {
@@ -2917,4 +2922,42 @@ canvas.pad {
   margin-inline-start: auto;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* نشانِ حوزه روی کارتِ اصلیِ خانه.
+   رنگ را نمی‌دهیم: `currentColor` سفیدِ متنِ کارت را می‌گیرد، پس
+   نشان و متن همیشه یک‌رنگ‌اند و هیچ‌وقت از هم نمی‌افتند.
+   `opacity` کمی زیر ۱ تا نشان *پس‌زمینهٔ* عنوان باشد نه رقیبش. */
+.play-ico {
+  width: 64px;
+  height: 64px;
+  display: block;
+  margin: 0 auto var(--s2);
+  opacity: 0.92;
+}
+
+.play-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* نشانِ ریزِ حوزه در سطرهای نقشه.
+   رنگِ حوزه را می‌گیرد (نه رنگِ متنِ خاکستری) تا همان کدِ رنگی که
+   نقطهٔ کناری دارد اینجا هم تکرار شود.
+   ⚠ `flex: none` لازم است وگرنه در سطرِ باریک، نشان به‌جای متن
+   فشرده می‌شود و بیضی از آب درمی‌آید. */
+.map-dom-ico {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  color: var(--c);
+  display: inline-block;
+  vertical-align: -3px;
+}
+
+.map-dom-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
