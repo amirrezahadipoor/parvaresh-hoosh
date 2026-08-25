@@ -975,6 +975,8 @@ function orderView(r, feedback, done, onWin = () => {}) {
         if (ok) {
           onWin();
           sfx.correct();
+          // جرقه روی خودِ ردیفِ چیده‌شده — همان چیزی که کودک ساخت.
+          sparkle(slots, 16);
           markOk(feedback, 'آفرین! درست چیدی.');
           speak('آفرین!');
         } else {
@@ -1019,6 +1021,10 @@ function memoryView(r, feedback, done, onWin = () => {}) {
         return;
       }
       if (first.dataset.icon === b.dataset.icon) {
+        // جشنِ کوچک روی *هر دو* کارت، نه فقط دومی: کودک جفت را
+        // پیدا کرده، نه یک کارت را.
+        sparkle(first, 6);
+        sparkle(b, 6);
         first.classList.add('matched');
         b.classList.add('matched');
         first = null;

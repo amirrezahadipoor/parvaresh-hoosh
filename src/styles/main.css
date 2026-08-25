@@ -1146,14 +1146,26 @@ canvas.pad {
   margin-bottom: 0;
 }
 
+/* ⚠ گزینش‌گر باید از `.field input` قوی‌تر باشد. نسخهٔ اول فقط
+   `.switch` بود و `.field input { width: 100% }` بردش: کلید ۳۵۸px
+   پهن شد و از لبهٔ صفحه زد بیرون (x = -71).
+   `.field .switch` دو کلاس دارد، پس برنده است.
+   ریشهٔ واقعی هم اصلاح شد: قاعدهٔ عرض حالا به `input[type='text']`
+   محدود است، نه هر `input`. */
+.field .switch,
 .switch {
   appearance: none;
   -webkit-appearance: none;
   flex: none;
-  width: 68px;
-  height: 40px;
-  min-height: 40px;
-  padding: 4px;
+  /* ⚠ ۸۸×۵۶ و نه ۶۸×۴۰. نسخهٔ اول ۴۰px بلند بود و `test-visual` در
+     هر چهار اندازهٔ صفحه ردش کرد: حداقلِ هدفِ لمسی در این پروژه
+     ۵۶px است. وسوسه این بود که آستانه را پایین بیاورم چون «کلید
+     کوچک قشنگ‌تر است» — ولی این کلید را والد با شست می‌زند و
+     قانونِ ۵۶px از پژوهش آمده، نه از سلیقه. کلید بزرگ شد. */
+  width: 88px;
+  height: 56px;
+  min-height: 56px;
+  padding: 6px;
   border: 2px solid var(--line);
   border-radius: 999px;
   background: #EFE9E0;
@@ -1164,8 +1176,8 @@ canvas.pad {
 .switch::after {
   content: '';
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #FFF;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
@@ -1181,11 +1193,11 @@ canvas.pad {
 }
 
 .switch:checked::after {
-  transform: translateX(-28px);
+  transform: translateX(-32px);
 }
 
 [dir='ltr'] .switch:checked::after {
-  transform: translateX(28px);
+  transform: translateX(32px);
 }
 
 .switch:focus-visible {
@@ -1193,16 +1205,15 @@ canvas.pad {
   outline-offset: 3px;
 }
 
-.field input,
-/* ⚠ فلشِ پیش‌فرضِ مرورگر در RTL سمت چپ می‌افتد، در حالی که متن
-   راست‌چین است — نتیجه فلشی جدا افتاده در گوشهٔ مخالف. فلش را خودمان
-   می‌کشیم (data-uri، بدون درخواست شبکه) و سمت چپِ کادر اما با فاصلهٔ
-   دقیق می‌گذاریم؛ فضای متن هم به همان اندازه کم می‌شود تا هرگز
-   روی هم نیفتند. */
+/* ⚠ شکلِ مشترکِ ورودی‌ها. عمداً *بدون* فلش — نسخهٔ پیشین
+   `.field input` و `.field select` را در یک قاعده جمع کرده بود و
+   نتیجه‌اش این شد که کادرِ «اسم کودک» هم فلشِ کشویی می‌گرفت: یک
+   ورودیِ متنی که وعدهٔ فهرست می‌داد و هیچ فهرستی نداشت.
+   در اسکرین‌شات دیده شد، نه در هیچ آزمونی. */
+.field input[type='text'],
 .field select {
   width: 100%;
   padding: 14px;
-  padding-left: 42px;
   border: 2px solid var(--line);
   border-radius: 14px;
   font-family: inherit;
@@ -1211,10 +1222,24 @@ canvas.pad {
   color: inherit;
   appearance: none;
   -webkit-appearance: none;
+}
+
+/* ⚠ فلشِ پیش‌فرضِ مرورگر در RTL سمت چپ می‌افتد، در حالی که متن
+   راست‌چین است — نتیجه فلشی جدا افتاده در گوشهٔ مخالف. فلش را خودمان
+   می‌کشیم (data-uri، بدون درخواست شبکه) و سمت چپِ کادر اما با فاصلهٔ
+   دقیق می‌گذاریم؛ فضای متن هم به همان اندازه کم می‌شود تا هرگز
+   روی هم نیفتند. فقط برای select، چون فقط select کشویی است. */
+.field select {
+  padding-left: 42px;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 6l4.5 4.5L12.5 6' fill='none' stroke='%236E6A78' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: left 14px center;
   background-size: 16px 16px;
+}
+
+.field input[type='text']:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
 }
 
 .field select:focus-visible {
