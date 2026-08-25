@@ -52,9 +52,17 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 220, height: 220 } });
 await page.goto(BASE, { waitUntil: 'domcontentloaded' });
 
+// ⚠ نسخهٔ اول فقط SHAPE_NAMES را می‌سنجید — ۹۵ از ۱۴۸ تصویر. یعنی
+// چهره‌ها، موقعیت‌ها، صحنه‌ها و خطرها (۵۳ تصویر) بیرونِ دیدِ گارد
+// بودند، درست همان‌هایی که بیشترین بازکشیدن را داشته‌اند. گارد باید
+// *هر چیزی* را که `shape()` می‌تواند برگرداند بسنجد.
 const names = await page.evaluate(async () => {
   const m = await import('/src/core/svg.js');
-  return m.SHAPE_NAMES;
+  const all = new Set(m.SHAPE_NAMES);
+  for (const t of [m.FACES, m.SITUATIONS, m.SCENES, m.PROBLEM_SCENES, m.HAZARDS, m.SAFETY_STEPS]) {
+    for (const k of Object.keys(t || {})) all.add(k);
+  }
+  return [...all].filter((n) => m.hasPicture(n));
 });
 
 const rows = [];
@@ -92,14 +100,42 @@ for (const name of names) {
       }
       if (L < 200) ink++;
     }
-    return { ink: ink / 40000, avgL: cnt ? sum / cnt : 255 };
+    return { ink: ink / 40000, avgL: cnt ? sum / cnt : 255, markup: m.shape(nm) };
   }, name);
-  rows.push({ name, ink: r.ink, cr: contrastToWhite(r.avgL) });
+  rows.push({ name, ink: r.ink, cr: contrastToWhite(r.avgL), markup: r.markup });
 }
 
 await browser.close();
 
+// ── گاردِ دوم: هیچ دو شکلی نباید یکسان باشند ────────────────────
+//
+// ⚠ این گارد از یک باگِ واقعیِ همین جلسه زاده شد. برای افزودن
+// کانتور به «خانه» یک regex نوشتم که نامِ شکل را می‌گرفت — ولی
+// «رودخانه» به «خانه» ختم می‌شود، پس regex اول به رودخانه خورد و
+// **رودخانه تبدیل به خانه شد**. هر پنج گاردِ دیگر سبز ماندند: شکل
+// وجود داشت، کانتور داشت، کنتراستش خوب بود. فقط اتفاقی چشمم به
+// خروجی افتاد.
+//
+// درسِ فارسی‌اش را جدا نگه دار: نامِ شکل‌ها پسوندِ هم‌اند
+// (خانه/رودخانه، برگ/بزرگ، آب/آبی). جست‌وجوی نام در فارسی
+// **همیشه** باید مرزِ ابتدای خط داشته باشد.
 const problems = [];
+
+// شکل‌های همسان: دو نامِ متفاوت که دقیقاً یک تصویر می‌دهند
+{
+  const byMarkup = new Map();
+  for (const r of rows) {
+    const key = r.markup;
+    if (!byMarkup.has(key)) byMarkup.set(key, []);
+    byMarkup.get(key).push(r.name);
+  }
+  for (const [, group] of byMarkup) {
+    if (group.length > 1) {
+      problems.push(`شکل‌های یکسان: ${group.join(' = ')} — احتمالاً یکی روی دیگری نوشته شده`);
+    }
+  }
+}
+
 for (const r of rows) {
   if (ALLOW.has(r.name)) continue;
   if (r.ink < MIN_INK) {

@@ -107,9 +107,11 @@ export const SHAPES = {
     <path d="M8 80 H92" stroke="#5A6B7A" stroke-width="3" stroke-linecap="round"/></g>`),
 
   رودخانه: () =>
-    svg(`<g><path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#2E86AB" stroke-width="16" fill="none" stroke-linecap="round"/>
-    <path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#7FD1E8" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <ellipse cx="68" cy="42" rx="9" ry="6" fill="#8FBF6A"/><ellipse cx="76" cy="66" rx="8" ry="5" fill="#8FBF6A"/></g>`),
+    svg(`<path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#1B6B8F" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#2E86AB" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#7FD1E8" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="68" cy="42" rx="9" ry="6" fill="#8FBF6A" stroke="#6B9E4A" stroke-width="2.2"/>
+    <ellipse cx="76" cy="66" rx="8" ry="5" fill="#8FBF6A" stroke="#6B9E4A" stroke-width="2.2"/>`),
 
   برف: () =>
     svg(`<g stroke="#2E86AB" stroke-width="4" stroke-linecap="round">
@@ -140,18 +142,21 @@ export const SHAPES = {
   // عمداً عمودی کشیده شده‌اند تا وقتی کنار هم می‌چینیم، طولِ نوار
   // را نشان بدهند نه پهنا را.
   مداد: () =>
-    svg(`<g><rect x="40" y="20" width="20" height="52" rx="3" fill="#F4B942"/>
-    <rect x="40" y="20" width="20" height="8" rx="3" fill="#E08A1E"/>
-    <path d="M40 72 L50 88 L60 72 Z" fill="#E8C39E"/>
-    <path d="M45 79 L50 88 L55 79 Z" fill="#2B2A33"/></g>`),
+    svg(`<path d="M40 72 L50 88 L60 72 Z" fill="#E8C39E" stroke="#C49A6C" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M45.5 80 L50 88 L54.5 80 Z" fill="#2B2A33"/>
+    <rect x="40" y="20" width="20" height="52" rx="3" fill="#F4B942" stroke="#D69A1E" stroke-width="2.6"/>
+    <path d="M40 23 h6 v49 h-6z" fill="#F8CE72"/>
+    <rect x="40" y="20" width="20" height="9" rx="3" fill="#E08A1E" stroke="#D69A1E" stroke-width="2.6"/>`),
 
   گیره: () =>
     svg(`<g><path d="M38 22 v46 a12 12 0 0 0 24 0 v-38 a7 7 0 0 0 -14 0 v36"
     fill="none" stroke="#7B8794" stroke-width="7" stroke-linecap="round"/></g>`),
 
   'پاک‌کن': () =>
-    svg(`<g><rect x="30" y="34" width="40" height="34" rx="5" fill="#E4572E"/>
-    <rect x="30" y="34" width="40" height="12" rx="5" fill="#F2F0EC"/></g>`),
+    svg(`<rect x="30" y="34" width="40" height="34" rx="5" fill="#E4572E" stroke="#B8431F" stroke-width="2.8"/>
+    <path d="M35 34 h7 v34 h-7z" fill="#EE7452"/>
+    <path d="M30 46 h40" stroke="#B8431F" stroke-width="2.4"/>
+    <path d="M35 34 h30 a5 5 0 0 1 5 5 v7 h-40 v-7 a5 5 0 0 1 5 -5z" fill="#F2F0EC" stroke="#B8431F" stroke-width="2.8"/>`),
 
   گربه: () =>
     svg(`<g><ellipse cx="50" cy="62" rx="26" ry="24" fill="#F4A259"/>
@@ -230,9 +235,11 @@ export const SHAPES = {
     <circle cx="50" cy="48" r="8" fill="#F4B942"/></g>`),
 
   درخت: () =>
-    svg(`<g><rect x="45" y="56" width="10" height="32" rx="3" fill="#8B5E3C"/>
-    <circle cx="50" cy="40" r="20" fill="#4CAF50"/><circle cx="34" cy="50" r="14" fill="#43A047"/>
-    <circle cx="66" cy="50" r="14" fill="#43A047"/></g>`),
+    svg(`<rect x="45" y="56" width="10" height="32" rx="3" fill="#8B5E3C" stroke="#6B462B" stroke-width="2.4"/>
+    <circle cx="34" cy="50" r="14" fill="#43A047" stroke="#2E7D32" stroke-width="2.6"/>
+    <circle cx="66" cy="50" r="14" fill="#43A047" stroke="#2E7D32" stroke-width="2.6"/>
+    <circle cx="50" cy="40" r="20" fill="#4CAF50" stroke="#2E7D32" stroke-width="2.8"/>
+    <path d="M50 20 a20 20 0 0 0 -20 20 a20 20 0 0 0 6 14 a17 20 0 0 1 14 -34z" fill="#63BF66"/>`),
 
   // ── اشیاء ─────────────────────────────────────────────────────────────
   توپ: () =>
@@ -250,29 +257,37 @@ export const SHAPES = {
     <path d="M58 38 H76 M58 46 H76 M58 54 H72" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></g>`),
 
   خانه: () =>
-    svg(`<g><path d="M50 18 L88 50 H12 Z" fill="#E4572E"/>
-    <rect x="22" y="50" width="56" height="36" fill="#F7E4C8"/>
-    <rect x="42" y="62" width="16" height="24" rx="2" fill="#8B5E3C"/>
-    <rect x="28" y="58" width="10" height="10" fill="#2E86AB"/>
-    <rect x="62" y="58" width="10" height="10" fill="#2E86AB"/></g>`),
+    svg(`<rect x="22" y="50" width="56" height="36" fill="#F7E4C8" stroke="#C9A87C" stroke-width="2.8"/>
+    <path d="M22 50 h12 v36 h-12z" fill="#FCF1DE"/>
+    <path d="M50 18 L88 50 H12 Z" fill="#E4572E" stroke="#B8431F" stroke-width="2.8" stroke-linejoin="round"/>
+    <path d="M50 18 L12 50 h14 L50 29z" fill="#EE7452"/>
+    <rect x="42" y="62" width="16" height="24" rx="2" fill="#8B5E3C" stroke="#6B462B" stroke-width="2.4"/>
+    <circle cx="54" cy="74" r="1.8" fill="#F4D03F"/>
+    <rect x="28" y="58" width="10" height="10" fill="#7FBBD6" stroke="#4A87A8" stroke-width="2.2"/>
+    <rect x="62" y="58" width="10" height="10" fill="#7FBBD6" stroke="#4A87A8" stroke-width="2.2"/>`),
 
   ماشین: () =>
-    svg(`<g><path d="M14 62 L20 44 H70 L82 62 Z" fill="#2E86AB"/>
-    <rect x="12" y="60" width="76" height="14" rx="6" fill="#1B6B8F"/>
-    <rect x="28" y="47" width="16" height="13" fill="#BFE6F5"/>
-    <rect x="48" y="47" width="16" height="13" fill="#BFE6F5"/>
-    <circle cx="30" cy="76" r="9" fill="#2D2A32"/><circle cx="70" cy="76" r="9" fill="#2D2A32"/>
-    <circle cx="30" cy="76" r="3.6" fill="#ccc"/><circle cx="70" cy="76" r="3.6" fill="#ccc"/></g>`),
+    svg(`<path d="M14 62 L20 44 H70 L82 62 Z" fill="#2E86AB" stroke="#1B6B8F" stroke-width="2.8" stroke-linejoin="round"/>
+    <rect x="12" y="60" width="76" height="14" rx="6" fill="#1B6B8F" stroke="#14526E" stroke-width="2.6"/>
+    <rect x="28" y="47" width="16" height="13" fill="#BFE6F5" stroke="#1B6B8F" stroke-width="2.2"/>
+    <rect x="48" y="47" width="16" height="13" fill="#BFE6F5" stroke="#1B6B8F" stroke-width="2.2"/>
+    <path d="M28 47 h6 l-6 13 h-0z" fill="#E4F4FB"/>
+    <circle cx="30" cy="76" r="9.5" fill="#2D2A32"/><circle cx="70" cy="76" r="9.5" fill="#2D2A32"/>
+    <circle cx="30" cy="76" r="3.8" fill="#C4C4C4"/><circle cx="70" cy="76" r="3.8" fill="#C4C4C4"/>`),
 
   ستاره: () =>
-    svg(`<path d="M50 16 L60 42 L88 44 L66 62 L73 88 L50 73 L27 88 L34 62 L12 44 L40 42 Z" fill="#F4B942"/>`),
+    svg(`<path d="M50 16 L60 42 L88 44 L66 62 L73 88 L50 73 L27 88 L34 62 L12 44 L40 42 Z"
+      fill="#F4B942" stroke="#D69A1E" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M50 16 L40 42 L12 44 L34 62 L27 88 L50 73z" fill="#F8CE72"/>`),
 
   // هلال ماه با «تفریق» دو دایره ساخته می‌شود. تلاش اول با یک path و دو
   // کمان، به‌خاطر جهت‌های sweep، شکل توخالی و نامرئی می‌داد.
   ماه: () =>
-    svg(`<g><defs><mask id="mn"><rect width="100" height="100" fill="#000"/>
-    <circle cx="50" cy="50" r="34" fill="#fff"/><circle cx="66" cy="40" r="30" fill="#000"/></mask></defs>
-    <rect width="100" height="100" fill="#F4B942" mask="url(#mn)"/></g>`),
+    svg(`<path d="M62 16 a36 36 0 1 0 22 62 a30 30 0 1 1 -22 -62z"
+      fill="#F4B942" stroke="#D69A1E" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="52" cy="40" r="4.5" fill="#E8AC2E"/>
+    <circle cx="44" cy="58" r="6" fill="#E8AC2E"/>
+    <circle cx="58" cy="66" r="3.5" fill="#E8AC2E"/>`),
 
   خورشید: () =>
     svg(`<g><circle cx="50" cy="50" r="20" fill="#F4B942"/>
@@ -610,7 +625,9 @@ export const SHAPES = {
     <path d="M22 49 v34 M78 49 v34" stroke="#8B6F47" stroke-width="8" stroke-linecap="round"/>`),
 
   باران: () =>
-    svg(`<path d="M30 46 a15 15 0 0 1 29 -6 a13 13 0 0 1 13 20 h-42 a12 12 0 0 1 0 -14z" fill="#B9C6D6"/>
+    svg(`<path d="M30 46 a15 15 0 0 1 29 -6 a13 13 0 0 1 13 20 h-42 a12 12 0 0 1 0 -14z"
+      fill="#B9C6D6" stroke="#8595A8" stroke-width="2.8" stroke-linejoin="round"/>
+    <path d="M30 46 a15 15 0 0 1 12 -14 a15 15 0 0 0 -6 28 h-6 a12 12 0 0 1 0 -14z" fill="#CFD9E4"/>
     <g fill="#2E86AB"><path d="M32 66 q4 8 0 10 q-5 -2 0 -10z"/><path d="M48 70 q4 8 0 10 q-5 -2 0 -10z"/>
     <path d="M64 66 q4 8 0 10 q-5 -2 0 -10z"/><path d="M40 82 q4 8 0 10 q-5 -2 0 -10z"/>
     <path d="M56 82 q4 8 0 10 q-5 -2 0 -10z"/></g>`),
@@ -928,12 +945,16 @@ export const SCENES = {
     <circle cx="82" cy="46" r="5" fill="#DCEAF4" stroke="#BFD9E8" stroke-width="1.6"/>
     <circle cx="78" cy="68" r="4" fill="#DCEAF4" stroke="#BFD9E8" stroke-width="1.6"/>`),
   خواب: () =>
-    svg(`<rect x="14" y="56" width="72" height="24" rx="6" fill="#BFD3E6"/>
-    <rect x="14" y="48" width="26" height="16" rx="6" fill="#FFF"/>
-    <circle cx="30" cy="50" r="10" fill="#F5D3B5"/>
-    <path d="M25 50 q3 3 6 0" fill="none" stroke="#2B2A33" stroke-width="2.2" stroke-linecap="round"/>
-    <text x="62" y="42" font-size="16" fill="#7B8A99" font-family="sans-serif">Z</text>
-    <text x="74" y="32" font-size="11" fill="#9AA5B1" font-family="sans-serif">z</text>`),
+    svg(`<rect x="12" y="52" width="76" height="30" rx="7" fill="#A8C0D8" stroke="#7A93AD" stroke-width="3"/>
+    <path d="M12 62 h76" stroke="#7A93AD" stroke-width="2.6"/>
+    <rect x="40" y="58" width="48" height="24" rx="6" fill="#C8DCEC" stroke="#7A93AD" stroke-width="3"/>
+    <rect x="16" y="46" width="28" height="17" rx="7" fill="#FBFBF8" stroke="#B5BFC9" stroke-width="3"/>
+    <circle cx="32" cy="48" r="11" fill="#F0C9A4" stroke="#C99A6E" stroke-width="2.8"/>
+    <path d="M26 47 q3.5 3.5 7 0" fill="none" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M36 46 q3.5 3.5 7 0" fill="none" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="60" cy="38" r="5" fill="#CFDCE8" stroke="#8FA3B8" stroke-width="2.4"/>
+    <circle cx="71" cy="28" r="6.5" fill="#CFDCE8" stroke="#8FA3B8" stroke-width="2.4"/>
+    <circle cx="84" cy="16" r="8" fill="#CFDCE8" stroke="#8FA3B8" stroke-width="2.4"/>`),
 
   آب‌خوردن: () =>
     svg(`<path d="M34 34 h32 l-5 42 q-1 6 -11 6 t-11 -6 z" fill="#DCEAF4" stroke="#9CC4DC" stroke-width="2.5"/>
