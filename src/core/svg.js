@@ -709,7 +709,8 @@ export function shape(name) {
   // نمایش دوباره نوشته می‌شد. با این عقب‌نشینی، حوزهٔ مهارت زندگی
   // بدون یک خط تغییر در رابط کاربری تصویر می‌گیرد.
   const f = SHAPES[name] || FACES[name] || SCENES[name]
-    || SITUATIONS[name] || HAZARDS[name] || SAFETY_STEPS[name];
+    || SITUATIONS[name] || HAZARDS[name] || SAFETY_STEPS[name]
+    || PROBLEM_SCENES[name];
   return f ? f() : null;
 }
 
@@ -717,7 +718,8 @@ export function shape(name) {
 export function hasPicture(name) {
   return Boolean(
     SHAPES[name] || FACES[name] || SCENES[name]
-    || SITUATIONS[name] || HAZARDS[name] || SAFETY_STEPS[name],
+    || SITUATIONS[name] || HAZARDS[name] || SAFETY_STEPS[name]
+    || PROBLEM_SCENES[name],
   );
 }
 
@@ -962,6 +964,109 @@ export function sceneSvg(name) {
 // موقعیت‌ها از دو منبع درآمده‌اند: چارچوب CASEL (خودآگاهی: نام‌گذاری
 // احساس) و راهنمای مهارت زندگی بهزیستی (ایمنی فردی، «نه، برو، بگو»).
 
+/**
+ * صحنهٔ موقعیت‌های مسئله — برای گِرد problem-solve.
+ *
+ * ⚠ چرا این هشت شکل لازم شد: گِرد problem-solve تصویری برای
+ * موقعیت‌هایش نداشت و از شکل‌های موجود قرض می‌گرفت. نتیجه فاجعه
+ * بود و هیچ گاردی نمی‌گرفتش، چون شکل «وجود داشت»:
+ *
+ *   «زخم»    → تصویرِ قرص     (به کودک یاد می‌داد زخم = دارو بخور!)
+ *   «تشنگی»  → تصویرِ رودخانه
+ *   «خستگی»  → تصویرِ ماه
+ *   «خرابی»  → تصویرِ توپِ سالم
+ *   «اذیت»   → تصویرِ دست
+ *   «گم شدن» → تصویرِ خانه
+ *
+ * قانون تازه‌ای که از این پیدا شد و در نقشهٔ راه ثبت شد:
+ * **تصویر باید خودِ چیز را نشان دهد، نه چیزی که با آن تداعی
+ * می‌شود.** «ماه» یعنی ماه، نه خستگی. تداعی کارِ بزرگ‌سالی است؛
+ * کودک ۵ ساله تصویر را تحت‌اللفظی می‌خواند.
+ */
+export const PROBLEM_SCENES = {
+  // اسباب‌بازی شکسته — همان توپ، ولی دو تکه و با خط شکست
+  'اسباب‌بازی‌شکسته': () =>
+    svg(`<path d="M46 26 a28 28 0 0 0 -8 52 l8 -14 l-6 -8 l10 -6 l-6 -10 z"
+      fill="#E4572E" stroke="#B33E1C" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M56 26 a28 28 0 0 1 8 52 l-8 -14 l6 -8 l-10 -6 l6 -10 z"
+      fill="#D14343" stroke="#B33E1C" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M30 20 l-6 -8 M70 20 l6 -8 M50 16 v-9" stroke="#F4B942" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  // گم شدن — کودکِ تنها میان دو مسیر، با علامت سؤال
+  'گم‌شدن': () =>
+    svg(`<path d="M8 84 h84" stroke="#C9BFB0" stroke-width="5" stroke-linecap="round"/>
+    <path d="M30 84 l10 -30 M70 84 l-10 -30" stroke="#E0D5C4" stroke-width="4" stroke-dasharray="6 6"/>
+    <circle cx="50" cy="56" r="11" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M34 84 q0 -18 16 -18 t16 18 z" fill="#2E86AB"/>
+    <circle cx="46" cy="55" r="2" fill="#2D2A32"/><circle cx="54" cy="55" r="2" fill="#2D2A32"/>
+    <path d="M46 61 q4 -3 8 0" fill="none" stroke="#B5836A" stroke-width="2" stroke-linecap="round"/>
+    <path d="M62 28 q0 -9 8 -9 t8 9 q0 6 -8 8 v4" fill="none" stroke="#E4572E" stroke-width="4.4" stroke-linecap="round"/>
+    <circle cx="70" cy="47" r="2.8" fill="#E4572E"/>`),
+
+  // اذیت شدن — دستی که به سوی کودک دراز شده و کودکِ عقب‌کشیده
+  اذیت: () =>
+    svg(`<circle cx="66" cy="42" r="12" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M48 86 q0 -22 18 -22 t18 22 z" fill="#3D9A50"/>
+    <circle cx="62" cy="41" r="2.2" fill="#2D2A32"/><circle cx="70" cy="41" r="2.2" fill="#2D2A32"/>
+    <path d="M61 49 q5 3 10 0" fill="none" stroke="#B5836A" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M40 46 q-10 -4 -16 2 q-4 5 2 8 l12 4" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M14 30 l8 6 M12 44 h10 M16 58 l8 -5" stroke="#D14343" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  // زخمِ زانو — پا با چسب‌زخم روی زانو (نه قرص!)
+  زخم: () =>
+    svg(`<path d="M40 12 q14 0 14 16 v22 q0 14 8 22 v14 h-26 v-16 q-10 -10 -10 -26 v-16 q0 -16 14 -16z"
+      fill="#F5D3B5" stroke="#D9A87E" stroke-width="2.6" stroke-linejoin="round"/>
+    <g transform="rotate(-25 40 46)">
+      <rect x="26" y="39" width="28" height="14" rx="7" fill="#F0C89A" stroke="#C9995F" stroke-width="2.4"/>
+      <rect x="34" y="41" width="12" height="10" rx="3" fill="#FBEBD6"/>
+      <circle cx="37" cy="44" r="1.2" fill="#C9995F"/><circle cx="43" cy="44" r="1.2" fill="#C9995F"/>
+      <circle cx="37" cy="49" r="1.2" fill="#C9995F"/><circle cx="43" cy="49" r="1.2" fill="#C9995F"/>
+    </g>
+    <path d="M62 22 l6 -6 M70 32 h8 M64 44 l7 4" stroke="#D14343" stroke-width="3" stroke-linecap="round"/>`),
+
+  // تشنگی — کودک با لیوانِ خالی و زبانِ بیرون (نه رودخانه!)
+  تشنگی: () =>
+    svg(`<circle cx="40" cy="38" r="16" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.4"/>
+    <path d="M18 86 q0 -24 22 -24 t22 24 z" fill="#E08A1E"/>
+    <circle cx="34" cy="35" r="2.4" fill="#2D2A32"/><circle cx="46" cy="35" r="2.4" fill="#2D2A32"/>
+    <path d="M33 45 q7 8 14 0z" fill="#B5535A"/>
+    <path d="M38 49 q3 7 6 0z" fill="#D96A72"/>
+    <path d="M70 40 h18 l-3 34 h-12 z" fill="none" stroke="#9AC7DC" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M74 68 h10 l-1 5 h-8 z" fill="#BFE6F5"/>`),
+
+  // خستگی — کودک با چشمِ بسته و حباب خواب (نه ماه!)
+  خستگی: () =>
+    svg(`<circle cx="44" cy="44" r="18" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2.4"/>
+    <path d="M20 86 q0 -24 24 -24 t24 24 z" fill="#7B4B94"/>
+    <path d="M33 42 q6 5 12 0 M49 42 q6 5 12 0" fill="none" stroke="#2D2A32" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M38 55 q6 4 12 0" fill="none" stroke="#B5836A" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M68 34 h10 l-10 12 h10" fill="none" stroke="#6E6A78" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M78 16 h8 l-8 10 h8" fill="none" stroke="#9A96A4" stroke-width="2.6" stroke-linejoin="round"/>`),
+
+  // دعوا بر سر اسباب‌بازی — دو دست یک توپ را می‌کشند
+  'دعوا‌سر‌بازی': () =>
+    svg(`<circle cx="50" cy="50" r="16" fill="#F4B942" stroke="#C9931F" stroke-width="2.6"/>
+    <path d="M34 50 q-12 -6 -20 0 q-5 5 1 9 l14 5" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M66 50 q12 -6 20 0 q5 5 -1 9 l-14 5" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M50 26 v-10 M36 30 l-6 -8 M64 30 l6 -8" stroke="#D14343" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  // نوبتِ کسی دیگر — دو کودک و یک اسباب‌بازی، یکی منتظر
+  'نوبت‌دیگری': () =>
+    svg(`<circle cx="28" cy="38" r="12" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.2"/>
+    <path d="M12 86 q0 -20 16 -20 t16 20 z" fill="#2E86AB"/>
+    <circle cx="24" cy="37" r="2.2" fill="#2D2A32"/><circle cx="32" cy="37" r="2.2" fill="#2D2A32"/>
+    <path d="M23 45 q5 4 10 0" fill="none" stroke="#B5836A" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="72" cy="38" r="12" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2.2"/>
+    <path d="M56 86 q0 -20 16 -20 t16 20 z" fill="#3D9A50"/>
+    <circle cx="68" cy="37" r="2.2" fill="#2D2A32"/><circle cx="76" cy="37" r="2.2" fill="#2D2A32"/>
+    <path d="M67 46 q5 -4 10 0" fill="none" stroke="#B5836A" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="70" r="9" fill="#E4572E"/>
+    <path d="M50 61 v18" stroke="#fff" stroke-width="2.2"/>`),
+};
+
+/** نام همهٔ صحنه‌های مسئله. */
+export const PROBLEM_SCENE_NAMES = Object.freeze(Object.keys(PROBLEM_SCENES));
+
 export const SITUATIONS = {
   هدیه: () =>
     svg(`<rect x="24" y="42" width="52" height="40" rx="5" fill="#E4572E"/>
@@ -1104,6 +1209,139 @@ export const SAFETY_STEPS = {
     <circle cx="55" cy="45" r="2.4" fill="#7B8A99"/>
     <circle cx="63" cy="45" r="2.4" fill="#7B8A99"/>`),
 };
+
+// ── افزودهٔ بازبینی احساسات ─────────────────────────────────────────
+//
+// ⚠ چرا لازم شد: با هفت موقعیت، گِرد «او چه حسی دارد؟» فقط سه پرسش
+// متمایز می‌ساخت و چهار پاسخ. کودک بعد از دو بار بازی، *صحنه* را
+// حفظ می‌کرد نه *احساس* را — یعنی درست همان چیزی را یاد نمی‌گرفت
+// که درس ادعا می‌کرد. حفظِ جفتِ «تصویر ← پاسخ» شبیه یادگیری است و
+// در هیچ آزمونی هم قرمز نمی‌شود.
+//
+// دو احساس («عصبانی» و «متعجب») چهره داشتند ولی هیچ موقعیتی
+// نداشتند، یعنی هرگز به‌عنوان پاسخ نمی‌آمدند و فقط بدل بودند.
+// حالا هر شش احساس دست‌کم دو موقعیت دارد.
+Object.assign(SITUATIONS, {
+  // شاد — کیک تولد
+  'کیک‌تولد': () =>
+    svg(`<path d="M22 54 h56 v26 q0 4 -4 4 h-48 q-4 0 -4 -4z" fill="#F5C6C6" stroke="#C98A8A" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M22 62 q9 6 18 0 q9 6 18 0 q9 6 18 0" fill="none" stroke="#E4572E" stroke-width="3.4"/>
+    <rect x="36" y="38" width="6" height="16" rx="2" fill="#8FC7E0"/>
+    <rect x="58" y="38" width="6" height="16" rx="2" fill="#C6D64A"/>
+    <path d="M39 38 q5 -7 0 -12 q-5 6 0 12z" fill="#F4B942"/>
+    <path d="M61 38 q5 -7 0 -12 q-5 6 0 12z" fill="#F4B942"/>`),
+
+  // شاد — دوستِ تازه، دو کودک دست در دست
+  'دوستِ‌تازه': () =>
+    svg(`<circle cx="30" cy="34" r="12" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.2"/>
+    <path d="M14 84 q0 -22 16 -22 t16 22z" fill="#E4572E"/>
+    <circle cx="26" cy="33" r="2.2" fill="#2D2A32"/><circle cx="34" cy="33" r="2.2" fill="#2D2A32"/>
+    <path d="M25 41 q5 5 10 0" fill="none" stroke="#B5836A" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="70" cy="34" r="12" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2.2"/>
+    <path d="M54 84 q0 -22 16 -22 t16 22z" fill="#3D9A50"/>
+    <circle cx="66" cy="33" r="2.2" fill="#2D2A32"/><circle cx="74" cy="33" r="2.2" fill="#2D2A32"/>
+    <path d="M65 41 q5 5 10 0" fill="none" stroke="#B5836A" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M42 66 h16" stroke="#F2C6A0" stroke-width="8" stroke-linecap="round"/>`),
+
+  // غمگین — بادکنکِ پرواز کرده
+  'بادکنک‌رفته': () =>
+    svg(`<ellipse cx="66" cy="20" rx="13" ry="16" fill="#E4572E"/>
+    <path d="M66 36 l-4 5 h8z" fill="#C8431F"/>
+    <path d="M66 41 q-8 12 -4 22 q4 10 -6 16" fill="none" stroke="#B8A98F" stroke-width="2.4"/>
+    <circle cx="30" cy="58" r="13" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.4"/>
+    <path d="M12 88 q0 -20 18 -20 t18 20z" fill="#2E86AB"/>
+    <circle cx="25" cy="57" r="2.2" fill="#2D2A32"/><circle cx="35" cy="57" r="2.2" fill="#2D2A32"/>
+    <path d="M25 68 q5 -5 10 0" fill="none" stroke="#B5836A" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M25 61 q0 6 2 8" fill="none" stroke="#7FB8D8" stroke-width="2.6" stroke-linecap="round"/>`),
+
+  // غمگین — تنها نشستن، بقیه دورترند
+  تنهایی: () =>
+    svg(`<circle cx="26" cy="52" r="13" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.4"/>
+    <path d="M8 86 q0 -22 18 -22 t18 22z" fill="#7B4B94"/>
+    <circle cx="21" cy="51" r="2.2" fill="#2D2A32"/><circle cx="31" cy="51" r="2.2" fill="#2D2A32"/>
+    <path d="M21 62 q5 -5 10 0" fill="none" stroke="#B5836A" stroke-width="2.4" stroke-linecap="round"/>
+    <g opacity=".45">
+      <circle cx="68" cy="42" r="9" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+      <path d="M56 74 q0 -16 12 -16 t12 16z" fill="#3D9A50"/>
+      <circle cx="86" cy="46" r="8" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>
+      <path d="M76 74 q0 -14 10 -14 t10 14z" fill="#E08A1E"/>
+    </g>`),
+
+  // عصبانی — برجِ بازی که کسی خرابش کرده و دستِ مقصر
+  'خط‌روی‌نقاشی': () =>
+    svg(`<rect x="18" y="18" width="64" height="58" rx="5" fill="#FFF" stroke="#C9BFB0" stroke-width="3"/>
+    <circle cx="40" cy="38" r="9" fill="#F4B942"/>
+    <path d="M26 66 l12 -16 l10 12 l8 -9 l12 13z" fill="#7DBB5B"/>
+    <path d="M22 24 L78 70 M78 24 L22 70" stroke="#D14343" stroke-width="6" stroke-linecap="round"/>`),
+
+  // عصبانی — کسی در صف جلو زده
+  'صف‌شکنی': () =>
+    svg(`<path d="M8 86 h84" stroke="#C9BFB0" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="24" cy="46" r="10" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M10 80 q0 -18 14 -18 t14 18z" fill="#2E86AB"/>
+    <circle cx="52" cy="46" r="10" fill="#F5D3B5" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M38 80 q0 -18 14 -18 t14 18z" fill="#E08A1E"/>
+    <circle cx="80" cy="38" r="11" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2"/>
+    <path d="M64 80 q0 -20 16 -20 t16 20z" fill="#D14343"/>
+    <path d="M74 22 l-14 -8 M74 26 l-16 2" stroke="#D14343" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  // ترسیده — سگِ بزرگِ پارس‌کننده
+  'سگ‌بزرگ': () =>
+    svg(`<ellipse cx="58" cy="56" rx="26" ry="20" fill="#8B5E3C"/>
+    <circle cx="30" cy="42" r="16" fill="#A0692F"/>
+    <path d="M18 30 q-6 -12 2 -12 q6 1 8 10z" fill="#6B4423"/>
+    <path d="M42 30 q6 -12 -2 -12 q-6 1 -8 10z" fill="#6B4423"/>
+    <circle cx="25" cy="40" r="2.6" fill="#2D2A32"/><circle cx="35" cy="40" r="2.6" fill="#2D2A32"/>
+    <ellipse cx="30" cy="49" rx="5" ry="4" fill="#3A2A1C"/>
+    <path d="M24 54 h12 l-2 6 h-8z" fill="#FFF" stroke="#3A2A1C" stroke-width="1.6"/>
+    <path d="M26 56 v4 M30 56 v4 M34 56 v4" stroke="#3A2A1C" stroke-width="1.4"/>
+    <path d="M46 76 v10 M62 76 v10 M78 74 v12" stroke="#8B5E3C" stroke-width="8" stroke-linecap="round"/>
+    <path d="M84 40 q10 -6 12 -14" fill="none" stroke="#8B5E3C" stroke-width="7" stroke-linecap="round"/>`),
+
+  // ترسیده — بلندی، ایستادن لب پله
+  بلندی: () =>
+    svg(`<path d="M6 86 h30 v-18 h20 v-18 h20 v-18 h18" fill="none" stroke="#C9BFB0" stroke-width="6" stroke-linejoin="round"/>
+    <circle cx="20" cy="46" r="11" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.2"/>
+    <path d="M6 80 q0 -18 14 -18 t14 18z" fill="#5C6BC0"/>
+    <circle cx="16" cy="45" r="2.4" fill="#2D2A32"/><circle cx="24" cy="45" r="2.4" fill="#2D2A32"/>
+    <ellipse cx="20" cy="54" rx="4" ry="3.4" fill="#B5535A"/>
+    <path d="M36 30 v-8 M46 34 l4 -7" stroke="#9AA5B1" stroke-width="3" stroke-linecap="round"/>`),
+
+  // متعجب — جعبه‌ای که چیزی از آن بیرون پریده
+  'جعبهٔ‌شگفتی': () =>
+    svg(`<rect x="24" y="52" width="52" height="32" rx="5" fill="#2E86AB" stroke="#1B6B8F" stroke-width="2.6"/>
+    <path d="M20 52 h60 l-8 -10 h-44z" fill="#8FC7E0" stroke="#1B6B8F" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M50 42 q-4 -10 4 -14 q-8 -4 -4 -12" fill="none" stroke="#F4B942" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="52" cy="14" r="10" fill="#E4572E"/>
+    <circle cx="48" cy="12" r="1.8" fill="#FFF"/><circle cx="56" cy="12" r="1.8" fill="#FFF"/>
+    <path d="M14 34 l-7 -6 M86 34 l7 -6 M50 6 v-5" stroke="#F4B942" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  // متعجب — رنگین‌کمانِ ناگهانی
+  'رنگین‌کمان': () =>
+    svg(`<path d="M12 78 a38 38 0 0 1 76 0" fill="none" stroke="#E4572E" stroke-width="8"/>
+    <path d="M20 78 a30 30 0 0 1 60 0" fill="none" stroke="#F4B942" stroke-width="8"/>
+    <path d="M28 78 a22 22 0 0 1 44 0" fill="none" stroke="#3D9A50" stroke-width="8"/>
+    <path d="M36 78 a14 14 0 0 1 28 0" fill="none" stroke="#2E86AB" stroke-width="8"/>
+    <path d="M8 84 h84" stroke="#C9BFB0" stroke-width="4" stroke-linecap="round"/>`),
+
+  // خسته — بعد از دویدنِ زیاد
+  'دویدنِ‌زیاد': () =>
+    svg(`<circle cx="46" cy="34" r="14" fill="#F2C6A0" stroke="#D9A87E" stroke-width="2.4"/>
+    <path d="M26 86 q0 -24 20 -24 t20 24z" fill="#E4572E"/>
+    <path d="M40 32 q6 5 12 0" fill="none" stroke="#2D2A32" stroke-width="2.6" stroke-linecap="round"/>
+    <ellipse cx="46" cy="43" rx="5" ry="4" fill="#B5535A"/>
+    <path d="M28 20 q4 -8 -1 -12 M62 22 q5 -7 1 -12" fill="none" stroke="#8FC7E0" stroke-width="3" stroke-linecap="round"/>
+    <path d="M14 44 h10 M12 56 h12 M76 44 h10 M74 56 h12" stroke="#C9BFB0" stroke-width="3" stroke-linecap="round"/>`),
+
+  // آرام — کنارِ دریا
+  'کنارِ‌دریا': () =>
+    svg(`<circle cx="74" cy="24" r="12" fill="#F4B942"/>
+    <path d="M0 56 h100 v34 h-100z" fill="#8FC7E0"/>
+    <path d="M0 56 q14 -6 26 0 t26 0 t26 0 t26 0" fill="none" stroke="#5A9BBA" stroke-width="3"/>
+    <path d="M6 70 q14 -5 26 0 M50 78 q14 -5 26 0" fill="none" stroke="#BFE6F5" stroke-width="3" stroke-linecap="round"/>
+    <path d="M0 56 h100" stroke="#E4D3AC" stroke-width="0"/>
+    <path d="M0 50 h100 v6 h-100z" fill="#EFE0C4"/>`),
+});
 
 /** نام همهٔ موقعیت‌ها، خطرها و گام‌های ایمنی. */
 export const SITUATION_NAMES = Object.freeze(Object.keys(SITUATIONS));

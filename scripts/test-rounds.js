@@ -292,6 +292,118 @@ for (const trackId of TRACK_ORDER) {
   }
 }
 
+// ── تنوعِ واقعی: آیا کودک یاد می‌گیرد یا حفظ می‌کند؟ ────────────────
+//
+// ⚠ این گارد پس از پیدا شدن یک باگِ خاموش نوشته شد.
+//
+// گِرد «او چه حسی دارد؟» فقط هفت موقعیت داشت و در عمل **سه پرسش
+// متمایز** می‌ساخت. کودک بعد از دو بار بازی، جفتِ «تصویر ← پاسخ»
+// را حفظ می‌کرد نه *احساس* را. همهٔ آزمون‌ها سبز بودند: ساختار
+// سالم، پاسخ درست، تصویر موجود. ولی درس چیزی نمی‌آموخت.
+//
+// بدتر از آن: دو احساس («عصبانی» و «متعجب») چهره داشتند ولی هیچ
+// موقعیتی نداشتند، یعنی هرگز پاسخ نمی‌شدند و فقط بدل بودند.
+//
+// معیار: گِردی که در ۴۰ ساخت کمتر از سه *صحنهٔ* متمایز تولید کند،
+// حفظ‌کردنی است نه یادگرفتنی. صحنه = چیزی که کودک می‌بیند
+// (تصویر یا متنِ صحنه)، نه پرسشِ ثابتِ بالای صفحه.
+//
+// گِردهایی که درس عمداً پارامترشان را ثابت کرده (مثل
+// letter-trace با یک حرف مشخص) استثنا هستند: آنجا تکرار خودِ هدف
+// است، نه تنبلیِ داده.
+{
+  const lowVariety = [];
+  for (const lesson of LESSONS) {
+    for (const rd of lesson.rounds) {
+      // درس اگر خودش موضوع را قفل کرده، تنوع را از او نمی‌خواهیم.
+      // ⚠ فهرست باید *هر* کلیدی را که درس موضوع را با آن قفل می‌کند
+      // بشناسد، وگرنه گارد مثبتِ کاذب می‌دهد. `cycle` جا افتاده بود
+      // و درسِ «رشد گیاه را بچین» را — که عمداً همیشه گیاه است —
+      // به‌عنوان کم‌تنوع گزارش می‌کرد.
+      const pinned = rd.situation || rd.emotion || rd.letter !== undefined
+        || rd.digit !== undefined || rd.category || rd.sequence || rd.items
+        || rd.topic || rd.group || rd.word || rd.cycle || rd.want
+        || rd.unit || rd.op !== undefined || rd.step !== undefined;
+      if (pinned) continue;
+
+      // ⚠ معیار باید *کلِ چیزی که کودک می‌بیند* باشد، نه فقط صحنه.
+      // نخست فقط `display` را می‌شمردم و ۶ مثبتِ کاذب داد: گِردهایی
+      // مثل float-sink صحنهٔ ثابت دارند ولی ۱۵ مجموعهٔ گزینهٔ
+      // متفاوت — یعنی هر بار پرسشِ تازه‌ای است.
+      //
+      // حفظ‌کردنی یعنی صحنه *و* گزینه‌ها هر دو تکراری باشند.
+      const views = new Set();
+      for (let i = 0; i < 40; i++) {
+        let r;
+        try {
+          r = buildRound(rd, AGE_TRACKS.school);
+        } catch {
+          continue;
+        }
+        if (!r) continue;
+        const d = r.display;
+        const scene = d
+          ? `${d.kind}:${d.icon ?? d.value ?? d.letter ?? d.total ?? d.times ?? d.filled ?? d.groups ?? ''}`
+          : '';
+        // ⚠ برچسبِ گزینه تنها بخشی از آنچه کودک می‌بیند نیست:
+        // گِرد position برچسب ثابت دارد («بالا/وسط/پایین») ولی
+        // *تصویرِ* داخل هر گزینه عوض می‌شود. پس نشانهٔ دیداری هم
+        // باید در کلید بیاید، وگرنه گِردِ متنوع کم‌تنوع شمرده می‌شود.
+        const opts = (r.options ?? r.items ?? r.cards ?? [])
+          .map((o) => `${o.label ?? o.icon ?? ''}~${o.pic ?? o.spot?.icon ?? ''}`)
+          .sort()
+          .join('|');
+        views.add(`${scene}##${opts}`);
+      }
+      if (views.size > 0 && views.size < 3) {
+        const tag = `${rd.kind}`;
+        if (!lowVariety.some((x) => x.startsWith(tag + ':'))) {
+          lowVariety.push(`${tag}: فقط ${views.size} نمای متمایز در ۴۰ ساخت (${lesson.id}) — کودک حفظ می‌کند، یاد نمی‌گیرد`);
+        }
+      }
+    }
+  }
+  if (lowVariety.length) {
+    lowVariety.forEach((m) => errors.push(m));
+  } else {
+    console.log('✓ هیچ گِردی آن‌قدر کم‌تنوع نیست که حفظ‌کردنی شود.');
+  }
+}
+
+// ── هر احساس باید دست‌کم یک بار پاسخ باشد ──────────────────────────
+//
+// ⚠ «چهره داشتن» کافی نیست. اگر احساسی هیچ موقعیتی نداشته باشد،
+// همیشه در نقش بدل ظاهر می‌شود و کودک هرگز یاد نمی‌گیرد آن حس چه
+// شکلی است — دقیقاً وضعیت «عصبانی» و «متعجب» پیش از این بازبینی.
+{
+  const answered = new Set();
+  const shown = new Set();
+  for (const lesson of LESSONS) {
+    for (const rd of lesson.rounds) {
+      if (rd.kind !== 'feel-face' && rd.kind !== 'name-face') continue;
+      for (let i = 0; i < 60; i++) {
+        let r;
+        try {
+          r = buildRound(rd, AGE_TRACKS.school);
+        } catch {
+          continue;
+        }
+        if (!r) continue;
+        answered.add(String(r.answer));
+        for (const o of r.options ?? []) shown.add(String(o.label));
+      }
+    }
+  }
+  const neverAnswer = [...shown].filter((f) => !answered.has(f));
+  if (neverAnswer.length) {
+    errors.push(
+      `احساس‌های ${neverAnswer.join('، ')} هرگز پاسخ نمی‌شوند و فقط بدل‌اند — کودک یادشان نمی‌گیرد`,
+    );
+  } else if (answered.size) {
+    console.log(`✓ هر ${answered.size} احساس دست‌کم یک بار پاسخ است، نه فقط بدل.`);
+  }
+}
+
 // ردهٔ سنی باید واقعاً اثر داشته باشد: تعداد گزینه‌ها باید فرق کند.
 const sample = LESSONS.flatMap((l) => l.rounds).find((r) => r.kind === 'count-objects');
 if (sample) {

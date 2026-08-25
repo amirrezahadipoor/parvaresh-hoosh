@@ -899,6 +899,21 @@ canvas.pad {
 .spot-وسط { align-items: center; }
 .spot-پایین { align-items: flex-end; }
 
+/* محورِ افقی — «راست» و «چپ».
+   ⚠ اینجا عمداً از `justify-content: flex-start/end` استفاده
+   *نمی‌شود*: در RTL آن‌ها معنایشان برعکس می‌شود و «راست» به چپ
+   می‌افتد. با `margin-inline` هم همین مشکل هست. تنها راهِ مطمئن،
+   ویژگی‌های فیزیکیِ صریح است، چون اینجا «راست» یعنی سمت راستِ
+   *دیدنی*، نه «آغازِ خط». */
+.spot-راست,
+.spot-چپ {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.spot-راست .ico { margin-right: 6px; margin-left: auto; }
+.spot-چپ .ico { margin-left: 6px; margin-right: auto; }
+
 /* ── حافظه ─────────────────────────────────────────────── */
 .memory-grid {
   display: grid;

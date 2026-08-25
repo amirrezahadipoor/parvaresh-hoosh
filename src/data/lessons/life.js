@@ -57,12 +57,17 @@ export const LIFE_LESSONS = [
       'وقتی کتاب می‌خوانید، وسط داستان بایستید و بپرسید «حالا او چه حسی دارد؟». این تمرین همان مهارت است.',
     reviewDays: [1, 3, 7],
     rounds: [
-      { kind: 'feel-face', situation: 'هدیه', prompt: 'او چه حسی دارد؟' },
+      // ⚠ در نخستین درسِ احساس، موقعیت‌ها عمداً ثابت‌اند تا والد
+      // بداند کودک با چه چیزی روبه‌رو می‌شود. ولی باید هر شش احساس
+      // را پوشش بدهند، وگرنه کودک درس را تمام می‌کند بی‌آنکه
+      // «عصبانی» یا «متعجب» را یک بار هم دیده باشد — که تا امروز
+      // دقیقاً همین بود.
+      { kind: 'feel-face', prompt: 'او چه حسی دارد؟' },
       { kind: 'feel-face', situation: 'برج‌خراب', prompt: 'او چه حسی دارد؟' },
       { kind: 'feel-face', situation: 'اتاق‌تاریک', prompt: 'او چه حسی دارد؟' },
-      { kind: 'feel-face', situation: 'بستنی‌افتاده', prompt: 'او چه حسی دارد؟' },
-      { kind: 'feel-face', situation: 'رعدوبرق', prompt: 'او چه حسی دارد؟' },
-      { kind: 'feel-face', situation: 'باغچه‌آرام', prompt: 'او چه حسی دارد؟' },
+      { kind: 'feel-face', situation: 'خط‌روی‌نقاشی', prompt: 'او چه حسی دارد؟' },
+      { kind: 'feel-face', situation: 'جعبهٔ‌شگفتی', prompt: 'او چه حسی دارد؟' },
+      { kind: 'feel-face', prompt: 'او چه حسی دارد؟' },
     ],
   },
   {
