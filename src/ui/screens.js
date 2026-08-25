@@ -1028,8 +1028,28 @@ function orderView(r, feedback, done, onWin = () => {}) {
   return stage ? [stage, slots, tray] : [slots, tray];
 }
 
+/**
+ * تعدادِ ستونِ جدولِ حافظه.
+ *
+ * ⚠ نسخهٔ اول از `auto-fit` استفاده می‌کرد و برای ۶ و ۱۰ کارت چیدمانِ
+ * ناهموار می‌ساخت: چهار کارت در ردیفِ اول و دو تا در ردیفِ دوم، با یک
+ * فضای خالیِ بزرگ کنارشان. کودک آن فضای خالی را «جای یک کارتِ گمشده»
+ * می‌بیند. `auto-fit` وقتی خوب است که تعدادِ آیتم نامعلوم باشد؛ اینجا
+ * دقیقاً چهار حالت داریم (۶، ۸، ۱۰، ۱۲) پس چیدمان باید صریح باشد.
+ *
+ * هدف: ردیف‌های مساوی. ۶→۳×۲، ۸→۴×۲، ۱۰→۵×۲، ۱۲→۴×۳.
+ */
+function memoryCols(n) {
+  if (n % 4 === 0 && n > 8) return 4; // ۱۲ → ۴×۳
+  if (n % 2 === 0) return n / 2; // ۶→۳، ۸→۴، ۱۰→۵
+  return 3;
+}
+
 function memoryView(r, feedback, done, onWin = () => {}) {
-  const grid = el('div', { class: 'memory-grid' });
+  const grid = el('div', {
+    class: 'memory-grid',
+    style: `--cols:${memoryCols(r.cards.length)}`,
+  });
   let first = null;
   let lock = false;
   let found = 0;

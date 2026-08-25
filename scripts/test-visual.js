@@ -333,6 +333,96 @@ for (const vp of VIEWPORTS) {
   await page.waitForSelector('select');
   await audit(page, 'تنظیمات', vp);
 
+  // ── دربارهٔ برنامه ────────────────────────────────────────────────
+  // صفحهٔ تازه‌ای که هیچ نگهبانی نمی‌دید. پر از عدد و جدولِ دوستونی
+  // است، یعنی مستعدِ سرریز در باریک‌ترین صفحه.
+  {
+    const about = page.locator('.btn.ghost', { hasText: 'دربارهٔ برنامه' });
+    if (await about.count()) {
+      await about.click();
+      await page.waitForSelector('.about-box');
+      await audit(page, 'دربارهٔ برنامه', vp);
+      await page.locator('.btn.ghost', { hasText: 'بازگشت' }).last().click();
+      await page.waitForSelector('.gate, select');
+      // اگر دوباره دروازه آمد، بازش کن تا ادامهٔ آزمون نشکند.
+      if (await page.locator('.gate').count()) {
+        const q = await page.locator('.gate .prompt').textContent();
+        const [x, y] = (q || '').match(/\d+/g).map(Number);
+        await page.locator('.gate input').fill(String(x * y));
+        await page.locator('.btn', { hasText: 'ورود' }).click();
+        await page.waitForSelector('select');
+      }
+    } else {
+      errors.push(`${vp.name}/تنظیمات: دکمهٔ «دربارهٔ برنامه» پیدا نشد`);
+    }
+  }
+
+  // ── جدولِ بازی حافظه در هر چهار اندازه ────────────────────────────
+  //
+  // ⚠ چرا این بررسیِ جداگانه لازم شد: بازیِ حافظه ۶، ۸، ۱۰ یا ۱۲ کارت
+  // دارد و حالتِ ۱۰ کارتی صفحه را در عرضِ ۳۲۰ پیکسل تا ۴۳۶ پیکسل پهن
+  // می‌کرد — کلِ برنامه افقی می‌لغزید. نگهبانِ بصری سرریز را
+  // *می‌سنجید* ولی هرگز به آن صفحه نمی‌رسید، چون رسیدن به ۱۰ کارت
+  // نیازمندِ چند مرحله بازیِ حافظه است. یک نگهبانِ درست که به جای
+  // درست نگاه نمی‌کند، همان سبزِ دروغین است.
+  //
+  // پس به‌جای بازی‌کردن تا مرحلهٔ ۱۰ کارتی، هر چهار حالت را مستقیم
+  // می‌سازیم و اندازه می‌گیریم.
+  {
+    const grid = await page.evaluate(async () => {
+      const { LESSONS } = await import('/src/data/lessons/index.js');
+      const out = [];
+      // تابعِ ستون‌بندی را از خودِ رابط می‌خوانیم تا آزمون منطق را
+      // تکرار نکند؛ ولی *نتیجه‌اش* را مستقل می‌سنجیم.
+      const src = await (await fetch('/src/ui/screens.js')).text();
+      const m = src.match(/function memoryCols\(n\) \{[\s\S]*?\n\}/);
+      if (!m) return { missing: true };
+      // eslint-disable-next-line no-new-func
+      const cols = new Function(`${m[0]}; return memoryCols;`)();
+
+      const host = document.createElement('div');
+      host.style.cssText = 'position:fixed;inset:0;visibility:hidden';
+      document.body.append(host);
+      for (const n of [6, 8, 10, 12]) {
+        const g = document.createElement('div');
+        g.className = 'memory-grid';
+        g.style.setProperty('--cols', String(cols(n)));
+        for (let i = 0; i < n; i++) {
+          const b = document.createElement('button');
+          b.className = 'card';
+          g.append(b);
+        }
+        host.append(g);
+        const rows = n / cols(n);
+        out.push({
+          n,
+          cols: cols(n),
+          rows,
+          even: Number.isInteger(rows),
+          cardW: Math.round(g.firstChild.getBoundingClientRect().width),
+          overflow: g.scrollWidth > g.clientWidth + 1,
+        });
+        g.remove();
+      }
+      host.remove();
+      void LESSONS;
+      return { rows: out };
+    });
+
+    if (grid.missing) {
+      errors.push(`${vp.name}: تابع memoryCols پیدا نشد`);
+    } else {
+      for (const g of grid.rows) {
+        if (g.overflow) errors.push(`${vp.name}/حافظه ${g.n} کارت: جدول از عرضش بیرون زده`);
+        // ردیفِ ناقص یعنی جای خالی که کودک آن را «کارتِ گمشده» می‌بیند.
+        if (!g.even) errors.push(`${vp.name}/حافظه ${g.n} کارت: ${g.cols} ستون ردیفِ ناقص می‌سازد`);
+        // ۴۴px حداقلِ لمسِ استانداردِ کودک است.
+        if (g.cardW < 44) errors.push(`${vp.name}/حافظه ${g.n} کارت: کارت فقط ${g.cardW}px است`);
+      }
+      notes.push(`حافظه: ${grid.rows.map((g) => `${g.n}→${g.cols}×${g.rows} (${g.cardW}px)`).join('، ')}`);
+    }
+  }
+
   // پنل والدین — طولانی‌ترین متن برنامه و پرخطرترین جا برای دام دوجهته،
   // چون پر از عدد و درصد است.
   await page.locator('.btn.ghost', { hasText: 'بخش والدین' }).click();
