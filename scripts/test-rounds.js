@@ -103,7 +103,7 @@ for (const trackId of TRACK_ORDER) {
           // باشد، یا صریحاً یکی از پرچم‌های برچسب را داشته باشد
           // (همان شرطی که screens.js برای رسمِ .pic-label دارد).
           const isVisibleText = (o) => {
-            const cued = o.pic || o.geo || o.shapeRepeat || o.latin || o.dots || o.swatch;
+            const cued = o.pic || o.geo || o.shapeRepeat || o.latin || o.dots || o.swatch || o.spot;
             if (!cued) return true;
             return Boolean(o.picLabel || o.latinLabel || o.geoLabel);
           };
@@ -212,8 +212,12 @@ for (const trackId of TRACK_ORDER) {
             continue;
           }
           if (!r || r.type !== 'choice' || !r.options) continue;
+          // ⚠ هر کلید نشانهٔ تازه باید اینجا هم شناخته شود، وگرنه
+          // گِردِ کاملاً تصویری «همه‌واژه‌ای» گزارش می‌شود. `spot`
+          // صحنهٔ کوچکِ جای‌گیری است (بالا/وسط/پایین) و کودک از روی
+          // خودِ چیدمان می‌فهمد، نه از روی واژه.
           const bare = r.options.filter(
-            (o) => !o.pic && !o.geo && !o.shapeRepeat && !o.latin && !o.dots && !o.swatch,
+            (o) => !o.pic && !o.geo && !o.shapeRepeat && !o.latin && !o.dots && !o.swatch && !o.spot,
           );
           const words = bare.filter((o) => !isNumeric(o.label) && !isGlyph(o.label));
           if (words.length === r.options.length && !wordOnly.has(rd.kind)) {

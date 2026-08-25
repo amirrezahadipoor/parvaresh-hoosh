@@ -16,7 +16,8 @@ import {
   rimeKey, rhymeFamilies, firstSound,
 } from '../data/phonics.js';
 import {
-  SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, TRAIT_NEGATIVE, TRAIT_PHRASE, EVERYDAY_NAMES, COLOR_HEX, GEO,
+  SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, TRAIT_NEGATIVE, TRAIT_PHRASE, TRAIT_STATEMENT, TRAIT_PLURAL,
+  EVERYDAY_NAMES, COLOR_HEX, GEO,
   FACES, SITUATIONS, HAZARDS, SAFETY_STEPS, SCENES, hasPicture,
 } from './svg.js';
 import {
@@ -833,6 +834,248 @@ function buildRoundInner(round, track) {
         })),
         answer,
         because: `${toFa(a)} و ${toFa(answer)} با هم ${toFa(10)} می‌شوند.`,
+      };
+    }
+
+    case 'doubles': {
+      // «دوبرابر» — CCSS 1.OA.C.6 آن را جدا از جمعِ عمومی می‌آورد و
+      // دلیلش این است: دوبرابرها نخستین جمع‌هایی‌اند که کودک از
+      // حفظ می‌گوید، و بعد بقیه را از روی آنها می‌سازد
+      // («۶+۷ یعنی ۶+۶ و یکی بیشتر»). بدون دوبرابر، هر جمع تا آخر
+      // شمردنی می‌ماند.
+      const maxA = Math.floor(cap / 2);
+      if (maxA < 2) return null;
+      const a = 1 + rand(maxA);
+      const answer = a * 2;
+      // ⚠ بدل‌ها باید *نزدیک* باشند: با بدلِ تصادفی کودک از روی
+      // بزرگی حدس می‌زند. عددهای مجاور دوبرابر، خطای واقعیِ کودک‌اند.
+      // ⚠ خودِ a را از بدل‌ها بیرون می‌گذاریم: «دوبرابر ۴» با گزینهٔ
+      // «۴» دام است نه تمرین — کودکی که واژه را نفهمیده همان را
+      // می‌زند و ما فکر می‌کنیم حساب بلد نیست. اشتباهِ مفید،
+      // اشتباهِ *حساب* است: یکی کم یا یکی زیاد.
+      // ⚠ فهرست ثابتِ بدل کافی نیست: وقتی a بزرگ‌ترین مقدار ممکن
+      // است (a=۱۰ با سقف ۲۰)، پاسخ خودش روی سقف می‌نشیند و همهٔ
+      // بدل‌های «answer+k» بیرون می‌افتند. پس دامنه را از پاسخ به
+      // بیرون باز می‌کنیم تا هر جا لازم شد به پایین برود.
+      const wrong = [];
+      for (let d = 1; d <= 4 && wrong.length < 6; d += 1) {
+        for (const v of [answer + d, answer - d]) {
+          if (v > 0 && v <= cap && v !== answer && v !== a) wrong.push(v);
+        }
+      }
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{a}', toFa(a)),
+        // دو گروهِ هم‌اندازه کنار هم: «دوبرابر» باید دیده شود، نه
+        // فقط شنیده. کودک دو دستهٔ برابر می‌بیند و می‌شمارد.
+        display: { kind: 'repeat', icon: pick(COUNTABLES), times: answer },
+        options: buildOptions(answer, wrong, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+        because: `${toFa(a)} و ${toFa(a)} با هم ${toFa(answer)} می‌شوند.`,
+      };
+    }
+
+    case 'fact-family': {
+      // خانوادهٔ اعداد — CCSS 1.OA.B.4: تفریق یعنی «جمعِ ناتمام».
+      // کودک ۸−۳ را نمی‌داند ولی می‌داند ۳ و ۵ می‌شود ۸؛ همین کافی
+      // است. این گِرد آن پیوند را صریح می‌کند.
+      if (cap < 4) return null;
+      const total = 3 + rand(Math.max(1, cap - 3));
+      const part = 1 + rand(total - 1);
+      const answer = total - part;
+      const wrong = [];
+      for (let d = 1; d <= cap; d += 1) if (d !== answer) wrong.push(d);
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt
+          .replaceAll('{t}', toFa(total))
+          .replaceAll('{p}', toFa(part)),
+        // نمودار تجزیه: کل بالا، بخش شناخته‌شده پایین، جای خالی کنارش.
+        display: { kind: 'bond', total, part },
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: toFa(v),
+          value: v,
+          dots: v,
+        })),
+        answer,
+        because: `${toFa(part)} و ${toFa(answer)} می‌شود ${toFa(total)}، پس ${toFa(total)} منهای ${toFa(part)} می‌شود ${toFa(answer)}.`,
+      };
+    }
+
+    case 'count-tens': {
+      // شمارش ده‌تایی — CCSS K.CC.A.1 «تا ۱۰۰ یکی‌یکی و ده‌تایی».
+      //
+      // ⚠ سقف سنی اینجا هم فرمانرواست. نخست فکر کردم شمارش ده‌تایی
+      // استثناست چون کودک «دسته» می‌شمارد نه واحد — ولی گارد درست
+      // ردش کرد: پاسخِ نمایش‌داده‌شده «۴۰» است و کودکی که سقفش ۱۰
+      // است، آن عدد را نخوانده. استثنا نمی‌سازیم؛ درس را به ردهٔ
+      // سنی‌ای می‌سپاریم که برایش ساخته شده.
+      //
+      // ⚠ ولی «رد کردنِ گِرد» هم راه‌حل نبود: buildRound روی null
+      // پرتاب می‌کند و درس برای کودک ۵ ساله می‌ترکید. پرسش عوض
+      // می‌شود، نه سقف — همان قانونی که در push-pull هم به کار رفت.
+      //
+      // زیر سقف ۳۰: «چند دسته؟» — پاسخ ۲ تا ۴ و کاملاً در دامنهٔ سنی.
+      // خودِ مهارت همان است (K.NBT.A.1: ده یکی = یک «ده»)، فقط از
+      // زاویه‌ای پرسیده می‌شود که کودک عددش را می‌خواند.
+      // بالای ۳۰: «روی هم چند تا؟» — گام بعدی همان مهارت.
+      const groupsCount = 2 + rand(3); // ۲ تا ۴ دسته
+      const asTotal = track.maxNumber >= 30;
+      const answer = asTotal ? groupsCount * 10 : groupsCount;
+      const wrong = [];
+      for (let g = 1; g <= 6; g += 1) {
+        if (g === groupsCount) continue;
+        wrong.push(asTotal ? g * 10 : g);
+      }
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: (round.prompt ?? '{q}').replaceAll(
+          '{q}',
+          asTotal ? 'روی هم چند تا است؟' : 'چند دستهٔ ده‌تایی است؟',
+        ),
+        // هر دسته یک قابِ ده‌تاییِ پر است — کودک دسته‌ها را می‌شمارد.
+        display: { kind: 'ten-groups', groups: groupsCount },
+        options: buildOptions(answer, wrong, n).map((v) => ({ label: toFa(v), value: v })),
+        answer,
+        because: asTotal
+          ? `${toFa(groupsCount)} دستهٔ ده‌تایی می‌شود ${toFa(groupsCount * 10)}.`
+          : `${toFa(groupsCount)} دسته شمردی، و هر دسته ده تاست.`,
+      };
+    }
+
+    case 'and-rule': {
+      // منطقِ «و» — دو شرط همزمان.
+      //
+      // ⚠ این با two-rule فرق دارد: آنجا شکل و رنگ دو ویژگیِ *مستقل*
+      // بودند. اینجا هر دو شرط از یک جنس‌اند («هم پرواز می‌کند هم
+      // خوردنی نیست»)، پس کودک نمی‌تواند از روی یک ویژگی جدا کند.
+      // Funexpected: کودک اول با NOT راحت می‌شود، بعد با AND.
+      const pool = EVERYDAY_NAMES.filter(hasPicture);
+      const names = Object.keys(TRAITS);
+      // دو ویژگی که دست‌کم یک عضو مشترک دارند و با هم یکی نیستند.
+      // ⚠ کوتاه کردنِ قالبِ جمله کافی نبود: «در آب زندگی می‌کند»
+      // خودش ۲۰ نویسه است و هر جمله‌ای که دو ویژگی را کنار هم
+      // بگذارد از سقفِ ۳۴ نویسهٔ ردهٔ ۵–۶ سال می‌گذرد. پس برای آن
+      // رده، ویژگی‌های بلند اصلاً وارد ترکیب نمی‌شوند — همان مهارت
+      // با واژه‌های کوتاه‌تر تمرین می‌شود.
+      const MAX_TRAIT_LEN_EARLY = 9;
+      const short = (t) => (TRAIT_PHRASE[t] ?? t).length <= MAX_TRAIT_LEN_EARLY;
+      const combos = [];
+      for (const a of names) {
+        for (const b of names) {
+          if (a === b) continue;
+          if (n <= 2 && (!short(a) || !short(b))) continue;
+          const both = TRAITS[a].filter((x) => TRAITS[b].includes(x) && hasPicture(x));
+          if (!both.length) continue;
+          // بدل‌ها باید *یکی* از دو شرط را داشته باشند، نه هیچ‌کدام —
+          // وگرنه گِرد به یک شرط فرو می‌ریزد و «و» چیزی نمی‌آموزد.
+          const onlyA = TRAITS[a].filter((x) => !TRAITS[b].includes(x) && hasPicture(x));
+          const onlyB = TRAITS[b].filter((x) => !TRAITS[a].includes(x) && hasPicture(x));
+          if (onlyA.length + onlyB.length < n - 1) continue;
+          combos.push({ a, b, both, near: [...onlyA, ...onlyB] });
+        }
+      }
+      if (!combos.length) return null;
+      const c = pick(combos);
+      const answer = pick(c.both);
+      const wrong = c.near.filter((x) => x !== answer);
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        // ⚠ اعتبارسنج روی هر گِرد یک prompt غیرخالی می‌خواهد، پس درس
+        // جای‌نگهدار {q} می‌گذارد و متن واقعی اینجا ساخته می‌شود —
+        // چون پیش از انتخاب دو ویژگی، متنی وجود ندارد.
+        // ⚠ ردهٔ ۵–۶ سال سقف ۳۴ نویسه دارد و «کدام هم جانور و هم در
+        // آب زندگی می‌کند؟» ۳۸ نویسه است. متن کوتاه می‌شود، نه
+        // آستانه: برای دو گزینه‌ای شکل فشرده، و برای بزرگ‌ترها کامل.
+        prompt: (round.prompt ?? '{q}').replaceAll(
+          '{q}',
+          n <= 2
+            ? `کدام هم ${TRAIT_PHRASE[c.a] ?? c.a}، هم ${TRAIT_PHRASE[c.b] ?? c.b}؟`
+            : `کدام هم ${TRAIT_PHRASE[c.a] ?? c.a} و هم ${TRAIT_PHRASE[c.b] ?? c.b}؟`,
+        ),
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer,
+        because: `«${answer}» هر دو شرط را دارد.`,
+      };
+    }
+
+    case 'true-false': {
+      // درست یا نادرست — Funexpected آن را پس از AND/NOT می‌گذارد:
+      // کودک باید گزاره‌ای را *بسنجد*، نه گزینه‌ای را انتخاب کند.
+      //
+      // ⚠ گزینه‌ها «درست/نادرست» واژه‌اند و کودک پیش‌خوان نمی‌خواندشان.
+      // پس پرسش وارونه می‌شود (قانون پروژه): گزاره در پرسش می‌آید و
+      // کودک تصویری را می‌زند که گزاره را درست می‌کند. همان اثر
+      // آموزشی، بی‌آنکه خواندن لازم باشد.
+      const names = Object.keys(TRAITS);
+      const usable = names.filter(
+        (t) =>
+          TRAITS[t].filter(hasPicture).length >= 1 &&
+          EVERYDAY_NAMES.filter((x) => !TRAITS[t].includes(x) && hasPicture(x)).length >= n - 1,
+      );
+      if (!usable.length) return null;
+      const trait = pick(usable);
+      const answer = pick(TRAITS[trait].filter(hasPicture));
+      const wrong = EVERYDAY_NAMES.filter((x) => !TRAITS[trait].includes(x) && hasPicture(x));
+      return {
+        type: 'choice',
+        prompt: (round.prompt ?? '{q}').replaceAll(
+          '{q}',
+          n <= 2
+            ? `کدام ${TRAIT_STATEMENT[trait] ?? trait}؟`
+            : `دربارهٔ کدام درست است: «${TRAIT_STATEMENT[trait] ?? trait}»؟`,
+        ),
+        options: buildOptions(answer, wrong, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer,
+        because: `«${answer}» ${TRAIT_STATEMENT[trait] ?? trait}.`,
+      };
+    }
+
+    case 'position': {
+      // جای مکانی — بالا/پایین/کنار.
+      // منطقِ فضایی پیش‌نیاز هندسه و نقشه‌خوانی است و برنامه هیچ
+      // تمرینی برایش نداشت.
+      const icon = pick(COUNTABLES);
+      const spots = [
+        { key: 'بالا', label: 'بالا', phrase: 'بالای کادر' },
+        { key: 'پایین', label: 'پایین', phrase: 'پایین کادر' },
+        { key: 'وسط', label: 'وسط', phrase: 'وسط کادر' },
+      ];
+      const target = pick(spots);
+      // گزینه‌ها *صحنه‌های کوچک*اند: در هرکدام شکل جای دیگری نشسته.
+      // پس کودک بی‌خواندن می‌فهمد و پاسخ از روی واژه لو نمی‌رود.
+      const opts = shuffle(spots.map((sp) => ({
+        label: sp.label,
+        value: sp.key,
+        spot: { icon, where: sp.key },
+      }))).slice(0, Math.min(n, spots.length));
+      if (!opts.some((o) => o.value === target.key)) {
+        opts[0] = { label: target.label, value: target.key, spot: { icon, where: target.key } };
+      }
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{p}', target.label),
+        options: shuffle(opts),
+        answer: target.key,
+        // ⚠ «بالاِ کادر» غلط است: «بالا» قید است نه اسم، و کسرهٔ
+        // اضافه رویش نمی‌نشیند. «در بالای کادر» شکل درست است.
+        // «بالای کادر»/«وسط کادر»/«پایین کادر» — هرکدام شکل خودش را
+        // دارد و قاعدهٔ واحدی ندارند، پس در خود جدول نوشته می‌شوند.
+        because: `شکل ${target.phrase} است.`,
       };
     }
 
@@ -2121,7 +2364,9 @@ function buildRoundInner(round, track) {
         display: null,
         options: shuffle([answer, ...wrong]).map((v) => ({ label: v, value: v, pic: v, picLabel: true })),
         answer,
-        because: `${answer} ${trait} نیست.`,
+        // ⚠ کلیدِ خام در جمله نمی‌نشیند: «گلابی در آسمان است نیست».
+        // TRAIT_NEGATIVE همان جدولی است که برای همین ساخته شده.
+        because: `${answer} ${TRAIT_NEGATIVE[trait] ?? `${trait} نیست`}.`,
       };
     }
 
@@ -2460,7 +2705,10 @@ function buildRoundInner(round, track) {
         display: { kind: 'pic-only', icon: shown },
         options: shuffle([answer, ...outside]).map((v) => ({ label: v, value: v, pic: v, picLabel: true })),
         answer,
-        because: `${shown} و ${answer} هر دو ${trait}.`,
+        // ⚠ «برگ و هویج هر دو گیاه است» — فعلِ مفرد با نهاد جمع.
+        // چسباندن «اند» هم جواب نداد («پرواز می‌کنداند»)، پس جدول
+        // صریحِ شکل جمع.
+        because: `${shown} و ${answer} هر دو ${TRAIT_PLURAL[trait] ?? trait}.`,
       };
     }
 

@@ -350,6 +350,19 @@ function playScreen(lessonId) {
         }
         stage.append(frame);
       }
+      // دسته‌های ده‌تایی — کودک *دسته* می‌شمارد، نه واحد. همین است
+      // که شمارش ده‌تایی را ممکن می‌کند بی‌آنکه تا ۴۰ بشمارد.
+      if (r.display.kind === 'ten-groups') {
+        const box = el('div', { class: 'ten-groups' });
+        for (let g = 0; g < r.display.groups; g++) {
+          const frame = el('div', { class: 'ten-frame mini' });
+          for (let k = 0; k < 10; k++) {
+            frame.append(el('span', { class: 'cell on', style: `animation-delay:${(g * 10 + k) * 18}ms` }));
+          }
+          box.append(frame);
+        }
+        stage.append(box);
+      }
       // تجزیهٔ عدد: کل بالا، بخش شناخته‌شده پایین
       if (r.display.kind === 'bond') {
         stage.append(
@@ -558,7 +571,18 @@ function playScreen(lessonId) {
 
     r.options.forEach((o) => {
       const btn = el('button', { class: `opt${o.big ? ' big' : ''}` });
-      if (o.pic) {
+      if (o.spot) {
+        // صحنهٔ کوچک: یک کادر و شکلی که در آن جای مشخصی نشسته.
+        // ⚠ گزینه‌های «بالا/پایین/وسط» اگر فقط واژه بودند، کودک
+        // پیش‌خوان نمی‌توانست حل کند. پس خودِ جای‌گیری نشان داده
+        // می‌شود و برچسب برای والد زیرش می‌ماند.
+        btn.append(
+          el('span', { class: `spot spot-${o.spot.where}` }, [
+            el('span', { class: 'ico', html: svgShape(o.spot.icon) || '' }),
+          ]),
+          el('span', { class: 'pic-label', text: o.label }),
+        );
+      } else if (o.pic) {
         btn.append(el('span', { class: 'ico lg', html: svgShape(o.pic) || '' }));
         // در درس انگلیسی، واژه زیر تصویر می‌آید تا شکل و واژه با هم دیده شوند.
         if (o.latinLabel) {

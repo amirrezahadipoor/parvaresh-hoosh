@@ -851,6 +851,54 @@ canvas.pad {
   justify-content: center;
 }
 
+/* دسته‌های ده‌تایی: هر قاب یک «ده» است و کودک قاب‌ها را می‌شمارد.
+   قاب‌ها عمداً کوچک‌اند تا چهار دسته در عرض ۳۲۰px یک‌جا دیده شوند —
+   اگر بشکنند، «چند دسته؟» دیگر در یک نگاه پاسخ نمی‌گیرد. */
+.ten-groups {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ten-frame.mini {
+  gap: 3px;
+  padding: 5px;
+}
+
+.ten-frame.mini .cell {
+  width: 11px;
+  height: 11px;
+}
+
+/* صحنهٔ جای‌گیری: کادر ثابت، شکل در یکی از سه جایگاه.
+   ارتفاع ثابت لازم است وگرنه سه گزینه سه قدِ متفاوت می‌گیرند و
+   «فرق‌دار» بودنِ یکی، پاسخ را لو می‌دهد. */
+/* ⚠ نخست با position:absolute و inset-inline-start:50% نوشته شد و
+   شکل به کنارهٔ کادر چسبید: در RTL آن ویژگی به `right` نگاشته
+   می‌شود و translateX(-50%) هم به همان سو می‌بَرَد، پس دو جابه‌جایی
+   هم‌جهت جمع می‌شوند. با flex اصلاً جهت‌مندی وارد کار نمی‌شود —
+   وسطِ افقی در RTL و LTR یکی است. */
+.spot {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 64px;
+  border: 2px dashed var(--line);
+  border-radius: 10px;
+  padding: 5px 0;
+}
+
+.spot .ico {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+}
+
+.spot-بالا { align-items: flex-start; }
+.spot-وسط { align-items: center; }
+.spot-پایین { align-items: flex-end; }
+
 /* ── حافظه ─────────────────────────────────────────────── */
 .memory-grid {
   display: grid;
