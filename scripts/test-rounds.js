@@ -427,7 +427,40 @@ if (sample) {
   if (new Set(counts).size === 1) {
     errors.push(`ردهٔ سنی بی‌اثر است: تعداد گزینه در هر سه رده ${counts[0]} است`);
   } else {
-    console.log(`تعداد گزینه بر حسب سن: ${TRACK_ORDER.map((t, i) => `${AGE_TRACKS[t].label}=${counts[i]}`).join('، ')}`);
+    // ── گارد: تصویرِ گِردِ حرف باید با پاسخش بخواند ─────────────────
+//
+// ⚠ این گارد از یک باگِ دیده‌شده زاده شد. `letter-sound` می‌پرسید
+// «کدام یکی حرف الف است؟» و تصویرِ *انار* را نشان می‌داد. برای
+// کودکی که صدا را می‌شنود منطقی بود، ولی برنامه باید **بدون هیچ
+// صدایی** کامل کار کند — و بی‌صدا آن صفحه یک انارِ بی‌ربط کنارِ یک
+// پرسشِ حرفی بود.
+//
+// بدتر: وقتی متن را به «با کدام حرف شروع می‌شود؟» تغییر دادم، غلط
+// از آب درآمد، چون LETTER_PICTURE جدولِ *شروع* نیست — «ب» در «ابر»
+// است، نه اولش. پس این گارد دقیقاً همان را می‌سنجد: **حرفِ پاسخ
+// باید در نامِ تصویر وجود داشته باشد.**
+{
+  const mismatched = [];
+  for (const lesson of LESSONS) {
+    for (const rd of lesson.rounds) {
+      if (rd.kind !== 'letter-sound') continue;
+      const r = buildRound(rd, AGE_TRACKS.school);
+      if (!r || !r.display || !r.display.icon) continue;
+      if (![...r.display.icon].includes(r.answer)) {
+        mismatched.push(
+          `${lesson.id}: تصویر «${r.display.icon}» حرف «${r.answer}» را ندارد`,
+        );
+      }
+    }
+  }
+  if (mismatched.length) {
+    for (const m of mismatched) problems.push(`تصویر و حرف نمی‌خوانند — ${m}`);
+  } else {
+    console.log('✓ در هر گِرد حرف، تصویر واقعاً آن حرف را در خود دارد.');
+  }
+}
+
+console.log(`تعداد گزینه بر حسب سن: ${TRACK_ORDER.map((t, i) => `${AGE_TRACKS[t].label}=${counts[i]}`).join('، ')}`);
   }
 }
 
