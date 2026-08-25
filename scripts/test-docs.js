@@ -35,6 +35,7 @@ const fail = (m) => problems.push(m);
 const FA = '۰۱۲۳۴۵۶۷۸۹';
 const toEn = (s) => s.replace(/[۰-۹]/g, (d) => String(FA.indexOf(d))).replace(/٬/g, '');
 
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
 const roadmap = readFileSync(new URL('../ROADMAP.md', import.meta.url), 'utf8');
 
@@ -98,13 +99,36 @@ for (const d of DOMAINS) {
 // ⚠ گاردی که کسی از وجودش خبر ندارد، اجرا نمی‌شود. و گاردی که در CI
 // نیست، فقط یک اسکریپت است که *گاهی* کسی اجرایش می‌کند — سه گاردِ
 // contrast/a11y/music دقیقاً همین وضع را داشتند.
-const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const ci = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
 const guardScripts = Object.keys(pkg.scripts).filter((k) => k.startsWith('test:'));
 
 for (const g of guardScripts) {
   if (!readme.includes(`npm run ${g}`)) fail(`گاردِ «${g}» در README مستند نشده`);
   if (!ci.includes(`npm run ${g}`)) fail(`گاردِ «${g}» در CI اجرا نمی‌شود`);
+}
+
+// ── ۳.۵ هیچ سندی نباید فرمانِ مرده بدهد ────────────────────────────
+//
+// ⚠ سندی که فرمانِ ناموجود می‌دهد، بدتر از سندِ نبوده است: ایجنت یا
+// توسعه‌دهنده آن را اجرا می‌کند، خطا می‌گیرد، و اعتمادش به کلِ سند
+// می‌ریزد. `AGENTS.md` مخصوصاً حساس است چون ابزارهای خودکار
+// بی‌چون‌وچرا از آن پیروی می‌کنند.
+//
+// ⚠ الگوی regex باید رقم را هم بگیرد (`test:a11y`)، وگرنه خودش
+// «test:a» را استخراج می‌کند و خطای کاذب می‌سازد — همین اشتباه
+// هنگامِ نوشتنِ این گارد رخ داد.
+{
+  const docs = [
+    ['AGENTS.md', readFileSync(new URL('../AGENTS.md', import.meta.url), 'utf8')],
+    ['README.md', readme],
+    ['ROADMAP.md', roadmap],
+  ];
+  for (const [name, text] of docs) {
+    for (const cmd of new Set(text.match(/npm run [a-z0-9:-]+/g) || [])) {
+      const script = cmd.replace('npm run ', '');
+      if (!pkg.scripts[script]) fail(`${name}: فرمانِ «${cmd}» در package.json وجود ندارد`);
+    }
+  }
 }
 
 // ── ۴. شمارشِ گارد در متن باید با واقعیت بخواند ─────────────────────
@@ -136,6 +160,8 @@ if (pkg.version !== '1.0.0') {
 for (const need of ['۰. شروع سریع', '۰.۲ برپا کردن محیط', '۰.۴ کارِ باقی‌مانده']) {
   if (!roadmap.includes(need)) fail(`بخشِ «${need}» از نقشهٔ راه حذف شده`);
 }
+// AGENTS.md نقطهٔ ورودِ ابزارهای خودکار است.
+if (!readme.includes('ROADMAP.md')) fail('README به نقشهٔ راه ارجاع نمی‌دهد');
 
 console.log('');
 if (problems.length) {
