@@ -31,7 +31,7 @@ import {
   TRANSLATABLE_SIGHT_WORDS,
 } from '../data/english.js';
 import {
-  LIVING, NON_LIVING, LIFE_CYCLES, SEASONS, SENSES, FLOATS, SINKS,
+  LIVING, NON_LIVING, LIFE_CYCLES, SEASONS, SEASON_SIGNS, SENSES, FLOATS, SINKS,
   WEATHER, WEATHER_CHOICE, NEEDS, HABITATS, FORCES, MATERIALS, LIGHT_FACTS,
 } from '../data/science-data.js';
 import {
@@ -538,18 +538,31 @@ function buildRoundInner(round, track) {
 
     case 'season': {
       // کدام تصویر به این فصل می‌خورد؟
-      const target = pick(SEASONS);
-      const wrong = SEASONS.filter((x) => x.name !== target.name).map((x) => x.sign);
+      //
+      // ⚠ نسخهٔ اول از SEASONS می‌خواند که دقیقاً چهار ردیف دارد و
+      // هر ردیف یک نشانه. با گِردِ چهارگزینه‌ای یعنی *همهٔ* داده هر
+      // بار روی صفحه بود: چهار پرسشِ ممکن، در ده درس. کودک بعد از
+      // دو بار، جای گزینه‌ها را حفظ می‌کرد.
+      //
+      // SEASON_SIGNS چند نشانه برای هر فصل دارد، پس هم پاسخ عوض
+      // می‌شود و هم بدل‌ها. SEASONS دست‌نخورده ماند چون چرخهٔ
+      // فصل‌ها به چهار ردیفِ دقیق نیاز دارد.
+      const target = pick(SEASON_SIGNS.filter((x) => hasPicture(x.pic)));
+      const wrong = SEASON_SIGNS.filter(
+        (x) => x.season !== target.season && hasPicture(x.pic),
+      ).map((x) => x.pic);
+      if (wrong.length < n - 1) return null;
       return {
         type: 'choice',
-        prompt: round.prompt.replaceAll('{f}', target.name),
-        display: { kind: 'pic-only', icon: target.name },
-        options: buildOptions(target.sign, wrong, n).map((v) => ({
+        prompt: round.prompt.replaceAll('{f}', target.season),
+        display: { kind: 'pic-only', icon: target.season },
+        options: buildOptions(target.pic, shuffle(wrong), n).map((v) => ({
           label: v,
           value: v,
           pic: v,
         })),
-        answer: target.sign,
+        answer: target.pic,
+        because: `${target.pic} را در ${target.season} می‌بینیم.`,
       };
     }
 
@@ -2757,12 +2770,30 @@ function buildRoundInner(round, track) {
         دویدن: 'دویدن',
         توپ: 'بازی',
         خانه: 'خانه',
+        نوبت: 'نوبت',
+        'آب‌خوردن': 'آب',
+        'دوستِ‌تازه': 'دوستی',
+        خواب: 'خواب',
       };
       const CASES = [
         { if: 'برج‌خراب', then: 'کمک‌کردن', wrong: ['خواب', 'غذا'], q: 'برج خراب شد. بعد چه کار خوبی است؟' },
         { if: 'بستنی‌افتاده', then: 'دستمال', wrong: ['دویدن', 'کتاب‌خواندن'], q: 'بستنی افتاد. اول چه کار می‌کنی؟' },
         { if: 'زانوی‌زخمی', then: 'کمک‌کردن', wrong: ['دویدن', 'توپ'], q: 'زانویت زخم شد. چه کار می‌کنی؟' },
         { if: 'رعدوبرق', then: 'خانه', wrong: ['دویدن', 'توپ'], q: 'رعد و برق شد. کجا می‌روی؟' },
+        // ⚠ چهار ردیف در پانزده گِرد یعنی تکرار. صحنه‌های SITUATIONS
+        // و SCENES از قبل ساخته شده بودند و این گِرد از آن‌ها استفاده
+        // نمی‌کرد. هر ردیف تازه از همان‌ها می‌آید — بدون بایتِ نو.
+        { if: 'خط‌روی‌نقاشی', then: 'دستمال', wrong: ['دویدن', 'خواب'], q: 'روی نقاشی خط افتاد. چه کنی؟' },
+        { if: 'صف‌شکنی', then: 'نوبت', wrong: ['دویدن', 'توپ'], q: 'کسی جلوی صف پرید. کارِ درست چیست؟' },
+        { if: 'دویدنِ‌زیاد', then: 'آب‌خوردن', wrong: ['کتاب‌خواندن', 'توپ'], q: 'دویدی و تشنه‌ای. چه می‌کنی؟' },
+        { if: 'تنهایی', then: 'دوستِ‌تازه', wrong: ['خواب', 'دستمال'], q: 'کسی تنها نشسته. چه کار خوبی است؟' },
+        { if: 'اتاق‌تاریک', then: 'کمک‌کردن', wrong: ['دویدن', 'توپ'], q: 'اتاق تاریک است. چه کار می‌کنی؟' },
+        { if: 'دعوا‌سر‌بازی', then: 'نوبت', wrong: ['دویدن', 'خواب'], q: 'سرِ بازی دعوا شد. چه کنیم؟' },
+        { if: 'خستگی', then: 'خواب', wrong: ['دویدن', 'توپ'], q: 'خیلی خسته‌ای. بدنت چه می‌خواهد؟' },
+        { if: 'اذیت', then: 'کمک‌کردن', wrong: ['دویدن', 'کتاب‌خواندن'], q: 'کسی اذیتت کرد. چه می‌کنی؟' },
+        { if: 'گم‌شدن', then: 'کمک‌کردن', wrong: ['دویدن', 'خواب'], q: 'گم شدی. چه کار می‌کنی؟' },
+        { if: 'سگ‌بزرگ', then: 'کمک‌کردن', wrong: ['دویدن', 'توپ'], q: 'سگِ بزرگی نزدیک شد. چه کنی؟' },
+        { if: 'بلندی', then: 'کمک‌کردن', wrong: ['دویدن', 'توپ'], q: 'جای بلندی است. چه کار می‌کنی؟' },
       ];
       const usable = CASES.filter(
         (c) => hasPicture(c.if) && hasPicture(c.then) && c.wrong.every(hasPicture),

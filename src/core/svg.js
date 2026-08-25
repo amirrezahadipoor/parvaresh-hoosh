@@ -483,6 +483,57 @@ export const SHAPES = {
     <circle cx="60" cy="54" r="2.4" fill="#B8863A"/>
     <circle cx="44" cy="58" r="2.4" fill="#B8863A"/>`),
 
+  // ── افزودهٔ عمق‌بخشی به علوم ───────────────────────────────────
+  // این پنج شکل برای گسترش جدول‌های «از چه ساخته شده؟» و «نور و
+  // سایه» لازم شدند. قانون همان است: هر آیتمی که در گزینه بیاید
+  // باید شکل داشته باشد.
+
+  شیر: () =>
+    svg(`<path d="M30 34 h40 v46 a6 6 0 0 1 -6 6 h-28 a6 6 0 0 1 -6 -6z"
+      fill="#FBFBF8" stroke="#C9CFD4" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M30 34 l8 -14 h24 l8 14z" fill="#EDEFF0" stroke="#C9CFD4" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M34 52 h32 v22 h-32z" fill="#8FC7E0" opacity=".5"/>
+    <circle cx="50" cy="62" r="7" fill="#FFF" stroke="#9AC7DC" stroke-width="2.2"/>
+    <path d="M46 62 q4 -5 8 0 q-4 5 -8 0z" fill="#8FC7E0"/>`),
+
+  ماست: () =>
+    svg(`<path d="M26 40 h48 l-5 42 a5 5 0 0 1 -5 4 h-28 a5 5 0 0 1 -5 -4z"
+      fill="#FBFBF8" stroke="#C9CFD4" stroke-width="3" stroke-linejoin="round"/>
+    <ellipse cx="50" cy="40" rx="24" ry="7" fill="#EDEFF0" stroke="#C9CFD4" stroke-width="3"/>
+    <ellipse cx="50" cy="40" rx="17" ry="4.4" fill="#FFF"/>
+    <path d="M40 56 h20 M38 66 h24" stroke="#DCE3E8" stroke-width="3" stroke-linecap="round"/>`),
+
+  موم: () =>
+    svg(`<path d="M22 44 h56 v34 a6 6 0 0 1 -6 6 h-44 a6 6 0 0 1 -6 -6z"
+      fill="#F5E6C8" stroke="#D9C49A" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M22 44 q14 -8 28 0 q14 8 28 0 v-6 q-14 8 -28 0 q-14 -8 -28 0z" fill="#EBD8AF"/>
+    <path d="M34 58 h32 M34 70 h24" stroke="#E4D3AC" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  // ⚠ نسخهٔ اول این را لیوان کشیده بود و کنارِ «ماست» گذاشته می‌شد:
+  // دو ظرفِ کم‌رنگِ هم‌شکل. کاربردِ این شکل «پنجره از چه ساخته شده؟»
+  // است، پس *قطعه شیشه* درست است نه ظرفِ شیشه‌ای.
+  شیشه: () =>
+    svg(`<path d="M24 26 h52 v48 h-52z" fill="#DCF0FA" stroke="#7FBBD6"
+      stroke-width="3" stroke-linejoin="round"/>
+    <path d="M30 70 l34 -38" stroke="#FFF" stroke-width="8" stroke-linecap="round" opacity=".9"/>
+    <path d="M44 70 l24 -26" stroke="#FFF" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+    <path d="M24 26 h52 v48 h-52z" fill="none" stroke="#7FBBD6"
+      stroke-width="3" stroke-linejoin="round"/>
+    <path d="M76 26 l8 -6 v48 l-8 6z" fill="#C4E4F2" stroke="#7FBBD6"
+      stroke-width="3" stroke-linejoin="round"/>`),
+
+  شکوفه: () =>
+    svg(`<path d="M50 60 v26" stroke="#8B5E3C" stroke-width="4" stroke-linecap="round"/>
+    <path d="M50 72 q-12 -6 -16 4 q12 5 16 -4z" fill="#4CAF50"/>
+    <g fill="#F7CBD8" stroke="#E3A8BA" stroke-width="2">
+      <ellipse cx="50" cy="30" rx="8" ry="11"/>
+      <ellipse cx="64" cy="40" rx="11" ry="8"/>
+      <ellipse cx="58" cy="55" rx="8" ry="11"/>
+      <ellipse cx="42" cy="55" rx="8" ry="11"/>
+      <ellipse cx="36" cy="40" rx="11" ry="8"/>
+    </g>
+    <circle cx="50" cy="43" r="6" fill="#F4B942"/>`),
+
   // ── افزودهٔ بخش خواندن: واژگان تصویردار ─────────────────────────
   // ⚠ چرا این ۲۵ شکل: سقف تنوعِ جمله‌سازی و کلمه‌خوانی تعداد واژه‌هایی
   // بود که هم با نشانه‌های آموخته‌شده خواندنی باشند و هم تصویر داشته
