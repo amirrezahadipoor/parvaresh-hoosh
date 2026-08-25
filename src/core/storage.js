@@ -14,6 +14,11 @@ const EMPTY = {
   dailyLimitMin: 0, // ۰ یعنی بدون محدودیت
   playLog: {}, // 'YYYY-MM-DD' -> دقیقهٔ بازی
   sessionStart: 0,
+  // بهترین امتیاز هر بازی آزاد — id بازی → عدد.
+  // ⚠ عمداً «امتیاز کل» یا سکه نیست: قانون پروژه اقتصاد سکه را رد
+  // می‌کند. این فقط رکوردِ خودِ کودک در همان بازی است تا بتواند با
+  // خودش رقابت کند، نه با دیگری.
+  gameScores: {},
 };
 
 let cache = null;
@@ -78,8 +83,26 @@ export function isCompleted(id) {
   return lessonProgress(id).completions > 0;
 }
 
+/** بهترین امتیاز یک بازی. */
+export function gameBest(gameId) {
+  return read().gameScores?.[gameId] ?? 0;
+}
+
+/** امتیاز تازه را ثبت می‌کند و می‌گوید آیا رکورد شکسته شد. */
+export function recordGame(gameId, score) {
+  const s = read();
+  if (!s.gameScores) s.gameScores = {};
+  const prev = s.gameScores[gameId] ?? 0;
+  const isRecord = score > prev;
+  if (isRecord) s.gameScores[gameId] = score;
+  write(s);
+  return isRecord;
+}
+
 export function resetAll() {
-  cache = { ...EMPTY, lessons: {} };
+  // ⚠ gameScores هم باید صفر شود، وگرنه پس از «پاک‌کردن پیشرفت»
+  // رکوردهای بازی می‌مانند و والد فکر می‌کند پاک نشده.
+  cache = { ...EMPTY, lessons: {}, gameScores: {} };
   try {
     localStorage.removeItem(KEY);
   } catch {

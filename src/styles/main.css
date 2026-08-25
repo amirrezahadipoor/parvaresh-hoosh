@@ -635,22 +635,52 @@ body {
   animation: pop var(--base) var(--ease) backwards;
 }
 
-.opt:nth-child(1) { animation-delay: 0ms; }
-.opt:nth-child(2) { animation-delay: 45ms; }
-.opt:nth-child(3) { animation-delay: 90ms; }
-.opt:nth-child(4) { animation-delay: 135ms; }
+/* ── اصل ۳: Follow-through / Stagger ─────────────────────
+   منبع: ۴۰–۱۲۰ms فاصله بین والد و فرزند. صحنه اول می‌آید، بعد
+   گزینه‌ها یکی‌یکی — چون کودک باید *اول پرسش را ببیند*. اگر همه
+   با هم بیایند، چشم نمی‌داند کجا را نگاه کند.
+   ۵۵ms انتخاب شد: با چهار گزینه یعنی ۱۶۵ms کل، که هنوز زیر آستانهٔ
+   «منتظر ماندن» است. */
+.opt:nth-child(1) { animation-delay: 90ms; }
+.opt:nth-child(2) { animation-delay: 145ms; }
+.opt:nth-child(3) { animation-delay: 200ms; }
+.opt:nth-child(4) { animation-delay: 255ms; }
 
+/* صحنه پیش از گزینه‌ها، بی‌درنگ. */
+.stage {
+  animation: stage-in var(--base) var(--ease) backwards;
+}
+
+@keyframes stage-in {
+  0% { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── اصل ۲: Anticipation ─────────────────────────────────
+   منبع: پیش از حرکتِ اصلی، ۴۰–۸۰ms حرکتِ کوچکِ *هم‌جهت*. اینجا
+   کارت کمی زیر اندازه شروع می‌کند، از اندازهٔ نهایی رد می‌شود و
+   برمی‌گردد — همان «over-shoot» که ورود را زنده می‌کند.
+   ⚠ مقدار بیش از ۱٫۰۴ روی صفحهٔ کوچک کارت‌ها را به هم می‌زند. */
 @keyframes pop {
-  from { opacity: 0; transform: scale(0.88); }
+  0% { opacity: 0; transform: scale(0.86) translateY(6px); }
+  60% { opacity: 1; transform: scale(1.035) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .opt.big {
   font-size: 2.2rem;
 }
 
+/* ── اصل ۱: Squash & Stretch ─────────────────────────────
+   منبع (Ripplix / IxDF): دکمه هنگام لمس باید *فرو برود*، نه فقط
+   کوچک شود. تفاوت ظریف ولی محسوس است: scale یکنواخت یعنی «دور
+   شد»، ولی پهن‌شدن + پایین‌رفتن یعنی «فشرده شد» — همان چیزی که
+   انگشت انتظارش را دارد.
+   حجم ثابت می‌ماند: عرض بیشتر، ارتفاع کمتر. */
 .opt:active {
-  transform: scale(0.95);
+  transform: scale(1.02, 0.94) translateY(2px);
   box-shadow: none;
+  transition-duration: 90ms;
 }
 
 .opt.correct {
@@ -659,8 +689,15 @@ body {
   animation: cheer var(--slow) var(--ease);
 }
 
+/* پاسخ درست: اول یک فشردگیِ کوتاه (آمادگی)، بعد کشیدگیِ رو به
+   بالا، بعد نشستن. سه مرحله، چون دو مرحله «تکان» به‌نظر می‌رسد و
+   چهار مرحله طولانی می‌شود. */
 @keyframes cheer {
-  40% { transform: scale(1.07); }
+  0% { transform: scale(1, 1); }
+  18% { transform: scale(1.06, 0.94); }
+  45% { transform: scale(0.97, 1.09) translateY(-4px); }
+  70% { transform: scale(1.03, 0.98) translateY(0); }
+  100% { transform: scale(1, 1); }
 }
 
 .opt.wrong {
@@ -679,13 +716,14 @@ body {
   border-radius: 10px;
 }
 
+/* ⚠ لرزش عمداً کوچک و میرا است. نسخهٔ اول ±۶px یک‌نواخت بود و
+   حسِ «خطای سیستمی» می‌داد. دامنهٔ کاهنده یعنی «نه، دوباره» — نه
+   «اشتباه کردی». همان قانونِ «هرگز ضربدر قرمز»، این بار در حرکت. */
 @keyframes shake {
-  25% {
-    transform: translateX(-6px);
-  }
-  75% {
-    transform: translateX(6px);
-  }
+  20% { transform: translateX(-5px); }
+  45% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
 }
 
 .feedback {
@@ -933,7 +971,11 @@ canvas.pad {
   background:
     radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.22) 0 18%, transparent 18%),
     radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.18) 0 14%, transparent 14%),
-    var(--brand);
+    /* ⚠ پشتِ کارت رنگِ --c را می‌گیرد نه --brand ثابت: در بخش
+       بازی‌ها هر بازی رنگ خودش را دارد و کارتِ نارنجی وسط صفحهٔ
+       بنفش، قانون «یک رنگ = یک معنی» را می‌شکست. در درس‌ها --c
+       همان رنگ حوزه است، پس آنجا هم درست‌تر شد. */
+    var(--c, var(--brand));
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -2420,4 +2462,194 @@ canvas.pad {
   font-weight: 800;
   display: grid;
   place-content: center;
+}
+
+
+/* ── بخش بازی‌ها ─────────────────────────────────────────
+   جدا از مسیر درس. رنگ هر بازی از --c می‌آید تا «یک رنگ = یک
+   معنی» اینجا هم برقرار بماند. */
+.home-actions {
+  display: flex;
+  gap: var(--s3);
+}
+
+.home-actions .btn {
+  flex: 1;
+}
+
+.center {
+  text-align: center;
+}
+
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.game-card {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: var(--tap);
+  padding: var(--s3);
+  background: var(--surface);
+  border: 3px solid var(--line);
+  border-inline-start: 8px solid var(--c);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: start;
+  transition: transform var(--fast), box-shadow var(--fast);
+  animation: pop var(--base) var(--ease) backwards;
+}
+
+.game-card:active {
+  transform: scale(1.01, 0.96) translateY(2px);
+  box-shadow: none;
+}
+
+.game-card:nth-child(2) { animation-delay: 55ms; }
+.game-card:nth-child(3) { animation-delay: 110ms; }
+.game-card:nth-child(4) { animation-delay: 165ms; }
+
+.game-ico {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+}
+
+.game-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.game-body strong {
+  font-size: var(--t-body);
+}
+
+.game-tag {
+  font-size: var(--t-small);
+  color: var(--muted);
+}
+
+/* بهترین امتیاز — عدد درشت، بی‌واحد. کودک عدد بزرگ‌تر را می‌فهمد. */
+.game-best {
+  font-size: var(--t-title);
+  font-weight: 800;
+  color: var(--c);
+  flex: 0 0 auto;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* نوار وضعیت بازی: امتیاز راست، زمان/جان چپ. */
+.g-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s2) var(--s3);
+  background: var(--surface);
+  border: 3px solid var(--line);
+  border-radius: var(--radius-sm, 16px);
+  margin-bottom: var(--s3);
+}
+
+.g-score,
+.g-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.g-ico {
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.g-ico svg { width: 100%; height: 100%; }
+
+.g-num {
+  font-size: var(--t-title);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ⚠ ستارهٔ امتیاز با currentColor کشیده می‌شود، پس رنگ باید روی
+   *ظرف* بنشیند نه فقط روی عدد — وگرنه نشان سیاه می‌ماند و با رنگ
+   بازی نمی‌خواند. */
+.g-score {
+  color: var(--c);
+}
+
+.g-score .g-num {
+  color: var(--c);
+  /* عددِ صفر نباید محو باشد: کودک باید ببیند «هنوز صفرم». */
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ⚠ عدد ثانیه با tabular-nums نوشته می‌شود، وگرنه با هر تیکِ
+   ساعت پهنایش عوض می‌شود و نوار می‌لرزد — همان دسته باگ ظاهری که
+   در بقیهٔ برنامه هم شکار شد. */
+.g-time .g-num {
+  color: var(--muted);
+  transition: color var(--fast);
+}
+
+.g-time.low .g-num {
+  color: var(--no);
+}
+
+.g-time.low {
+  animation: tick 1s var(--ease) infinite;
+}
+
+@keyframes tick {
+  50% { transform: scale(1.14); }
+}
+
+.g-lives {
+  display: flex;
+  gap: 4px;
+}
+
+.g-heart {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  transition: transform var(--base) var(--ease);
+}
+
+.g-heart svg { width: 100%; height: 100%; }
+
+.g-heart.gone {
+  transform: scale(0.75);
+  opacity: 0.5;
+}
+
+.g-level {
+  font-size: var(--t-body);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* امتیاز پایانی — بزرگ‌ترین عدد صفحه. */
+.g-final {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--c);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  animation: cheer var(--slow) var(--ease);
 }

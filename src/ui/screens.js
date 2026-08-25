@@ -4,8 +4,11 @@
 import { DOMAINS, AGE_TRACKS, TRACK_ORDER, trackForAge, TARGET_AGE } from '../data/curriculum.js';
 import { lessonsByDomain, LESSONS } from '../data/lessons/index.js';
 import * as store from '../core/storage.js';
-import { speak, sfx, setMuted, isMuted, hasClip, stop as stopAudio } from '../core/audio.js';
-import { buildLesson, toFa } from '../core/rounds.js';
+import {
+  speak, sfx, setMuted, isMuted, hasClip, stop as stopAudio,
+  setDomainVoice, resetStreak,
+} from '../core/audio.js';
+import { buildLesson, buildRound, toFa } from '../core/rounds.js';
 import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../core/journey.js';
 import { masterySummary, isDue, MASTERY_SCORE } from '../core/mastery.js';
 import { taskIcon, actionLabel } from '../core/task-icon.js';
@@ -15,6 +18,7 @@ import {
   lockIcon, checkIcon, reviewIcon, moonIcon, backIcon,
 } from '../core/ui-icons.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
+import { GAMES, gameById } from '../data/games.js';
 
 const el = (tag, props = {}, kids = []) => {
   const n = document.createElement(tag);
@@ -124,7 +128,13 @@ export function homeScreen() {
       el('span', { class: 'star-ico', html: starIcon() }),
       el('span', { text: `${toFa(s.stars)} ستاره` }),
     ]),
-    el('button', { class: 'btn ghost', text: 'نقشهٔ سفر', onClick: () => render(mapScreen()) }),
+    // ⚠ دو دکمهٔ ثانویه، هم‌ردیف و هم‌وزن. بازی‌ها *در دسترس* است
+    // ولی سرِ راه نیست: دکمهٔ بزرگِ بالا همچنان درسِ بعدی است، چون
+    // مسیر یادگیری باید مسیر پیش‌فرض بماند (نقشهٔ راه ۷.۴).
+    el('div', { class: 'home-actions' }, [
+      el('button', { class: 'btn ghost', text: 'نقشهٔ سفر', onClick: () => render(mapScreen()) }),
+      el('button', { class: 'btn ghost', text: 'بازی‌ها', onClick: () => render(gamesScreen()) }),
+    ]),
   ]);
 }
 
@@ -182,6 +192,12 @@ function playScreen(lessonId) {
   const rounds = buildLesson(lesson, track);
   const dom = DOMAINS.find((x) => x.id === lesson.domain) || DOMAINS[0];
 
+  // «یک رنگ = یک معنی» در صدا هم صادق است: هر حوزه رنگِ صوتیِ
+  // خودش را دارد. و زنجیرهٔ نُت‌ها با هر درس از نو شروع می‌شود،
+  // وگرنه درسِ دوم از وسطِ ملودی آغاز می‌شد.
+  setDomainVoice(lesson.domain);
+  resetStreak();
+
   let idx = 0;
   let correct = 0;
   const wrap = el('div', { class: 'screen' });
@@ -214,8 +230,8 @@ function playScreen(lessonId) {
         : r.type === 'trace'
           ? traceView(r, next, feedback)
           : r.type === 'order'
-            ? orderView(r, feedback, next)
-            : memoryView(r, feedback, next);
+            ? orderView(r, feedback, next, () => { correct++; })
+            : memoryView(r, feedback, next, () => { correct++; });
 
     wrap.replaceChildren(
       topbar(lesson.title, () => render(homeScreen())),
@@ -258,373 +274,13 @@ function playScreen(lessonId) {
   }
 
   function choiceView(r, feedback, done, trk) {
-    const stage = r.display ? el('div', { class: 'stage' }) : null;
-    if (stage) {
-      if (r.display.kind === 'text') stage.textContent = r.display.value;
-      // صداکشی: هر صدا جدا، با قوس پیوند زیرشان — همان حرکتی که
-      // معلم با انگشت روی تخته می‌کشد. کودک باید صداها را به هم
-      // بچسباند و واژه را بسازد.
-      if (r.display.kind === 'sounds') {
-        const row = el('div', { class: 'sounds' });
-        r.display.parts.forEach((p, i) => {
-          if (i) row.append(el('span', { class: 'snd-link', 'aria-hidden': 'true' }));
-          row.append(
-            el('span', { class: 'snd' }, [
-              // آنچه نوشته می‌شود (مصوت کوتاه نوشته نمی‌شود → خالی)
-              el('span', { class: 'snd-g', text: p.g || '·' }),
-              // آنچه شنیده می‌شود
-              el('span', { class: 'snd-s', text: p.s }),
-            ]),
-          );
-        });
-        // تعداد صدا به CSS می‌رود تا کارت‌ها کوچک شوند و واژه در
-        // یک خط بماند. شکستن خط در RTL ترتیب خواندن را وارونه
-        // می‌کرد — «ا ک ِ ش ر» به‌جای «ش ِ ک ا ر».
-        row.dataset.n = String(r.display.parts.length);
-        stage.append(row);
-      }
-      if (r.display.kind === 'repeat') {
-        const row = el('div', { class: 'repeat' });
-        for (let k = 0; k < r.display.times; k++) {
-          row.append(el('span', { class: 'ico', html: svgShape(r.display.icon) || '' }));
-        }
-        stage.append(row);
-      }
-      if (r.display.kind === 'scatter') {
-        // چیدمان پراکنده ولی بدون هم‌پوشانی: شبکهٔ نامنظمِ از پیش محاسبه‌شده.
-        const box = el('div', { class: 'scatter' });
-        const slots = scatterSlots(r.display.times);
-        slots.forEach((p) => {
-          box.append(
-            el('span', {
-              class: 'ico',
-              style: `left:${p.x}%;top:${p.y}%;transform:rotate(${p.r}deg)`,
-              html: svgShape(r.display.icon) || '',
-            }),
-          );
-        });
-        stage.append(box);
-      }
-      // حرف در کنار تصویرِ کلمه‌ای که با آن شروع می‌شود.
-      // پیوند «نشانه ↔ معنا» برای کودکی که هنوز نمی‌خواند.
-      if (r.display.kind === 'letter-pic') {
-        stage.append(
-          el('div', { class: 'letter-pic' }, [
-            el('span', { class: 'lp-letter', text: r.display.letter }),
-            el('span', { class: 'lp-ico ico', html: svgShape(r.display.icon) || '' }),
-          ]),
-        );
-      }
-      // چند شکل درهم — کودک باید عضوهای یک دسته را جدا کند
-      if (r.display.kind === 'mixed') {
-        const box = el('div', { class: 'mixed' });
-        r.display.items.forEach((it, k) => {
-          box.append(
-            el('span', {
-              class: 'ico',
-              style: `animation-delay:${k * 55}ms`,
-              html: svgShape(it) || '',
-            }),
-          );
-        });
-        stage.append(box);
-      }
-      // الگوی تاس — چیدمان آشنا که تشخیص فوری را ممکن می‌کند
-      if (r.display.kind === 'dice') {
-        const box = el('div', { class: `dice d${r.display.times}` });
-        for (let k = 0; k < r.display.times; k++) {
-          box.append(el('span', { class: 'pip', style: `animation-delay:${k * 50}ms` }));
-        }
-        stage.append(box);
-      }
-      // قاب ده‌تایی
-      if (r.display.kind === 'ten-frame') {
-        const frame = el('div', { class: 'ten-frame' });
-        for (let k = 0; k < 10; k++) {
-          frame.append(
-            el('span', {
-              class: `cell${k < r.display.filled ? ' on' : ''}`,
-              style: `animation-delay:${k * 40}ms`,
-            }),
-          );
-        }
-        stage.append(frame);
-      }
-      // دسته‌های ده‌تایی — کودک *دسته* می‌شمارد، نه واحد. همین است
-      // که شمارش ده‌تایی را ممکن می‌کند بی‌آنکه تا ۴۰ بشمارد.
-      if (r.display.kind === 'ten-groups') {
-        const box = el('div', { class: 'ten-groups' });
-        for (let g = 0; g < r.display.groups; g++) {
-          const frame = el('div', { class: 'ten-frame mini' });
-          for (let k = 0; k < 10; k++) {
-            frame.append(el('span', { class: 'cell on', style: `animation-delay:${(g * 10 + k) * 18}ms` }));
-          }
-          box.append(frame);
-        }
-        stage.append(box);
-      }
-      // تجزیهٔ عدد: کل بالا، بخش شناخته‌شده پایین
-      if (r.display.kind === 'bond') {
-        stage.append(
-          el('div', { class: 'bond' }, [
-            el('span', { class: 'bond-total', text: toFa(r.display.total) }),
-            el('span', { class: 'bond-line', 'aria-hidden': 'true' }),
-            el('span', { class: 'bond-parts' }, [
-              el('span', { class: 'bond-part', text: toFa(r.display.part) }),
-              el('span', { class: 'bond-part q', text: '؟' }),
-            ]),
-          ]),
-        );
-      }
-      // متن لاتین در محیط راست‌به‌چپ: باید dir="ltr" صریح داشته باشد،
-      // وگرنه نویسه‌های خنثی (خط تیره، فاصله) جابه‌جا می‌شوند.
-      if (r.display.kind === 'latin') {
-        stage.append(el('span', { class: 'latin-big', dir: 'ltr', lang: 'en', text: r.display.value }));
-      }
-      // فقط تصویر — بدون حرف، تا پاسخ لو نرود
-      if (r.display.kind === 'pic-only') {
-        stage.append(el('span', { class: 'lp-ico ico big-pic', html: svgShape(r.display.icon) || '' }));
-      }
-      // نقطه‌های شمردنی — پیوند «عدد ↔ مقدار»
-      if (r.display.kind === 'dots') {
-        const box = el('div', { class: 'dots' });
-        for (let k = 0; k < r.display.times; k++) {
-          box.append(el('span', { class: 'dot', style: `animation-delay:${k * 55}ms` }));
-        }
-        stage.append(box);
-      }
-      if (r.display.kind === 'shadow') {
-        stage.append(el('div', { class: 'ico shadow', html: svgShape(r.display.value) || '' }));
-      }
-      // ── نمایش‌های ریاضیِ دور دوم ─────────────────────────────
-      // ⚠ درس گرفته‌شده: کلیدی که این‌جا شاخه نداشته باشد بی‌سروصدا
-      // نادیده گرفته می‌شود و صفحه خالی می‌ماند. هر kind تازه در
-      // rounds.js باید این‌جا هم شاخه بگیرد.
-
-      // چوب‌خط: دسته‌های ۵تایی، پنجمی مورب روی چهارتای قبل
-      if (r.display.kind === 'tally') {
-        const box = el('div', { class: 'tally' });
-        const groups = Math.floor(r.display.times / 5);
-        const rest = r.display.times % 5;
-        for (let g = 0; g < groups; g++) {
-          box.append(
-            el('span', { class: 'tally-g full', style: `animation-delay:${g * 70}ms` }, [
-              ...Array.from({ length: 4 }, () => el('i', { class: 'tick' })),
-              el('i', { class: 'tick cross' }),
-            ]),
-          );
-        }
-        if (rest) {
-          box.append(
-            el('span', { class: 'tally-g', style: `animation-delay:${groups * 70}ms` },
-              Array.from({ length: rest }, () => el('i', { class: 'tick' }))),
-          );
-        }
-        stage.append(box);
-      }
-
-      // رشتهٔ عددی برای شمردن چندتایی: ۲ ۴ ۶ ؟
-      if (r.display.kind === 'number-seq') {
-        const seq = el('div', { class: 'num-seq' });
-        r.display.items.forEach((v, i) =>
-          seq.append(el('span', { class: 'num-chip', style: `animation-delay:${i * 80}ms`, text: v })),
-        );
-        seq.append(el('span', { class: 'num-chip q', text: '؟' }));
-        stage.append(seq);
-      }
-
-      // ارزش مکانی: دسته‌های ده‌تایی کنار یکی‌ها
-      if (r.display.kind === 'place-value') {
-        const box = el('div', { class: 'pv' });
-        const tens = el('div', { class: 'pv-tens' });
-        for (let t = 0; t < r.display.tens; t++) {
-          const rod = el('span', { class: 'pv-rod', style: `animation-delay:${t * 70}ms` });
-          for (let k = 0; k < 10; k++) rod.append(el('i', { class: 'pv-bead' }));
-          tens.append(rod);
-        }
-        box.append(tens);
-        // ⚠ وقتی یکی‌ها صفرند، ظرفِ خالی با padding/gap باقی می‌ماند و
-        // یک جعبهٔ نامرئی کنار دسته‌ها می‌سازد. اصلاً نسازش.
-        if (r.display.ones > 0) {
-          const ones = el('div', { class: 'pv-ones' });
-          for (let o = 0; o < r.display.ones; o++) {
-            ones.append(el('i', { class: 'pv-one', style: `animation-delay:${(r.display.tens + o) * 50}ms` }));
-          }
-          box.append(ones);
-        }
-        stage.append(box);
-      }
-
-      // محور اعداد: خانه‌های مساوی + فلشِ قدم‌ها.
-      //
-      // ⚠ کتاب هشدار می‌دهد «رسم محور با فاصلهٔ مساوی ممکن است زود
-      // باشد» — پس خانه‌ها را درشت و شماره‌دار نگه می‌داریم و قدم را
-      // با کمانِ دیدنی نشان می‌دهیم، نه با فلشِ نازکِ ریاضی‌وار.
-      if (r.display.kind === 'number-line') {
-        const d = r.display;
-        const line = el('div', { class: 'nline' });
-        for (let v = 0; v <= d.span; v++) {
-          const isFrom = d.from === v;
-          // مقصد فقط وقتی رنگی می‌شود که پرسش دربارهٔ آن نباشد.
-          const isTo = !d.hideTo && d.steps != null && d.from + d.steps === v;
-          const marked = Array.isArray(d.mark) && d.mark.includes(v);
-          // خانه‌هایی که قدم روی‌شان می‌افتد، کمانِ پرش می‌گیرند —
-          // کودک باید قدم‌ها را بشمارد، نه عددِ آخر را بخواند.
-          const hop = d.steps != null && v > d.from && v <= d.from + d.steps;
-          const tick = el('span', {
-            class: `nl-tick${isFrom ? ' from' : ''}${isTo ? ' to' : ''}${marked ? ' mark' : ''}${hop ? ' hop' : ''}`,
-            style: `animation-delay:${v * 40}ms`,
-          });
-          if (hop) tick.append(el('i', { class: 'nl-arc', 'aria-hidden': 'true' }));
-          tick.append(el('i', { class: 'nl-dot' }));
-          tick.append(el('b', { class: 'nl-num', text: toFa(v) }));
-          line.append(tick);
-        }
-        stage.append(line);
-      }
-
-      // اندازه‌گیری با واحد غیراستاندارد: نوار کنار n واحدِ چیده‌شده.
-      if (r.display.kind === 'measure') {
-        const box = el('div', { class: 'measure' });
-        box.append(el('span', { class: 'ms-bar', style: `--n:${r.display.len}` }));
-        const row = el('div', { class: 'ms-units' });
-        for (let i = 0; i < r.display.len; i++) {
-          row.append(
-            el('span', {
-              class: 'ico ms-unit',
-              style: `animation-delay:${i * 70}ms`,
-              html: svgShape(r.display.unit) || '',
-            }),
-          );
-        }
-        box.append(row);
-        stage.append(box);
-      }
-
-      // صفِ ترتیبی: اولی، دومی، سومی…
-      //
-      // ⚠ فارسی راست‌به‌چپ است و «اولی» باید سمت راست باشد. ترتیب
-      // DOM را دست نمی‌زنیم و چیدمان را به جهتِ صفحه می‌سپاریم؛
-      // row-reverse اینجا همان اشتباهی است که در .sounds کردیم.
-      if (r.display.kind === 'queue') {
-        const wrap = el('div', { class: 'queue-wrap' });
-        const row = el('div', { class: 'queue' });
-        // ⚠ بدون نشانهٔ شروع، «اولی» حدس است: کودک نمی‌داند از راست
-        // بشمارد یا از چپ. پرچمِ شروع سمت راست (جهت خواندن فارسی)
-        // می‌گذاریم تا صف مبدأ داشته باشد.
-        row.append(el('span', { class: 'q-start', 'aria-hidden': 'true' }));
-        r.display.items.forEach((name, i) => {
-          const cell = el('span', { class: 'q-cell', style: `animation-delay:${i * 80}ms` });
-          cell.append(el('span', { class: 'ico q-pic', html: svgShape(name) || '' }));
-          row.append(cell);
-        });
-        wrap.append(row);
-        wrap.append(el('span', { class: 'q-hint', text: 'شروع صف' }));
-        stage.append(wrap);
-      }
-
-      // شکل هندسی بزرگ با گوشه‌های برجسته
-      if (r.display.kind === 'geo-big') {
-        stage.append(el('span', { class: 'ico big-pic', html: svgGeo(r.display.name, '#2E86AB') || '' }));
-      }
-
-      // تقارن: فقط *نیمهٔ* شکل کنار خط آینه.
-      //
-      // ⚠ نسخهٔ اول شکل کامل و بازتابش را کنار هم می‌گذاشت — یعنی
-      // پاسخ را مستقیم نشان می‌داد و کودک فقط شکلِ دیده‌شده را
-      // می‌زد. هیچ تقارنی آموخته نمی‌شد. حالا نیمه را می‌بیند و
-      // باید در ذهن کاملش کند.
-      if (r.display.kind === 'mirror') {
-        stage.append(
-          el('div', { class: 'mirror' }, [
-            el('span', { class: 'ico mr-half', html: svgGeo(r.display.name, '#2E86AB') || '' }),
-            el('span', { class: 'mr-line', 'aria-hidden': 'true' }),
-          ]),
-        );
-      }
-
-      // جمع با جای خالی: ۵ + ؟ = ۷ به‌صورت دیدنی
-      if (r.display.kind === 'missing') {
-        const box = el('div', { class: 'missing' });
-        // هر دو گروه نقطهٔ هم‌اندازه دارند: اگر یکی درشت و دیگری
-        // ریز باشد، کودک اندازه را با تعداد اشتباه می‌گیرد.
-        const known = el('span', { class: 'ms-group' });
-        for (let k = 0; k < r.display.part; k++) known.append(el('i', { class: 'dot sm' }));
-        box.append(known, el('span', { class: 'ms-plus', text: '+' }), el('span', { class: 'ms-q', text: '؟' }));
-        box.append(el('span', { class: 'ms-eq', text: '=' }));
-        const goal = el('span', { class: 'ms-group goal' });
-        for (let k = 0; k < r.display.total; k++) goal.append(el('i', { class: 'dot sm' }));
-        box.append(goal);
-        stage.append(box);
-      }
-
-      if (r.display.kind === 'sequence') {
-        const seq = el('div', { class: 'seq' });
-        r.display.items.forEach((it) => seq.append(chip(it, r.display.unit)));
-        seq.append(el('div', { class: 'chip q', text: '؟' }));
-        stage.append(seq);
-      }
-    }
+    const stage = buildStage(r);
 
     const grid = el('div', { class: `options${r.options.length === 3 ? ' cols-3' : ''}` });
     let answered = false;
 
     r.options.forEach((o) => {
-      const btn = el('button', { class: `opt${o.big ? ' big' : ''}` });
-      if (o.spot) {
-        // صحنهٔ کوچک: یک کادر و شکلی که در آن جای مشخصی نشسته.
-        // ⚠ گزینه‌های «بالا/پایین/وسط» اگر فقط واژه بودند، کودک
-        // پیش‌خوان نمی‌توانست حل کند. پس خودِ جای‌گیری نشان داده
-        // می‌شود و برچسب برای والد زیرش می‌ماند.
-        btn.append(
-          el('span', { class: `spot spot-${o.spot.where}` }, [
-            el('span', { class: 'ico', html: svgShape(o.spot.icon) || '' }),
-          ]),
-          el('span', { class: 'pic-label', text: o.label }),
-        );
-      } else if (o.pic) {
-        btn.append(el('span', { class: 'ico lg', html: svgShape(o.pic) || '' }));
-        // در درس انگلیسی، واژه زیر تصویر می‌آید تا شکل و واژه با هم دیده شوند.
-        if (o.latinLabel) {
-          btn.append(el('span', { class: 'pic-label', dir: 'ltr', lang: 'en', text: o.label }));
-        } else if (o.picLabel) {
-          // در مهارت زندگی، نامِ احساس خودش درسِ اصلی است: کودک باید
-          // یاد بگیرد به این حس بگوید «غمگین». تصویر تنها، واژه را
-          // یاد نمی‌دهد. برای والد هم روشن می‌کند برنامه چه می‌آموزد.
-          btn.append(el('span', { class: 'pic-label', text: o.label }));
-        }
-      } else if (o.geo) {
-        btn.append(el('span', { class: 'ico lg', html: svgGeo(o.geo.name, o.geo.color) || '' }));
-        // در گِردِ دو معیاره، شکل تنها کافی نیست: کودک باید ببیند
-        // گزینه «قلب قرمز» است نه فقط یک قلب. برچسب هر دو شرط را
-        // می‌گوید و انتخاب را از حدس جدا می‌کند.
-        if (o.geoLabel) {
-          btn.append(el('span', { class: 'pic-label', text: o.label }));
-        }
-      } else if (o.shapeRepeat) {
-        const g = el('span', { class: 'grp' });
-        for (let k = 0; k < o.shapeRepeat.times; k++) {
-          g.append(el('span', { class: 'ico sm', html: svgShape(o.shapeRepeat.icon) || '' }));
-        }
-        btn.append(g);
-      } else if (o.latin) {
-        // کلاس طول، تا واژهٔ بلند به‌جای شکستن، کوچک‌تر نوشته شود.
-        const len = String(o.label).length;
-        const sz = len >= 9 ? ' len-9' : len >= 7 ? ' len-7' : '';
-        btn.append(el('span', { class: `latin-opt${sz}`, dir: 'ltr', lang: 'en', text: o.label }));
-      } else if (o.dots) {
-        // عدد + نقطه‌های متناظرش روی خودِ گزینه: کودک پیوند
-        // «رقم ↔ مقدار» را می‌بیند بدون آنکه پاسخ لو برود.
-        btn.append(el('span', { class: 'opt-num', text: o.label }));
-        const dg = el('span', { class: 'opt-dots' });
-        for (let k = 0; k < o.dots; k++) dg.append(el('i', { class: 'dot sm' }));
-        btn.append(dg);
-      } else if (o.swatch) {
-        btn.append(el('div', { class: 'swatch', style: `background:${o.swatch}` }));
-      } else {
-        btn.append(document.createTextNode(o.label));
-      }
-
+      const btn = optionButton(o);
       btn.addEventListener('click', () => {
         if (answered) return;
         answered = true;
@@ -662,29 +318,8 @@ function playScreen(lessonId) {
     return [stage, grid].filter(Boolean);
   }
 
-  function chip(label, unit) {
-    if (unit === 'color') {
-      return el('div', { class: 'chip', style: `background:${COLOR_HEX[label] || '#999'}` });
-    }
-    return el('div', { class: 'chip plain', html: svgGeo(label, '#2D2A32') || label });
-  }
 
   // جای‌های پراکنده ولی بدون هم‌پوشانی، برای بازی شمردن.
-  function scatterSlots(count) {
-    const cols = count <= 4 ? 2 : 3;
-    const rows = Math.ceil(count / cols);
-    const out = [];
-    for (let i = 0; i < count; i++) {
-      const cx = i % cols;
-      const cy = Math.floor(i / cols);
-      out.push({
-        x: (cx + 0.5) * (100 / cols) - 9 + (Math.random() * 8 - 4),
-        y: (cy + 0.5) * (100 / rows) - 9 + (Math.random() * 8 - 4),
-        r: Math.random() * 24 - 12,
-      });
-    }
-    return out;
-  }
 
   function traceView(r, done, feedback) {
     const canvas = el('canvas', { class: 'pad' });
@@ -768,162 +403,7 @@ function playScreen(lessonId) {
     return [wrapEl, btns];
   }
 
-  function orderView(r, feedback, done) {
-    const chosen = [];
-    // ⚠ چیدنِ *جمله* با چیدنِ حرف فرق دارد: «گربه ماهی خورد» در یک
-    // کارتِ ۶۸px جا نمی‌شود و در عرض ۳۲۰px به سه سطر می‌شکند، و کنار
-    // هم نشستنِ دو جملهٔ چندسطری در RTL ترتیب خواندن را وارونه
-    // نشان می‌دهد. پس هر جمله یک سطر کامل می‌گیرد.
-    // معیار: بلندترین آیتم بیش از ۶ نویسه = جمله، نه حرف/بخش.
-    const longItems = r.items.some((it) => String(it.label).length > 6);
-    const mod = longItems ? ' stacked' : '';
-    const slots = el('div', { class: `order-slots${mod}` });
-    const tray = el('div', { class: `order-tray${mod}` });
 
-    // ⚠ تا امروز گِردهای چیدنی هیچ صحنه‌ای نداشتند و همین محدودشان
-    // می‌کرد: «حرف‌ها را بچین تا کلمه بسازی» بدون تصویر بی‌معناست —
-    // کودک نمی‌داند کدام کلمه را باید بسازد. صحنه فقط تصویر می‌شود،
-    // نه متن: اگر واژه نوشته شود کودک فقط کپی می‌کند و املا نمی‌آموزد
-    // (همان دام «نشتی پاسخ» که در syllable-build گرفته شد).
-    const stage =
-      r.display && r.display.kind === 'pic-only'
-        ? el('div', { class: 'stage' }, [
-            el('span', { class: 'lp-ico ico big-pic', html: svgShape(r.display.icon) || '' }),
-          ])
-        : null;
-
-    // چیدن گِردهای مهارت زندگی («نه، برو، بگو») تصویری است، نه متنی:
-    // کودک پیش‌خوان باید ترتیب را از روی تصویر بچیند. پس اگر آیتم
-    // تصویر داشت، تصویر بالا و برچسب زیرش می‌آید؛ وگرنه مثل قبل
-    // فقط متن. برچسب هرگز حذف نمی‌شود — والد باید بتواند بخواند.
-    const fill = (node, it) => {
-      if (it.pic && svgShape(it.pic)) {
-        node.append(
-          el('span', { class: 'ico ord-ico', html: svgShape(it.pic) }),
-          el('span', { class: 'ord-label', text: it.label }),
-        );
-      } else {
-        node.append(document.createTextNode(it.label));
-      }
-      return node;
-    };
-
-    const refresh = () => {
-      slots.replaceChildren(
-        ...(chosen.length
-          ? chosen.map((c) =>
-              fill(
-                el('div', {
-                  class: `order-item${c.pic ? ' has-pic' : ''}`,
-                  style: `transform:scale(${c.scale})`,
-                }),
-                c,
-              ),
-            )
-          : [el('span', { class: 'muted', text: 'به ترتیب لمس کن' })]),
-      );
-    };
-    refresh();
-
-    r.items.forEach((it) => {
-      const b = fill(
-        el('button', {
-          class: `order-item${it.pic ? ' has-pic' : ''}`,
-          style: `transform:scale(${it.scale})`,
-        }),
-        it,
-      );
-      b.addEventListener('click', () => {
-        if (b.classList.contains('picked')) return;
-        b.classList.add('picked');
-        chosen.push(it);
-        sfx.tap();
-        refresh();
-        if (chosen.length === r.items.length) {
-          // ⚠ باگ جدی: مقایسه با `value` (که شاخصِ جایگاه است) وقتی دو
-          // آیتم برچسب یکسان دارند پاسخِ درست را غلط می‌شمارد.
-          // «انار» = ا ن ا ر — کودک اگر «ا»ی دوم را اول بگذارد،
-          // واژه‌ای که روی صفحه می‌سازد دقیقاً «انار» است ولی برنامه
-          // می‌گوید اشتباه. همین برای «بابا» (با + با) هم رخ می‌داد.
-          //
-          // معیار درست همان چیزی است که کودک *می‌بیند*: رشتهٔ
-          // برچسب‌ها. جایگاهِ داخلی برای او وجود ندارد.
-          const want = r.answer.map((v) => r.items.find((x) => x.value === v)?.label);
-          const ok = chosen.every((c, i) => c.label === want[i]);
-          if (ok) {
-            correct++;
-            sfx.correct();
-            markOk(feedback, 'آفرین! درست چیدی.');
-            speak('آفرین!');
-          } else {
-            sfx.wrong();
-            markRetry(feedback, 'ترتیب درست نبود — دوباره نگاه کن.');
-          }
-          setTimeout(done, ok ? 1000 : 1800);
-        }
-      });
-      tray.append(b);
-    });
-
-    return stage ? [stage, slots, tray] : [slots, tray];
-  }
-
-  function memoryView(r, feedback, done) {
-    const grid = el('div', { class: 'memory-grid' });
-    let first = null;
-    let lock = false;
-    let found = 0;
-
-    r.cards.forEach((c) => {
-      // ⚠ باگ جدی: پیش از این کارت با `text: c.icon` ساخته می‌شد و
-      // c.icon نامِ شکل است، نه تصویرش. یعنی کودکِ پیش‌خوان بازی
-      // حافظه را با واژه‌های «سیب» و «ماهی» می‌دید — بازی‌ای که
-      // اصلاً نمی‌توانست انجام دهد. قانون الزامی برنامه این است که
-      // هر گِرد بدون خواندن حل شود.
-      //
-      // برچسب متنی زیر تصویر می‌ماند (قانون: هر گزینه برچسب دارد)
-      // ولی تصویر است که بازی را ممکن می‌کند.
-      const b = el('button', { class: 'card' }, [
-        el('span', { class: 'ico card-ico', html: svgShape(c.icon) || '' }),
-        el('span', { class: 'card-label', text: c.icon }),
-      ]);
-      b.dataset.icon = c.icon;
-      b.addEventListener('click', () => {
-        if (lock || b.classList.contains('up') || b.classList.contains('matched')) return;
-        b.classList.add('up');
-        sfx.tap();
-        if (!first) {
-          first = b;
-          return;
-        }
-        if (first.dataset.icon === b.dataset.icon) {
-          first.classList.add('matched');
-          b.classList.add('matched');
-          first = null;
-          found++;
-          sfx.correct();
-          if (found === r.pairs) {
-            correct++;
-            markOk(feedback, 'همه را پیدا کردی!');
-            speak('آفرین! عالی بود.');
-            setTimeout(done, 1100);
-          }
-        } else {
-          lock = true;
-          const a = first;
-          first = null;
-          setTimeout(() => {
-            a.classList.remove('up');
-            b.classList.remove('up');
-            lock = false;
-          }, 800);
-        }
-      });
-      grid.append(b);
-    });
-
-    return [grid];
-  }
 
   draw();
   return wrap;
@@ -949,6 +429,419 @@ const RETRY_MARK = `<svg viewBox="0 0 48 48" aria-hidden="true">
     stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
+/**
+ * دکمهٔ یک گزینه — با هر نشانهٔ دیداری که داشته باشد.
+ *
+ * ⚠ این تابع از دلِ choiceView بیرون کشیده شد تا بخش بازی‌ها هم
+ * بتواند از آن استفاده کند. پیش از این داخل playScreen بسته بود و
+ * تنها راهِ استفادهٔ دوباره‌اش، کپی کردنِ ۵۰ خط بود — یعنی همان
+ * تکراری که قانون ۶ منعش می‌کند. هر کلید نشانهٔ تازه فقط اینجا
+ * اضافه می‌شود و هر دو مسیر با هم به‌روز می‌شوند.
+ */
+// ⚠ chip و scatterSlots هم ماژولی شدند: buildStage بیرون از
+// playScreen زندگی می‌کند و بدون اینها نمی‌توانست صحنهٔ «دنبالهٔ
+// الگو» و «شمردن پراکنده» را بسازد. تا وقتی داخل playScreen بودند،
+// بخش بازی‌ها به آن دو نوع نمایش دسترسی نداشت.
+function chip(label, unit) {
+  if (unit === 'color') {
+    return el('div', { class: 'chip', style: `background:${COLOR_HEX[label] || '#999'}` });
+  }
+  return el('div', { class: 'chip plain', html: svgGeo(label, '#2D2A32') || label });
+}
+
+function scatterSlots(count) {
+  const cols = count <= 4 ? 2 : 3;
+  const rows = Math.ceil(count / cols);
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const cx = i % cols;
+    const cy = Math.floor(i / cols);
+    out.push({
+      x: (cx + 0.5) * (100 / cols) - 9 + (Math.random() * 8 - 4),
+      y: (cy + 0.5) * (100 / rows) - 9 + (Math.random() * 8 - 4),
+      r: Math.random() * 24 - 12,
+    });
+  }
+  return out;
+}
+
+/**
+ * صحنهٔ بالای پرسش — هر بیست‌وچند نوع نمایش.
+ *
+ * ⚠ مثل optionButton، این هم از دلِ choiceView بیرون کشیده شد تا
+ * بخش بازی‌ها بتواند همان صحنه‌ها را رسم کند بی‌آنکه کدی کپی شود.
+ * `chip` و `scatterSlots` هم به همین دلیل ماژولی شدند.
+ */
+function buildStage(r) {
+  const stage = r.display ? el('div', { class: 'stage' }) : null;
+  if (stage) {
+    if (r.display.kind === 'text') stage.textContent = r.display.value;
+    // صداکشی: هر صدا جدا، با قوس پیوند زیرشان — همان حرکتی که
+    // معلم با انگشت روی تخته می‌کشد. کودک باید صداها را به هم
+    // بچسباند و واژه را بسازد.
+    if (r.display.kind === 'sounds') {
+      const row = el('div', { class: 'sounds' });
+      r.display.parts.forEach((p, i) => {
+        if (i) row.append(el('span', { class: 'snd-link', 'aria-hidden': 'true' }));
+        row.append(
+          el('span', { class: 'snd' }, [
+            // آنچه نوشته می‌شود (مصوت کوتاه نوشته نمی‌شود → خالی)
+            el('span', { class: 'snd-g', text: p.g || '·' }),
+            // آنچه شنیده می‌شود
+            el('span', { class: 'snd-s', text: p.s }),
+          ]),
+        );
+      });
+      // تعداد صدا به CSS می‌رود تا کارت‌ها کوچک شوند و واژه در
+      // یک خط بماند. شکستن خط در RTL ترتیب خواندن را وارونه
+      // می‌کرد — «ا ک ِ ش ر» به‌جای «ش ِ ک ا ر».
+      row.dataset.n = String(r.display.parts.length);
+      stage.append(row);
+    }
+    if (r.display.kind === 'repeat') {
+      const row = el('div', { class: 'repeat' });
+      for (let k = 0; k < r.display.times; k++) {
+        row.append(el('span', { class: 'ico', html: svgShape(r.display.icon) || '' }));
+      }
+      stage.append(row);
+    }
+    if (r.display.kind === 'scatter') {
+      // چیدمان پراکنده ولی بدون هم‌پوشانی: شبکهٔ نامنظمِ از پیش محاسبه‌شده.
+      const box = el('div', { class: 'scatter' });
+      const slots = scatterSlots(r.display.times);
+      slots.forEach((p) => {
+        box.append(
+          el('span', {
+            class: 'ico',
+            style: `left:${p.x}%;top:${p.y}%;transform:rotate(${p.r}deg)`,
+            html: svgShape(r.display.icon) || '',
+          }),
+        );
+      });
+      stage.append(box);
+    }
+    // حرف در کنار تصویرِ کلمه‌ای که با آن شروع می‌شود.
+    // پیوند «نشانه ↔ معنا» برای کودکی که هنوز نمی‌خواند.
+    if (r.display.kind === 'letter-pic') {
+      stage.append(
+        el('div', { class: 'letter-pic' }, [
+          el('span', { class: 'lp-letter', text: r.display.letter }),
+          el('span', { class: 'lp-ico ico', html: svgShape(r.display.icon) || '' }),
+        ]),
+      );
+    }
+    // چند شکل درهم — کودک باید عضوهای یک دسته را جدا کند
+    if (r.display.kind === 'mixed') {
+      const box = el('div', { class: 'mixed' });
+      r.display.items.forEach((it, k) => {
+        box.append(
+          el('span', {
+            class: 'ico',
+            style: `animation-delay:${k * 55}ms`,
+            html: svgShape(it) || '',
+          }),
+        );
+      });
+      stage.append(box);
+    }
+    // الگوی تاس — چیدمان آشنا که تشخیص فوری را ممکن می‌کند
+    if (r.display.kind === 'dice') {
+      const box = el('div', { class: `dice d${r.display.times}` });
+      for (let k = 0; k < r.display.times; k++) {
+        box.append(el('span', { class: 'pip', style: `animation-delay:${k * 50}ms` }));
+      }
+      stage.append(box);
+    }
+    // قاب ده‌تایی
+    if (r.display.kind === 'ten-frame') {
+      const frame = el('div', { class: 'ten-frame' });
+      for (let k = 0; k < 10; k++) {
+        frame.append(
+          el('span', {
+            class: `cell${k < r.display.filled ? ' on' : ''}`,
+            style: `animation-delay:${k * 40}ms`,
+          }),
+        );
+      }
+      stage.append(frame);
+    }
+    // دسته‌های ده‌تایی — کودک *دسته* می‌شمارد، نه واحد. همین است
+    // که شمارش ده‌تایی را ممکن می‌کند بی‌آنکه تا ۴۰ بشمارد.
+    if (r.display.kind === 'ten-groups') {
+      const box = el('div', { class: 'ten-groups' });
+      for (let g = 0; g < r.display.groups; g++) {
+        const frame = el('div', { class: 'ten-frame mini' });
+        for (let k = 0; k < 10; k++) {
+          frame.append(el('span', { class: 'cell on', style: `animation-delay:${(g * 10 + k) * 18}ms` }));
+        }
+        box.append(frame);
+      }
+      stage.append(box);
+    }
+    // تجزیهٔ عدد: کل بالا، بخش شناخته‌شده پایین
+    if (r.display.kind === 'bond') {
+      stage.append(
+        el('div', { class: 'bond' }, [
+          el('span', { class: 'bond-total', text: toFa(r.display.total) }),
+          el('span', { class: 'bond-line', 'aria-hidden': 'true' }),
+          el('span', { class: 'bond-parts' }, [
+            el('span', { class: 'bond-part', text: toFa(r.display.part) }),
+            el('span', { class: 'bond-part q', text: '؟' }),
+          ]),
+        ]),
+      );
+    }
+    // متن لاتین در محیط راست‌به‌چپ: باید dir="ltr" صریح داشته باشد،
+    // وگرنه نویسه‌های خنثی (خط تیره، فاصله) جابه‌جا می‌شوند.
+    if (r.display.kind === 'latin') {
+      stage.append(el('span', { class: 'latin-big', dir: 'ltr', lang: 'en', text: r.display.value }));
+    }
+    // فقط تصویر — بدون حرف، تا پاسخ لو نرود
+    if (r.display.kind === 'pic-only') {
+      stage.append(el('span', { class: 'lp-ico ico big-pic', html: svgShape(r.display.icon) || '' }));
+    }
+    // نقطه‌های شمردنی — پیوند «عدد ↔ مقدار»
+    if (r.display.kind === 'dots') {
+      const box = el('div', { class: 'dots' });
+      for (let k = 0; k < r.display.times; k++) {
+        box.append(el('span', { class: 'dot', style: `animation-delay:${k * 55}ms` }));
+      }
+      stage.append(box);
+    }
+    if (r.display.kind === 'shadow') {
+      stage.append(el('div', { class: 'ico shadow', html: svgShape(r.display.value) || '' }));
+    }
+    // ── نمایش‌های ریاضیِ دور دوم ─────────────────────────────
+    // ⚠ درس گرفته‌شده: کلیدی که این‌جا شاخه نداشته باشد بی‌سروصدا
+    // نادیده گرفته می‌شود و صفحه خالی می‌ماند. هر kind تازه در
+    // rounds.js باید این‌جا هم شاخه بگیرد.
+
+    // چوب‌خط: دسته‌های ۵تایی، پنجمی مورب روی چهارتای قبل
+    if (r.display.kind === 'tally') {
+      const box = el('div', { class: 'tally' });
+      const groups = Math.floor(r.display.times / 5);
+      const rest = r.display.times % 5;
+      for (let g = 0; g < groups; g++) {
+        box.append(
+          el('span', { class: 'tally-g full', style: `animation-delay:${g * 70}ms` }, [
+            ...Array.from({ length: 4 }, () => el('i', { class: 'tick' })),
+            el('i', { class: 'tick cross' }),
+          ]),
+        );
+      }
+      if (rest) {
+        box.append(
+          el('span', { class: 'tally-g', style: `animation-delay:${groups * 70}ms` },
+            Array.from({ length: rest }, () => el('i', { class: 'tick' }))),
+        );
+      }
+      stage.append(box);
+    }
+
+    // رشتهٔ عددی برای شمردن چندتایی: ۲ ۴ ۶ ؟
+    if (r.display.kind === 'number-seq') {
+      const seq = el('div', { class: 'num-seq' });
+      r.display.items.forEach((v, i) =>
+        seq.append(el('span', { class: 'num-chip', style: `animation-delay:${i * 80}ms`, text: v })),
+      );
+      seq.append(el('span', { class: 'num-chip q', text: '؟' }));
+      stage.append(seq);
+    }
+
+    // ارزش مکانی: دسته‌های ده‌تایی کنار یکی‌ها
+    if (r.display.kind === 'place-value') {
+      const box = el('div', { class: 'pv' });
+      const tens = el('div', { class: 'pv-tens' });
+      for (let t = 0; t < r.display.tens; t++) {
+        const rod = el('span', { class: 'pv-rod', style: `animation-delay:${t * 70}ms` });
+        for (let k = 0; k < 10; k++) rod.append(el('i', { class: 'pv-bead' }));
+        tens.append(rod);
+      }
+      box.append(tens);
+      // ⚠ وقتی یکی‌ها صفرند، ظرفِ خالی با padding/gap باقی می‌ماند و
+      // یک جعبهٔ نامرئی کنار دسته‌ها می‌سازد. اصلاً نسازش.
+      if (r.display.ones > 0) {
+        const ones = el('div', { class: 'pv-ones' });
+        for (let o = 0; o < r.display.ones; o++) {
+          ones.append(el('i', { class: 'pv-one', style: `animation-delay:${(r.display.tens + o) * 50}ms` }));
+        }
+        box.append(ones);
+      }
+      stage.append(box);
+    }
+
+    // محور اعداد: خانه‌های مساوی + فلشِ قدم‌ها.
+    //
+    // ⚠ کتاب هشدار می‌دهد «رسم محور با فاصلهٔ مساوی ممکن است زود
+    // باشد» — پس خانه‌ها را درشت و شماره‌دار نگه می‌داریم و قدم را
+    // با کمانِ دیدنی نشان می‌دهیم، نه با فلشِ نازکِ ریاضی‌وار.
+    if (r.display.kind === 'number-line') {
+      const d = r.display;
+      const line = el('div', { class: 'nline' });
+      for (let v = 0; v <= d.span; v++) {
+        const isFrom = d.from === v;
+        // مقصد فقط وقتی رنگی می‌شود که پرسش دربارهٔ آن نباشد.
+        const isTo = !d.hideTo && d.steps != null && d.from + d.steps === v;
+        const marked = Array.isArray(d.mark) && d.mark.includes(v);
+        // خانه‌هایی که قدم روی‌شان می‌افتد، کمانِ پرش می‌گیرند —
+        // کودک باید قدم‌ها را بشمارد، نه عددِ آخر را بخواند.
+        const hop = d.steps != null && v > d.from && v <= d.from + d.steps;
+        const tick = el('span', {
+          class: `nl-tick${isFrom ? ' from' : ''}${isTo ? ' to' : ''}${marked ? ' mark' : ''}${hop ? ' hop' : ''}`,
+          style: `animation-delay:${v * 40}ms`,
+        });
+        if (hop) tick.append(el('i', { class: 'nl-arc', 'aria-hidden': 'true' }));
+        tick.append(el('i', { class: 'nl-dot' }));
+        tick.append(el('b', { class: 'nl-num', text: toFa(v) }));
+        line.append(tick);
+      }
+      stage.append(line);
+    }
+
+    // اندازه‌گیری با واحد غیراستاندارد: نوار کنار n واحدِ چیده‌شده.
+    if (r.display.kind === 'measure') {
+      const box = el('div', { class: 'measure' });
+      box.append(el('span', { class: 'ms-bar', style: `--n:${r.display.len}` }));
+      const row = el('div', { class: 'ms-units' });
+      for (let i = 0; i < r.display.len; i++) {
+        row.append(
+          el('span', {
+            class: 'ico ms-unit',
+            style: `animation-delay:${i * 70}ms`,
+            html: svgShape(r.display.unit) || '',
+          }),
+        );
+      }
+      box.append(row);
+      stage.append(box);
+    }
+
+    // صفِ ترتیبی: اولی، دومی، سومی…
+    //
+    // ⚠ فارسی راست‌به‌چپ است و «اولی» باید سمت راست باشد. ترتیب
+    // DOM را دست نمی‌زنیم و چیدمان را به جهتِ صفحه می‌سپاریم؛
+    // row-reverse اینجا همان اشتباهی است که در .sounds کردیم.
+    if (r.display.kind === 'queue') {
+      const wrap = el('div', { class: 'queue-wrap' });
+      const row = el('div', { class: 'queue' });
+      // ⚠ بدون نشانهٔ شروع، «اولی» حدس است: کودک نمی‌داند از راست
+      // بشمارد یا از چپ. پرچمِ شروع سمت راست (جهت خواندن فارسی)
+      // می‌گذاریم تا صف مبدأ داشته باشد.
+      row.append(el('span', { class: 'q-start', 'aria-hidden': 'true' }));
+      r.display.items.forEach((name, i) => {
+        const cell = el('span', { class: 'q-cell', style: `animation-delay:${i * 80}ms` });
+        cell.append(el('span', { class: 'ico q-pic', html: svgShape(name) || '' }));
+        row.append(cell);
+      });
+      wrap.append(row);
+      wrap.append(el('span', { class: 'q-hint', text: 'شروع صف' }));
+      stage.append(wrap);
+    }
+
+    // شکل هندسی بزرگ با گوشه‌های برجسته
+    if (r.display.kind === 'geo-big') {
+      stage.append(el('span', { class: 'ico big-pic', html: svgGeo(r.display.name, '#2E86AB') || '' }));
+    }
+
+    // تقارن: فقط *نیمهٔ* شکل کنار خط آینه.
+    //
+    // ⚠ نسخهٔ اول شکل کامل و بازتابش را کنار هم می‌گذاشت — یعنی
+    // پاسخ را مستقیم نشان می‌داد و کودک فقط شکلِ دیده‌شده را
+    // می‌زد. هیچ تقارنی آموخته نمی‌شد. حالا نیمه را می‌بیند و
+    // باید در ذهن کاملش کند.
+    if (r.display.kind === 'mirror') {
+      stage.append(
+        el('div', { class: 'mirror' }, [
+          el('span', { class: 'ico mr-half', html: svgGeo(r.display.name, '#2E86AB') || '' }),
+          el('span', { class: 'mr-line', 'aria-hidden': 'true' }),
+        ]),
+      );
+    }
+
+    // جمع با جای خالی: ۵ + ؟ = ۷ به‌صورت دیدنی
+    if (r.display.kind === 'missing') {
+      const box = el('div', { class: 'missing' });
+      // هر دو گروه نقطهٔ هم‌اندازه دارند: اگر یکی درشت و دیگری
+      // ریز باشد، کودک اندازه را با تعداد اشتباه می‌گیرد.
+      const known = el('span', { class: 'ms-group' });
+      for (let k = 0; k < r.display.part; k++) known.append(el('i', { class: 'dot sm' }));
+      box.append(known, el('span', { class: 'ms-plus', text: '+' }), el('span', { class: 'ms-q', text: '؟' }));
+      box.append(el('span', { class: 'ms-eq', text: '=' }));
+      const goal = el('span', { class: 'ms-group goal' });
+      for (let k = 0; k < r.display.total; k++) goal.append(el('i', { class: 'dot sm' }));
+      box.append(goal);
+      stage.append(box);
+    }
+
+    if (r.display.kind === 'sequence') {
+      const seq = el('div', { class: 'seq' });
+      r.display.items.forEach((it) => seq.append(chip(it, r.display.unit)));
+      seq.append(el('div', { class: 'chip q', text: '؟' }));
+      stage.append(seq);
+    }
+  }
+  return stage;
+}
+
+function optionButton(o) {
+  const btn = el('button', { class: `opt${o.big ? ' big' : ''}` });
+    if (o.spot) {
+      // صحنهٔ کوچک: یک کادر و شکلی که در آن جای مشخصی نشسته.
+      // ⚠ گزینه‌های «بالا/پایین/وسط» اگر فقط واژه بودند، کودک
+      // پیش‌خوان نمی‌توانست حل کند. پس خودِ جای‌گیری نشان داده
+      // می‌شود و برچسب برای والد زیرش می‌ماند.
+      btn.append(
+        el('span', { class: `spot spot-${o.spot.where}` }, [
+          el('span', { class: 'ico', html: svgShape(o.spot.icon) || '' }),
+        ]),
+        el('span', { class: 'pic-label', text: o.label }),
+      );
+    } else if (o.pic) {
+      btn.append(el('span', { class: 'ico lg', html: svgShape(o.pic) || '' }));
+      // در درس انگلیسی، واژه زیر تصویر می‌آید تا شکل و واژه با هم دیده شوند.
+      if (o.latinLabel) {
+        btn.append(el('span', { class: 'pic-label', dir: 'ltr', lang: 'en', text: o.label }));
+      } else if (o.picLabel) {
+        // در مهارت زندگی، نامِ احساس خودش درسِ اصلی است: کودک باید
+        // یاد بگیرد به این حس بگوید «غمگین». تصویر تنها، واژه را
+        // یاد نمی‌دهد. برای والد هم روشن می‌کند برنامه چه می‌آموزد.
+        btn.append(el('span', { class: 'pic-label', text: o.label }));
+      }
+    } else if (o.geo) {
+      btn.append(el('span', { class: 'ico lg', html: svgGeo(o.geo.name, o.geo.color) || '' }));
+      // در گِردِ دو معیاره، شکل تنها کافی نیست: کودک باید ببیند
+      // گزینه «قلب قرمز» است نه فقط یک قلب. برچسب هر دو شرط را
+      // می‌گوید و انتخاب را از حدس جدا می‌کند.
+      if (o.geoLabel) {
+        btn.append(el('span', { class: 'pic-label', text: o.label }));
+      }
+    } else if (o.shapeRepeat) {
+      const g = el('span', { class: 'grp' });
+      for (let k = 0; k < o.shapeRepeat.times; k++) {
+        g.append(el('span', { class: 'ico sm', html: svgShape(o.shapeRepeat.icon) || '' }));
+      }
+      btn.append(g);
+    } else if (o.latin) {
+      // کلاس طول، تا واژهٔ بلند به‌جای شکستن، کوچک‌تر نوشته شود.
+      const len = String(o.label).length;
+      const sz = len >= 9 ? ' len-9' : len >= 7 ? ' len-7' : '';
+      btn.append(el('span', { class: `latin-opt${sz}`, dir: 'ltr', lang: 'en', text: o.label }));
+    } else if (o.dots) {
+      // عدد + نقطه‌های متناظرش روی خودِ گزینه: کودک پیوند
+      // «رقم ↔ مقدار» را می‌بیند بدون آنکه پاسخ لو برود.
+      btn.append(el('span', { class: 'opt-num', text: o.label }));
+      const dg = el('span', { class: 'opt-dots' });
+      for (let k = 0; k < o.dots; k++) dg.append(el('i', { class: 'dot sm' }));
+      btn.append(dg);
+    } else if (o.swatch) {
+      btn.append(el('div', { class: 'swatch', style: `background:${o.swatch}` }));
+    } else {
+      btn.append(document.createTextNode(o.label));
+    }
+
+  return btn;
+}
+
 function markOk(feedback, text) {
   if (!feedback) return;
   feedback.className = 'feedback ok';
@@ -965,6 +858,463 @@ function markRetry(feedback, text) {
     el('span', { class: 'fb-mark', html: RETRY_MARK }),
     ...(text ? [el('span', { class: 'fb-text', text })] : []),
   );
+}
+
+// ⚠ orderView و memoryView هم از playScreen بیرون آمدند تا بخش
+// بازی‌ها بتواند «حافظهٔ بزرگ» را اجرا کند. هر دو به شمارندهٔ
+// `correct` درس وابسته بودند؛ حالا به‌جای دست‌بردن در متغیرِ
+// بیرونی، یک callback به نام onWin می‌گیرند. درس شمارنده‌اش را
+// بالا می‌برد و بازی امتیازش را — بدون آنکه هیچ‌کدام از دیگری خبر
+// داشته باشد.
+function orderView(r, feedback, done, onWin = () => {}) {
+  const chosen = [];
+  // ⚠ چیدنِ *جمله* با چیدنِ حرف فرق دارد: «گربه ماهی خورد» در یک
+  // کارتِ ۶۸px جا نمی‌شود و در عرض ۳۲۰px به سه سطر می‌شکند، و کنار
+  // هم نشستنِ دو جملهٔ چندسطری در RTL ترتیب خواندن را وارونه
+  // نشان می‌دهد. پس هر جمله یک سطر کامل می‌گیرد.
+  // معیار: بلندترین آیتم بیش از ۶ نویسه = جمله، نه حرف/بخش.
+  const longItems = r.items.some((it) => String(it.label).length > 6);
+  const mod = longItems ? ' stacked' : '';
+  const slots = el('div', { class: `order-slots${mod}` });
+  const tray = el('div', { class: `order-tray${mod}` });
+
+  // ⚠ تا امروز گِردهای چیدنی هیچ صحنه‌ای نداشتند و همین محدودشان
+  // می‌کرد: «حرف‌ها را بچین تا کلمه بسازی» بدون تصویر بی‌معناست —
+  // کودک نمی‌داند کدام کلمه را باید بسازد. صحنه فقط تصویر می‌شود،
+  // نه متن: اگر واژه نوشته شود کودک فقط کپی می‌کند و املا نمی‌آموزد
+  // (همان دام «نشتی پاسخ» که در syllable-build گرفته شد).
+  const stage =
+    r.display && r.display.kind === 'pic-only'
+      ? el('div', { class: 'stage' }, [
+          el('span', { class: 'lp-ico ico big-pic', html: svgShape(r.display.icon) || '' }),
+        ])
+      : null;
+
+  // چیدن گِردهای مهارت زندگی («نه، برو، بگو») تصویری است، نه متنی:
+  // کودک پیش‌خوان باید ترتیب را از روی تصویر بچیند. پس اگر آیتم
+  // تصویر داشت، تصویر بالا و برچسب زیرش می‌آید؛ وگرنه مثل قبل
+  // فقط متن. برچسب هرگز حذف نمی‌شود — والد باید بتواند بخواند.
+  const fill = (node, it) => {
+    if (it.pic && svgShape(it.pic)) {
+      node.append(
+        el('span', { class: 'ico ord-ico', html: svgShape(it.pic) }),
+        el('span', { class: 'ord-label', text: it.label }),
+      );
+    } else {
+      node.append(document.createTextNode(it.label));
+    }
+    return node;
+  };
+
+  const refresh = () => {
+    slots.replaceChildren(
+      ...(chosen.length
+        ? chosen.map((c) =>
+            fill(
+              el('div', {
+                class: `order-item${c.pic ? ' has-pic' : ''}`,
+                style: `transform:scale(${c.scale})`,
+              }),
+              c,
+            ),
+          )
+        : [el('span', { class: 'muted', text: 'به ترتیب لمس کن' })]),
+    );
+  };
+  refresh();
+
+  r.items.forEach((it) => {
+    const b = fill(
+      el('button', {
+        class: `order-item${it.pic ? ' has-pic' : ''}`,
+        style: `transform:scale(${it.scale})`,
+      }),
+      it,
+    );
+    b.addEventListener('click', () => {
+      if (b.classList.contains('picked')) return;
+      b.classList.add('picked');
+      chosen.push(it);
+      sfx.tap();
+      refresh();
+      if (chosen.length === r.items.length) {
+        // ⚠ باگ جدی: مقایسه با `value` (که شاخصِ جایگاه است) وقتی دو
+        // آیتم برچسب یکسان دارند پاسخِ درست را غلط می‌شمارد.
+        // «انار» = ا ن ا ر — کودک اگر «ا»ی دوم را اول بگذارد،
+        // واژه‌ای که روی صفحه می‌سازد دقیقاً «انار» است ولی برنامه
+        // می‌گوید اشتباه. همین برای «بابا» (با + با) هم رخ می‌داد.
+        //
+        // معیار درست همان چیزی است که کودک *می‌بیند*: رشتهٔ
+        // برچسب‌ها. جایگاهِ داخلی برای او وجود ندارد.
+        const want = r.answer.map((v) => r.items.find((x) => x.value === v)?.label);
+        const ok = chosen.every((c, i) => c.label === want[i]);
+        if (ok) {
+          onWin();
+          sfx.correct();
+          markOk(feedback, 'آفرین! درست چیدی.');
+          speak('آفرین!');
+        } else {
+          sfx.wrong();
+          markRetry(feedback, 'ترتیب درست نبود — دوباره نگاه کن.');
+        }
+        setTimeout(done, ok ? 1000 : 1800);
+      }
+    });
+    tray.append(b);
+  });
+
+  return stage ? [stage, slots, tray] : [slots, tray];
+}
+
+function memoryView(r, feedback, done, onWin = () => {}) {
+  const grid = el('div', { class: 'memory-grid' });
+  let first = null;
+  let lock = false;
+  let found = 0;
+
+  r.cards.forEach((c) => {
+    // ⚠ باگ جدی: پیش از این کارت با `text: c.icon` ساخته می‌شد و
+    // c.icon نامِ شکل است، نه تصویرش. یعنی کودکِ پیش‌خوان بازی
+    // حافظه را با واژه‌های «سیب» و «ماهی» می‌دید — بازی‌ای که
+    // اصلاً نمی‌توانست انجام دهد. قانون الزامی برنامه این است که
+    // هر گِرد بدون خواندن حل شود.
+    //
+    // برچسب متنی زیر تصویر می‌ماند (قانون: هر گزینه برچسب دارد)
+    // ولی تصویر است که بازی را ممکن می‌کند.
+    const b = el('button', { class: 'card' }, [
+      el('span', { class: 'ico card-ico', html: svgShape(c.icon) || '' }),
+      el('span', { class: 'card-label', text: c.icon }),
+    ]);
+    b.dataset.icon = c.icon;
+    b.addEventListener('click', () => {
+      if (lock || b.classList.contains('up') || b.classList.contains('matched')) return;
+      b.classList.add('up');
+      sfx.tap();
+      if (!first) {
+        first = b;
+        return;
+      }
+      if (first.dataset.icon === b.dataset.icon) {
+        first.classList.add('matched');
+        b.classList.add('matched');
+        first = null;
+        found++;
+        sfx.correct();
+        if (found === r.pairs) {
+          correct++;
+          markOk(feedback, 'همه را پیدا کردی!');
+          speak('آفرین! عالی بود.');
+          setTimeout(done, 1100);
+        }
+      } else {
+        lock = true;
+        const a = first;
+        first = null;
+        setTimeout(() => {
+          a.classList.remove('up');
+          b.classList.remove('up');
+          lock = false;
+        }, 800);
+      }
+    });
+    grid.append(b);
+  });
+
+  return [grid];
+}
+
+// ── بخش بازی‌ها ─────────────────────────────────────────────────────────
+//
+// جدا از مسیر درس، و عمداً پشتِ یک دکمه در خانه — نه بخشِ اول صفحه.
+// مسیر یادگیری باید مسیر پیش‌فرض بماند (نقشهٔ راه، ۷.۴).
+//
+// ⚠ هیچ محتوای تازه‌ای اینجا ساخته نمی‌شود: همان buildRound موتور
+// درس‌ها را صدا می‌زنیم و فقط قالبِ دور را عوض می‌کنیم. یعنی هر
+// گِردی که به برنامه اضافه شود خودبه‌خود بازی‌ها را غنی‌تر می‌کند.
+
+/** فهرست بازی‌ها. */
+function gamesScreen() {
+  const cards = GAMES.map((g) =>
+    el(
+      'button',
+      {
+        class: 'game-card',
+        style: `--c:${g.color}`,
+        onClick: () => render(store.limitReached() ? timeUpScreen() : gameScreen(g.id)),
+      },
+      [
+        el('span', { class: 'game-ico ico', html: svgShape(g.icon) || '' }),
+        el('span', { class: 'game-body' }, [
+          el('strong', { text: g.title }),
+          el('span', { class: 'game-tag', text: g.tagline }),
+        ]),
+        el('span', {
+          class: 'game-best',
+          text: store.gameBest(g.id) ? `${toFa(store.gameBest(g.id))}` : '—',
+        }),
+      ],
+    ),
+  );
+
+  return el('div', { class: 'screen' }, [
+    topbar('بازی‌ها', () => render(homeScreen())),
+    el('p', { class: 'muted center', text: 'اینجا درسی نیست — فقط بازی.' }),
+    el('div', { class: 'game-list' }, cards),
+  ]);
+}
+
+/**
+ * موتور مشترک هر سه حالت بازی.
+ *
+ * حالت‌ها:
+ *  timed  — ثانیه‌شمار، پاسخ غلط وقت کم می‌کند
+ *  lives  — سه جان، پاسخ غلط یک جان می‌گیرد
+ *  levels — مرحله‌ای، هر مرحله سخت‌تر (فعلاً فقط حافظه)
+ */
+function gameScreen(gameId) {
+  const g = gameById(gameId);
+  const state = store.getState();
+  const track = trackForAge(state.age);
+
+  let score = 0;
+  let lives = g.lives ?? 0;
+  let level = 0;
+  let left = g.seconds ?? 0;
+  let over = false;
+  let timer = null;
+
+  const wrap = el('div', { class: 'screen game-play', style: `--c:${g.color}` });
+  const startedAt = Date.now();
+
+  // استخر گِردهای این بازی: از همهٔ درس‌ها، هر گِردی که نوعش در
+  // فهرست بازی باشد. ⚠ یکتاسازی بر پایهٔ JSON لازم است چون یک نوع
+  // در ده‌ها درس تکرار شده و بدون آن استخر پر از تکرار می‌شود.
+  const seen = new Set();
+  const pool = [];
+  for (const lesson of LESSONS) {
+    for (const rd of lesson.rounds) {
+      if (!g.kinds.includes(rd.kind)) continue;
+      const key = JSON.stringify(rd);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      pool.push(rd);
+    }
+  }
+
+  const stopTimer = () => {
+    if (timer) clearInterval(timer);
+    timer = null;
+  };
+
+  const finish = () => {
+    if (over) return;
+    over = true;
+    stopTimer();
+    const spent = Math.min(30, (Date.now() - startedAt) / 60000);
+    store.addPlayTime(Math.round(spent * 10) / 10);
+    const isRecord = store.recordGame(g.id, score);
+    sfx.win();
+    render(gameOverScreen(g, score, isRecord));
+  };
+
+  /** ساخت یک گِرد تازه از استخر — با تلاش مجدد اگر داده کم بود. */
+  const nextRound = () => {
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const rd = pool[Math.floor(Math.random() * pool.length)];
+      try {
+        const built = buildRound(rd, track);
+        if (built) return built;
+      } catch {
+        /* این گِرد الان دادهٔ کافی ندارد — یکی دیگر */
+      }
+    }
+    return null;
+  };
+
+  const draw = () => {
+    if (over) return;
+    const r = g.mode === 'levels' ? levelRound() : nextRound();
+    if (!r) {
+      finish();
+      return;
+    }
+
+    const feedback = el('div', { class: 'feedback' });
+    const onDone = (wasRight) => {
+      if (over) return;
+      if (wasRight) {
+        score += 1;
+        sfx.point();
+        if (g.mode === 'levels') level += 1;
+      } else {
+        sfx.wrong();
+        if (g.mode === 'lives') {
+          lives -= 1;
+          if (lives <= 0) {
+            finish();
+            return;
+          }
+        } else if (g.mode === 'timed') {
+          left = Math.max(0, left - (g.penaltySec ?? 5));
+          if (left <= 0) {
+            finish();
+            return;
+          }
+        } else {
+          finish();
+          return;
+        }
+      }
+      draw();
+    };
+
+    const body =
+      r.type === 'choice'
+        ? gameChoiceView(r, feedback, onDone, track)
+        : r.type === 'order'
+          ? orderView(r, feedback, () => onDone(true))
+          : memoryView(r, feedback, () => onDone(true));
+
+    wrap.replaceChildren(
+      topbar(g.title, () => {
+        stopTimer();
+        over = true;
+        render(gamesScreen());
+      }),
+      statusRow(),
+      ...(r.display || r.type !== 'choice' ? [] : []),
+      el('div', { class: 'ask' }, [
+        el('span', { class: 'task-ico', html: taskIcon(r.action, g.color) }),
+        el('p', { class: 'prompt', text: r.prompt }),
+      ]),
+      ...(Array.isArray(body) ? body : [body]),
+      feedback,
+    );
+  };
+
+  /** نوار وضعیت: امتیاز، و زمان یا جان. */
+  function statusRow() {
+    // ⚠ دو عددِ برهنه کنار هم قابل تشخیص نبودند: در تصویر آزمایشی
+    // «۴۷» ثانیه بود ولی مثل امتیاز به‌نظر می‌رسید، و امتیازِ صفر
+    // فقط یک خطِ کوچک بود. حالا هرکدام نشانهٔ دیداری خودش را دارد —
+    // ستاره برای امتیاز، ساعت برای زمان — که کودک پیش‌خوان هم
+    // می‌فهمدشان.
+    const bits = [
+      el('span', { class: 'g-score' }, [
+        el('span', { class: 'g-ico', html: starIcon() }),
+        el('span', { class: 'g-num', text: `${toFa(score)}` }),
+      ]),
+    ];
+    if (g.mode === 'timed') {
+      bits.push(
+        el('span', { class: `g-time${left <= 10 ? ' low' : ''}` }, [
+          el('span', { class: 'g-ico', html: svgShape('ساعت') || '' }),
+          el('span', { class: 'g-num', text: `${toFa(left)}` }),
+        ]),
+      );
+    } else if (g.mode === 'lives') {
+      // ⚠ جان‌ها با شکل نشان داده می‌شوند نه عدد: کودک پیش‌خوان
+      // «۲ جان» را نمی‌خواند ولی دو قلب را می‌شمارد.
+      const hearts = el('span', { class: 'g-lives' });
+      for (let i = 0; i < (g.lives ?? 3); i++) {
+        hearts.append(
+          el('span', {
+            class: `g-heart${i < lives ? '' : ' gone'}`,
+            html: svgGeo('قلب', i < lives ? '#D14343' : '#E7DFD4') || '',
+          }),
+        );
+      }
+      bits.push(hearts);
+    } else {
+      bits.push(el('span', { class: 'g-level', text: `مرحلهٔ ${toFa(level + 1)}` }));
+    }
+    return el('div', { class: 'g-status' }, bits);
+  }
+
+  /** گِرد مرحله‌ایِ حافظه: هر مرحله جفت بیشتر. */
+  function levelRound() {
+    const pairs = g.levels[Math.min(level, g.levels.length - 1)];
+    try {
+      return buildRound({ kind: 'memory-pairs', pairs, prompt: 'جفت‌های مثل هم را پیدا کن' }, track);
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * نسخهٔ بازیِ صفحهٔ گزینه‌ها.
+   *
+   * ⚠ چرا از choiceView درس استفاده نمی‌شود: آن نسخه پس از پاسخ
+   * درست ۹۰۰ms مکث می‌کند تا کودک بازخورد را ببیند. در بازیِ
+   * زمان‌دار همان مکث یعنی از دست دادنِ وقت و حسِ کندی. اینجا
+   * بازخورد فوری و گذر سریع است — ۳۲۰ms.
+   */
+  function gameChoiceView(r, feedback, done, trk) {
+    const stage = r.display ? buildStage(r, trk) : null;
+    const opts = el('div', {
+      class: `options${r.options.length > 2 ? ' cols-3' : ''}`,
+    });
+
+    let locked = false;
+    r.options.forEach((o) => {
+      const btn = optionButton(o);
+      btn.addEventListener('click', () => {
+        if (locked) return;
+        locked = true;
+        const right = String(o.value) === String(r.answer);
+        btn.classList.add(right ? 'correct' : 'wrong');
+        if (right) markOk(feedback, '');
+        else markRetry(feedback, '');
+        setTimeout(() => done(right), right ? 320 : 700);
+      });
+      opts.append(btn);
+    });
+
+    return stage ? [stage, opts] : [opts];
+  }
+
+  if (g.mode === 'timed') {
+    timer = setInterval(() => {
+      if (over) return;
+      left -= 1;
+      if (left <= 0) {
+        finish();
+        return;
+      }
+      const t = wrap.querySelector('.g-time');
+      const num = t && t.querySelector('.g-num');
+      if (num) {
+        num.textContent = toFa(left);
+        t.classList.toggle('low', left <= 10);
+      }
+    }, 1000);
+  }
+
+  draw();
+  return wrap;
+}
+
+/** صفحهٔ پایان بازی. */
+function gameOverScreen(g, score, isRecord) {
+  return el('div', { class: 'screen', style: `--c:${g.color}` }, [
+    topbar(g.title, () => render(gamesScreen())),
+    el('div', { class: 'done-card' }, [
+      el('div', { class: 'buddy big', html: buddy(isRecord ? 'star' : 'happy', g.color) }),
+      el('h2', { text: isRecord ? 'رکورد تازه!' : 'خسته نباشی!' }),
+      el('div', { class: 'g-final', text: toFa(score) }),
+      el('p', { class: 'muted', text: `بهترین امتیاز تو: ${toFa(store.gameBest(g.id))}` }),
+      el('button', {
+        class: 'btn next-btn',
+        text: 'دوباره',
+        onClick: () => render(gameScreen(g.id)),
+      }),
+      el('button', {
+        class: 'btn ghost',
+        text: 'بازی‌های دیگر',
+        onClick: () => render(gamesScreen()),
+      }),
+    ]),
+  ]);
 }
 
 // ── پایان درس ───────────────────────────────────────────────────────────

@@ -27,6 +27,7 @@ const SHELL = [
   './src/data/alphabet.js',
   './src/data/curriculum.js',
   './src/data/english.js',
+  './src/data/games.js',
   './src/data/lessons/english.js',
   './src/data/lessons/index.js',
   './src/data/lessons/life.js',
