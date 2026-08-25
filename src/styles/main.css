@@ -1260,9 +1260,13 @@ canvas.pad {
     opacity: 0;
     transform: translate(0, 0) scale(0.3) rotate(0deg);
   }
-  22% {
+  0.1% {
     opacity: 1;
-    transform: translate(calc(var(--dx) * 0.4), calc(var(--dy) * 0.4)) scale(1.15) rotate(calc(var(--rot) * 0.4));
+    transform: translate(calc(var(--dx) * 0.34), calc(var(--dy) * 0.34)) scale(0.8) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 0.66), calc(var(--dy) * 0.66)) scale(1.12) rotate(calc(var(--rot) * 0.5));
   }
   100% {
     opacity: 0;

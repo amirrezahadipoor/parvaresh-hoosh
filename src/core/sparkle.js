@@ -45,11 +45,15 @@ export function sparkle(target, count = 14) {
     const p = document.createElement('i');
     // پخشِ یکنواخت روی دایره + کمی تصادف، تا الگوی مکانیکی نشود.
     const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
-    const dist = 46 + Math.random() * 42;
+    // ⚠ اولین نسخه با شعاعِ ۴۶px ساخته شد و در اسکرین‌شات معلوم شد
+    // ذره‌ها درست *روی* حرفِ پاسخ می‌نشینند و آن را می‌پوشانند.
+    // جشن نباید چیزی را که جشنش گرفته شده پنهان کند. حالا از حلقه‌ای
+    // بیرونِ متن شروع می‌شوند و بیرون‌تر می‌روند.
+    const dist = 74 + Math.random() * 46;
     p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
     p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
     p.style.setProperty('--rot', `${Math.random() * 360}deg`);
-    p.style.setProperty('--sz', `${7 + Math.random() * 6}px`);
+    p.style.setProperty('--sz', `${6 + Math.random() * 5}px`);
     p.style.setProperty('--d', `${Math.random() * 90}ms`);
     p.style.background = COLORS[i % COLORS.length];
     layer.append(p);
