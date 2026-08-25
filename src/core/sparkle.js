@@ -1,0 +1,67 @@
+/**
+ * جرقه‌ها — پاداشِ دیداریِ پاسخِ درست.
+ *
+ * ── چرا این لازم بود ──────────────────────────────────────────────
+ * قانونِ برنامه می‌گوید «هرجا صدا نیست، باید راهنمای دیداری باشد» و
+ * برنامه باید کاملاً بی‌صدا هم کار کند. تا الان لحظهٔ پاسخِ درست یک
+ * صدای خوش داشت و یک انیمیشنِ `cheer` روی خودِ دکمه. برای کودکی که
+ * صدا را خاموش کرده، آن `cheer` تنها جشن بود — و کافی نیست.
+ *
+ * جرقه‌ها همان «صدای شادی» را به زبانِ چشم می‌گویند.
+ *
+ * ── چرا با DOM و نه canvas ────────────────────────────────────────
+ * canvas یعنی یک حلقهٔ رندر، مدیریتِ اندازه با devicePixelRatio، و
+ * یک لایهٔ تمام‌صفحه که باید با اسکرول هماهنگ بماند. برای ۱۴ ذره
+ * این پیچیدگی توجیه ندارد. چند `<i>` با انیمیشنِ CSS را خودِ مرورگر
+ * روی GPU می‌برد و بعد از پایان، حذفشان می‌کنیم.
+ *
+ * ── قانونِ رنگ ────────────────────────────────────────────────────
+ * ⚠ «یک رنگ = یک معنی» در این برنامه قانون است. سبز یعنی درست و
+ * قرمز یعنی نادرست. جرقه‌ها فقط در لحظهٔ *درست* ظاهر می‌شوند، پس
+ * از پالتِ شاد استفاده می‌کنند ولی **هرگز قرمز** — چون قرمز در این
+ * برنامه معنیِ دیگری دارد و «هرگز ضربدرِ قرمز» یک تصمیمِ ثبت‌شده است.
+ */
+
+// طلایی، سبزِ تأیید، آبی، بنفش، نارنجیِ برند. بدون قرمز.
+const COLORS = ['#F4B942', '#3D9A50', '#4E9CC4', '#9B72C4', '#E4572E'];
+
+/**
+ * از مرکزِ یک عنصر جرقه می‌پاشد.
+ *
+ * @param {HTMLElement} target عنصری که جشن برایش گرفته می‌شود
+ * @param {number} count تعداد ذره‌ها
+ */
+export function sparkle(target, count = 14) {
+  if (!target || typeof document === 'undefined') return;
+  // ⚠ احترام به کاربری که حرکت برایش آزاردهنده است. این را نمی‌شود
+  // فقط به CSS سپرد، چون خودِ ساختنِ گره‌ها هم کار بی‌هوده می‌شود.
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const layer = document.createElement('div');
+  layer.className = 'sparkles';
+  layer.setAttribute('aria-hidden', 'true'); // تزئین است، صفحه‌خوان نباید بخواندش
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('i');
+    // پخشِ یکنواخت روی دایره + کمی تصادف، تا الگوی مکانیکی نشود.
+    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+    const dist = 46 + Math.random() * 42;
+    p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+    p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+    p.style.setProperty('--rot', `${Math.random() * 360}deg`);
+    p.style.setProperty('--sz', `${7 + Math.random() * 6}px`);
+    p.style.setProperty('--d', `${Math.random() * 90}ms`);
+    p.style.background = COLORS[i % COLORS.length];
+    layer.append(p);
+  }
+
+  // ⚠ لایه باید *داخل* عنصر باشد تا با اسکرول جابه‌جا شود. اگر روی
+  // body بگذاریمش، با یک اسکرولِ کوچک جرقه‌ها از دکمه جدا می‌افتند.
+  // برای همین عنصر باید position داشته باشد؛ اگر ندارد، می‌دهیم.
+  const cs = getComputedStyle(target);
+  if (cs.position === 'static') target.style.position = 'relative';
+  target.append(layer);
+
+  // ۹۰۰ms = طولانی‌ترین انیمیشن (۷۰۰) + بیشترین تأخیر (۹۰) + حاشیه.
+  setTimeout(() => layer.remove(), 900);
+}

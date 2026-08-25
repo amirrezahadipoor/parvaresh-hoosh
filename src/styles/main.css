@@ -310,6 +310,8 @@ body {
 }
 
 .journey-fill {
+  position: relative;
+  overflow: hidden;
   height: 100%;
   border-radius: 7px;
   background: var(--c, var(--brand));
@@ -1128,6 +1130,69 @@ canvas.pad {
   font-weight: 700;
 }
 
+/* ── کلیدِ روشن/خاموش ──────────────────────────────────────────────
+   ⚠ چک‌باکسِ پیش‌فرضِ مرورگر روی اندروید ۱۸px است — نصفِ حداقلِ
+   ۴۴px که راهنمای دسترس‌پذیری می‌خواهد و تستِ test-a11y آن را رد
+   می‌کند. پس خودِ ورودی را بزرگ نگه می‌داریم و ظاهرش را عوض
+   می‌کنیم؛ شفافش نمی‌کنیم چون صفحه‌خوان باید همچنان ببیندش. */
+.switch-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.switch-field span {
+  margin-bottom: 0;
+}
+
+.switch {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 68px;
+  height: 40px;
+  min-height: 40px;
+  padding: 4px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: #EFE9E0;
+  cursor: pointer;
+  transition: background var(--base) ease, border-color var(--base) ease;
+}
+
+.switch::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  /* در RTL «خاموش» سمت راست است و «روشن» سمت چپ — با inline-start
+     خود مرورگر جهت را درست می‌کند و نیازی به وارونه‌کردن دستی نیست. */
+  transform: translateX(0);
+  transition: transform var(--base) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.switch:checked {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+
+.switch:checked::after {
+  transform: translateX(-28px);
+}
+
+[dir='ltr'] .switch:checked::after {
+  transform: translateX(28px);
+}
+
+.switch:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
 .field input,
 /* ⚠ فلشِ پیش‌فرضِ مرورگر در RTL سمت چپ می‌افتد، در حالی که متن
    راست‌چین است — نتیجه فلشی جدا افتاده در گوشهٔ مخالف. فلش را خودمان
@@ -1161,6 +1226,74 @@ canvas.pad {
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.8;
+}
+
+/* ── جرقه‌های پاسخِ درست ────────────────────────────────────────────
+   ⚠ `pointer-events: none` حیاتی است: لایه روی تمامِ دکمه پهن
+   می‌شود و بدون آن، کلیکِ بعدی کودک را می‌بلعد.
+   ⚠ `overflow: visible` هم لازم است — ذره‌ها عمداً از مرزِ دکمه
+   بیرون می‌زنند، وگرنه انفجار حس نمی‌شود. */
+.sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 3;
+}
+
+.sparkles i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--sz, 9px);
+  height: var(--sz, 9px);
+  margin: calc(var(--sz, 9px) / -2) 0 0 calc(var(--sz, 9px) / -2);
+  border-radius: 2px;
+  animation: sparkle-fly 700ms var(--d, 0ms) cubic-bezier(0.16, 0.9, 0.32, 1) backwards;
+}
+
+/* سه مرحله: پرتاب، اوج، افتادن. جاذبه در ۱۰۰٪ اضافه می‌شود
+   (`+ 14px`) وگرنه ذره‌ها در خلأ شناور می‌مانند و پلاستیکی به‌نظر
+   می‌رسند. */
+@keyframes sparkle-fly {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3) rotate(0deg);
+  }
+  22% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 0.4), calc(var(--dy) * 0.4)) scale(1.15) rotate(calc(var(--rot) * 0.4));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), calc(var(--dy) + 14px)) scale(0.55) rotate(var(--rot));
+  }
+}
+
+/* ── نوارِ پیشرفت: درخششی که رد می‌شود ─────────────────────────────
+   وقتی نوار پر می‌شود، یک نورِ کم‌رنگ از رویش عبور می‌کند. حرکت
+   کُند و بی‌صداست: هدف «زنده بودن» است، نه جلب توجه. */
+.journey-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: sheen 2.8s ease-in-out 1.2s infinite;
+}
+
+@keyframes sheen {
+  0% { transform: translateX(-100%); }
+  /* ⚠ ۴۵٪ تا ۱۰۰٪ عمداً مکث است: بدون مکث، درخشش هر ۱٫۲ ثانیه
+     تکرار می‌شود و به یک چشمکِ عصبی تبدیل می‌گردد. */
+  45% { transform: translateX(220%); }
+  100% { transform: translateX(220%); }
 }
 
 @media (prefers-reduced-motion: reduce) {

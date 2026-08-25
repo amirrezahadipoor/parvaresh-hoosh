@@ -18,6 +18,8 @@ import {
   lockIcon, checkIcon, reviewIcon, moonIcon, backIcon,
 } from '../core/ui-icons.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
+import { playMusic, stopMusic } from '../core/music.js';
+import { sparkle } from '../core/sparkle.js';
 import { GAMES, gameById } from '../data/games.js';
 
 const el = (tag, props = {}, kids = []) => {
@@ -42,6 +44,22 @@ function render(screen) {
   stopAudio();
   root.replaceChildren(screen);
   window.scrollTo(0, 0);
+  applyMusic(screen);
+}
+
+// ── آهنگِ هر صفحه ───────────────────────────────────────────────────────
+//
+// ⚠ یک نقطهٔ تصمیم، نه چهارده تا. هر صفحه فقط *اعلام* می‌کند چه حالی
+// دارد (`data-music`) و `render` تصمیم می‌گیرد. اگر صفحه‌ای چیزی نگوید،
+// پیش‌فرض «خاموش» است — یعنی هیچ صفحهٔ جدیدی نمی‌تواند سهواً وسط درس
+// آهنگ پخش کند. ایمنی از جنسِ پیش‌فرض، نه از جنسِ یادآوری.
+function applyMusic(screen) {
+  const mood = screen.dataset ? screen.dataset.music : null;
+  if (!mood || mood === 'off' || isMuted() || !store.getState().music) {
+    stopMusic();
+    return;
+  }
+  playMusic(mood);
 }
 
 function topbar(title, onBack) {
@@ -92,7 +110,7 @@ export function homeScreen() {
     el('div', { class: 'journey-fill', style: `width:${p.percent}%;--c:${d.color}` }),
   ]);
 
-  return el('div', { class: 'screen home' }, [
+  return el('div', { class: 'screen home', 'data-music': 'calm' }, [
     el('div', { class: 'topbar' }, [
       el('h1', { text: greeting }),
       el('button', {
@@ -102,6 +120,9 @@ export function homeScreen() {
         onClick: (e) => {
           const m = setMuted(!isMuted());
           store.setMutedPref(m);
+          // بلندگوی خاموش یعنی سکوتِ کامل — آهنگ هم زیرمجموعهٔ صداست.
+          if (m) stopMusic();
+          else if (store.getState().music) playMusic('calm');
           const btn = e.currentTarget;
           btn.innerHTML = m ? soundOffIcon() : soundOnIcon();
           btn.setAttribute('aria-label', m ? 'روشن‌کردن صدا' : 'خاموش‌کردن صدا');
@@ -177,7 +198,7 @@ function mapScreen() {
     );
   });
 
-  return el('div', { class: 'screen' }, [
+  return el('div', { class: 'screen', 'data-music': 'calm' }, [
     topbar('نقشهٔ سفر', () => render(homeScreen())),
     el('div', { class: 'map-summary', text: `${toFa(p.done)} از ${toFa(p.total)} درس انجام شده` }),
     el('div', { class: 'map-list' }, cards),
@@ -291,6 +312,9 @@ function playScreen(lessonId) {
         if (right) {
           correct++;
           sfx.correct();
+          // جشنِ دیداری، برای وقتی که صدا خاموش است — و برای وقتی
+          // که روشن است هم بهتر می‌شود.
+          sparkle(btn);
           markOk(feedback, 'آفرین!');
           speak('آفرین!');
         } else {
@@ -1056,7 +1080,9 @@ function gamesScreen() {
     ),
   );
 
-  return el('div', { class: 'screen' }, [
+  // ⚠ بخشِ بازی تنها جایی است که آهنگِ تند مجاز است: اینجا کودک
+  // نمی‌خواند و نمی‌شمارد، پس رقابتِ کانالِ توجه پیش نمی‌آید.
+  return el('div', { class: 'screen', 'data-music': 'lively' }, [
     topbar('بازی‌ها', () => render(homeScreen())),
     el('p', { class: 'muted center', text: 'اینجا درسی نیست — فقط بازی.' }),
     el('div', { class: 'game-list' }, cards),
@@ -1083,7 +1109,10 @@ function gameScreen(gameId) {
   let over = false;
   let timer = null;
 
-  const wrap = el('div', { class: 'screen game-play', style: `--c:${g.color}` });
+  // بازیِ زمان‌دار برخلافِ درس از برانگیختگی سود می‌برد: پژوهشِ
+  // «موسیقیِ تند = شاد» از سنِ ۴ سالگی برقرار است و اینجا هدف
+  // تمرکزِ طولانی نیست، سرعت است. پس آهنگِ تند مجاز است.
+  const wrap = el('div', { class: 'screen game-play', style: `--c:${g.color}`, 'data-music': 'lively' });
   const startedAt = Date.now();
 
   // استخر گِردهای این بازی: از همهٔ درس‌ها، هر گِردی که نوعش در
@@ -1263,6 +1292,9 @@ function gameScreen(gameId) {
         locked = true;
         const right = String(o.value) === String(r.answer);
         btn.classList.add(right ? 'correct' : 'wrong');
+        // ⚠ در بازی ذره‌های کمتر: چرخهٔ بازی ۳۲۰ms است، نه ۹۰۰ms.
+        // انفجارِ کامل نیمه‌کاره بریده می‌شود و شلوغ به‌نظر می‌رسد.
+        if (right) sparkle(btn, 8);
         if (right) markOk(feedback, '');
         else markRetry(feedback, '');
         setTimeout(() => done(right), right ? 320 : 700);
@@ -1296,7 +1328,7 @@ function gameScreen(gameId) {
 
 /** صفحهٔ پایان بازی. */
 function gameOverScreen(g, score, isRecord) {
-  return el('div', { class: 'screen', style: `--c:${g.color}` }, [
+  return el('div', { class: 'screen', style: `--c:${g.color}`, 'data-music': 'lively' }, [
     topbar(g.title, () => render(gamesScreen())),
     el('div', { class: 'done-card' }, [
       el('div', { class: 'buddy big', html: buddy(isRecord ? 'star' : 'happy', g.color) }),
@@ -1580,6 +1612,32 @@ function settingsScreen() {
         store.setProfile({ childName: name.value, age: Number(age.value) });
         render(homeScreen());
       },
+    }),
+    // ── آهنگِ پس‌زمینه ───────────────────────────────────────────
+    // ⚠ چرا اینجا و نه کنارِ دکمهٔ بلندگو در صفحهٔ خانه: آن دکمه
+    // صدای *بازخورد* را قطع می‌کند و کودک باید بتواند خودش به آن
+    // دست بزند. آهنگ اما تصمیمِ والد است — پژوهش می‌گوید ممکن است
+    // به تمرکز آسیب بزند. پس پشتِ دروازهٔ والدین می‌ماند.
+    el('label', { class: 'field switch-field' }, [
+      el('span', { text: 'آهنگِ پس‌زمینه' }),
+      el('input', {
+        type: 'checkbox',
+        class: 'switch',
+        'aria-label': 'آهنگ پس‌زمینه',
+        ...(s.music ? { checked: 'checked' } : {}),
+        onChange: (e) => {
+          const on = e.currentTarget.checked;
+          store.setMusicPref(on);
+          // ⚠ پیش‌نمایشِ فوری. والد کلید را می‌زند و باید *بشنود* چه
+          // چیزی را روشن کرده؛ وگرنه باید برگردد به خانه تا بفهمد.
+          if (on && !isMuted()) playMusic('calm');
+          else stopMusic();
+        },
+      }),
+    ]),
+    el('div', {
+      class: 'note',
+      text: 'آهنگ فقط در صفحهٔ خانه، نقشه و بخش بازی‌ها پخش می‌شود. داخل درس هرگز پخش نمی‌شود، چون تمرکز کودک روی شنیدن حرف‌ها و شمردن است.',
     }),
     el('div', { class: 'note', text: 'همهٔ اطلاعات فقط روی همین دستگاه ذخیره می‌شود و به هیچ سروری فرستاده نمی‌شود.' }),
     el('button', { class: 'btn ghost', text: 'بخش والدین', onClick: () => render(parentGate()) }),

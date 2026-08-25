@@ -8,6 +8,11 @@ const EMPTY = {
   childName: '',
   age: 6,
   muted: false,
+  // ⚠ آهنگِ پس‌زمینه پیش‌فرض **خاموش** است و این عمدی است.
+  // پژوهشِ EEG روی کودکان ۵ تا ۷ ساله نشان می‌دهد در اتاقِ ساکت،
+  // موسیقیِ پس‌زمینه هوشیاری را *کم* می‌کند. پس آهنگ یک افزودنیِ
+  // انتخابیِ والد است، نه حالتِ پیش‌فرضِ برنامه.
+  music: false,
   lessons: {}, // id -> { completions, bestScore, lastPlayed }
   stars: 0,
   // پنل والدین
@@ -58,6 +63,12 @@ export function setProfile({ childName, age }) {
 export function setMutedPref(muted) {
   const s = read();
   s.muted = !!muted;
+  return write(s);
+}
+
+export function setMusicPref(on) {
+  const s = read();
+  s.music = !!on;
   return write(s);
 }
 
