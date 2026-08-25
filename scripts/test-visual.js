@@ -230,6 +230,40 @@ for (const vp of VIEWPORTS) {
     await page.waitForTimeout(420); // پایان انیمیشن ورود
     await audit(page, `بازی ${title}`, vp);
 
+    // ── فضای هدررفتهٔ زیرِ گزینه‌ها ─────────────────────────────────
+    //
+    // ⚠ چرا این سنجه لازم شد: `audit` سرریز و بریدگی را می‌گیرد —
+    // یعنی «چیزی بیرون زده». اما عکسِ آن را نمی‌دید: در گوشیِ
+    // ۴۳۰×۹۳۲ **۴۶٪ صفحه زیرِ گزینه‌ها خالی** بود و تصویرِ پرسش در
+    // ۱۲۰ پیکسل قفل مانده بود. هیچ چیز بیرون نزده بود، پس همه‌چیز
+    // سبز بود. صفحه‌ای که نصفش خالی است باگِ ظاهری است، حتی اگر
+    // هیچ چیز نشکسته باشد — مخصوصاً در برنامهٔ کودک که تصویر
+    // اصلی‌ترین کانالِ ارتباط است.
+    //
+    // آستانه ۲۸٪ است: کمی فضای تنفس لازم است، ولی بیش از یک‌چهارمِ
+    // صفحه یعنی چیدمان از فضا استفاده نمی‌کند.
+    {
+      const space = await page.evaluate(() => {
+        const last = document.querySelector('.options, .order-tray, .memory-grid, canvas');
+        if (!last) return null;
+        const r = last.getBoundingClientRect();
+        const stage = document.querySelector('.stage');
+        return {
+          idle: Math.round(window.innerHeight - r.bottom),
+          vh: window.innerHeight,
+          stageH: stage ? Math.round(stage.getBoundingClientRect().height) : 0,
+        };
+      });
+      if (space && space.idle > 0) {
+        const pct = Math.round((space.idle / space.vh) * 100);
+        if (pct > 28) {
+          errors.push(
+            `${vp.name}/${title}: ${pct}٪ صفحه (${space.idle}px) زیرِ گزینه‌ها بی‌استفاده مانده`,
+          );
+        }
+      }
+    }
+
     // درس را تا پایان بازی می‌کنیم تا درس بعدی باز شود.
     // ⚠ هر گِرد جداگانه بازرسی می‌شود، نه فقط اولی: گِردهای
     // صداکشی و بخش‌بندی در انتهای درس‌اند و با بازرسیِ فقط گِرد
