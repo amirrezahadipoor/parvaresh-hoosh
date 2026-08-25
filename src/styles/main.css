@@ -2815,3 +2815,84 @@ canvas.pad {
   font-variant-numeric: tabular-nums;
   animation: cheer var(--slow) var(--ease);
 }
+
+/* ── دربارهٔ برنامه ──────────────────────────────────────────────────
+   صفحه‌ای که والد می‌خواند، نه کودک. پس متن می‌تواند بلندتر و
+   چگال‌تر باشد — ولی همان مقیاسِ لمسیِ برنامه حفظ می‌شود، چون
+   والد هم روی همان گوشی می‌خواندش. */
+.about-title {
+  font-size: var(--t-title);
+  margin: 4px 0 6px;
+}
+
+.about-lead {
+  color: var(--muted);
+  line-height: 1.85;
+  margin: 0 0 14px;
+}
+
+.about-h {
+  font-size: var(--t-body);
+  margin: 22px 0 10px;
+}
+
+.about-box {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 6px 14px;
+}
+
+.about-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* آخرین سطر خطِ جداکننده نمی‌خواهد — وگرنه یک خطِ معلق زیرِ جعبه
+   می‌ماند که شبیه باگ است. */
+.about-row:last-child {
+  border-bottom: none;
+}
+
+.about-k {
+  color: var(--muted);
+}
+
+.about-v {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-doms {
+  display: grid;
+  gap: 8px;
+}
+
+.about-dom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.about-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* عدد به انتهای سطر می‌رود. در RTL یعنی سمتِ چپ — `margin-inline-start`
+   خودش جهت را می‌فهمد و نیازی به بازنویسیِ RTL نیست. */
+.about-num {
+  margin-inline-start: auto;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}

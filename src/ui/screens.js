@@ -18,7 +18,7 @@ import {
   lockIcon, checkIcon, reviewIcon, moonIcon, backIcon,
 } from '../core/ui-icons.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
-import { playMusic, stopMusic } from '../core/music.js';
+import { playMusic, stopMusic, TRACKS } from '../core/music.js';
 import { sparkle } from '../core/sparkle.js';
 import { GAMES, gameById } from '../data/games.js';
 
@@ -38,6 +38,42 @@ const el = (tag, props = {}, kids = []) => {
 let root = null;
 export function mount(node) {
   root = node;
+  installTapSound(node);
+}
+
+/**
+ * صدای لمس — یک شنونده برای کلِ برنامه.
+ *
+ * ── چرا سراسری و نه در هر دکمه ────────────────────────────────────
+ * حدود بیست دکمهٔ ناوبری در برنامه هست: بازگشت، نقشهٔ سفر، بازی‌ها،
+ * تنظیمات، «باز هم»، «خانه»… هیچ‌کدام بازخوردِ صوتی نداشتند. راهِ
+ * آشکار این بود که در هر بیست جا یک `sfx.tap()` بنویسم — یعنی همان
+ * تکراری که قانونِ ۶ منعش می‌کند، و تضمینِ اینکه دکمهٔ بیست‌ویکم
+ * فراموش شود.
+ *
+ * یک شنوندهٔ واحد در مرحلهٔ *capture* روی ریشه، هر لمسِ دکمه را
+ * می‌گیرد. دکمهٔ تازه خودبه‌خود صدا دارد.
+ *
+ * ⚠ چرا `pointerdown` و نه `click`: بازخورد باید در لحظهٔ *لمس*
+ * بیاید نه در لحظهٔ رها کردن. تأخیرِ ۱۰۰ میلی‌ثانیه‌ای کافی است که
+ * حس «دکمه جواب نداد» بدهد و کودک دوباره فشار دهد.
+ *
+ * ⚠ چرا گزینه‌های پاسخ مستثنا هستند: آن‌ها صدای *خودشان* را دارند
+ * (`sfx.correct` یا `sfx.wrong`). اگر صدای لمس هم بدهند، دو صدا روی
+ * هم می‌افتند و نتیجه گِل‌آلود می‌شود — نه «تِرِنگ» و نه «آفرین».
+ */
+function installTapSound(node) {
+  node.addEventListener(
+    'pointerdown',
+    (e) => {
+      const btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      // این‌ها صدای معنادارِ خودشان را دارند.
+      if (btn.closest('.options, .order-slots, .order-tray, .memory-grid')) return;
+      sfx.tap();
+    },
+    true,
+  );
 }
 
 function render(screen) {
@@ -1647,6 +1683,7 @@ function settingsScreen() {
     }),
     el('div', { class: 'note', text: 'همهٔ اطلاعات فقط روی همین دستگاه ذخیره می‌شود و به هیچ سروری فرستاده نمی‌شود.' }),
     el('button', { class: 'btn ghost', text: 'بخش والدین', onClick: () => render(parentGate()) }),
+    el('button', { class: 'btn ghost', text: 'دربارهٔ برنامه', onClick: () => render(aboutScreen()) }),
     el('button', {
       class: 'btn ghost',
       text: 'پاک کردن همهٔ پیشرفت',
@@ -1657,6 +1694,71 @@ function settingsScreen() {
         }
       },
     }),
+  ]);
+}
+
+/**
+ * دربارهٔ برنامه.
+ *
+ * ── این صفحه برای والد است، نه کودک ───────────────────────────────
+ * فروشگاه معمولاً چنین صفحه‌ای می‌خواهد، ولی دلیلِ واقعیِ وجودش این
+ * است: والدی که ۱۹۰٬۰۰۰ تومان می‌دهد حق دارد بداند دقیقاً چه خریده.
+ * پس اینجا شعار نیست؛ عدد است.
+ *
+ * ⚠ همهٔ اعداد **در لحظه شمرده می‌شوند**، هیچ‌کدام دستی نوشته
+ * نشده‌اند. عددِ دستی در سندی که هفته‌ای دو بار محتوا اضافه می‌شود،
+ * ظرف چند روز دروغ می‌شود — و دروغِ کوچک در صفحهٔ «دربارهٔ ما» بدترین
+ * جای ممکن برای دروغ است. اگر فردا ده درس اضافه شود، این صفحه
+ * خودش به‌روز است.
+ */
+function aboutScreen() {
+  const totalRounds = LESSONS.reduce((a, l) => a + l.rounds.length, 0);
+  const minutes = LESSONS.reduce((a, l) => a + (l.minutes || 0), 0);
+  const hours = Math.round(minutes / 60);
+
+  const row = (k, v) => el('div', { class: 'about-row' }, [
+    el('span', { class: 'about-k', text: k }),
+    el('span', { class: 'about-v', text: v }),
+  ]);
+
+  // شمارشِ درس‌های هر حوزه — از خودِ داده، نه از جدولی جداگانه.
+  const perDomain = DOMAINS.map((d) => {
+    const n = LESSONS.filter((l) => l.domain === d.id).length;
+    return el('div', { class: 'about-dom' }, [
+      el('span', { class: 'about-dot', style: `background:${d.color}` }),
+      el('span', { text: d.title }),
+      el('span', { class: 'about-num', text: `${toFa(n)} درس` }),
+    ]);
+  });
+
+  return el('div', { class: 'screen' }, [
+    topbar('دربارهٔ برنامه', () => render(parentGate(settingsScreen))),
+    el('h2', { class: 'about-title', text: 'پرورش هوش' }),
+    el('p', {
+      class: 'about-lead',
+      text: 'یک برنامهٔ کاملاً آفلاین برای کودکان ۵ تا ۸ سال. بدون تبلیغ، بدون خرید درون‌برنامه‌ای، بدون اینترنت.',
+    }),
+    el('div', { class: 'about-box' }, [
+      row('درس‌ها', `${toFa(LESSONS.length)} درس`),
+      row('تمرین‌ها', `${toFa(totalRounds)} تمرین`),
+      row('زمانِ آموزش', `حدود ${toFa(hours)} ساعت`),
+      row('حوزه‌ها', `${toFa(DOMAINS.length)} حوزه`),
+      row('آهنگ‌ها', `${toFa(TRACKS.length)} آهنگ`),
+    ]),
+    el('h3', { class: 'about-h', text: 'چه چیزهایی آموزش داده می‌شود' }),
+    el('div', { class: 'about-doms' }, perDomain),
+    el('h3', { class: 'about-h', text: 'حریمِ خصوصی' }),
+    el('p', {
+      class: 'about-lead',
+      text: 'این برنامه به اینترنت وصل نمی‌شود. نام و پیشرفتِ کودک فقط روی همین دستگاه ذخیره می‌شود و برای هیچ‌کس فرستاده نمی‌شود. هیچ تبلیغی و هیچ ردیابی‌ای وجود ندارد.',
+    }),
+    el('h3', { class: 'about-h', text: 'برای والدین' }),
+    el('p', {
+      class: 'about-lead',
+      text: 'در «بخش والدین» می‌توانید زمانِ روزانهٔ بازی را محدود کنید و گزارشِ پیشرفت را ببینید. برنامه خودش می‌داند کودک کجای مسیر است و درسِ بعدی را انتخاب می‌کند.',
+    }),
+    el('div', { class: 'note', text: `نسخهٔ ${toFa(1)}٫${toFa(0)}٫${toFa(0)}` }),
+    el('button', { class: 'btn ghost', text: 'بازگشت', onClick: () => render(parentGate(settingsScreen)) }),
   ]);
 }
 
