@@ -13,7 +13,10 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # ⚠ test-visual به‌تنهایی ~۱۲ دقیقه است (چهار اندازهٔ صفحه × شش
+    # درس). با سقفِ ۱۵ دقیقه، کار با timeout می‌افتاد و شبیهِ شکستِ
+    # واقعی به‌نظر می‌رسید. سقف باید از مجموعِ گاردها بیشتر باشد.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -29,6 +32,12 @@ jobs:
       - name: اعتبارسنجی محتوا و موتور گِرد
         run: npm test
 
+      # ⚠ سریع‌ترین گارد، پس زودترین. سندِ کهنه باگ نیست ولی
+      # توسعه‌دهندهٔ بعدی را گمراه می‌کند — و او ممکن است یک ایجنت
+      # باشد که تصمیمش را از روی همان سند می‌گیرد.
+      - name: صداقتِ مستندات
+        run: npm run test:docs
+
       - name: بررسی بازتولیدپذیری فایل‌های تولیدشده
         run: |
           npm run build:lessons
@@ -43,10 +52,23 @@ jobs:
       - name: نصب مرورگر
         run: npx playwright-core install --with-deps chromium
 
-      - name: آزمون مرورگر و ظاهر
+      # ⚠ هر ده گارد اینجا اجرا می‌شوند و ترتیبشان عمدی است: از سریع
+      # به کند. اگر test-contrast (۲ ثانیه) قرمز شود، نباید ۱۲ دقیقه
+      # منتظر test-visual بمانیم تا بفهمیم.
+      #
+      # ⚠ تا پیش از این، سه گاردِ contrast/a11y/music در CI نبودند —
+      # فقط روی ماشینِ توسعه اجرا می‌شدند. یعنی یک کامیت می‌توانست
+      # تصویری نامرئی یا آهنگی ناکوک را وارد main کند و CI سبز بدهد.
+      # گاردی که در CI نیست، گارد نیست؛ یک اسکریپت است که گاهی کسی
+      # اجرایش می‌کند.
+      - name: آزمون مرورگر، ظاهر، خوانایی و صدا
         run: |
           python3 -m http.server 8080 --bind 127.0.0.1 &
           for i in $(seq 1 20); do curl -sf http://127.0.0.1:8080 >/dev/null && break; sleep 0.5; done
-          BASE_URL=http://127.0.0.1:8080 npm run test:browser
-          BASE_URL=http://127.0.0.1:8080 npm run test:visual
-          BASE_URL=http://127.0.0.1:8080 npm run test:delight
+          export BASE_URL=http://127.0.0.1:8080
+          npm run test:contrast
+          npm run test:a11y
+          npm run test:music
+          npm run test:browser
+          npm run test:delight
+          npm run test:visual
