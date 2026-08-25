@@ -333,6 +333,57 @@ export function pickWords(opts = {}) {
   });
 }
 
+/**
+ * «قافیه» (rime) یک واژه = از آخرین مصوت تا پایان.
+ *
+ * چرا این تابع لازم شد:
+ * جدول Reading Rockets («سنی که ۸۰–۹۰٪ کودکان مهارت را دارند»)
+ * تشخیص قافیه را در ۵ سالگی می‌گذارد — یعنی *پیش از* بخش‌کردن و
+ * پیش از تجزیهٔ واج. تا امروز برنامه هیچ تمرین قافیه‌ای نداشت و
+ * مستقیم سراغ صداکشی می‌رفت؛ یعنی یک پلهٔ کاملِ رشدی جا افتاده بود.
+ *
+ * قافیه را از روی *صدا* می‌گیریم نه املا: «ماهی» و «طوطی» هر دو با
+ * «ای» تمام می‌شوند، هرچند نویسهٔ آخرشان یکی نیست.
+ */
+export function rimeKey(entry) {
+  const all = flatSounds(entry);
+  let i = -1;
+  for (let k = all.length - 1; k >= 0; k--) {
+    if (all[k].v) {
+      i = k;
+      break;
+    }
+  }
+  if (i < 0) return null;
+  return all.slice(i).map((s) => s.s).join('·');
+}
+
+/**
+ * خانواده‌های هم‌قافیه: کلیدِ قافیه → فهرست واژه‌ها.
+ * @param {(w:string)=>boolean} [filter] صافیِ اختیاری (خواندنی؟ تصویر دارد؟)
+ */
+export function rhymeFamilies(filter) {
+  const map = new Map();
+  for (const e of SOUND_MAP) {
+    if (filter && !filter(e.word)) continue;
+    const key = rimeKey(e);
+    if (!key) continue;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(e.word);
+  }
+  return map;
+}
+
+/**
+ * صدای آغازینِ واژه — نخستین صدای بخش اول.
+ * ۵٫۵ سالگی: «جدا کردن صدای اول» (Reading Rockets). این تمرین با
+ * «کدام کلمه با ب شروع می‌شود؟» فرق دارد: آنجا کودک *نویسه* را
+ * می‌بیند، اینجا باید از تصویر به صدا برسد.
+ */
+export function firstSound(entry) {
+  return entry.syllables[0][0];
+}
+
 /** بررسی سلامت داده — اعتبارسنج استفاده می‌کند. */
 export function auditPhonics() {
   const problems = [];

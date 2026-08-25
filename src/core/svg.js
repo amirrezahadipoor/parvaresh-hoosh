@@ -483,6 +483,196 @@ export const SHAPES = {
     <circle cx="60" cy="54" r="2.4" fill="#B8863A"/>
     <circle cx="44" cy="58" r="2.4" fill="#B8863A"/>`),
 
+  // ── افزودهٔ بخش خواندن: واژگان تصویردار ─────────────────────────
+  // ⚠ چرا این ۲۵ شکل: سقف تنوعِ جمله‌سازی و کلمه‌خوانی تعداد واژه‌هایی
+  // بود که هم با نشانه‌های آموخته‌شده خواندنی باشند و هم تصویر داشته
+  // باشند — فقط ۳۴ واژه از ۱۹۲ واژهٔ نقشهٔ صدا. تا این عدد بالا نرود،
+  // درسِ «کلمه را بخوان و تصویرش را پیدا کن» ساخته نمی‌شود و
+  // جمله‌ها هم تکراری می‌مانند. همهٔ این واژه‌ها از پیش در SOUND_MAP
+  // بودند؛ فقط چشمِ برنامه را باز می‌کنیم.
+  // معیار انتخاب: واژه باید در یک نگاه و بدون توضیح شناخته شود.
+  // «دود» و «نمک» و «لباس» عمداً نیامدند چون تصویرشان دو پهلوست.
+
+  بادام: () =>
+    svg(`<path d="M50 14 C74 34 80 62 50 86 C20 62 26 34 50 14z" fill="#D9A86C" stroke="#A9793F" stroke-width="3"/>
+    <path d="M50 24 C61 42 61 66 50 78" fill="none" stroke="#A9793F" stroke-width="2.6" stroke-linecap="round"/>`),
+
+  سبد: () =>
+    svg(`<path d="M28 40 a22 20 0 0 1 44 0" fill="none" stroke="#8B6F47" stroke-width="5" stroke-linecap="round"/>
+    <path d="M18 42 h64 l-9 44 h-46z" fill="#C89B5A" stroke="#8B6F47" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M26 58 h48 M29 72 h42" stroke="#8B6F47" stroke-width="2.4"/>
+    <path d="M34 46 l4 38 M50 46 v38 M66 46 l-4 38" stroke="#8B6F47" stroke-width="2.4"/>`),
+
+  توت: () =>
+    svg(`<path d="M50 34 v-18" stroke="#4E7A32" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M50 22 q8 -12 20 -12 q-3 13 -18 16z" fill="#4CAF50"/>
+    <g fill="#7B4B94"><circle cx="50" cy="42" r="10"/><circle cx="38" cy="54" r="10"/>
+    <circle cx="62" cy="54" r="10"/><circle cx="44" cy="68" r="10"/><circle cx="57" cy="68" r="10"/>
+    <circle cx="50" cy="55" r="10"/></g>
+    <g fill="#9B6BB5"><circle cx="47" cy="39" r="3"/><circle cx="35" cy="51" r="3"/>
+    <circle cx="59" cy="51" r="3"/><circle cx="41" cy="65" r="3"/></g>`),
+
+  اتو: () =>
+    svg(`<path d="M14 74 h72 q2 -18 -16 -24 h-32 q-20 4 -24 24z" fill="#B9C3CC" stroke="#7B8794" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M12 74 h76 v9 h-76z" fill="#7B8794"/>
+    <path d="M34 50 q16 -22 34 -8" fill="none" stroke="#4A5560" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="26" cy="66" r="3.4" fill="#E4572E"/>`),
+
+  سوت: () =>
+    svg(`<path d="M22 40 h44 a16 16 0 0 1 0 32 h-44 a4 4 0 0 1 -4 -4 v-24 a4 4 0 0 1 4 -4z"
+      fill="#C9CFD4" stroke="#7B8794" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="62" cy="56" r="6" fill="#7B8794"/>
+    <path d="M18 46 h-8" stroke="#7B8794" stroke-width="5" stroke-linecap="round"/>
+    <path d="M74 34 q10 -6 14 -14 M80 50 h10 M74 68 q10 6 14 14" fill="none" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>`),
+
+  مار: () =>
+    svg(`<path d="M20 82 q22 0 22 -14 t-18 -14 q-14 0 -14 -12 t18 -12 h30"
+      fill="none" stroke="#4CAF50" stroke-width="12" stroke-linecap="round"/>
+    <path d="M20 82 q22 0 22 -14 t-18 -14 q-14 0 -14 -12 t18 -12 h30"
+      fill="none" stroke="#7DBB5B" stroke-width="5" stroke-linecap="round" stroke-dasharray="5 9"/>
+    <circle cx="56" cy="30" r="9" fill="#4CAF50"/>
+    <circle cx="59" cy="27" r="2.6" fill="#2D2A32"/>
+    <path d="M65 31 h10 l-5 4 M70 35 l5 4" fill="none" stroke="#E4572E" stroke-width="2.6" stroke-linecap="round"/>`),
+
+  میز: () =>
+    svg(`<rect x="12" y="38" width="76" height="11" rx="4" fill="#C89B5A" stroke="#8B6F47" stroke-width="2.6"/>
+    <path d="M22 49 v34 M78 49 v34" stroke="#8B6F47" stroke-width="8" stroke-linecap="round"/>`),
+
+  باران: () =>
+    svg(`<path d="M30 46 a15 15 0 0 1 29 -6 a13 13 0 0 1 13 20 h-42 a12 12 0 0 1 0 -14z" fill="#B9C6D6"/>
+    <g fill="#2E86AB"><path d="M32 66 q4 8 0 10 q-5 -2 0 -10z"/><path d="M48 70 q4 8 0 10 q-5 -2 0 -10z"/>
+    <path d="M64 66 q4 8 0 10 q-5 -2 0 -10z"/><path d="M40 82 q4 8 0 10 q-5 -2 0 -10z"/>
+    <path d="M56 82 q4 8 0 10 q-5 -2 0 -10z"/></g>`),
+
+  شانه: () =>
+    svg(`<rect x="14" y="30" width="72" height="20" rx="5" fill="#5C6BC0" stroke="#3F4C9A" stroke-width="2.6"/>
+    <g stroke="#5C6BC0" stroke-width="6" stroke-linecap="round">
+    <path d="M22 50 v24"/><path d="M34 50 v24"/><path d="M46 50 v24"/>
+    <path d="M58 50 v24"/><path d="M70 50 v24"/><path d="M80 50 v24"/></g>`),
+
+  اردک: () =>
+    svg(`<ellipse cx="52" cy="60" rx="26" ry="17" fill="#FFF8E7" stroke="#D9CDB5" stroke-width="2.4"/>
+    <circle cx="30" cy="40" r="13" fill="#FFF8E7" stroke="#D9CDB5" stroke-width="2.4"/>
+    <path d="M18 41 h-11 q-2 4 0 7 h11z" fill="#F07818"/>
+    <circle cx="27" cy="37" r="2.8" fill="#2D2A32"/>
+    <path d="M52 54 q12 -6 20 4 q-10 8 -20 -4z" fill="#E9DEC6"/>
+    <path d="M14 80 h72" stroke="#2E86AB" stroke-width="4" stroke-linecap="round"/>`),
+
+  کاسه: () =>
+    svg(`<path d="M16 46 h68 a34 32 0 0 1 -68 0z" fill="#2E86AB" stroke="#1B6B8F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M12 44 h76" stroke="#1B6B8F" stroke-width="6" stroke-linecap="round"/>
+    <path d="M28 58 a22 20 0 0 0 16 14" fill="none" stroke="#8FC7E0" stroke-width="4" stroke-linecap="round"/>`),
+
+  پنیر: () =>
+    svg(`<path d="M16 74 v-18 l58 -18 v18z" fill="#F4D03F" stroke="#C9A227" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M16 74 h58 v-18 l-58 18z" fill="#F7DC6F" stroke="#C9A227" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="34" cy="66" r="4" fill="#E0B90C"/><circle cx="52" cy="62" r="3" fill="#E0B90C"/>
+    <circle cx="64" cy="68" r="3.4" fill="#E0B90C"/>`),
+
+  خرس: () =>
+    svg(`<circle cx="28" cy="30" r="11" fill="#8B5E3C"/><circle cx="72" cy="30" r="11" fill="#8B5E3C"/>
+    <circle cx="28" cy="30" r="5" fill="#C08A5E"/><circle cx="72" cy="30" r="5" fill="#C08A5E"/>
+    <circle cx="50" cy="52" r="30" fill="#A0692F"/>
+    <ellipse cx="50" cy="64" rx="16" ry="12" fill="#D8B08C"/>
+    <ellipse cx="50" cy="56" rx="6" ry="4.6" fill="#3A2A1C"/>
+    <circle cx="38" cy="44" r="3.6" fill="#2D2A32"/><circle cx="62" cy="44" r="3.6" fill="#2D2A32"/>
+    <path d="M50 62 v5 M44 71 q6 5 12 0" fill="none" stroke="#3A2A1C" stroke-width="2.6" stroke-linecap="round"/>`),
+
+  فیل: () =>
+    svg(`<ellipse cx="56" cy="54" rx="30" ry="24" fill="#9AA5B1"/>
+    <path d="M34 74 v12 M52 76 v10 M70 76 v10 M82 70 v14" stroke="#9AA5B1" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="30" cy="44" r="20" fill="#AEB8C2"/>
+    <ellipse cx="44" cy="42" rx="12" ry="16" fill="#8A95A1"/>
+    <path d="M18 54 q-6 16 2 26 q8 4 10 -6" fill="none" stroke="#AEB8C2" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="26" cy="38" r="3.2" fill="#2D2A32"/>`),
+
+  گلابی: () =>
+    svg(`<path d="M50 26 c12 0 12 14 8 20 c10 8 14 20 14 28 c0 12 -10 20 -22 20 s-22 -8 -22 -20
+      c0 -8 4 -20 14 -28 c-4 -6 -4 -20 8 -20z" fill="#C6D64A" stroke="#93A32B" stroke-width="2.6"/>
+    <path d="M50 26 v-12" stroke="#8B5E3C" stroke-width="4" stroke-linecap="round"/>
+    <path d="M50 18 q10 -8 18 -6 q-4 10 -16 10z" fill="#4CAF50"/>`),
+
+  پنجره: () =>
+    svg(`<rect x="16" y="16" width="68" height="68" rx="5" fill="#BFE6F5" stroke="#8B6F47" stroke-width="6"/>
+    <path d="M50 16 v68 M16 50 h68" stroke="#8B6F47" stroke-width="6"/>
+    <circle cx="34" cy="32" r="7" fill="#F4B942"/>
+    <path d="M60 40 q8 -8 18 -4" fill="none" stroke="#FFF" stroke-width="4" stroke-linecap="round"/>`),
+
+  چای: () =>
+    svg(`<path d="M32 30 h36 l-6 44 h-24z" fill="#D9782E" stroke="#A85A1C" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M30 28 h40" stroke="#C9CFD4" stroke-width="6" stroke-linecap="round"/>
+    <path d="M22 84 h56" stroke="#C9CFD4" stroke-width="8" stroke-linecap="round"/>
+    <path d="M42 20 q6 -6 0 -12 M56 20 q6 -6 0 -12" fill="none" stroke="#B9C6D6" stroke-width="3.4" stroke-linecap="round"/>`),
+
+  صدف: () =>
+    svg(`<path d="M50 82 C18 66 14 40 30 26 C40 18 60 18 70 26 C86 40 82 66 50 82z"
+      fill="#F5C6C6" stroke="#C98A8A" stroke-width="3" stroke-linejoin="round"/>
+    <g fill="none" stroke="#C98A8A" stroke-width="2.6" stroke-linecap="round">
+    <path d="M50 80 V26"/><path d="M50 80 L30 30"/><path d="M50 80 L70 30"/>
+    <path d="M50 80 L20 44"/><path d="M50 80 L80 44"/></g>`),
+
+  صابون: () =>
+    svg(`<rect x="18" y="46" width="58" height="30" rx="12" fill="#8FC7E0" stroke="#5A9BBA" stroke-width="3"/>
+    <path d="M26 58 q10 -6 20 0" fill="none" stroke="#FFF" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="70" cy="30" r="10" fill="none" stroke="#8FC7E0" stroke-width="3.4"/>
+    <circle cx="84" cy="46" r="6" fill="none" stroke="#8FC7E0" stroke-width="3"/>
+    <circle cx="56" cy="24" r="6" fill="none" stroke="#8FC7E0" stroke-width="3"/>`),
+
+  شمع: () =>
+    svg(`<rect x="38" y="40" width="24" height="46" rx="4" fill="#F5E6C8" stroke="#D9C49A" stroke-width="2.6"/>
+    <path d="M42 52 h16 M42 64 h16" stroke="#E4D3AC" stroke-width="3"/>
+    <path d="M50 40 v-6" stroke="#6E6A78" stroke-width="3" stroke-linecap="round"/>
+    <path d="M50 12 q10 12 0 22 q-10 -10 0 -22z" fill="#F4B942"/>
+    <path d="M50 20 q5 7 0 12 q-5 -5 0 -12z" fill="#E4572E"/>`),
+
+  حلزون: () =>
+    svg(`<path d="M22 78 q-6 0 -6 -6 q0 -8 12 -8 h10" fill="none" stroke="#C6A76B" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="24" cy="56" r="3" fill="#2D2A32"/>
+    <path d="M20 50 v-8 M28 50 v-8" stroke="#C6A76B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M62 72 a20 20 0 1 0 -18 -20 a13 13 0 1 0 12 12 a7 7 0 1 1 -6 -7"
+      fill="none" stroke="#B8863A" stroke-width="9" stroke-linecap="round"/>`),
+
+  حوله: () =>
+    svg(`<rect x="18" y="26" width="64" height="52" rx="7" fill="#F5C6C6" stroke="#C98A8A" stroke-width="3"/>
+    <path d="M18 40 h64 M18 64 h64" stroke="#FFF" stroke-width="5"/>
+    <path d="M18 52 h64" stroke="#C98A8A" stroke-width="3.4"/>
+    <path d="M30 26 v52 M70 26 v52" stroke="#E9AFAF" stroke-width="2.4"/>`),
+
+  طوطی: () =>
+    svg(`<ellipse cx="46" cy="50" rx="20" ry="24" fill="#4CAF50"/>
+    <circle cx="46" cy="30" r="14" fill="#66BB6A"/>
+    <path d="M34 28 q-10 3 -8 9 q6 4 10 -2z" fill="#E4572E"/>
+    <circle cx="45" cy="27" r="3" fill="#2D2A32"/>
+    <path d="M58 56 q18 14 22 30 q-16 -4 -26 -20z" fill="#F4B942"/>
+    <path d="M40 74 v10 M52 74 v10" stroke="#B8863A" stroke-width="4" stroke-linecap="round"/>
+    <path d="M50 44 q14 6 12 18 q-12 0 -14 -12z" fill="#43A047"/>`),
+
+  قطار: () =>
+    svg(`<path d="M46 74 v-30 h30 l10 14 v16z" fill="#E4572E" stroke="#B33E1C" stroke-width="2.6" stroke-linejoin="round"/>
+    <rect x="10" y="50" width="30" height="24" rx="4" fill="#2E86AB" stroke="#1B6B8F" stroke-width="2.6"/>
+    <rect x="54" y="50" width="14" height="11" rx="2" fill="#BFE6F5"/>
+    <rect x="52" y="30" width="9" height="14" rx="2" fill="#B33E1C"/>
+    <circle cx="20" cy="80" r="7" fill="#2D2A32"/><circle cx="54" cy="80" r="7" fill="#2D2A32"/>
+    <circle cx="76" cy="80" r="7" fill="#2D2A32"/>
+    <path d="M6 84 h88" stroke="#8B6F47" stroke-width="4" stroke-linecap="round"/>`),
+
+  چراغ: () =>
+    svg(`<path d="M30 46 l10 -22 h20 l10 22z" fill="#E08A1E" stroke="#B36B12" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M50 46 v28" stroke="#7B8794" stroke-width="5"/>
+    <path d="M32 84 h36 q0 -10 -18 -10 t-18 10z" fill="#7B8794"/>
+    <g stroke="#F4B942" stroke-width="4" stroke-linecap="round">
+    <path d="M22 56 l-10 6"/><path d="M78 56 l10 6"/><path d="M50 52 v0"/></g>`),
+
+  مرغ: () =>
+    svg(`<ellipse cx="54" cy="58" rx="26" ry="21" fill="#FFF8E7" stroke="#D9CDB5" stroke-width="2.4"/>
+    <circle cx="30" cy="38" r="14" fill="#FFF8E7" stroke="#D9CDB5" stroke-width="2.4"/>
+    <path d="M22 26 q4 -8 8 -2 q4 -8 8 -2 q3 4 -2 8 q-8 2 -14 -4z" fill="#D14343"/>
+    <path d="M17 40 l-10 4 l10 4z" fill="#F07818"/>
+    <path d="M26 48 q4 8 8 0" fill="#D14343"/>
+    <circle cx="27" cy="35" r="2.8" fill="#2D2A32"/>
+    <path d="M56 52 q14 -8 22 4 q-12 10 -22 -4z" fill="#E9DEC6"/>
+    <path d="M46 79 v7 M62 79 v7" stroke="#F07818" stroke-width="4" stroke-linecap="round"/>`),
+
 };
 
 // ── شکل‌های هندسی ───────────────────────────────────────────────────────
@@ -922,10 +1112,19 @@ export const SAFETY_STEP_NAMES = Object.freeze(Object.keys(SAFETY_STEPS));
 
 /** دسته‌بندی معنایی — برای بازی «کدام فرق دارد؟». */
 export const CATEGORIES = Object.freeze({
-  حیوان: ['گربه', 'سگ', 'ماهی', 'پرنده', 'خرگوش', 'جوجه', 'گاو', 'پروانه', 'زنبور', 'لاکپشت'],
-  میوه: ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس'],
-  طبیعت: ['گل', 'درخت', 'خورشید', 'ماه', 'ابر', 'ستاره', 'کوه', 'رودخانه', 'برف'],
-  وسیله: ['توپ', 'کتاب', 'خانه', 'ماشین', 'چتر', 'ساعت', 'کلید'],
+  // ⚠ هر افزوده باید هم تصویر داشته باشد و هم کودک ۵ ساله بی‌توضیح
+  // بشناسدش. اینها با ۲۶ شکلِ تازهٔ واژگانِ خواندنی گسترده شدند تا
+  // «کدام فرق دارد؟» بیست درس پشت سر هم یک استخر را نچرخاند.
+  حیوان: [
+    'گربه', 'سگ', 'ماهی', 'پرنده', 'خرگوش', 'جوجه', 'گاو', 'پروانه', 'زنبور',
+    'لاکپشت', 'خرس', 'فیل', 'مار', 'طوطی', 'مرغ', 'اردک', 'حلزون',
+  ],
+  میوه: ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس', 'گلابی', 'توت'],
+  طبیعت: ['گل', 'درخت', 'خورشید', 'ماه', 'ابر', 'ستاره', 'کوه', 'رودخانه', 'برف', 'باران', 'صدف'],
+  وسیله: [
+    'توپ', 'کتاب', 'خانه', 'ماشین', 'چتر', 'ساعت', 'کلید',
+    'میز', 'سبد', 'اتو', 'سوت', 'پنجره', 'شانه', 'حوله', 'صابون', 'شمع', 'چراغ', 'قطار', 'کاسه',
+  ],
   پوشیدنی: ['کفش', 'کلاه', 'پیراهن'],
 });
 
@@ -935,14 +1134,16 @@ export const CATEGORIES = Object.freeze({
  * کودک یاد می‌گیرد یک چیز می‌تواند همزمان عضو چند دسته باشد.
  */
 export const TRAITS = Object.freeze({
-  'پرواز می‌کند': ['پرنده', 'پروانه', 'زنبور'],
-  'در آب زندگی می‌کند': ['ماهی', 'لاکپشت'],
+  'پرواز می‌کند': ['پرنده', 'پروانه', 'زنبور', 'طوطی'],
+  'در آب زندگی می‌کند': ['ماهی', 'لاکپشت', 'صدف', 'اردک'],
   'در آسمان است': ['خورشید', 'ماه', 'ستاره', 'ابر'],
   // ⚠ «می‌شود خورد» در جملهٔ «کدام مثل این …؟» شکسته می‌شد.
   // همهٔ کلیدها باید در قالبِ «کدام مثل این ___؟» و «کدام ___
   // نیست؟» درست بنشینند — یعنی گزارهٔ کامل و بی‌فعلِ کمکیِ اضافه.
-  'خوردنی است': ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس', 'هویج'],
-  'چرخ دارد': ['ماشین'],
+  'خوردنی است': ['سیب', 'موز', 'انار', 'پرتقال', 'گیلاس', 'هویج', 'گلابی', 'توت', 'بادام', 'پنیر', 'نان'],
+  // ⚠ با یک عضو، «کدام مثل این چرخ دارد؟» هرگز ساخته نمی‌شد؛ گاردها
+  // بی‌صدا ردش می‌کردند و ویژگی عملاً مرده بود.
+  'چرخ دارد': ['ماشین', 'قطار'],
   'گیاه است': ['گل', 'درخت', 'هویج'],
 });
 

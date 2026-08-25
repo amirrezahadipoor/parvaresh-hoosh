@@ -799,6 +799,58 @@ canvas.pad {
   align-items: center;
 }
 
+/* چیدنِ جمله: هر جمله یک سطر کامل.
+   ⚠ چرا لازم شد: کارت پیش‌فرض ۶۸px است و برای حرف ساخته شده. جملهٔ
+   «گربه ماهی خورد» در عرض ۳۲۰px به سه سطر می‌شکست و دو کارتِ
+   چندسطری کنار هم، ترتیب خواندنِ راست‌به‌چپ را گمراه‌کننده می‌کرد:
+   کودک نمی‌فهمید کدام «اول» است. با سطرِ کامل، بالا یعنی اول. */
+.order-tray.stacked,
+.order-slots.stacked {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ⚠ display:grid + place-items:center شمارهٔ ::before را در یک خانهٔ
+   جداگانه می‌نشاند، یعنی شماره *بالای* جمله می‌افتد نه کنارش. برای
+   سطرِ جمله‌ای باید flex باشد تا شماره و متن هم‌ردیف بمانند. */
+.order-tray.stacked .order-item,
+.order-slots.stacked .order-item {
+  width: 100%;
+  min-height: var(--tap-min);
+  font-size: var(--t-body);
+  line-height: 1.5;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+/* شمارهٔ ترتیب در جایگاه‌ها: کودک باید ببیند کدام اول نشست. */
+.order-slots.stacked {
+  counter-reset: sline;
+}
+
+/* ⚠ نقطه یا خط تیره کنار رقم فارسی نویسهٔ خنثی است و در RTL
+   جابه‌جا می‌شود (قانون بیدیِ پروژه). پس شماره در یک دایرهٔ رنگی
+   می‌نشیند، بی‌هیچ نشانهٔ نگارشی — و همان‌جا خواناتر هم هست. */
+.order-slots.stacked .order-item::before {
+  counter-increment: sline;
+  content: counter(sline, persian);
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-size: var(--t-small);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ── حافظه ─────────────────────────────────────────────── */
 .memory-grid {
   display: grid;

@@ -11,7 +11,10 @@ import { actionFor } from './task-icon.js';
 import { ALPHABET } from '../data/alphabet.js';
 import { STAGED_WORDS } from '../data/word-bank.js';
 import { teachRank } from '../data/neshaneh.js';
-import { pickWords, soundsOf, flatSounds, syllableText, SOUND_MAP } from '../data/phonics.js';
+import {
+  pickWords, soundsOf, flatSounds, syllableText, SOUND_MAP,
+  rimeKey, rhymeFamilies, firstSound,
+} from '../data/phonics.js';
 import {
   SHAPES, SHAPE_NAMES, CATEGORIES, TRAITS, TRAIT_NEGATIVE, TRAIT_PHRASE, EVERYDAY_NAMES, COLOR_HEX, GEO,
   FACES, SITUATIONS, HAZARDS, SAFETY_STEPS, SCENES, hasPicture,
@@ -30,7 +33,9 @@ import {
   LIVING, NON_LIVING, LIFE_CYCLES, SEASONS, SENSES, FLOATS, SINKS,
   WEATHER, WEATHER_CHOICE, NEEDS, HABITATS, FORCES, MATERIALS, LIGHT_FACTS,
 } from '../data/science-data.js';
-import { pickSentences, nearMisses } from '../data/sentences.js';
+import {
+  pickSentences, nearMisses, buildPassages, WH_QUESTIONS,
+} from '../data/sentences.js';
 
 const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 export const toFa = (n) => String(n).replace(/\d/g, (d) => faDigits[+d]);
@@ -964,6 +969,237 @@ function buildRoundInner(round, track) {
       };
     }
 
+    // ── شش گِردِ تازهٔ خواندن ─────────────────────────────────────────
+    //
+    // چرا این شش: جدول Reading Rockets نشان می‌دهد کودک پیش از
+    // صداکشی و تجزیه، «قافیه» و «صدای اول» را می‌فهمد (۵ تا ۵٫۵
+    // سالگی) — و برنامه هیچ‌کدام را نداشت. بالاتر از صداکشی هم
+    // پله‌ای نبود: کودکی که کلمه را می‌خواند، باید معنایش را هم
+    // نشان بدهد و بتواند کلمه را *بسازد*، نه فقط بشناسد.
+    //
+    // ترتیب رشدی که پیاده شد:
+    //   rhyme-pick   ۵    قافیه را بشناس (تصویری، بی‌نیاز از خواندن)
+    //   first-sound  ۵٫۵  صدای اول را جدا کن
+    //   word-pic     ۶    کلمه را بخوان، معنایش را نشان بده
+    //   pic-word     ۶    تصویر را ببین، کلمه‌اش را بخوان
+    //   word-build   ۶٫۵  حرف‌ها را بچین تا کلمه بسازی (رمزگذاری)
+    //   which-sound  ۶٫۵  صدای گم‌شده کدام است؟ (جانشینی واج)
+
+    case 'rhyme-pick': {
+      // «کدام با این هم‌آهنگ است؟» — هر سه گزینه تصویر دارند، پس
+      // کودکِ پیش‌خوان هم می‌تواند حل کند: نامِ تصویرها را در ذهن
+      // می‌گوید و آهنگ آخرشان را می‌سنجد.
+      //
+      // ⚠ همهٔ اعضای خانواده باید تصویر داشته باشند وگرنه گِرد
+      // نیمه‌تصویری می‌شود و پاسخ لو می‌رود (قانون گارد دوم).
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const fams = rhymeFamilies((w) => readable(w) && hasPicture(w));
+      const usable = [...fams.entries()].filter(([, ws]) => ws.length >= 2);
+      if (!usable.length) return null;
+      const [key, family] = pick(usable);
+      const target = pick(family);
+      const answer = pick(family.filter((w) => w !== target));
+      // بدل‌ها از خانواده‌های *دیگر* می‌آیند — یعنی قافیه‌شان فرق دارد.
+      const others = [];
+      for (const [k, ws] of fams) {
+        if (k === key) continue;
+        for (const w of ws) if (w !== target) others.push(w);
+      }
+      if (others.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: target },
+        options: buildOptions(answer, others, n).map((v) => ({
+          label: v,
+          value: v,
+          pic: v,
+          picLabel: true,
+        })),
+        answer,
+        because: `«${target}» و «${answer}» آهنگ آخرشان یکی است.`,
+      };
+    }
+
+    case 'first-sound': {
+      // تصویر را ببین، بگو با کدام صدا شروع می‌شود.
+      // ⚠ گزینه‌ها *حرف*اند نه واژه: حرف تنها را کودکی که نشانه را
+      // آموخته می‌شناسد، و همان چیزی است که این تمرین می‌سنجد.
+      // این گِرد در فهرست استثنای گارد نیست چون گزینه یک نویسه است،
+      // نه واژه‌ای که باید خوانده شود.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      // فقط واژه‌هایی که صدای اولشان همخوان است و *نوشته* می‌شود:
+      // اگر واژه با مصوت شروع شود («اتو»)، نویسهٔ اولش «ا» است و
+      // پرسش «کدام صدا؟» پاسخ دوپهلو پیدا می‌کند.
+      const pool = SOUND_MAP.filter((e) => {
+        if (!readable(e.word) || !hasPicture(e.word)) return false;
+        const f = firstSound(e);
+        return f.g && !f.v && teachRank(f.g) <= limit;
+      });
+      if (pool.length < 1) return null;
+      const target = pick(pool);
+      const answer = firstSound(target).g;
+      const letters = [
+        ...new Set(pool.map((e) => firstSound(e).g).filter((g) => g !== answer)),
+      ];
+      if (letters.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: target.word },
+        options: buildOptions(answer, letters, n).map((v) => ({ label: v, value: v })),
+        answer,
+        because: `«${target.word}» با صدای «${answer}» شروع می‌شود.`,
+      };
+    }
+
+    case 'word-pic': {
+      // کلمه بالای صفحه، چهار تصویر پایین. خواندن اجباری است.
+      // این نخستین جایی است که کودک باید از *نوشته* به *معنا* برسد
+      // بی‌آنکه صدایی راهنمایی‌اش کند.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = SOUND_MAP.map((e) => e.word).filter((w) => readable(w) && hasPicture(w));
+      if (pool.length < n) return null;
+      const answer = pick(pool);
+      const wrong = pool.filter((w) => w !== answer);
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'text', value: answer },
+        options: buildOptions(answer, wrong, n).map((v) => ({ label: v, value: v, pic: v })),
+        answer,
+      };
+    }
+
+    case 'pic-word': {
+      // جهت وارونه: تصویر بالا، واژه‌ها پایین.
+      // ⚠ این گِرد عمداً همه-واژه‌ای است و در فهرست استثنای گارد
+      // می‌نشیند، دقیقاً به همان دلیل pic-sentence: *هدفش* خواندن
+      // است. تصویر در صحنه است، پس گزینه‌ها نباید تصویر داشته باشند
+      // وگرنه کودک فقط شکل‌ها را جفت می‌کند و نمی‌خواند.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = SOUND_MAP.map((e) => e.word).filter((w) => readable(w) && hasPicture(w));
+      if (pool.length < n) return null;
+      const answer = pick(pool);
+      // بدل‌ها ترجیحاً هم‌طول و هم‌حرفِ آغازین‌اند تا کودک مجبور شود
+      // کل واژه را بخواند، نه فقط نویسهٔ اول را. (همان قاعدهٔ FCRR
+      // که در جمله‌خوانی هم به کار رفت.)
+      const near = pool.filter(
+        (w) => w !== answer && (w[0] === answer[0] || w.length === answer.length),
+      );
+      const rest = pool.filter((w) => w !== answer && !near.includes(w));
+      const wrong = [...shuffle(near), ...shuffle(rest)];
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: answer },
+        options: buildOptions(answer, wrong, n).map((v) => ({ label: v, value: v, big: true })),
+        answer,
+      };
+    }
+
+    case 'word-build': {
+      // حرف‌های درهم را بچین تا واژه بسازد — رمزگذاری، نه رمزگشایی.
+      // FCRR: کودک باید واژه را *بنویسد* نه فقط بخواند؛ نوشتن است
+      // که نشان می‌دهد نگاشت صدا↔نویسه واقعاً جا افتاده.
+      //
+      // تصویر بالای صفحه می‌ماند چون هدف املا است نه یادآوریِ معنا:
+      // بدون تصویر، کودک نمی‌داند کدام واژه را باید بسازد.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const maxLen = round.maxLetters ?? 4;
+      const pool = SOUND_MAP.map((e) => e.word).filter(
+        (w) =>
+          readable(w) &&
+          hasPicture(w) &&
+          [...w].every((ch) => !SKIP_CHARS.has(ch)) &&
+          w.length >= 3 &&
+          w.length <= maxLen,
+      );
+      if (!pool.length) return null;
+      const target = pick(pool);
+      const parts = [...target].map((ch, i) => ({ label: ch, value: i, scale: 1 }));
+      return {
+        type: 'order',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: target },
+        items: shuffle(parts.map((x) => ({ ...x }))),
+        answer: parts.map((x) => x.value),
+      };
+    }
+
+    case 'which-sound': {
+      // یک صدا از واژه افتاده — کدام بود؟ (جانشینی واج، ۶٫۵ سالگی)
+      // صحنه صداهای واژه را نشان می‌دهد و جای یکی خالی است.
+      const limit = teachRank(round.letter ?? 'ا');
+      const readable = (w) =>
+        [...w].every((ch) => {
+          if (SKIP_CHARS.has(ch)) return true;
+          const r = teachRank(ch);
+          return r === 999 || r <= limit;
+        });
+      const pool = pickWords({ maxSounds: round.maxSounds ?? 4, maxSyllables: 1, readable });
+      if (!pool.length) return null;
+      const target = pick(pool);
+      const all = flatSounds(target);
+      // فقط همخوانِ نوشته‌شده حذف می‌شود: مصوت کوتاه نوشته نمی‌شود و
+      // حذفش روی صفحه دیده نمی‌شود، پس معما بی‌معنا می‌شد.
+      const idxs = all.map((sd, i) => (sd.g && !sd.v ? i : -1)).filter((i) => i >= 0);
+      if (!idxs.length) return null;
+      const gap = pick(idxs);
+      const answer = all[gap].s;
+      // بدل: همخوان‌هایی که در واژه نیستند ولی آموخته شده‌اند.
+      const others = [
+        ...new Set(
+          SOUND_MAP.flatMap((e) => flatSounds(e))
+            .filter((sd) => sd.g && !sd.v && teachRank(sd.g) <= limit)
+            .map((sd) => sd.s),
+        ),
+      ].filter((x) => !all.some((sd) => sd.s === x));
+      if (others.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: {
+          kind: 'sounds',
+          parts: all.map((sd, i) => (i === gap ? { g: '؟', s: '؟' } : { g: sd.g, s: sd.s })),
+        },
+        options: buildOptions(answer, others, n).map((v) => ({ label: v, value: v })),
+        answer,
+        because: `واژه «${target.word}» است.`,
+      };
+    }
+
     case 'sentence-pic': {
       // جمله را بخوان، تصویرِ درست را انتخاب کن.
       //
@@ -1043,6 +1279,94 @@ function buildRoundInner(round, track) {
         items: target.parts.map((w, i) => ({ label: w, value: i })),
         answer: target.parts.map((_, i) => i),
         because: `در فارسی فعل («${target.verb}») آخرِ جمله می‌آید.`,
+      };
+    }
+
+    // ── درک مطلب ─────────────────────────────────────────────────────
+    //
+    // آخرین پلهٔ حوزهٔ خواندن. تا اینجا کودک جمله را به تصویر وصل
+    // می‌کرد — یعنی کل جمله را می‌فهمید یا نمی‌فهمید. درک مطلب یعنی
+    // بتوانی از دلِ جمله یک جزء را بیرون بکشی، و بتوانی دو جمله را
+    // با هم نگه داری.
+
+    case 'wh-question': {
+      // «سگ توپ دید.» → «چه چیزی؟» → توپ
+      // پاسخ تصویر دارد، پس گِرد تصویری است و کودک فقط برای *خواندن
+      // جمله* به خواندن نیاز دارد — که خودش هدف است.
+      const pool = pickSentences({ maxRank: teachRank(round.letter ?? 'ا'), parts: 3 });
+      if (pool.length < n) return null;
+      const target = pick(pool);
+      const wh = pick(WH_QUESTIONS);
+      const answer = wh.field === 'subject' ? target.subject : target.object;
+      const answerPic = wh.field === 'subject' ? target.pic : target.objPic;
+      if (!hasPicture(answerPic)) return null;
+      // ⚠ بدل‌ها باید از *همان جمله‌های نزدیک* بیایند: اگر بدل‌ها
+      // تصادفی باشند، کودک بدون خواندن جمله هم می‌تواند حدس بزند
+      // که «توپ» به «سگ» می‌خورد. با بدلِ نزدیک، تنها راه خواندن است.
+      //
+      // مهم‌تر: «مفعولِ» جمله‌ای دیگر که *همان نهاد* را دارد، بهترین
+      // بدل است — کودک باید بفهمد سگ در *این* جمله چه دید.
+      const sameSubject = pool
+        .filter((c) => c.subject === target.subject && c.text !== target.text)
+        .map((c) => (wh.field === 'subject' ? c.subject : c.objPic));
+      const rest = pool
+        .flatMap((c) => [c.pic, c.objPic])
+        .filter((x) => x && x !== answerPic && hasPicture(x));
+      const wrong = [...new Set([...sameSubject, ...shuffle(rest)])].filter(
+        (x) => x && x !== answerPic && hasPicture(x),
+      );
+      if (wrong.length < n - 1) return null;
+      // ⚠ جمله فقط یک بار روی صفحه: نخست هم در پرسش می‌آمد و هم در
+      // صحنه. تکرار نه‌تنها زشت بود، پرسش را از سقف ۳۴ نویسه‌ای ردهٔ
+      // ۵–۶ سال هم رد می‌کرد. صحنه جای *متنِ خواندنی* است و پرسش
+      // جای کاری که باید بکند.
+      return {
+        type: 'choice',
+        prompt: round.prompt.replaceAll('{q}', wh.q),
+        display: { kind: 'text', value: `${target.text}.` },
+        options: buildOptions(answerPic, wrong, n).map((v) => ({ label: v, value: v, pic: v })),
+        answer: answerPic,
+        because: `در جمله آمده «${answer}».`,
+      };
+    }
+
+    case 'passage-read': {
+      // دو جمله دربارهٔ یک موجود. پرسش از جملهٔ *دوم* است، پس کودک
+      // باید هر دو را بخواند و اولی را در ذهن نگه دارد.
+      const pool = buildPassages(teachRank(round.letter ?? 'ا'));
+      if (pool.length < 2) return null;
+      const target = pick(pool);
+      if (!hasPicture(target.objPic)) return null;
+      const wrong = pool
+        .map((c) => c.objPic)
+        .filter((x) => x && x !== target.objPic && hasPicture(x));
+      if (wrong.length < n - 1) return null;
+      return {
+        type: 'choice',
+        prompt: round.prompt,
+        display: { kind: 'text', value: target.text },
+        options: buildOptions(target.objPic, wrong, n).map((v) => ({ label: v, value: v, pic: v })),
+        answer: target.objPic,
+        because: `در جملهٔ دوم آمده «${target.lines[1]}».`,
+      };
+    }
+
+    case 'passage-order': {
+      // دو جمله را به ترتیب بچین. ترتیب رویداد، نه ترتیب واژه.
+      // ⚠ اینجا ترتیب «درست» است چون جملهٔ دوم به اولی وابسته است:
+      // اول موجود می‌آید، بعد کاری می‌کند. اگر دو جملهٔ مستقل بودند
+      // هر ترتیبی درست بود و گِرد دروغ می‌شد.
+      const pool = buildPassages(teachRank(round.letter ?? 'ا'));
+      if (!pool.length) return null;
+      const target = pick(pool);
+      const parts = target.lines.map((t, i) => ({ label: t, value: i, scale: 1 }));
+      return {
+        type: 'order',
+        prompt: round.prompt,
+        display: { kind: 'pic-only', icon: target.pic },
+        items: shuffle(parts.map((x) => ({ ...x }))),
+        answer: parts.map((x) => x.value),
+        because: `اول «${target.subject} ${target.firstVerb}»، بعد کاری که کرد.`,
       };
     }
 

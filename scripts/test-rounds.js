@@ -89,7 +89,27 @@ for (const trackId of TRACK_ORDER) {
           if (r.display?.kind === 'text') shown.push(String(r.display.value));
           if (r.display?.kind === 'letter-pic') shown.push(String(r.display.letter));
           if (r.display?.kind === 'dots') shown.push(String(r.display.times));
-          if (shown.includes(String(r.answer))) {
+          // ⚠ «لو رفتن» یعنی کودک بتواند بدون فکر، متنِ بالای صفحه را
+          // روی یک گزینه پیدا کند. پس مقایسه باید با آنچه *دیده*
+          // می‌شود باشد، نه با مقدار داخلیِ گزینه.
+          //
+          // این تمایز با گِردِ word-pic روشن شد: واژه بالا نوشته
+          // می‌شود و گزینه‌ها فقط تصویرند (بی‌برچسب). مقدار داخلی
+          // گزینه همان رشتهٔ واژه است، پس مقایسهٔ خام ۱۱۰۰ خطای
+          // دروغین ساخت — در حالی که کودک هیچ متنی روی گزینه‌ها
+          // نمی‌بیند و *باید* بخواند. این دقیقاً هدفِ تمرین است.
+          //
+          // برچسب فقط وقتی دیده می‌شود که گزینه نشانهٔ تصویری نداشته
+          // باشد، یا صریحاً یکی از پرچم‌های برچسب را داشته باشد
+          // (همان شرطی که screens.js برای رسمِ .pic-label دارد).
+          const isVisibleText = (o) => {
+            const cued = o.pic || o.geo || o.shapeRepeat || o.latin || o.dots || o.swatch;
+            if (!cued) return true;
+            return Boolean(o.picLabel || o.latinLabel || o.geoLabel);
+          };
+          const answerOpt = r.options.find((o) => String(o.value) === String(r.answer));
+          const answerText = answerOpt && isVisibleText(answerOpt) ? String(answerOpt.label) : null;
+          if (answerText !== null && shown.includes(answerText)) {
             errors.push(`${tag}: صحنه پاسخ «${r.answer}» را لو می‌دهد`);
           }
         }
@@ -138,7 +158,9 @@ for (const trackId of TRACK_ORDER) {
 // گزینه‌های عددی (رقم فارسی را کودک این سن می‌خواند).
 {
   const READING_KINDS = new Set([
-    'letter-sound',
+    // letter-sound از این فهرست حذف شد: گزینه‌هایش یک نویسه‌اند و
+    // قاعدهٔ عمومیِ isGlyph حالا آن را پوشش می‌دهد. فهرست استثنا هر
+    // چه کوتاه‌تر، صادق‌تر.
     'letter-word',
     'letter-in-word',
     'blend-word',
@@ -149,12 +171,32 @@ for (const trackId of TRACK_ORDER) {
     // نمی‌دهد و راهی جز خواندن نیست. این درس‌ها از نشانهٔ چهاردهم به
     // بعد می‌آیند، جایی که کودک دیگر کلمه‌خوان است.
     'pic-sentence',
+    // pic-word دقیقاً همان الگو در سطح واژه است: تصویر در صحنه،
+    // واژه‌ها در گزینه. اگر گزینه‌ها هم تصویر بگیرند، کودک شکل‌ها را
+    // جفت می‌کند و هرگز نمی‌خواند — یعنی تمرین هدفش را از دست می‌دهد.
+    'pic-word',
     'en-translate',
     // name-face پیوند «چهره ↔ واژه» را می‌آموزد و برای ردهٔ سنی
     // پایین خودش به feel-face تبدیل می‌شود.
     'name-face',
   ]);
   const isNumeric = (v) => /^[۰-۹0-9\s+\-−=]+$/.test(String(v ?? ''));
+  // ⚠ «نشانه» واژه نیست.
+  //
+  // این تمایز با گِردهای first-sound و which-sound روشن شد: گزینه‌ها
+  // یک نویسه‌اند («ب»، «ت»)، نه واژه‌ای که باید خوانده شود. کودک
+  // پیش‌خوان هم آنها را می‌شناسد — شناختن نشانه اولین چیزی است که
+  // در همین برنامه یاد می‌گیرد، و letter-sound از روز اول همین کار
+  // را می‌کند.
+  //
+  // معیار عمداً تنگ است: فقط یک نویسهٔ فارسی، یا نام یکی از سه
+  // مصوت بلند. «ما» و «پا» هم دو نویسه‌اند ولی واژه‌اند، پس فهرست
+  // مصوت‌ها صریح نوشته شده و قاعدهٔ «هر دو نویسه» به کار نرفته.
+  const VOWEL_NAMES = new Set(['آ', 'ای', 'او', 'اَ', 'اِ', 'اُ']);
+  const isGlyph = (v) => {
+    const t = String(v ?? '').trim();
+    return VOWEL_NAMES.has(t) || (t.length === 1 && /[\u0600-\u06FF]/.test(t));
+  };
   const wordOnly = new Map();
   const mixed = new Map();
 
@@ -173,7 +215,7 @@ for (const trackId of TRACK_ORDER) {
           const bare = r.options.filter(
             (o) => !o.pic && !o.geo && !o.shapeRepeat && !o.latin && !o.dots && !o.swatch,
           );
-          const words = bare.filter((o) => !isNumeric(o.label));
+          const words = bare.filter((o) => !isNumeric(o.label) && !isGlyph(o.label));
           if (words.length === r.options.length && !wordOnly.has(rd.kind)) {
             wordOnly.set(rd.kind, r.options.map((o) => o.label).join('/'));
           }

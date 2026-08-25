@@ -746,8 +746,27 @@ function playScreen(lessonId) {
 
   function orderView(r, feedback, done) {
     const chosen = [];
-    const slots = el('div', { class: 'order-slots' });
-    const tray = el('div', { class: 'order-tray' });
+    // ⚠ چیدنِ *جمله* با چیدنِ حرف فرق دارد: «گربه ماهی خورد» در یک
+    // کارتِ ۶۸px جا نمی‌شود و در عرض ۳۲۰px به سه سطر می‌شکند، و کنار
+    // هم نشستنِ دو جملهٔ چندسطری در RTL ترتیب خواندن را وارونه
+    // نشان می‌دهد. پس هر جمله یک سطر کامل می‌گیرد.
+    // معیار: بلندترین آیتم بیش از ۶ نویسه = جمله، نه حرف/بخش.
+    const longItems = r.items.some((it) => String(it.label).length > 6);
+    const mod = longItems ? ' stacked' : '';
+    const slots = el('div', { class: `order-slots${mod}` });
+    const tray = el('div', { class: `order-tray${mod}` });
+
+    // ⚠ تا امروز گِردهای چیدنی هیچ صحنه‌ای نداشتند و همین محدودشان
+    // می‌کرد: «حرف‌ها را بچین تا کلمه بسازی» بدون تصویر بی‌معناست —
+    // کودک نمی‌داند کدام کلمه را باید بسازد. صحنه فقط تصویر می‌شود،
+    // نه متن: اگر واژه نوشته شود کودک فقط کپی می‌کند و املا نمی‌آموزد
+    // (همان دام «نشتی پاسخ» که در syllable-build گرفته شد).
+    const stage =
+      r.display && r.display.kind === 'pic-only'
+        ? el('div', { class: 'stage' }, [
+            el('span', { class: 'lp-ico ico big-pic', html: svgShape(r.display.icon) || '' }),
+          ])
+        : null;
 
     // چیدن گِردهای مهارت زندگی («نه، برو، بگو») تصویری است، نه متنی:
     // کودک پیش‌خوان باید ترتیب را از روی تصویر بچیند. پس اگر آیتم
@@ -797,7 +816,16 @@ function playScreen(lessonId) {
         sfx.tap();
         refresh();
         if (chosen.length === r.items.length) {
-          const ok = chosen.every((c, i) => c.value === r.answer[i]);
+          // ⚠ باگ جدی: مقایسه با `value` (که شاخصِ جایگاه است) وقتی دو
+          // آیتم برچسب یکسان دارند پاسخِ درست را غلط می‌شمارد.
+          // «انار» = ا ن ا ر — کودک اگر «ا»ی دوم را اول بگذارد،
+          // واژه‌ای که روی صفحه می‌سازد دقیقاً «انار» است ولی برنامه
+          // می‌گوید اشتباه. همین برای «بابا» (با + با) هم رخ می‌داد.
+          //
+          // معیار درست همان چیزی است که کودک *می‌بیند*: رشتهٔ
+          // برچسب‌ها. جایگاهِ داخلی برای او وجود ندارد.
+          const want = r.answer.map((v) => r.items.find((x) => x.value === v)?.label);
+          const ok = chosen.every((c, i) => c.label === want[i]);
           if (ok) {
             correct++;
             sfx.correct();
@@ -813,7 +841,7 @@ function playScreen(lessonId) {
       tray.append(b);
     });
 
-    return [slots, tray];
+    return stage ? [stage, slots, tray] : [slots, tray];
   }
 
   function memoryView(r, feedback, done) {
