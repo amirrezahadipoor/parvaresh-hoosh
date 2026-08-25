@@ -14,6 +14,12 @@
 //   چهره تنها طرحی بود که در ۴۸px هم بی‌درنگ «برنامهٔ کودک» خوانده
 //   می‌شد. والدی که در کافه‌بازار فهرست را بالا و پایین می‌کند،
 //   کمتر از یک ثانیه به هر آیکون نگاه می‌کند.
+//
+//   ⚠ در فاز ۷.۱ خودِ طرح عوض نشد — آن تصمیم با آزمونِ ۴۸px گرفته
+//   شده بود و شکستنش دلیل می‌خواست. فقط با سبکِ تازهٔ برنامه هماهنگ
+//   شد: سایه‌روشنِ دو‌رنگ روی صورت و پیراهن، برقِ چشم، و گونه‌های
+//   گلی. همان قواعدی که روی ۱۴۸ تصویر اعمال شد، تا آیکون از بقیهٔ
+//   برنامه جدا نیفتد.
 
 const BRAND = '#E4572E';
 const SKIN = '#F5D3B5';
@@ -39,12 +45,18 @@ export function appIcon({ maskable = false, rounded = true } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <rect width="512" height="512" rx="${radius}" fill="${BRAND}"/>
   <g transform="${t}">
+    <path d="M256 300 q92 0 92 132 h-184 q0 -132 92 -132z" fill="${STAR}"/>
+    <path d="M256 300 q-92 0 -92 132 h34 q0 -108 58 -132z" fill="#F8CE72"/>
     <circle cx="256" cy="196" r="88" fill="${SKIN}"/>
-    <circle cx="227" cy="188" r="13.5" fill="${INK}"/>
-    <circle cx="285" cy="188" r="13.5" fill="${INK}"/>
+    <path d="M256 108 a88 88 0 0 0 -88 88 a88 88 0 0 0 26 62 a74 88 0 0 1 62 -150z" fill="#FBE6D2"/>
+    <circle cx="227" cy="188" r="14" fill="${INK}"/>
+    <circle cx="285" cy="188" r="14" fill="${INK}"/>
+    <circle cx="232" cy="183" r="5" fill="#FFF"/>
+    <circle cx="290" cy="183" r="5" fill="#FFF"/>
     <path d="M220 230 q36 32 72 0" fill="none" stroke="${INK}"
       stroke-width="15" stroke-linecap="round"/>
-    <path d="M256 300 q92 0 92 132 h-184 q0 -132 92 -132z" fill="${STAR}"/>
+    <circle cx="196" cy="222" r="13" fill="#F2A98F" opacity=".75"/>
+    <circle cx="316" cy="222" r="13" fill="#F2A98F" opacity=".75"/>
   </g>
 </svg>`;
 }
