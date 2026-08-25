@@ -45,26 +45,41 @@ export const AGE_TRACKS = Object.freeze({
 
 export const TRACK_ORDER = Object.freeze(['early', 'mid', 'school']);
 
+/**
+ * ⚠ رنگِ هر حوزه فقط تزئین نیست — روی دکمهٔ بزرگِ خانه پس‌زمینه است و
+ * متنِ سفیدِ عنوان روی آن می‌نشیند. گاردِ دسترس‌پذیری نشان داد چهار
+ * رنگ از شش‌تا زیر حدِ WCAG بودند:
+ *
+ *   خواندن #E4572E → ۳٫۶۸    ریاضی #2E86AB → ۴٫۱۱
+ *   علوم   #4CAF50 → ۲٫۷۸    زندگی #E08A1E → ۲٫۶۸
+ *
+ * راه‌حلِ ساده «متن را تیره کن» بود، ولی متنِ تیره روی نارنجیِ
+ * اشباع هم بدخوان است و قانونِ «یک رنگ = یک معنا» را هم می‌شکند
+ * (سفید همه‌جای برنامه یعنی «متنِ روی رنگِ حوزه»). پس خودِ رنگ‌ها
+ * یک درجه تیره‌تر شدند: همان فام، همان هویت، کنتراستِ استاندارد.
+ *
+ * هر تغییری در این رنگ‌ها باید از `node scripts/test-a11y.js` رد شود.
+ */
 export const DOMAINS = Object.freeze([
   Object.freeze({
     id: 'reading',
     title: 'خواندن و نوشتن',
     description: 'شناخت حروف، صدای حروف و ساختن کلمه',
-    color: '#E4572E',
+    color: '#C8461F',
     icon: 'book',
   }),
   Object.freeze({
     id: 'math',
     title: 'ریاضی',
     description: 'شمارش، مقایسه و جمع و تفریق ساده',
-    color: '#2E86AB',
+    color: '#256E8C',
     icon: 'numbers',
   }),
   Object.freeze({
     id: 'science',
     title: 'تماشا و شناخت',
     description: 'دسته‌بندی، شکل و رنگ، و شمردن با تصویر',
-    color: '#4CAF50',
+    color: '#2F7C3E',
     icon: 'leaf',
   }),
   Object.freeze({
@@ -78,7 +93,7 @@ export const DOMAINS = Object.freeze([
     id: 'life',
     title: 'مهارت زندگی',
     description: 'شناخت احساس‌ها، ایمنی، بهداشت و مهربانی',
-    color: '#E08A1E',
+    color: '#A8620C',
     icon: 'heart',
   }),
   Object.freeze({

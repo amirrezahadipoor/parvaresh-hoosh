@@ -16,7 +16,8 @@
     "test:browser": "node scripts/test-browser.js",
     "test:visual": "node scripts/test-visual.js",
     "test:delight": "node scripts/test-delight.js",
-    "test:contrast": "node scripts/test-contrast.js"
+    "test:contrast": "node scripts/test-contrast.js",
+    "test:a11y": "node scripts/test-a11y.js"
   },
   "engines": {
     "node": ">=20"
