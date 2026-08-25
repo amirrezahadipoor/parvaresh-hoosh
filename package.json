@@ -15,7 +15,8 @@
     "test": "node scripts/validate.js && node scripts/sync-sw.js --check && node scripts/build-icons.js --check && node scripts/test-rounds.js",
     "test:browser": "node scripts/test-browser.js",
     "test:visual": "node scripts/test-visual.js",
-    "test:delight": "node scripts/test-delight.js"
+    "test:delight": "node scripts/test-delight.js",
+    "test:contrast": "node scripts/test-contrast.js"
   },
   "engines": {
     "node": ">=20"
