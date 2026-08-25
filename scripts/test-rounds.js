@@ -311,7 +311,18 @@ for (const trackId of TRACK_ORDER) {
 // گِردهایی که درس عمداً پارامترشان را ثابت کرده (مثل
 // letter-trace با یک حرف مشخص) استثنا هستند: آنجا تکرار خودِ هدف
 // است، نه تنبلیِ داده.
+//
+// ⚠ آستانه از ۳ به optionCount+1 سخت شد. شش نوع گِرد — season,
+// push-pull, made-of, light-shadow, what-if — دقیقاً ۴ نما داشتند و
+// از کنار این گارد رد شدند: یک پله بالاتر از خطِ ۳.
+//
+// علتشان ساختاری بود: جدولِ داده هم‌اندازهٔ تعداد گزینه بود، پس
+// *همهٔ* داده در هر ساخت روی صفحه می‌آمد و کودک جای گزینه را حفظ
+// می‌کرد. پس آستانهٔ درست عددِ دستی نیست؛ از تعداد گزینه می‌آید:
+// پولِ داده باید دست‌کم یکی بزرگ‌تر از تعداد گزینه باشد، وگرنه
+// «انتخاب» توهم است.
 {
+  const MIN_VIEWS = AGE_TRACKS.school.optionCount + 1;
   const lowVariety = [];
   for (const lesson of LESSONS) {
     for (const rd of lesson.rounds) {
@@ -323,7 +334,12 @@ for (const trackId of TRACK_ORDER) {
       const pinned = rd.situation || rd.emotion || rd.letter !== undefined
         || rd.digit !== undefined || rd.category || rd.sequence || rd.items
         || rd.topic || rd.group || rd.word || rd.cycle || rd.want
-        || rd.unit || rd.op !== undefined || rd.step !== undefined;
+        || rd.unit || rd.op !== undefined || rd.step !== undefined
+        // ⚠ `max` هم قفل است: subitize با max:3 فقط می‌تواند ۱، ۲ و ۳
+        // نقطه نشان دهد و این خودِ هدفِ درس است — «تشخیص فوریِ
+        // مقدارهای کوچک بدون شمردن». سه نما اینجا تنبلیِ داده نیست،
+        // محدودیتِ آموزشی است.
+        || rd.max !== undefined;
       if (pinned) continue;
 
       // ⚠ معیار باید *کلِ چیزی که کودک می‌بیند* باشد، نه فقط صحنه.
@@ -355,7 +371,7 @@ for (const trackId of TRACK_ORDER) {
           .join('|');
         views.add(`${scene}##${opts}`);
       }
-      if (views.size > 0 && views.size < 3) {
+      if (views.size > 0 && views.size < MIN_VIEWS) {
         const tag = `${rd.kind}`;
         if (!lowVariety.some((x) => x.startsWith(tag + ':'))) {
           lowVariety.push(`${tag}: فقط ${views.size} نمای متمایز در ۴۰ ساخت (${lesson.id}) — کودک حفظ می‌کند، یاد نمی‌گیرد`);

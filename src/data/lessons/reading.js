@@ -2284,6 +2284,18 @@ export const READING_LESSONS = [
         "kind": "syllable-build",
         "letter": "خ",
         "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "first-sound",
+        "letter": "خ",
+        "maxSounds": 4,
+        "prompt": "کدام با این صدا شروع می‌شود؟"
+      },
+      {
+        "kind": "rhyme-pick",
+        "letter": "خ",
+        "maxSounds": 5,
+        "prompt": "کدام هم‌آهنگ است؟"
       }
     ],
     "parentNote": "سخت‌ترین تمرین این بخش است: کودک باید کلمه را در ذهن نگه دارد و جای خالی را پر کند. اگر خسته شد، درس بعد را بازی کنید و هفتهٔ دیگر برگردید.",
@@ -3064,6 +3076,18 @@ export const READING_LESSONS = [
         "kind": "syllable-build",
         "letter": "ج",
         "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "first-sound",
+        "letter": "ج",
+        "maxSounds": 4,
+        "prompt": "کدام با این صدا شروع می‌شود؟"
+      },
+      {
+        "kind": "rhyme-pick",
+        "letter": "ج",
+        "maxSounds": 5,
+        "prompt": "کدام هم‌آهنگ است؟"
       }
     ],
     "parentNote": "سخت‌ترین تمرین این بخش است: کودک باید کلمه را در ذهن نگه دارد و جای خالی را پر کند. اگر خسته شد، درس بعد را بازی کنید و هفتهٔ دیگر برگردید.",
@@ -3967,6 +3991,18 @@ export const READING_LESSONS = [
         "kind": "syllable-build",
         "letter": "ژ",
         "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "first-sound",
+        "letter": "ژ",
+        "maxSounds": 4,
+        "prompt": "کدام با این صدا شروع می‌شود؟"
+      },
+      {
+        "kind": "rhyme-pick",
+        "letter": "ژ",
+        "maxSounds": 5,
+        "prompt": "کدام هم‌آهنگ است؟"
       }
     ],
     "parentNote": "سخت‌ترین تمرین این بخش است: کودک باید کلمه را در ذهن نگه دارد و جای خالی را پر کند. اگر خسته شد، درس بعد را بازی کنید و هفتهٔ دیگر برگردید.",
@@ -5168,6 +5204,18 @@ export const READING_LESSONS = [
         "kind": "syllable-build",
         "letter": "ث",
         "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "first-sound",
+        "letter": "ث",
+        "maxSounds": 4,
+        "prompt": "کدام با این صدا شروع می‌شود؟"
+      },
+      {
+        "kind": "rhyme-pick",
+        "letter": "ث",
+        "maxSounds": 5,
+        "prompt": "کدام هم‌آهنگ است؟"
       }
     ],
     "parentNote": "سخت‌ترین تمرین این بخش است: کودک باید کلمه را در ذهن نگه دارد و جای خالی را پر کند. اگر خسته شد، درس بعد را بازی کنید و هفتهٔ دیگر برگردید.",
@@ -6472,6 +6520,18 @@ export const READING_LESSONS = [
         "kind": "syllable-build",
         "letter": "ط",
         "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "first-sound",
+        "letter": "ط",
+        "maxSounds": 4,
+        "prompt": "کدام با این صدا شروع می‌شود؟"
+      },
+      {
+        "kind": "rhyme-pick",
+        "letter": "ط",
+        "maxSounds": 5,
+        "prompt": "کدام هم‌آهنگ است؟"
       }
     ],
     "parentNote": "سخت‌ترین تمرین این بخش است: کودک باید کلمه را در ذهن نگه دارد و جای خالی را پر کند. اگر خسته شد، درس بعد را بازی کنید و هفتهٔ دیگر برگردید.",
@@ -7782,6 +7842,18 @@ export const READING_LESSONS = [
         "kind": "syllable-build",
         "letter": "ظ",
         "prompt": "بخش‌ها را به ترتیب بچین"
+      },
+      {
+        "kind": "first-sound",
+        "letter": "ظ",
+        "maxSounds": 4,
+        "prompt": "کدام با این صدا شروع می‌شود؟"
+      },
+      {
+        "kind": "rhyme-pick",
+        "letter": "ظ",
+        "maxSounds": 5,
+        "prompt": "کدام هم‌آهنگ است؟"
       }
     ],
     "parentNote": "سخت‌ترین تمرین این بخش است: کودک باید کلمه را در ذهن نگه دارد و جای خالی را پر کند. اگر خسته شد، درس بعد را بازی کنید و هفتهٔ دیگر برگردید.",

@@ -582,6 +582,18 @@ for (let end = 10; end <= groups.length; end += 2) {
   if (syl.length >= 3) {
     rounds.push({ kind: 'syllable-build', letter: last, prompt: 'بخش‌ها را به ترتیب بچین' });
   }
+  // ⚠ این خانواده روی چهار گِرد می‌ماند و کوتاه‌ترین درس‌های برنامه را
+  // می‌سازد. جانشینی واج سخت است، ولی چهار گِرد یعنی درس دو دقیقه‌ای:
+  // کودک تازه گرم می‌شود که تمام می‌شود. دو گِردِ سبک‌تر در انتها
+  // اضافه می‌شود تا درس به شش برسد و با آسان‌تر تمام شود — ترتیبِ
+  // «سخت در میانه، آسان در پایان» حس موفقیت می‌دهد.
+  if (pickWords({ maxSounds: 4, readable: readableHere }).length >= 4) {
+    rounds.push({ kind: 'first-sound', letter: last, maxSounds: 4, prompt: 'کدام با این صدا شروع می‌شود؟' });
+  }
+  const rhymers = pickWords({ maxSounds: 5, readable: readableHere });
+  if (rhymers.length >= 6) {
+    rounds.push({ kind: 'rhyme-pick', letter: last, maxSounds: 5, prompt: 'کدام هم‌آهنگ است؟' });
+  }
   if (rounds.length < 4) continue;
 
   missing.push({
