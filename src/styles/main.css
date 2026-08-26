@@ -373,19 +373,23 @@ body {
   padding-right: 34px;
 }
 
-.map-list::before {
-  content: '';
+/* راهِ پیوستهٔ سفر — یک SVG پس‌زمینه در گودیِ راست، نه ۳۰۷ گراف.
+   (§۷.۱۶ آیتم ۳) جایگزینِ خطِ صافِ قبلی است: پیچ‌وخمِ ملایم +
+   نشانِ رنگیِ آغازِ هر حوزه. بی‌حرکت و هرگز با کارت‌ها رقابت
+   نمی‌کند. */
+.map-scene {
   position: absolute;
-  top: 12px;
-  bottom: 12px;
-  right: 15px;
-  width: 4px;
-  border-radius: 2px;
-  background: var(--line);
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 34px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .map-item {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: var(--s4);

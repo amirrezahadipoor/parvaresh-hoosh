@@ -207,6 +207,46 @@ export function homeScreen() {
 // اینجا برای مرور و دیدن کل راه است، نه مانعی سر راه بازی.
 function mapScreen() {
   const p = progress();
+
+  // ── صحنهٔ نقشه (§۷.۱۶ آیتم ۳) ─────────────────────────────────
+  // یک راهِ پیوسته در گودیِ سمتِ راست (جایی که نقطه‌های درس می‌نشینند)
+  // + شش نشانِ رنگی در آغازِ هر حوزه. ⚠ یک `path` پس‌زمینه، نه ۳۰۷
+  // گرافِ تازه — این SVG کلِ راه را با یک مسیر می‌کشد.
+  const firsts = DOMAINS.map((d) => ({
+    d,
+    i: SEQUENCE.findIndex((st) => st.domainId === d.id),
+  })).filter((x) => x.i >= 0);
+  const scene = el(
+    'svg',
+    {
+      class: 'map-scene',
+      viewBox: '0 0 34 307',
+      preserveAspectRatio: 'none',
+      'aria-hidden': 'true',
+      focusable: 'false',
+    },
+    [
+      el('path', {
+        // پیچ‌وخمِ ملایم — کلم «راهِ سفر» را می‌گوید، نه «فهرست».
+        d: 'M17 0 C 9 34, 25 68, 17 102 C 9 136, 25 170, 17 204 C 9 238, 25 272, 17 307',
+        fill: 'none',
+        stroke: '#D8CFC0',
+        'stroke-width': '3',
+        'stroke-linecap': 'round',
+      }),
+      ...firsts.map(({ d, i }) =>
+        el('circle', {
+          cx: '17',
+          cy: String(i + 0.5),
+          r: '3.6',
+          fill: d.color,
+          stroke: '#FBF6EF',
+          'stroke-width': '1.4',
+        }),
+      ),
+    ],
+  );
+
   const cards = SEQUENCE.map((st) => {
     const d = DOMAINS.find((x) => x.id === st.domainId);
     const pr = store.lessonProgress(st.lesson.id);
@@ -250,7 +290,7 @@ function mapScreen() {
   return el('div', { class: 'screen', 'data-music': 'calm' }, [
     topbar('نقشهٔ سفر', () => render(homeScreen())),
     el('div', { class: 'map-summary', text: `${toFa(p.done)} از ${toFa(p.total)} درس انجام شده` }),
-    el('div', { class: 'map-list' }, cards),
+    el('div', { class: 'map-list' }, [scene, ...cards]),
   ]);
 }
 

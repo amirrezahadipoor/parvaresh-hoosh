@@ -40,6 +40,7 @@ npm run test:browser   # ۲۰s
 npm run test:delight   # ۳۰s
 npm run test:streak    # ~۴۰s
 npm run test:haptic    # ~۴۰s
+npm run test:map       # ~۵s
 npm run test:visual    # ۷۴۰s ← فرایندِ پس‌زمینه، نه فرمانِ معمولی
 ```
 

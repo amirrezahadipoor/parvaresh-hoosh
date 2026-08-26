@@ -60,6 +60,7 @@ python3 -m http.server 8080 --bind 0.0.0.0 &   # سرور باید بالا بم
 | حس بازی | `npm run test:delight` | ۳۰s |
 | زنجیرهٔ دیداری (§۷.۱۶/۱) | `npm run test:streak` | ~۴۰s |
 | لرزشِ مهربان (§۷.۱۶/۲) | `npm run test:haptic` | ~۴۰s |
+| نقشهٔ سفرِ صحنه‌دار (§۷.۱۶/۳) | `npm run test:map` | ~۵s |
 | ظاهر در ۴ اندازه | `npm run test:visual` | **۷۴۰s** |
 
 `npm test` خودش چهارتا را با هم اجرا می‌کند (validate، sync-sw --check،
