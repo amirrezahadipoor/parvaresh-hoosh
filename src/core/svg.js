@@ -81,60 +81,83 @@ export const SHAPES = {
     <ellipse cx="32" cy="76" rx="7" ry="5" fill="#7CB342"/><ellipse cx="66" cy="76" rx="7" ry="5" fill="#7CB342"/></g>`),
 
   پرتقال: () =>
-    svg(`<g><circle cx="50" cy="56" r="27" fill="#F07818"/>
+    svg(`<g><ellipse cx="50" cy="86" rx="24" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <circle cx="50" cy="56" r="27" fill="#F07818"/>
+    <path d="M32 70 a27 27 0 0 0 18 13 a25 25 0 0 1 -14 -8 a22 22 0 0 1 -4 -5z" fill="#C05A10" opacity="0.5"/>
     <circle cx="42" cy="48" r="7" fill="#FF9642" opacity="0.55"/>
     <path d="M50 29 v-8" stroke="#6B4423" stroke-width="3.5" stroke-linecap="round"/>
     <path d="M52 24 Q64 16 70 24 Q60 30 52 26 Z" fill="#4CAF50"/></g>`),
 
   هویج: () =>
-    svg(`<g><path d="M50 84 L36 40 Q50 34 64 40 Z" fill="#F07818"/>
+    svg(`<g><ellipse cx="50" cy="88" rx="20" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M50 84 L36 40 Q50 34 64 40 Z" fill="#F07818"/>
+    <path d="M40 52 q-4 4 -3 10 M58 56 q-4 4 -3 10 M45 68 q-3 3 -2 9" stroke="#FFB36B" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
     <path d="M42 52 h14 M40 62 h12 M45 72 h8" stroke="#D45F10" stroke-width="2" stroke-linecap="round"/>
     <path d="M50 36 Q44 20 34 18 Q40 30 46 36 Z" fill="#4CAF50"/>
     <path d="M50 36 Q50 18 50 14 Q56 26 54 36 Z" fill="#66BB6A"/>
     <path d="M52 36 Q62 22 72 20 Q64 32 56 37 Z" fill="#4CAF50"/></g>`),
 
   گیلاس: () =>
-    svg(`<g><circle cx="36" cy="66" r="14" fill="#D42B2B"/><circle cx="64" cy="70" r="13" fill="#E4572E"/>
+    svg(`<g><ellipse cx="50" cy="88" rx="24" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <circle cx="36" cy="66" r="14" fill="#D42B2B"/><circle cx="64" cy="70" r="13" fill="#E4572E"/>
+    <path d="M30 74 a14 14 0 0 0 12 6 a13 13 0 0 1 -8 -4 a10 10 0 0 1 -4 -6z" fill="#8E1C1C" opacity="0.55"/>
+    <path d="M58 77 a13 13 0 0 0 10 4 a12 12 0 0 1 -8 -4 a10 10 0 0 1 -2 -5z" fill="#B8431F" opacity="0.55"/>
     <circle cx="31" cy="61" r="4" fill="#fff" opacity="0.5"/>
+    <circle cx="59" cy="65" r="3.4" fill="#fff" opacity="0.45"/>
     <path d="M36 52 Q46 28 56 22" stroke="#4CAF50" stroke-width="3.5" fill="none" stroke-linecap="round"/>
     <path d="M64 57 Q60 32 56 22" stroke="#4CAF50" stroke-width="3.5" fill="none" stroke-linecap="round"/>
     <path d="M56 22 Q68 14 76 20 Q66 26 56 24 Z" fill="#66BB6A"/></g>`),
 
   کوه: () =>
-    svg(`<g><path d="M8 80 L34 34 L52 62 L64 44 L92 80 Z" fill="#7B8A99"/>
+    svg(`<g><ellipse cx="50" cy="86" rx="36" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M8 80 L34 34 L52 62 L64 44 L92 80 Z" fill="#7B8A99"/>
+    <path d="M8 80 L30 46 L52 62 L40 80 Z" fill="#96A4B2"/>
     <path d="M34 34 L44 52 L24 52 Z" fill="#F2F0EC"/>
     <path d="M64 44 L72 56 L56 56 Z" fill="#F2F0EC"/>
-    <path d="M8 80 H92" stroke="#5A6B7A" stroke-width="3" stroke-linecap="round"/></g>`),
+    <path d="M8 80 H92" stroke="#5A6B7A" stroke-width="3" stroke-linecap="round"/>
+    <path d="M16 72 l3 -3 M20 68 l3 -3" stroke="#C7D2DC" stroke-width="2.4" stroke-linecap="round"/></g>`),
 
   رودخانه: () =>
-    svg(`<path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#1B6B8F" stroke-width="18" fill="none" stroke-linecap="round"/>
+    svg(`<g><ellipse cx="42" cy="90" rx="30" ry="5" fill="#B9B0A0" opacity="0.25"/>
+    <path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#1B6B8F" stroke-width="18" fill="none" stroke-linecap="round"/>
     <path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#2E86AB" stroke-width="14" fill="none" stroke-linecap="round"/>
     <path d="M20 20 Q46 40 30 58 Q14 76 40 88" stroke="#7FD1E8" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M24 28 Q40 42 30 54" stroke="#BFE6F5" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.8"/>
     <ellipse cx="68" cy="42" rx="9" ry="6" fill="#8FBF6A" stroke="#6B9E4A" stroke-width="2.2"/>
-    <ellipse cx="76" cy="66" rx="8" ry="5" fill="#8FBF6A" stroke="#6B9E4A" stroke-width="2.2"/>`),
+    <ellipse cx="76" cy="66" rx="8" ry="5" fill="#8FBF6A" stroke="#6B9E4A" stroke-width="2.2"/>
+    <circle cx="63" cy="38" r="2" fill="#E4572E"/></g>`),
 
   برف: () =>
     svg(`<g stroke="#2E86AB" stroke-width="4" stroke-linecap="round">
     <path d="M50 16 v68 M20 33 L80 67 M80 33 L20 67"/>
     <path d="M50 26 l-7 -7 M50 26 l7 -7 M50 74 l-7 7 M50 74 l7 7"/>
     <path d="M30 39 l-10 1 M30 39 l1 -10 M70 61 l10 -1 M70 61 l-1 10"/>
-    <path d="M70 39 l10 1 M70 39 l-1 -10 M30 61 l-10 -1 M30 61 l1 10"/></g>`),
+    <path d="M70 39 l10 1 M70 39 l-1 -10 M30 61 l-10 -1 M30 61 l1 10"/>
+    <g fill="#7FD1E8" opacity="0.8"><circle cx="20" cy="33" r="2.6"/><circle cx="80" cy="33" r="2.6"/><circle cx="20" cy="67" r="2.6"/><circle cx="80" cy="67" r="2.6"/></g>
+    <ellipse cx="50" cy="90" rx="18" ry="4" fill="#B9B0A0" opacity="0.22"/></g>`),
 
   چتر: () =>
-    svg(`<g><path d="M12 54 Q50 12 88 54 Z" fill="#E4572E"/>
+    svg(`<g><ellipse cx="50" cy="92" rx="26" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M12 54 Q50 12 88 54 Z" fill="#E4572E"/>
     <path d="M12 54 Q22 44 32 54 Q42 44 50 54 Q58 44 68 54 Q78 44 88 54" fill="#C8431F"/>
-    <path d="M50 54 v26 Q50 90 38 88" stroke="#6B4423" stroke-width="4" fill="none" stroke-linecap="round"/></g>`),
+    <path d="M30 34 Q50 18 70 34 Q52 28 30 34 Z" fill="#F88A5E" opacity="0.55"/>
+    <path d="M50 54 v26 Q50 90 38 88" stroke="#6B4423" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="40" cy="90" r="2.2" fill="#7FBBD6"/></g>`),
 
   ساعت: () =>
-    svg(`<g><circle cx="50" cy="54" r="30" fill="#F2F0EC" stroke="#2D2A32" stroke-width="4"/>
+    svg(`<g><ellipse cx="50" cy="88" rx="26" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <circle cx="50" cy="54" r="30" fill="#F2F0EC" stroke="#2D2A32" stroke-width="4"/>
     <circle cx="50" cy="54" r="3" fill="#2D2A32"/>
     <path d="M50 54 V34" stroke="#2D2A32" stroke-width="4" stroke-linecap="round"/>
     <path d="M50 54 L66 62" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
     <path d="M50 28 v5 M76 54 h-5 M50 80 v-5 M24 54 h5" stroke="#2D2A32" stroke-width="3" stroke-linecap="round"/>
-    <path d="M36 20 L30 12 M64 20 L70 12" stroke="#2D2A32" stroke-width="4" stroke-linecap="round"/></g>`),
+    <path d="M36 20 L30 12 M64 20 L70 12" stroke="#2D2A32" stroke-width="4" stroke-linecap="round"/>
+    <path d="M30 40 a30 30 0 0 1 14 -14" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.55"/></g>`),
 
   کلید: () =>
-    svg(`<g><circle cx="32" cy="46" r="16" fill="none" stroke="#F4B942" stroke-width="8"/>
+    svg(`<g><ellipse cx="50" cy="88" rx="30" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <circle cx="32" cy="46" r="16" fill="none" stroke="#F4B942" stroke-width="8"/>
+    <path d="M22 40 a16 16 0 0 0 10 22" fill="none" stroke="#D69A1E" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
     <path d="M44 54 L78 76" stroke="#F4B942" stroke-width="8" stroke-linecap="round"/>
     <path d="M66 68 l6 -10 M74 74 l6 -10" stroke="#F4B942" stroke-width="6" stroke-linecap="round"/></g>`),
 
@@ -142,20 +165,27 @@ export const SHAPES = {
   // عمداً عمودی کشیده شده‌اند تا وقتی کنار هم می‌چینیم، طولِ نوار
   // را نشان بدهند نه پهنا را.
   مداد: () =>
-    svg(`<path d="M40 72 L50 88 L60 72 Z" fill="#E8C39E" stroke="#C49A6C" stroke-width="2.4" stroke-linejoin="round"/>
+    svg(`<g><ellipse cx="50" cy="92" rx="18" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M40 72 L50 88 L60 72 Z" fill="#E8C39E" stroke="#C49A6C" stroke-width="2.4" stroke-linejoin="round"/>
     <path d="M45.5 80 L50 88 L54.5 80 Z" fill="#2B2A33"/>
     <rect x="40" y="20" width="20" height="52" rx="3" fill="#F4B942" stroke="#D69A1E" stroke-width="2.6"/>
     <path d="M40 23 h6 v49 h-6z" fill="#F8CE72"/>
-    <rect x="40" y="20" width="20" height="9" rx="3" fill="#E08A1E" stroke="#D69A1E" stroke-width="2.6"/>`),
+    <rect x="40" y="20" width="20" height="9" rx="3" fill="#E08A1E" stroke="#D69A1E" stroke-width="2.6"/>
+    <path d="M47 78 l2 -3" stroke="#C49A6C" stroke-width="2" stroke-linecap="round"/></g>`),
 
   گیره: () =>
-    svg(`<g><path d="M38 22 v46 a12 12 0 0 0 24 0 v-38 a7 7 0 0 0 -14 0 v36"
-    fill="none" stroke="#7B8794" stroke-width="7" stroke-linecap="round"/></g>`),
+    svg(`<g><ellipse cx="50" cy="88" rx="22" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M38 22 v46 a12 12 0 0 0 24 0 v-38 a7 7 0 0 0 -14 0 v36"
+      fill="none" stroke="#7B8794" stroke-width="7" stroke-linecap="round"/>
+    <path d="M38 22 v46 a12 12 0 0 0 24 0 v-38 a7 7 0 0 0 -14 0 v36"
+      fill="none" stroke="#B9C4D0" stroke-width="2.2" stroke-linecap="round" opacity="0.8"/></g>`),
 
   'پاک‌کن': () =>
-    svg(`<rect x="30" y="34" width="40" height="34" rx="5" fill="#E4572E" stroke="#B8431F" stroke-width="2.8"/>
+    svg(`<g><ellipse cx="50" cy="86" rx="24" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <rect x="30" y="34" width="40" height="34" rx="5" fill="#E4572E" stroke="#B8431F" stroke-width="2.8"/>
     <path d="M35 34 h7 v34 h-7z" fill="#EE7452"/>
     <path d="M30 46 h40" stroke="#B8431F" stroke-width="2.4"/>
+    <rect x="37" y="37" width="18" height="5" rx="2.5" fill="#fff" opacity="0.4"/>
     <path d="M35 34 h30 a5 5 0 0 1 5 5 v7 h-40 v-7 a5 5 0 0 1 5 -5z" fill="#F2F0EC" stroke="#B8431F" stroke-width="2.8"/>`),
 
   گربه: () =>

@@ -22,10 +22,14 @@ import { readFileSync } from 'node:fs';
 
 const src = readFileSync(new URL('../src/core/svg.js', import.meta.url), 'utf8');
 
-// تصویرهایِ ارتقایافته در همین نشست — با هر نشستِ تازه بزرگ‌تر می‌شود.
+// تصویرهایِ ارتقایافته — با هر نشستِ تازه بزرگ‌تر می‌شود.
+// نشست ۱: گربه، سگ، ماهی، سیب، موز، گل، درخت، توپ، کتاب، خانه، ماشین، ابر
+// نشست ۲: پرتقال، هویج، گیلاس، کوه، رودخانه، برف، چتر، ساعت، کلید، مداد، گیره، پاک‌کن
 const ART_UPGRADED = [
   'گربه', 'سگ', 'ماهی', 'سیب', 'موز', 'گل',
   'درخت', 'توپ', 'کتاب', 'خانه', 'ماشین', 'ابر',
+  'پرتقال', 'هویج', 'گیلاس', 'کوه', 'رودخانه', 'برف',
+  'چتر', 'ساعت', 'کلید', 'مداد', 'گیره', 'پاک‌کن',
 ];
 
 const errors = [];
@@ -35,8 +39,10 @@ const check = (cond, msg) => {
 
 for (const name of ART_UPGRADED) {
   // بدنهٔ شکل: بین `svg(` و `),` در تعریفِ `name: () =>`
-  const key = `  ${name}: () =>\n    svg(\``;
-  const start = src.indexOf(key);
+  // کلید ممکن است نقل‌قول‌دار باشد یا نباشد ('پاک‌کن' در برابر گربه).
+  const start = src.indexOf(`  '${name}': () =>`) >= 0
+    ? src.indexOf(`  '${name}': () =>`)
+    : src.indexOf(`  ${name}: () =>`);
   check(start >= 0, `تصویرِ «${name}» در svg.js نیست`);
   if (start < 0) continue;
   const end = src.indexOf('`),', start);
@@ -51,7 +57,9 @@ for (const name of ART_UPGRADED) {
   const hasHighlight =
     /fill="#fff" opacity="0\.(2[0-9]|3[0-9])"/.test(body) ||
     /stroke="#FFF"[^>]*opacity="\.(5[0-9]|9[0-9])"/.test(body);
-  const hasAccent = /#C1352B|#F4B942|#FBE6A2|#F4D03F|#E4572E/.test(body);
+  // لهجهٔ پالت: رنگِ دومی که در بدنهٔ تازه آمده (فهرستِ صریحِ
+  // رنگ‌هایِ ارتقا — هر رنگِ تازه باید این‌جا بیاید تا امضا محسوب شود).
+  const hasAccent = /#C1352B|#F4B942|#FBE6A2|#F4D03F|#E4572E|#7FD1E8|#B9C4D0|#FFB36B|#FF9642|#F88A5E|#BFE6F5|#EE7452|#96A4B2|#C05A10|#8E1C1C|#D69A1E/.test(body);
   check(hasHighlight || hasAccent, `«${name}» نه هایلایت دارد نه لهجهٔ پالتِ تازه`);
 }
 
