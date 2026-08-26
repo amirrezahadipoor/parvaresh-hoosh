@@ -82,41 +82,27 @@ await page.waitForSelector('.game-card');
   check(!f.on, 'شعله نباید در شروعِ بازی روشن باشد');
 }
 
-// ۳ب) شعله: با دو پاسخِ درستِ پیاپی روشن می‌شود.
-{
-  let saw = false;
-  let lastOk = false;
-  for (let i = 0; i < 26 && !saw; i++) {
-    if (!(await page.locator('.prompt').count())) break;
-    await page.locator('.opt:not([disabled])').first().click();
-    await page.waitForTimeout(120);
-    const ok = (await page.locator('.feedback.ok').count()) > 0;
-    await page.waitForTimeout(620);
-    if (ok && lastOk) {
-      saw = await page.evaluate(() => document.querySelector('.g-fire')?.classList.contains('on') ?? false);
-    }
-    lastOk = ok;
-  }
-  check(saw, 'شعله با دو پاسخِ درستِ پیاپی روشن نشد');
-  notes.push(saw ? 'مرورگر: شعله با رشتهٔ ۲ روشن شد' : 'مرورگر: شعله دیده نشد');
-}
-
-// ۳ج) برج: بلوک‌ها با پاسخِ درست زیاد می‌شوند.
+// ۳ب و ۳ج) شعله و برج، هر دو در «برجِ پاسخ»:
+//    برج تایمر ندارد (بازیِ زمان‌دارِ سرعت با جریمهٔ ۵ ثانیه‌ای وسطِ
+//    آزمون تمام می‌شد — اینجا پایدار است)؛ فقط سه خطا بازی را
+//    می‌بندد، پس روی «دوباره» ری‌استارت می‌کنیم.
 {
   await page.locator('.icon-btn[aria-label="بازگشت"]').click().catch(() => {});
   await page.waitForSelector('.game-card');
   await page.locator('.game-card', { hasText: 'برجِ پاسخ' }).click();
   await page.waitForSelector('.prompt');
   check(await page.locator('.g-tower').count() === 1, 'برجِ دیداری در «برجِ پاسخ» نیست');
-  let observed = 0;
-  for (let i = 0; i < 22 && observed < 2; i++) {
+  let blocksObserved = 0;
+  let fireObserved = false;
+  let lastOk = false;
+  for (let i = 0; i < 26 && (blocksObserved < 2 || !fireObserved); i++) {
     if (!(await page.locator('.prompt').count())) {
-      // بازی با سه خطا تمام شد — «دوباره» بزن تا فرصتِ تازه بدهیم
-      // (خطاها بازی را زود می‌بندند؛ این ری‌استارت عمدی است).
+      // سه خطا بازی را بست — «دوباره» بزن و رشته را از نو بساز.
       const again = page.locator('.btn', { hasText: 'دوباره' }).first();
       if (await again.count()) {
         await again.click();
         await page.waitForSelector('.prompt', { timeout: 4000 }).catch(() => {});
+        lastOk = false;
         continue;
       }
       break;
@@ -126,11 +112,19 @@ await page.waitForSelector('.game-card');
     await page.waitForTimeout(120);
     const ok = (await page.locator('.feedback.ok').count()) > 0;
     await page.waitForTimeout(700);
-    const b2 = await page.evaluate(() => document.querySelectorAll('.g-tower .tower-b').length);
-    if (ok && b2 === b1 + 1) observed++;
+    const after = await page.evaluate(() => ({
+      b: document.querySelectorAll('.g-tower .tower-b').length,
+      fire: document.querySelector('.g-fire')?.classList.contains('on') ?? false,
+    }));
+    if (ok) {
+      if (after.b === b1 + 1) blocksObserved++;
+      if (ok && lastOk && after.fire) fireObserved = true;
+    }
+    lastOk = ok;
   }
-  check(observed >= 1, 'هیچ بلوکی به برج اضافه نشد — برج با امتیاز نمی‌خواند');
-  notes.push(`مرورگر: ${observed} بار بلوکِ برج افزایش یافت`);
+  check(blocksObserved >= 1, 'هیچ بلوکی به برج اضافه نشد — برج با امتیاز نمی‌خواند');
+  check(fireObserved, 'شعله با دو پاسخِ درستِ پیاپی روشن نشد');
+  notes.push(`مرورگر: ${blocksObserved} بار بلوکِ برج افزایش یافت؛ شعله ${fireObserved ? 'روشن شد' : 'دیده نشد'}`);
 }
 
 await browser.close();

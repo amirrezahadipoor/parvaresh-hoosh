@@ -79,4 +79,5 @@ jobs:
           npm run test:games
           npm run test:art
           npm run test:gamedepth
+          npm run test:android
           npm run test:visual

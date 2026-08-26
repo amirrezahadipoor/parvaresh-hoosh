@@ -56,7 +56,7 @@ npm start              # http://localhost:8080
 
 ### گاردها
 
-⚠ **هر هجده گارد باید سبز باشند پیش از هر پوش.** برای گاردهای مرورگری
+⚠ **هر بیست گارد باید سبز باشند پیش از هر پوش.** برای گاردهای مرورگری
 سرور باید بالا باشد.
 
 ```bash
@@ -75,12 +75,13 @@ npm run test:scene      # ~۱۵s — پس‌زمینهٔ صحنه‌ایِ ای�
 npm run test:games      # ~۱۰s — بازی‌ها: هر کدام گِرد می‌سازند + کارت‌های صحنه‌دار
 npm run test:art        # ~۱s  — ارتقای هنریِ SVG: امضای سایه/هایلایت (نشست‌های پیاپی)
 npm run test:gamedepth  # ~۳۰s — عمقِ بازی‌ها: شعلهٔ رشته، برجِ پاسخ، مراحلِ حافظه
+npm run test:android   # ~۱s  — پوستهٔ وبِ اندروید: theme-color، manifest، آیکون‌ها، لمس
 npm run test:visual    # ۷۴۰s — چهار اندازهٔ صفحه، سرریز، بریدگی
 ```
 
 مرورگر لازم است: `npx playwright-core install --with-deps chromium`.
 
-هر هجده گارد در CI هم اجرا می‌شوند (`.github/workflows/ci.yml`).
+هر بیست گارد در CI هم اجرا می‌شوند (`.github/workflows/ci.yml`).
 
 ---
 
@@ -181,7 +182,7 @@ scripts/
    `SUPPORTED_ROUND_KINDS`، `task-icon.js`، `buildStage`/`optionButton` در
    `screens.js`، و تصویر در `svg.js`. اگر یکی جا بماند، **خطا نمی‌دهد** —
    فقط بی‌صدا خراب می‌شود.
-۴. هر هجده گارد را اجرا کنید.
+۴. هر بیست گارد را اجرا کنید.
 
 ---
 

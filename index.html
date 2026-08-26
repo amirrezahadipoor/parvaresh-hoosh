@@ -2,11 +2,25 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<!-- آماده‌سازیِ ظاهری برای اندروید: viewport-fit=cover یعنی محتوا
+     زیر نوار وضعیت/حاشیهٔ امن کشیده شود و env(safe-area-inset-*) کار
+     کند؛ maximum-scale=1 جلوی زومِ بیرویه را می‌گیرد؛
+     interactive-widget=resizes-content یعنی با باز شدنِ کیبورد
+     (مثل دروازهٔ والدین) چیدمان جابه‌جا شود نه اینکه زیر کیبورد
+     برود. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, interactive-widget=resizes-content">
 <!-- ⚠ این رنگ باید دقیقاً برابر --bg در main.css باشد. پیش‌تر
      ‎#FDF6EC‎ بود در حالی که پس‌زمینهٔ برنامه ‎#FBF6EF‎ است؛ نتیجه
-     یک خطِ رنگیِ ناهم‌خوان زیر نوار وضعیت اندروید بود. -->
+     یک خطِ رنگیِ ناهم‌خوان زیر نوار وضعیت اندروید بود. test:android
+     این برابری را مکانیکی می‌سنجد. -->
 <meta name="theme-color" content="#FBF6EF">
+<!-- اندرویدِ کروم: نصبِ PWA به‌صورتِ مستقل (بدون نوار آدرس). -->
+<meta name="mobile-web-app-capable" content="yes">
+<!-- در WebView (کاپاسیتور/اندروید): همین علامت برای حالتِ تمام‌صفحه. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<!-- برنامهٔ کودک نباید عدد را «شمارهٔ تلفن» بپندارد و خط‌دارش کند. -->
+<meta name="format-detection" content="telephone=no">
 <link rel="icon" href="assets/icon/icon-32.png" sizes="32x32">
 <link rel="icon" href="assets/icon/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icon/icon-180.png">

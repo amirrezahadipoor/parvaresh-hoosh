@@ -97,6 +97,13 @@ body {
   overscroll-behavior: none;
   -webkit-user-select: none;
   user-select: none;
+  /* آماده‌سازیِ ظاهریِ اندروید: تأخیرِ ۳۰۰msِ دوبار-تپ حذف می‌شود —
+     لمس باید بی‌درنگ جواب دهد. و بزرگ‌نماییِ خودکارِ فونتِ WebView
+     هنگامِ چرخش/اندازهٔ کوچک خاموش می‌شود تا تایپوگرافی دست‌نخورده
+     بماند. */
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 #app {
