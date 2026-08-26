@@ -77,4 +77,5 @@ jobs:
           npm run test:milestone
           npm run test:scene
           npm run test:games
+          npm run test:art
           npm run test:visual

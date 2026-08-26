@@ -25,7 +25,8 @@
     "test:docs": "node scripts/test-docs.js",
     "test:milestone": "node scripts/test-milestone.js",
     "test:scene": "node scripts/test-scene.js",
-    "test:games": "node scripts/test-games.js"
+    "test:games": "node scripts/test-games.js",
+    "test:art": "node scripts/test-art.js"
   },
   "engines": {
     "node": ">=20"
