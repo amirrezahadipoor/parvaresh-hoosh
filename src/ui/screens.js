@@ -20,6 +20,7 @@ import {
 import { buddy, line as buddyLine } from '../core/buddy.js';
 import { playMusic, stopMusic, TRACKS } from '../core/music.js';
 import { sparkle } from '../core/sparkle.js';
+import { gentleBuzz } from '../core/haptics.js';
 import { GAMES, gameById } from '../data/games.js';
 
 const el = (tag, props = {}, kids = []) => {
@@ -269,6 +270,11 @@ function playScreen(lessonId) {
 
   let idx = 0;
   let correct = 0;
+  // ⚠ زنجیرهٔ دیداری (§۷.۱۶ آیتم ۱) — همتایِ دیداریِ ملودیِ
+  // بالارونده. سه نشان، هر پاسخِ درست یکی را روشن می‌کند، خطا
+  // همه را خاموش. تا سه — بیش از سه معنیِ «یک جشنِ طولانی» می‌دهد
+  // و چیزی یاد نمی‌دهد.
+  let streak = 0;
   const wrap = el('div', { class: 'screen' });
 
   const startedAt = Date.now();
@@ -293,19 +299,46 @@ function playScreen(lessonId) {
     ]);
     const feedback = el('div', { class: 'feedback' });
 
+    // ── سربرگِ درس: هوشیِ کوچک + زنجیرهٔ دیداری + شمارهٔ تمرین ──
+    // ⚠ ملودیِ بالارونده (§۷.۳) فقط صدا داشت؛ در حالتِ بی‌صدا هیچ
+    // نشانه‌ای از «رشتهٔ درست‌ها» نبود. این سه نقطه همان زنجیره‌اند
+    // به زبانِ چشم. روشن‌شدن فقط در *لحظهٔ گذار* (بعد از پاسخ) است —
+    // حینِ پرسش هیچ حرکتی نیست (قانونِ ۱ §۷.۱۶).
+    const head = el('div', { class: 'lesson-head' }, [
+      el('span', { class: 'buddy mini', html: buddy('neutral', dom.color), 'aria-hidden': 'true' }),
+      el('span', { class: 'streak', 'aria-hidden': 'true' }, [
+        el('i', { class: 'streak-dot' }),
+        el('i', { class: 'streak-dot' }),
+        el('i', { class: 'streak-dot' }),
+      ]),
+      el('span', { class: 'muted', text: `تمرین ${toFa(idx + 1)} از ${toFa(rounds.length)}` }),
+    ]);
+
+    // به‌روزرسانیِ زنجیره — فقط در لحظه‌های گذار.
+    const light = (ok) => {
+      streak = ok ? Math.min(3, streak + 1) : 0;
+      const dots = head.querySelectorAll('.streak-dot');
+      dots.forEach((d, i) => d.classList.toggle('on', i < streak));
+      // هوشی با زنجیره حال می‌گیرد: سه درستِ پیاپی = شاد، خطا = خنثی.
+      // هر دو در گذار رخ می‌دهند؛ حینِ پرسش دست نمی‌خورد.
+      const b = head.querySelector('.buddy');
+      if (b && streak === 3) b.innerHTML = buddy('happy', dom.color);
+      else if (b && streak === 0) b.innerHTML = buddy('neutral', dom.color);
+    };
+
     const body =
       r.type === 'choice'
-        ? choiceView(r, feedback, next, track)
+        ? choiceView(r, feedback, next, track, light)
         : r.type === 'trace'
-          ? traceView(r, next, feedback)
+          ? traceView(r, next, feedback, light)
           : r.type === 'order'
-            ? orderView(r, feedback, next, () => { correct++; })
-            : memoryView(r, feedback, next, () => { correct++; });
+            ? orderView(r, feedback, next, () => { correct++; light(true); gentleBuzz(); }, light)
+            : memoryView(r, feedback, next, () => { correct++; light(true); gentleBuzz(); }, light);
 
     wrap.replaceChildren(
       topbar(lesson.title, () => render(homeScreen())),
       bar,
-      el('div', { class: 'muted', text: `تمرین ${toFa(idx + 1)} از ${toFa(rounds.length)}` }),
+      head,
       // ردیف پرسش: نشان تصویری + متن + دکمهٔ شنیدن.
       // کودکی که خواندن بلد نیست از روی نشان می‌فهمد باید چه کند،
       // و با تپ روی نشان پرسش را دوباره می‌شنود.
@@ -342,7 +375,7 @@ function playScreen(lessonId) {
     if (r.speak) setTimeout(() => speak(r.speak), 220);
   }
 
-  function choiceView(r, feedback, done, trk) {
+  function choiceView(r, feedback, done, trk, onStreak = () => {}) {
     const stage = buildStage(r);
 
     const grid = el('div', { class: `options${r.options.length === 3 ? ' cols-3' : ''}` });
@@ -365,6 +398,9 @@ function playScreen(lessonId) {
           sparkle(btn);
           markOk(feedback, 'آفرین!');
           speak('آفرین!');
+          // لرزشِ مهربان — فقط اینجا، فقط روی درست (§۷.۱۶ آیتم ۲).
+          gentleBuzz();
+          onStreak(true);
         } else {
           sfx.wrong();
           markRetry(feedback, r.because || 'اشکالی ندارد، دفعهٔ بعد!');
@@ -373,6 +409,7 @@ function playScreen(lessonId) {
           [...grid.children].forEach((c, i) => {
             if (r.options[i].value === r.answer) c.classList.add('correct');
           });
+          onStreak(false);
         }
         setTimeout(done, right ? 900 : 1900);
       });
@@ -393,7 +430,7 @@ function playScreen(lessonId) {
 
   // جای‌های پراکنده ولی بدون هم‌پوشانی، برای بازی شمردن.
 
-  function traceView(r, done, feedback) {
+  function traceView(r, done, feedback, onStreak = () => {}) {
     const canvas = el('canvas', { class: 'pad' });
     const wrapEl = el('div', { class: 'trace-wrap' }, [
       el('div', { class: 'trace-ghost', text: r.letter }),
@@ -454,7 +491,11 @@ function playScreen(lessonId) {
     // که پیش از این خط اجرا می‌شود هم می‌تواند صدایش بزند.
     function finishTrace() {
       // خط کشیدن نمره‌دهی درست/غلط ندارد — تلاش کافی است.
-      if (drawn > 8) correct++;
+      if (drawn > 8) {
+        correct++;
+        onStreak(true);
+        gentleBuzz();
+      }
       markOk(feedback);
       sfx.correct();
       setTimeout(done, 550);
@@ -938,7 +979,7 @@ function markRetry(feedback, text) {
 // بیرونی، یک callback به نام onWin می‌گیرند. درس شمارنده‌اش را
 // بالا می‌برد و بازی امتیازش را — بدون آنکه هیچ‌کدام از دیگری خبر
 // داشته باشد.
-function orderView(r, feedback, done, onWin = () => {}) {
+function orderView(r, feedback, done, onWin = () => {}, onStreak = () => {}) {
   const chosen = [];
   // ⚠ چیدنِ *جمله* با چیدنِ حرف فرق دارد: «گربه ماهی خورد» در یک
   // کارتِ ۶۸px جا نمی‌شود و در عرض ۳۲۰px به سه سطر می‌شکند، و کنار
@@ -1030,6 +1071,8 @@ function orderView(r, feedback, done, onWin = () => {}) {
         } else {
           sfx.wrong();
           markRetry(feedback, 'ترتیب درست نبود — دوباره نگاه کن.');
+          // زنجیرهٔ دیداری هم باید بداند رشته پاره شد.
+          onStreak(false);
         }
         setTimeout(done, ok ? 1000 : 1800);
       }
@@ -1712,6 +1755,24 @@ function settingsScreen() {
     el('div', {
       class: 'note',
       text: 'آهنگ فقط در صفحهٔ خانه، نقشه و بخش بازی‌ها پخش می‌شود. داخل درس هرگز پخش نمی‌شود، چون تمرکز کودک روی شنیدن حرف‌ها و شمردن است.',
+    }),
+    // ── لرزشِ مهربان (§۷.۱۶ آیتم ۲) ───────────────────────────
+    // ⚠ چرا اینجا: تصمیمِ والد است، پس پشتِ دروازهٔ والدین می‌ماند
+    // (کلِ این صفحه پشتِ دروازه است). کودکِ نشنونده این لرزش را
+    // همان «آفرین» می‌گیرد.
+    el('label', { class: 'field switch-field' }, [
+      el('span', { text: 'لرزشِ مهربان' }),
+      el('input', {
+        type: 'checkbox',
+        class: 'switch',
+        'aria-label': 'لرزش مهربان',
+        ...(s.vibrate ? { checked: 'checked' } : {}),
+        onChange: (e) => store.setVibratePref(e.currentTarget.checked),
+      }),
+    ]),
+    el('div', {
+      class: 'note',
+      text: 'وقتی پاسخ درست است، گوشی یک تپِ کوتاه می‌زند — همان «آفرین» به زبانِ لمس. هرگز روی پاسخِ غلط. در دستگاه‌های بدون لرزش اثری ندارد.',
     }),
     el('div', { class: 'note', text: 'همهٔ اطلاعات فقط روی همین دستگاه ذخیره می‌شود و به هیچ سروری فرستاده نمی‌شود.' }),
     el('button', { class: 'btn ghost', text: 'بخش والدین', onClick: () => render(parentGate()) }),

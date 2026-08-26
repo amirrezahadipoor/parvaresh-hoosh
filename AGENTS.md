@@ -38,6 +38,8 @@ npm run test:a11y      # ۹s
 npm run test:music     # ۱۴s
 npm run test:browser   # ۲۰s
 npm run test:delight   # ۳۰s
+npm run test:streak    # ~۴۰s
+npm run test:haptic    # ~۴۰s
 npm run test:visual    # ۷۴۰s ← فرایندِ پس‌زمینه، نه فرمانِ معمولی
 ```
 

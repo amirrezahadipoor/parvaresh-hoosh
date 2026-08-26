@@ -561,6 +561,55 @@ body {
   transition: width 0.3s ease;
 }
 
+/* ── سربرگِ درس: هوشیِ کوچک + زنجیرهٔ دیداری + شمارهٔ تمرین ──
+   (§۷.۱۶ آیتم ۱) همتایِ دیداریِ ملودیِ بالارونده: هر پاسخِ درست
+   یکی از سه نقطه را روشن می‌کند و خطا همه را خاموش.
+   ⚠ حینِ پرسش بی‌حرکت — روشن‌شدن فقط در لحظهٔ گذار و فقط با یک
+   انیمیشنِ متناهی (قانونِ ۱ §۷.۱۶). `prefers-reduced-motion` را
+   همان قانونِ سراسریِ پایینِ فایل خاموش می‌کند. */
+.lesson-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 30px;
+}
+
+.buddy.mini {
+  width: 30px;
+  height: 30px;
+}
+
+.streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.streak-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+/* ⚠ طلاییِ ستاره‌ها، نه سبزِ «درست»: نقطه‌ها «جشنِ رشته» را
+   می‌گویند، نه درستیِ همین پاسخ را — آن را تیکِ سبزِ بازخورد می‌گوید. */
+.streak-dot.on {
+  background: #F4B942;
+  animation: streak-pop var(--base) var(--ease);
+}
+
+@keyframes streak-pop {
+  0% { transform: scale(0.35); }
+  60% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+.lesson-head .muted {
+  margin-inline-start: auto;
+  line-height: 1.2;
+}
+
 .prompt {
   font-size: var(--t-prompt);
   font-weight: 700;

@@ -13,6 +13,9 @@ const EMPTY = {
   // موسیقیِ پس‌زمینه هوشیاری را *کم* می‌کند. پس آهنگ یک افزودنیِ
   // انتخابیِ والد است، نه حالتِ پیش‌فرضِ برنامه.
   music: false,
+  // لرزشِ مهربان (§۷.۱۶ آیتم ۲) — پیش‌فرض روشن: یک تپِ ۱۵ms روی
+  // پاسخِ درست، هیچ‌چیز بیشتر. والد می‌تواند از تنظیمات خاموشش کند.
+  vibrate: true,
   lessons: {}, // id -> { completions, bestScore, lastPlayed }
   stars: 0,
   // پنل والدین
@@ -69,6 +72,13 @@ export function setMutedPref(muted) {
 export function setMusicPref(on) {
   const s = read();
   s.music = !!on;
+  return write(s);
+}
+
+/** لرزشِ مهربان — تصمیمِ والد (داخلِ دروازه). */
+export function setVibratePref(on) {
+  const s = read();
+  s.vibrate = !!on;
   return write(s);
 }
 

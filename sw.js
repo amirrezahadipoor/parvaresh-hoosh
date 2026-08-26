@@ -17,6 +17,7 @@ const SHELL = [
   './src/core/app-icon.js',
   './src/core/audio.js',
   './src/core/buddy.js',
+  './src/core/haptics.js',
   './src/core/journey.js',
   './src/core/mastery.js',
   './src/core/music.js',

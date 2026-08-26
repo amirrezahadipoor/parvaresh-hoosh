@@ -71,4 +71,6 @@ jobs:
           npm run test:music
           npm run test:browser
           npm run test:delight
+          npm run test:streak
+          npm run test:haptic
           npm run test:visual
