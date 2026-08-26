@@ -65,6 +65,7 @@ python3 -m http.server 8080 --bind 0.0.0.0 &   # سرور باید بالا بم
 | پس‌زمینهٔ صحنه‌ایِ ایستا (§۷.۱۶/۵) | `npm run test:scene` | ~۱۵s |
 | گسترشِ بازی‌ها و کارت‌های صحنه‌دار (§۷.۴ و §۷.۱۶/۸) | `npm run test:games` | ~۱۰s |
 | ارتقای هنریِ SVG (§۷.۱۶/۷ — نشست‌های پیاپی) | `npm run test:art` | ~۱s |
+| عمقِ بازی‌ها (گسترش — شعلهٔ رشته، برجِ پاسخ، مراحلِ حافظه) | `npm run test:gamedepth` | ~۳۰s |
 | ظاهر در ۴ اندازه | `npm run test:visual` | **۷۴۰s** |
 
 `npm test` خودش چهارتا را با هم اجرا می‌کند (validate، sync-sw --check،

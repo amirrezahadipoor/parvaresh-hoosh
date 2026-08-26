@@ -45,6 +45,7 @@ npm run test:milestone  # ~۲۵s
 npm run test:scene      # ~۱۵s
 npm run test:games      # ~۱۰s
 npm run test:art        # ~۱s
+npm run test:gamedepth  # ~۳۰s
 npm run test:visual    # ۷۴۰s ← فرایندِ پس‌زمینه، نه فرمانِ معمولی
 ```
 

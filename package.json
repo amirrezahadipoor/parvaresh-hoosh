@@ -26,7 +26,8 @@
     "test:milestone": "node scripts/test-milestone.js",
     "test:scene": "node scripts/test-scene.js",
     "test:games": "node scripts/test-games.js",
-    "test:art": "node scripts/test-art.js"
+    "test:art": "node scripts/test-art.js",
+    "test:gamedepth": "node scripts/test-gamedepth.js"
   },
   "engines": {
     "node": ">=20"

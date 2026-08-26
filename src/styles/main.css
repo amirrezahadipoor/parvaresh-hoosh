@@ -3102,6 +3102,98 @@ canvas.pad {
   gap: 4px;
 }
 
+/* ── شعلهٔ رشته (عمقِ بازی) ────────────────────────────────
+   با پاسخِ درستِ پیاپی روشن می‌شود و عددِ پاداش را می‌گوید؛ غلط
+   خاموشش می‌کند. تزئینی و بی‌صدا. انیمیشن‌ها متناهی‌اند. */
+.g-fire {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--line);
+  opacity: 0.45;
+  transition: opacity var(--base) ease, color var(--base) ease;
+}
+
+.g-fire.on {
+  color: #E4572E;
+  opacity: 1;
+  animation: fire-pop var(--base) var(--ease);
+}
+
+.g-fire-ico {
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+}
+
+.g-fire-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.g-fire-num {
+  font-size: 0.85rem;
+  min-width: 14px;
+  text-align: center;
+}
+
+@keyframes fire-pop {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ── برجِ پاسخ (عمقِ بازی) ──────────────────────────────────
+   هر پاسخِ درست یک بلوک بالا می‌رود (تا سقفِ نمایشی) و پاسخِ غلط
+   برج را می‌لرزاند. تزئینی، بی‌صدا، فقط transform. */
+.g-tower {
+  display: inline-flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 2px;
+  height: 40px;
+  justify-content: flex-start;
+}
+
+.g-tower.shake {
+  animation: tower-shake 380ms var(--ease);
+}
+
+.tower-b {
+  width: 18px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--c, var(--brand));
+  opacity: 0.85;
+  display: block;
+}
+
+.tower-b:nth-child(even) {
+  background: var(--line);
+}
+
+.tower-base {
+  width: 22px;
+  height: 8px;
+  display: block;
+  color: var(--line);
+}
+
+.tower-base svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes tower-shake {
+  15% { transform: translateX(-4px); }
+  40% { transform: translateX(3px); }
+  65% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
 .g-heart {
   width: 24px;
   height: 24px;

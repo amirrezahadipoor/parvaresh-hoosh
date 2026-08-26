@@ -21,6 +21,7 @@ import { buddy, line as buddyLine } from '../core/buddy.js';
 import { playMusic, stopMusic, TRACKS } from '../core/music.js';
 import { sparkle } from '../core/sparkle.js';
 import { gentleBuzz } from '../core/haptics.js';
+import { streakBonus, pointsFor, towerBlocks } from '../core/game-depth.js';
 import { GAMES, gameById } from '../data/games.js';
 
 const el = (tag, props = {}, kids = []) => {
@@ -1291,6 +1292,12 @@ function gamesScreen() {
   ]);
 }
 
+/** شعلهٔ رشته — نشانِ پاداشِ پاسخ‌های درستِ پیاپی در بازی‌ها (عمقِ بازی). */
+const FLAME_ICO = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d="M12 2.5c2.7 3.3 5.2 5.9 5.2 9.4a5.2 5.2 0 0 1-10.4 0c0-1.5.6-3 1.6-4.4.5 1 1.2 1.8 2.2 2.3-.2-2.4.3-4.8 1.4-7.3z" fill="currentColor"/>
+  <path d="M12 11.6c1.7 1.6 2.7 3 2.7 4.5a2.7 2.7 0 0 1-5.4 0c0-1 .4-2.2 1-3.4.5.9 1 1.4 1.7 1.8z" fill="#fff" opacity=".6"/>
+</svg>`;
+
 /**
  * موتور مشترک هر سه حالت بازی.
  *
@@ -1310,6 +1317,11 @@ function gameScreen(gameId) {
   let left = g.seconds ?? 0;
   let over = false;
   let timer = null;
+  // ⚠ عمقِ بازی (گسترش): رشتهٔ پاسخ‌های درست شعله می‌سازد و امتیازِ
+  // پیاپی می‌دهد؛ پاسخِ غلط رشته را می‌شکند. «برجِ پاسخ» هم با هر
+  // درست یک بلوک می‌گیرد و با غلط می‌لرزد.
+  let streak = 0;
+  let shakeTower = false;
 
   // بازیِ زمان‌دار برخلافِ درس از برانگیختگی سود می‌برد: پژوهشِ
   // «موسیقیِ تند = شاد» از سنِ ۴ سالگی برقرار است و اینجا هدف
@@ -1374,10 +1386,20 @@ function gameScreen(gameId) {
     const onDone = (wasRight) => {
       if (over) return;
       if (wasRight) {
-        score += 1;
+        // ⚠ پاداشِ رشته: پاسخِ درستِ پیاپی بیش از یکی امتیاز می‌دهد.
+        // حافظه (levels) رشته ندارد — آنجا هر جفت «یک» است.
+        if (g.mode !== 'levels') {
+          streak += 1;
+          score += pointsFor(streak);
+        } else {
+          score += 1;
+        }
         sfx.point();
         if (g.mode === 'levels') level += 1;
       } else {
+        streak = 0;
+        // برجِ پاسخ با پاسخِ غلط می‌لرزد — همان «دوباره» به زبانِ شکل.
+        if (g.id === 'tower') shakeTower = true;
         sfx.wrong();
         if (g.mode === 'lives') {
           lives -= 1;
@@ -1421,6 +1443,8 @@ function gameScreen(gameId) {
       ...(Array.isArray(body) ? body : [body]),
       feedback,
     );
+    // لرزشِ برج فقط برای همان یک رندر است — تا پاسخِ بعدی.
+    shakeTower = false;
   };
 
   /** نوار وضعیت: امتیاز، و زمان یا جان. */
@@ -1436,6 +1460,28 @@ function gameScreen(gameId) {
         el('span', { class: 'g-num', text: `${toFa(score)}` }),
       ]),
     ];
+    // ⚠ شعلهٔ رشته (عمقِ بازی): با پاسخِ درستِ پیاپی روشن و عددِ
+    // پاداش بزرگ‌تر می‌شود؛ غلط خاموشش می‌کند. تزئینی و بی‌صدا —
+    // عددِ امتیاز پیامِ اصلی است، شعله «چرا بیشتر شد» را می‌گوید.
+    if (g.mode !== 'levels') {
+      const bonus = streakBonus(streak);
+      bits.push(
+        el('span', { class: `g-fire${bonus > 0 ? ' on' : ''}`, 'aria-hidden': 'true' }, [
+          el('span', { class: 'g-fire-ico', html: FLAME_ICO }),
+          el('b', { class: 'g-fire-num', text: bonus > 0 ? `×${toFa(bonus)}` : '' }),
+        ]),
+      );
+    }
+    // برجِ پاسخ: هر پاسخِ درست یک بلوک بالا می‌رود (تا سقفِ نمایشی)؛
+    // پاسخِ غلط برج را می‌لرزاند — همان ایدهٔ «برج تا سقف» از §۷.۴.
+    if (g.id === 'tower') {
+      bits.push(
+        el('span', { class: `g-tower${shakeTower ? ' shake' : ''}`, 'aria-hidden': 'true' }, [
+          el('span', { class: 'tower-base', html: svgGeo('مربع', '#C9BFB0') || '' }),
+          ...Array.from({ length: towerBlocks(score) }, () => el('i', { class: 'tower-b' })),
+        ]),
+      );
+    }
     if (g.mode === 'timed') {
       bits.push(
         el('span', { class: `g-time${left <= 10 ? ' low' : ''}` }, [
