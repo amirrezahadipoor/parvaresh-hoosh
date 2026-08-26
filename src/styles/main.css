@@ -196,6 +196,32 @@ body {
   display: block;
 }
 
+/* ── پس‌زمینهٔ صحنه‌ایِ ایستا (§۷.۱۶ آیتم ۵) ─────────────────────────
+   تپه و خورشیدِ ساده برای خانه و جشن. ⚠ ایستا — هیچ حرکتی، چون
+   پس‌زمینهٔ «زنده» بارِ شناختیِ بی‌دلیل است (فاز ۴.۵). تزئینی:
+   pointer-events: none و پشتِ محتوا (z-index منفی در کنارِ
+   isolation تا از خودِ صفحه بیرون نزند). */
+.screen.home,
+.screen.done {
+  position: relative;
+  isolation: isolate;
+}
+
+.screen.home::before,
+.screen.done::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 34%;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20130%22%3E%0A%3Ccircle%20cx%3D%22334%22%20cy%3D%2230%22%20r%3D%2224%22%20fill%3D%22%23F6E3B4%22%2F%3E%0A%3Cpath%20d%3D%22M0%20130%20L0%2072%20Q%2060%2040%20132%2078%20T%20268%2072%20T%20400%2080%20L400%20130%20Z%22%20fill%3D%22%23E9EFDA%22%2F%3E%0A%3Cpath%20d%3D%22M0%20130%20L0%2096%20Q%2090%2058%20180%2092%20T%20400%2094%20L400%20130%20Z%22%20fill%3D%22%23DCE8C6%22%2F%3E%0A%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
 /* ── کارت‌های حوزه ─────────────────────────────────────── */
 /* ── خانه: یک دکمه، نه یک منو ─────────────────────────────
    کودک ۵ ساله نمی‌خواهد انتخاب کند، می‌خواهد بازی کند.

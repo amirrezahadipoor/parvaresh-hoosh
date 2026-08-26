@@ -75,4 +75,5 @@ jobs:
           npm run test:haptic
           npm run test:map
           npm run test:milestone
+          npm run test:scene
           npm run test:visual

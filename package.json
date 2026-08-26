@@ -23,7 +23,8 @@
     "test:haptic": "node scripts/test-haptic.js",
     "test:map": "node scripts/test-map.js",
     "test:docs": "node scripts/test-docs.js",
-    "test:milestone": "node scripts/test-milestone.js"
+    "test:milestone": "node scripts/test-milestone.js",
+    "test:scene": "node scripts/test-scene.js"
   },
   "engines": {
     "node": ">=20"
