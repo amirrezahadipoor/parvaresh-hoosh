@@ -84,6 +84,27 @@ export function nextStep() {
   return { step: weakest, mode: 'review' };
 }
 
+/** قدم‌های گردِ سفر — جشنِ متفاوت از درسِ عادی (§۷.۱۶ آیتم ۴). */
+export const MILESTONE_STEPS = Object.freeze([50, 100, 200, 307]);
+
+/**
+ * نوعِ جشنِ پایانِ این درس: قدمِ گرد، پایانِ یک حوزه، یا هیچ.
+ *
+ * خالص و بی‌واسطه، تا گارد بتواند مستقیم آزمونش کند:
+ *  • 'milestone'  — گامِ ۵۰/۱۰۰/۲۰۰/۳۰۷ امِ سفر.
+ *  • 'domain-end' — آخرین درسِ حوزه‌اش (پایانِ فصل).
+ *  • null         — درسِ عادی؛ جشنِ معمول.
+ */
+export function milestoneOf(lessonId) {
+  const st = stepOf(lessonId);
+  if (!st) return { kind: null, step: 0, domainEnd: false };
+  const step = st.order + 1;
+  const lastOfDomain = SEQUENCE.filter((x) => x.domainId === st.domainId).at(-1);
+  const domainEnd = lastOfDomain?.lesson.id === lessonId;
+  const kind = MILESTONE_STEPS.includes(step) ? 'milestone' : domainEnd ? 'domain-end' : null;
+  return { kind, step, domainEnd };
+}
+
 /** درس پس از این یکی — برای زنجیرهٔ «ادامه» در پایان درس. */
 export function stepAfter(lessonId) {
   const cur = stepOf(lessonId);

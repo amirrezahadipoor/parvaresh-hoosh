@@ -9,13 +9,13 @@ import {
   setDomainVoice, resetStreak,
 } from '../core/audio.js';
 import { buildLesson, buildRound, toFa } from '../core/rounds.js';
-import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress } from '../core/journey.js';
+import { nextStep, stepAfter, stepOf, SEQUENCE, isLocked, progress, milestoneOf } from '../core/journey.js';
 import { masterySummary, isDue, MASTERY_SCORE } from '../core/mastery.js';
 import { taskIcon, actionLabel } from '../core/task-icon.js';
 import { shape as svgShape, geo as svgGeo, COLOR_HEX } from '../core/svg.js';
 import {
   starIcon, soundOnIcon, soundOffIcon, gearIcon,
-  lockIcon, checkIcon, reviewIcon, moonIcon, backIcon, domainIcon,
+  lockIcon, checkIcon, reviewIcon, moonIcon, backIcon, domainIcon, trophyIcon,
 } from '../core/ui-icons.js';
 import { buddy, line as buddyLine } from '../core/buddy.js';
 import { playMusic, stopMusic, TRACKS } from '../core/music.js';
@@ -1511,31 +1511,58 @@ function doneScreen(lesson, correct, total) {
   const pct = Math.round((correct / total) * 100);
   const msg = pct >= 80 ? 'عالی بود!' : pct >= 50 ? 'خوب بود!' : 'تمرین بیشتر، بهتر!';
 
+  // ⚠ قدم‌های گردِ سفر (§۷.۱۶ آیتم ۴): گامِ ۵۰/۱۰۰/۲۰۰/۳۰۷ و پایانِ
+  // هر حوزه جشنِ *متفاوت* دارند — جام، هوشیِ «وای»، هالهٔ طلایی و
+  // جرقهٔ بیشتر. هر ۳۰۷ درس نباید یکسان تمام شوند.
+  const m = milestoneOf(lesson.id);
+  const isBig = !!m.kind;
+  const d0 = DOMAINS.find((x) => x.id === lesson.domain) || DOMAINS[0];
+
   // زنجیرهٔ بازی: درس بعدی مستقیم شروع می‌شود، بدون برگشت به منو.
   // این همان جایی است که در طرح قبلی جریان بازی می‌شکست.
   const nxt = stepAfter(lesson.id);
   const nd = DOMAINS.find((x) => x.id === nxt.domainId);
 
+  const card = el('div', { class: `done-card${isBig ? ' milestone' : ''}` }, [
+    el('span', {
+      class: 'buddy big-buddy cheer',
+      html: buddy(isBig ? 'wow' : pct >= 50 ? 'happy' : 'encourage', nd.color),
+    }),
+    el('h2', { text: msg }),
+    // نشانِ قدم: جام + عددِ قدم (یا «پایانِ حوزه»). کودکِ پیش‌خوان
+    // جام و هالهٔ طلایی را می‌بیند؛ متن برای والد است.
+    isBig
+      ? el('div', { class: 'milestone-badge' }, [
+          el('span', { class: 'mb-ico', html: trophyIcon(), 'aria-hidden': 'true' }),
+          el('span', {
+            class: 'mb-label',
+            text: m.kind === 'milestone' ? `قدم ${toFa(m.step)}` : `پایانِ ${d0.title}`,
+          }),
+        ])
+      : null,
+    // ستاره‌ها یکی‌یکی روشن می‌شوند — لحظهٔ جشن باید دیده شود،
+    // نه اینکه فقط یک عدد نوشته شود.
+    el(
+      'div',
+      { class: 'star-row', 'aria-hidden': 'true' },
+      [1, 2, 3].map((i) =>
+        el('span', {
+          class: `award${i <= Math.max(1, Math.round((pct / 100) * 3)) ? ' on' : ''}`,
+          style: `animation-delay:${140 + i * 190}ms`,
+          html: starIcon(),
+        }),
+      ),
+    ),
+    el('p', { class: 'muted', text: `${toFa(correct)} از ${toFa(total)} تمرین درست` }),
+  ]);
+
+  // جرقهٔ بیشتر برای لحظهٔ بزرگ — پس از ورودِ کارت، نه در همان لحظه
+  // (تا با انیمیشنِ ورود قاطی نشود). در سکوت هم دیده می‌شود.
+  if (isBig) setTimeout(() => sparkle(card, 26), 420);
+
   return el('div', { class: 'screen done' }, [
     topbar('پایان درس', () => render(homeScreen())),
-    el('div', { class: 'done-card' }, [
-      el('span', { class: 'buddy big-buddy cheer', html: buddy(pct >= 50 ? 'happy' : 'encourage', nd.color) }),
-      el('h2', { text: msg }),
-      // ستاره‌ها یکی‌یکی روشن می‌شوند — لحظهٔ جشن باید دیده شود،
-      // نه اینکه فقط یک عدد نوشته شود.
-      el(
-        'div',
-        { class: 'star-row', 'aria-hidden': 'true' },
-        [1, 2, 3].map((i) =>
-          el('span', {
-            class: `award${i <= Math.max(1, Math.round((pct / 100) * 3)) ? ' on' : ''}`,
-            style: `animation-delay:${140 + i * 190}ms`,
-            html: starIcon(),
-          }),
-        ),
-      ),
-      el('p', { class: 'muted', text: `${toFa(correct)} از ${toFa(total)} تمرین درست` }),
-    ]),
+    card,
     // ⚠ یادداشت والدین گاهی ۳۰۰ نویسه است و در گوشیِ ۳۲۰×۵۶۸
     // دکمهٔ «بعدی» را زیر لبه می‌بُرد. بریدن متن هم رد شد: والد
     // باید کل توصیه را ببیند. پس تاشو می‌شود — بسته، فقط یک خط

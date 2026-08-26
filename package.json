@@ -22,7 +22,8 @@
     "test:streak": "node scripts/test-streak.js",
     "test:haptic": "node scripts/test-haptic.js",
     "test:map": "node scripts/test-map.js",
-    "test:docs": "node scripts/test-docs.js"
+    "test:docs": "node scripts/test-docs.js",
+    "test:milestone": "node scripts/test-milestone.js"
   },
   "engines": {
     "node": ">=20"

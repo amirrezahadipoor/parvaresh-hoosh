@@ -16,7 +16,7 @@
 // یک نگاه می‌فهمد و ذهنش درگیر جزئیات نمی‌شود.
 
 /** حالت‌های مجاز. هر حالت باید معنایی داشته باشد. */
-export const MOODS = Object.freeze(['neutral', 'happy', 'encourage', 'think']);
+export const MOODS = Object.freeze(['neutral', 'happy', 'encourage', 'think', 'wow']);
 
 const FACE = Object.freeze({
   // چشم‌ها: [شعاع، جابه‌جایی عمودی]
@@ -24,6 +24,9 @@ const FACE = Object.freeze({
   happy: { eye: 5.5, brow: -2, mouth: 'M36 60 Q50 74 64 60', blush: 0.9 },
   encourage: { eye: 5, brow: -1, mouth: 'M38 63 Q50 69 62 63', blush: 0.5 },
   think: { eye: 4.5, brow: 1, mouth: 'M43 64 h11', blush: 0 },
+  // «وای!» — فقط برای لحظه‌های بزرگ (قدمِ گردِ سفر). چشم‌های درشتِ
+  // بالا و دهانِ «او»ی کوچک: شگفتیِ شاد، نه ترس (§۷.۱۶ آیتم ۶).
+  wow: { eye: 6.2, brow: -3, mouth: 'M43 64 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0', blush: 0.9 },
 });
 
 /**

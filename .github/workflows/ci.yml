@@ -74,4 +74,5 @@ jobs:
           npm run test:streak
           npm run test:haptic
           npm run test:map
+          npm run test:milestone
           npm run test:visual

@@ -1256,6 +1256,43 @@ canvas.pad {
   text-align: center;
 }
 
+/* ── جشنِ قدم‌های گرد (§۷.۱۶ آیتم ۴) ─────────────────────
+   گامِ ۵۰/۱۰۰/۲۰۰/۳۰۷ و پایانِ هر حوزه: هالهٔ طلایی + نشانِ جام.
+   همهٔ انیمیشن‌ها متناهی‌اند و `prefers-reduced-motion` را همان
+   قانونِ سراسری خاموش می‌کند. */
+.done-card.milestone {
+  border: 3px solid #F4B942;
+  box-shadow:
+    0 0 0 6px rgba(244, 185, 66, 0.22),
+    var(--shadow-lift);
+}
+
+.milestone-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  background: #FFF3D6;
+  border-radius: 999px;
+  padding: 6px 16px;
+  color: #8a6d3b;
+  font-weight: 900;
+  margin-block: var(--s2);
+  animation: award-in var(--slow) var(--ease) 220ms backwards;
+}
+
+.mb-ico {
+  width: 26px;
+  height: 26px;
+  display: block;
+  color: #E08A1E;
+}
+
+.mb-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .done-card .big {
   font-size: 3.4rem;
   margin-bottom: 8px;

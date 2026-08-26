@@ -60,6 +60,14 @@ export const moonIcon = () =>
     <circle cx="17.5" cy="5.5" r="1.4" fill="currentColor" opacity=".55"/>
     <circle cx="20.5" cy="9" r="1" fill="currentColor" opacity=".4"/>`);
 
+/** جام — جشنِ قدم‌های گردِ سفر (§۷.۱۶ آیتم ۴). */
+export const trophyIcon = () =>
+  wrap(`<path d="M7.5 3.5h9v5.4a4.5 4.5 0 0 1-9 0z" fill="currentColor"/>
+    <path d="M7.5 4.6H4.6a2.9 2.9 0 0 0 2.9 4.6M16.5 4.6h2.9a2.9 2.9 0 0 1-2.9 4.6"
+      fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    <path d="M12 13.4v3.1M9.3 20.5h5.4M10 16.5h4l1 4H9z" fill="none" stroke="currentColor"
+      stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>`);
+
 /** پیکان بازگشت — در RTL به سمت راست. */
 export const backIcon = () =>
   wrap(`<path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor"
