@@ -63,6 +63,7 @@ python3 -m http.server 8080 --bind 0.0.0.0 &   # سرور باید بالا بم
 | نقشهٔ سفرِ صحنه‌دار (§۷.۱۶/۳) | `npm run test:map` | ~۵s |
 | جشنِ قدم‌های گرد و هوشیِ «وای» (§۷.۱۶/۴ و ۶) | `npm run test:milestone` | ~۲۵s |
 | پس‌زمینهٔ صحنه‌ایِ ایستا (§۷.۱۶/۵) | `npm run test:scene` | ~۱۵s |
+| گسترشِ بازی‌ها و کارت‌های صحنه‌دار (§۷.۴ و §۷.۱۶/۸) | `npm run test:games` | ~۱۰s |
 | ظاهر در ۴ اندازه | `npm run test:visual` | **۷۴۰s** |
 
 `npm test` خودش چهارتا را با هم اجرا می‌کند (validate، sync-sw --check،

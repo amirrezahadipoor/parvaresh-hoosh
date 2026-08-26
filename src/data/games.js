@@ -16,6 +16,12 @@
 //  • بی‌صدا و بی‌خواندن قابل انجام باشد.
 //  • محدودیت زمانِ روزانه شامل بازی هم می‌شود.
 //  • در دسترس، ولی نه سرِ راه: مسیر یادگیری پیش‌فرض می‌ماند.
+//  • هر بازی یک رنگ، یک نشان، یک هویت — دو کارت نباید فقط با
+//    برچسب‌شان فرق کنند.
+//
+// ⚠ `about` اینجا عمداً نیست: دادهٔ مرده بود (هیچ‌جا رندر نمی‌شد —
+// درسِ §۷.۱۳). هر افزودنیِ تازه به این فایل باید در رابط هم دیده
+// شود یا اصلاً نوشته نشود.
 
 /**
  * هر بازی می‌گوید از کدام نوع گِرد تغذیه کند.
@@ -23,7 +29,8 @@
  * `kinds` عمداً فهرستِ صریح است، نه «همهٔ گِردها»:
  * ⚠ گِردهای چیدنی (order) و حافظه در قالبِ مسابقهٔ زمان‌دار خراب
  * می‌شوند — کودک وسط چیدن، وقت تمام می‌کند و حس بی‌عدالتی می‌گیرد.
- * پس فقط گِردهای تک‌ضربه‌ای در بازی‌های زمان‌دار می‌آیند.
+ * پس فقط گِردهای تک‌ضربه‌ای در بازی‌های زمان‌دار می‌آیند
+ * (`test:games` این را مکانیکی می‌سنجد).
  */
 // ⚠ نشانِ هر بازی باید *یکتا* باشد. نخست «برجِ پاسخ» و «جفتِ کلمه»
 // هر دو کتاب داشتند و در فهرست از هم تشخیص داده نمی‌شدند — کودکی که
@@ -38,7 +45,6 @@ export const GAMES = Object.freeze([
     seconds: 60,
     penaltySec: 5,
     icon: 'ساعت',
-    about: 'در یک دقیقه هر پاسخ درست یک امتیاز دارد. پاسخ نادرست پنج ثانیه از وقت کم می‌کند.',
     // ترکیبی از همهٔ حوزه‌ها — بازیِ «همه‌چیز».
     kinds: [
       'count-objects', 'subitize', 'compare-groups', 'compare-numbers',
@@ -55,7 +61,6 @@ export const GAMES = Object.freeze([
     mode: 'lives',
     lives: 3,
     icon: 'کوه',
-    about: 'هر پاسخ درست یک آجر به برج اضافه می‌کند. سه اشتباه و بازی تمام می‌شود.',
     kinds: [
       'add', 'sub', 'doubles', 'fact-family', 'make-ten', 'missing-addend',
       'number-bond', 'between', 'next-number', 'skip-count', 'count-tens',
@@ -71,7 +76,6 @@ export const GAMES = Object.freeze([
     seconds: 60,
     penaltySec: 5,
     icon: 'کتاب',
-    about: 'کلمه را بخوان و تصویرش را پیدا کن. هرچه سریع‌تر، امتیاز بیشتر.',
     kinds: ['word-pic', 'pic-word', 'letter-in-word', 'rhyme-pick', 'first-sound', 'sentence-pic'],
   },
   {
@@ -81,11 +85,55 @@ export const GAMES = Object.freeze([
     color: '#7B4B94',
     mode: 'levels',
     icon: 'ستاره',
-    about: 'جفت‌های مثل هم را پیدا کن. هر مرحله جفت‌های بیشتری دارد.',
     // ⚠ این بازی زمان‌دار نیست، پس گِرد حافظه اینجا مشکلی ندارد.
     // مرحله‌ها با `pairs` بالا می‌روند، نه با سرعت.
     levels: [3, 4, 5, 6, 7, 8],
     kinds: ['memory-pairs'],
+  },
+  {
+    id: 'count',
+    title: 'سرعتِ شمارش',
+    tagline: 'بشمار، قبل از تمام‌شدن وقت!',
+    color: '#E08A1E',
+    mode: 'timed',
+    seconds: 60,
+    penaltySec: 5,
+    icon: 'توپ',
+    // شمارشِ خالص: تشخیصِ فوریِ تعداد، بدون خواندن و بدون جمع.
+    kinds: [
+      'subitize', 'count-objects', 'count-shapes', 'count-tens', 'tally',
+      'ten-frame', 'place-value', 'pick-number', 'next-number', 'compare-groups',
+    ],
+  },
+  {
+    id: 'nature',
+    title: 'طبیعت‌گرد',
+    tagline: 'به دنیای دور و برت نگاه کن',
+    color: '#5C6BC0',
+    mode: 'timed',
+    seconds: 60,
+    penaltySec: 5,
+    icon: 'درخت',
+    // مشاهدهٔ علمی: سایه، جنس، جانور، زیستگاه، فصل و آب‌وهوا.
+    kinds: [
+      'shadow', 'light-shadow', 'made-of', 'living', 'habitat', 'needs',
+      'sense', 'weather-name', 'season', 'float-sink',
+    ],
+  },
+  {
+    id: 'pattern',
+    title: 'الگوی بعدی',
+    tagline: 'بعدی کدام است؟',
+    color: '#00897B',
+    mode: 'timed',
+    seconds: 60,
+    penaltySec: 5,
+    icon: 'گل',
+    // منطقِ دیداری: ادامهٔ الگو، تفاوت، طبقه‌بندی و قاعده.
+    kinds: [
+      'pattern-next', 'pattern-make', 'odd-one-out', 'same-different',
+      'shape-color', 'two-rule', 'not-rule', 'between', 'category', 'trait',
+    ],
   },
 ]);
 

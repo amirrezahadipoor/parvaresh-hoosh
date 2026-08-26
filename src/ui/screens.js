@@ -1213,6 +1213,50 @@ function memoryView(r, feedback, done, onWin = () => {}) {
 // درس‌ها را صدا می‌زنیم و فقط قالبِ دور را عوض می‌کنیم. یعنی هر
 // گِردی که به برنامه اضافه شود خودبه‌خود بازی‌ها را غنی‌تر می‌کند.
 
+/**
+ * صحنهٔ کوچکِ هر کارتِ بازی (§۷.۱۶ آیتم ۸).
+ * کارت‌ها «آیکون + متن» بودند؛ حالا هرکدام یک صحنه دارند: خورشید و
+ * تپهٔ مشترک + نشانِ هویتیِ همان بازی (جاده، برج، کتاب، ستاره…).
+ * ⚠ تزئینی است: aria-hidden، بی‌تعامل و بی‌حرکت.
+ */
+function gameScene(g) {
+  const hill = `<path d="M0 60 Q 55 28 115 46 T 200 42 L200 60 Z" fill="#E9EFDA"/>`;
+  const sun = `<circle cx="176" cy="13" r="9" fill="#F6E3B4"/>`;
+  let glyph = '';
+  switch (g.id) {
+    case 'speed':
+      glyph = `<path d="M14 46 Q 60 26 105 38 T 190 34" fill="none" stroke="#C8461F" stroke-width="3.4" stroke-linecap="round" opacity=".55"/>`;
+      break;
+    case 'tower':
+      glyph = `<rect x="88" y="26" width="24" height="9" rx="2" fill="#256E8C" opacity=".45"/>
+               <rect x="82" y="15" width="36" height="9" rx="2" fill="#256E8C" opacity=".7"/>
+               <rect x="90" y="4" width="20" height="9" rx="2" fill="#256E8C"/>`;
+      break;
+    case 'wordmatch':
+      glyph = `<path d="M58 32 v-18 a9 9 0 0 1 9-9 h66 a9 9 0 0 1 9 9 v18" fill="none" stroke="#2F7C3E" stroke-width="2.8" opacity=".6"/>
+               <path d="M66 28 h58" stroke="#2F7C3E" stroke-width="2.8" opacity=".6"/>`;
+      break;
+    case 'memory':
+      glyph = `<path d="M38 42 l4.4-8.8 8.6-1.3-6.2-6 1.5-8.6-8.3 4.4-8.3-4.4 1.5 8.6-6.2 6 8.6 1.3z" fill="#7B4B94" opacity=".7"/>`;
+      break;
+    case 'count':
+      glyph = `<circle cx="58" cy="34" r="4.6" fill="#E08A1E" opacity=".45"/>
+               <circle cx="100" cy="34" r="4.6" fill="#E08A1E" opacity=".72"/>
+               <circle cx="142" cy="34" r="4.6" fill="#E08A1E"/>`;
+      break;
+    case 'nature':
+      glyph = `<path d="M100 42 v-18 M88 42 a12 12 0 0 1 24 0" fill="none" stroke="#2F7C3E" stroke-width="3.4" stroke-linecap="round" opacity=".65"/>`;
+      break;
+    case 'pattern':
+      glyph = `<rect x="66" y="28" width="13" height="13" rx="2.5" fill="#00897B" opacity=".5"/>
+               <rect x="92" y="28" width="13" height="13" rx="2.5" fill="#F4B942"/>
+               <rect x="118" y="28" width="13" height="13" rx="2.5" fill="#00897B" opacity=".8"/>
+               <rect x="144" y="28" width="13" height="13" rx="2.5" fill="#F4B942" opacity=".7"/>`;
+      break;
+  }
+  return `<svg viewBox="0 0 200 60" aria-hidden="true" focusable="false">${sun}${hill}${glyph}</svg>`;
+}
+
 /** فهرست بازی‌ها. */
 function gamesScreen() {
   const cards = GAMES.map((g) =>
@@ -1224,6 +1268,7 @@ function gamesScreen() {
         onClick: () => render(store.limitReached() ? timeUpScreen() : gameScreen(g.id)),
       },
       [
+        el('span', { class: 'game-scene', 'aria-hidden': 'true', html: gameScene(g) }),
         el('span', { class: 'game-ico ico', html: svgShape(g.icon) || '' }),
         el('span', { class: 'game-body' }, [
           el('strong', { text: g.title }),
