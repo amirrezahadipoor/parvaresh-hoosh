@@ -566,36 +566,53 @@ export const SHAPES = {
 
   // حواس پنج‌گانه — اندام، نه نماد انتزاعی
   چشم: () =>
-    svg(`<path d="M12 50 q38 -30 76 0 q-38 30 -76 0z" fill="#FFF" stroke="#2B2A33" stroke-width="3"/>
+    svg(`<g><ellipse cx="50" cy="86" rx="30" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M12 50 q38 -30 76 0 q-38 30 -76 0z" fill="#FFF" stroke="#2B2A33" stroke-width="3"/>
     <circle cx="50" cy="50" r="15" fill="#5AA9CF"/>
+    <path d="M50 35 a15 15 0 0 1 0 30 a11 15 0 0 0 0 -30z" fill="#7FD1E8" opacity="0.6"/>
     <circle cx="50" cy="50" r="7" fill="#2B2A33"/>
-    <circle cx="45" cy="45" r="3" fill="#FFF"/>`),
+    <circle cx="45" cy="45" r="3" fill="#FFF"/><circle cx="55" cy="55" r="1.6" fill="#FFF"/>
+    <ellipse cx="50" cy="38" rx="9" ry="4" fill="#fff" opacity="0.28"/>
+    <path d="M26 36 l-5 -8 M40 28 l-3 -9 M60 28 l3 -9 M74 36 l5 -8" stroke="#2B2A33" stroke-width="2.6" stroke-linecap="round"/></g>`),
 
   گوش: () =>
-    svg(`<path d="M62 18 q-30 -4 -32 26 q-1 20 6 30 q5 8 12 8 q8 0 8 -9 q0 -8 6 -12 q14 -9 12 -25 q-2 -16 -12 -18z"
+    svg(`<g><ellipse cx="50" cy="88" rx="26" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M62 18 q-30 -4 -32 26 q-1 20 6 30 q5 8 12 8 q8 0 8 -9 q0 -8 6 -12 q14 -9 12 -25 q-2 -16 -12 -18z"
       fill="#F7C9A8" stroke="#C99B7A" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M56 38 q-12 2 -10 16 q1 8 6 10" fill="none" stroke="#C99B7A" stroke-width="3.5" stroke-linecap="round"/>`),
+    <ellipse cx="44" cy="40" rx="5" ry="10" fill="#fff" opacity="0.28"/>
+    <path d="M56 38 q-12 2 -10 16 q1 8 6 10" fill="none" stroke="#C99B7A" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M60 60 q4 4 1 9" fill="none" stroke="#C99B7A" stroke-width="2.6" stroke-linecap="round"/>
+    <ellipse cx="55" cy="82" rx="3" ry="2.2" fill="#B07B5A" opacity="0.7"/></g>`),
 
   // ⚠ نسخهٔ اول نیم‌رخ بود و مثل یک سیم خمیده دیده می‌شد. بینیِ
   // روبه‌رو با دو سوراخ برای کودک بلافاصله خواناست.
   بینی: () =>
-    svg(`<path d="M50 16 q-16 26 -22 46 q-4 14 10 18 q12 4 12 -6 q0 10 12 6 q14 -4 10 -18 q-6 -20 -22 -46z"
+    svg(`<g><ellipse cx="50" cy="90" rx="24" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M50 16 q-16 26 -22 46 q-4 14 10 18 q12 4 12 -6 q0 10 12 6 q14 -4 10 -18 q-6 -20 -22 -46z"
       fill="#F7C9A8" stroke="#C99B7A" stroke-width="3" stroke-linejoin="round"/>
     <ellipse cx="38" cy="70" rx="6" ry="4.5" fill="#B07B5A" transform="rotate(-18 38 70)"/>
-    <ellipse cx="62" cy="70" rx="6" ry="4.5" fill="#B07B5A" transform="rotate(18 62 70)"/>`),
+    <ellipse cx="62" cy="70" rx="6" ry="4.5" fill="#B07B5A" transform="rotate(18 62 70)"/>
+    <ellipse cx="42" cy="38" rx="6" ry="12" fill="#fff" opacity="0.28"/></g>`),
 
   // ⚠ نسخهٔ اول مثل کاسهٔ صورتی بود. حالا دهانِ باز با دندان‌های
   // بالا و زبانِ بیرون‌آمده — نشانهٔ روشنِ «چشیدن».
   زبان: () =>
-    svg(`<path d="M18 40 q32 -20 64 0 q2 26 -14 38 q-18 14 -36 0 q-16 -12 -14 -38z"
+    svg(`<g><ellipse cx="50" cy="88" rx="28" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M18 40 q32 -20 64 0 q2 26 -14 38 q-18 14 -36 0 q-16 -12 -14 -38z"
       fill="#8E3B4E"/>
     <path d="M22 40 q28 -16 56 0 q-6 8 -28 8 t-28 -8z" fill="#FFF"/>
     <path d="M34 54 q16 -8 32 0 q2 22 -16 30 q-18 -8 -16 -30z" fill="#E88AA0" stroke="#C4566F" stroke-width="2.5"/>
-    <path d="M50 62 v18" fill="none" stroke="#C4566F" stroke-width="2.5" stroke-linecap="round"/>`),
+    <ellipse cx="44" cy="62" rx="6" ry="9" fill="#fff" opacity="0.28"/>
+    <path d="M50 62 v18" fill="none" stroke="#C4566F" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="40" cy="70" r="1.4" fill="#C4566F" opacity="0.7"/><circle cx="60" cy="68" r="1.4" fill="#C4566F" opacity="0.7"/></g>`),
 
   دست: () =>
-    svg(`<path d="M34 88 v-30 q-8 2 -10 -6 q-2 -8 6 -10 l4 -1 v-24 q0 -6 6 -6 t6 6 v20 h3 v-26 q0 -6 6 -6 t6 6 v26 h3 v-20 q0 -6 6 -6 t6 6 v34 q0 24 -18 37z"
-      fill="#F7C9A8" stroke="#C99B7A" stroke-width="3" stroke-linejoin="round"/>`),
+    svg(`<g><ellipse cx="50" cy="92" rx="24" ry="4.5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M34 88 v-30 q-8 2 -10 -6 q-2 -8 6 -10 l4 -1 v-24 q0 -6 6 -6 t6 6 v20 h3 v-26 q0 -6 6 -6 t6 6 v26 h3 v-20 q0 -6 6 -6 t6 6 v34 q0 24 -18 37z"
+      fill="#F7C9A8" stroke="#C99B7A" stroke-width="3" stroke-linejoin="round"/>
+    <ellipse cx="50" cy="62" rx="10" ry="14" fill="#fff" opacity="0.28"/>
+    <rect x="30" y="85" width="40" height="9" rx="4.5" fill="#7FD1E8"/>
+    <path d="M34 89.5 q16 5 32 0" fill="none" stroke="#5FB6D8" stroke-width="2" stroke-linecap="round"/></g>`),
 
   // ── صحنه‌های پرسش ─────────────────────────────────────────────────
   // ⚠ این‌ها «تصویرِ خودِ پرسش»اند، نه گزینه. گِردهای زنده/غیرزنده و
@@ -628,39 +645,61 @@ export const SHAPES = {
   // چون هر دو می‌توانند گزینهٔ یک پرسش باشند، باید در یک نگاه از هم
   // جدا شوند: برگِ تک و بزرگ با رگبرگ، نه جوانه.
   برگ: () =>
-    svg(`<path d="M78 20 q-52 4 -60 40 q-4 20 10 26 q26 10 42 -14 q14 -22 8 -52z"
+    svg(`<g><ellipse cx="50" cy="90" rx="30" ry="5.5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M78 20 q-52 4 -60 40 q-4 20 10 26 q26 10 42 -14 q14 -22 8 -52z"
       fill="#7DBB5B" stroke="#4E7A32" stroke-width="3" stroke-linejoin="round"/>
     <path d="M78 20 q-34 22 -52 66" fill="none" stroke="#4E7A32" stroke-width="3.5" stroke-linecap="round"/>
     <g stroke="#4E7A32" stroke-width="2.2" stroke-linecap="round" fill="none">
-    <path d="M64 33 q-12 2 -18 12"/><path d="M56 47 q-12 2 -18 12"/><path d="M46 62 q-10 2 -14 10"/></g>`),
+    <path d="M64 33 q-12 2 -18 12"/><path d="M56 47 q-12 2 -18 12"/><path d="M46 62 q-10 2 -14 10"/></g>
+    <ellipse cx="52" cy="38" rx="9" ry="6" fill="#fff" opacity="0.28" transform="rotate(-36 52 38)"/>
+    <path d="M64 60 q6 -7 13 -5 q-2 9 -11 8 q-3 -1 -2 -3z" fill="#7FD1E8"/></g>`),
 
   چوب: () =>
-    svg(`<rect x="14" y="40" width="72" height="22" rx="10" fill="#C89B5A" stroke="#8B6F47" stroke-width="3"/>
+    svg(`<g><ellipse cx="50" cy="70" rx="38" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <rect x="14" y="40" width="72" height="22" rx="10" fill="#C89B5A" stroke="#8B6F47" stroke-width="3"/>
     <ellipse cx="82" cy="51" rx="6" ry="11" fill="#A87B3A"/>
-    <path d="M28 46 v10 M42 44 v14 M56 46 v10" stroke="#A87B3A" stroke-width="2.5" stroke-linecap="round"/>`),
+    <ellipse cx="82" cy="51" rx="3.5" ry="6.5" fill="#D69A1E" opacity="0.8"/>
+    <path d="M28 46 v10 M42 44 v14 M56 46 v10" stroke="#A87B3A" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="30" cy="44" rx="9" ry="3.4" fill="#fff" opacity="0.28"/>
+    <path d="M62 56 q10 3 18 0" fill="none" stroke="#8B6F47" stroke-width="2" stroke-linecap="round" opacity="0.7"/></g>`),
 
   کاغذ: () =>
-    svg(`<path d="M24 14 h40 l14 14 v58 h-54z" fill="#FFF" stroke="#B9AFA0" stroke-width="3" stroke-linejoin="round"/>
+    svg(`<g><ellipse cx="50" cy="90" rx="27" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M24 14 h40 l14 14 v58 h-54z" fill="#FFF" stroke="#B9AFA0" stroke-width="3" stroke-linejoin="round"/>
     <path d="M64 14 v14 h14" fill="none" stroke="#B9AFA0" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M34 44 h34 M34 56 h34 M34 68 h22" stroke="#C9BFB0" stroke-width="3.5" stroke-linecap="round"/>`),
+    <path d="M64 28 l14 -14 v14z" fill="#FBE6A2" opacity="0.6"/>
+    <rect x="31" y="40" width="40" height="7" rx="3.5" fill="#FFB36B" opacity="0.55"/>
+    <path d="M34 56 h34 M34 68 h22" stroke="#C9BFB0" stroke-width="3.5" stroke-linecap="round"/>
+    <ellipse cx="38" cy="22" rx="8" ry="4" fill="#fff" opacity="0.28"/></g>`),
 
   سنگ: () =>
-    svg(`<path d="M18 72 q-4 -22 16 -32 q22 -12 38 2 q16 12 10 30 q-32 8 -64 0z"
+    svg(`<g><ellipse cx="50" cy="82" rx="34" ry="6" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M18 72 q-4 -22 16 -32 q22 -12 38 2 q16 12 10 30 q-32 8 -64 0z"
       fill="#9A9490" stroke="#6E6A66" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M46 40 q16 2 22 14 q6 12 2 20 l-8 2 q4 -18 -16 -36z" fill="#96A4B2" opacity="0.45"/>
     <path d="M34 52 q10 -8 20 -2" fill="none" stroke="#7E7A76" stroke-width="3" stroke-linecap="round"/>
-    <ellipse cx="50" cy="76" rx="34" ry="5" fill="#C9C3BE"/>`),
+    <ellipse cx="36" cy="48" rx="9" ry="5" fill="#fff" opacity="0.28"/>
+    <path d="M30 62 q5 -3 9 1 M44 66 q4 -3 8 0" fill="none" stroke="#7E7A76" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+    <circle cx="66" cy="46" r="3" fill="#4CAF50" opacity="0.8"/><circle cx="72" cy="52" r="2.2" fill="#4CAF50" opacity="0.6"/></g>`),
 
   سکه: () =>
-    svg(`<circle cx="50" cy="50" r="32" fill="#E8B84B" stroke="#B8863A" stroke-width="3.5"/>
+    svg(`<g><ellipse cx="50" cy="88" rx="26" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <circle cx="50" cy="50" r="32" fill="#E8B84B" stroke="#B8863A" stroke-width="3.5"/>
+    <path d="M26 40 a32 32 0 0 1 30 -21 q-16 6 -22 21 q-5 13 -8 22z" fill="#D69A1E" opacity="0.4"/>
     <circle cx="50" cy="50" r="23" fill="none" stroke="#B8863A" stroke-width="2.5"/>
-    <path d="M50 34 v32 M40 42 h20 M40 58 h20" stroke="#B8863A" stroke-width="4" stroke-linecap="round"/>`),
+    <path d="M50 34 v32 M40 42 h20 M40 58 h20" stroke="#B8863A" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="38" cy="36" rx="8" ry="5" fill="#fff" opacity="0.30" transform="rotate(-32 38 36)"/>
+    <circle cx="76" cy="28" r="2.4" fill="#FBE6A2"/><circle cx="24" cy="72" r="2" fill="#FBE6A2"/></g>`),
 
   قاشق: () =>
-    svg(`<path d="M50 86 v-34" stroke="#6F7A82" stroke-width="13" stroke-linecap="round"/>
+    svg(`<g><ellipse cx="50" cy="92" rx="22" ry="4.5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M50 86 v-34" stroke="#6F7A82" stroke-width="13" stroke-linecap="round"/>
     <path d="M50 86 v-34" stroke="#C9CFD4" stroke-width="8" stroke-linecap="round"/>
     <ellipse cx="50" cy="32" rx="21" ry="25" fill="#C9CFD4" stroke="#6F7A82" stroke-width="3.2"/>
     <ellipse cx="50" cy="33" rx="14" ry="17" fill="#9FA9B0"/>
-    <ellipse cx="45" cy="25" rx="5" ry="8" fill="#EDF1F4"/>`),
+    <ellipse cx="45" cy="25" rx="5" ry="8" fill="#EDF1F4"/>
+    <path d="M55 22 q4 8 2 16" fill="none" stroke="#7FD1E8" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <ellipse cx="46" cy="60" rx="2.6" ry="7" fill="#fff" opacity="0.28"/></g>`),
 
   'رنگین‌کمان': () =>
     svg(`<g fill="none" stroke-width="9" stroke-linecap="round">
@@ -761,13 +800,17 @@ export const SHAPES = {
     <path d="M34 46 l4 38 M50 46 v38 M66 46 l-4 38" stroke="#8B6F47" stroke-width="2.4"/>`),
 
   توت: () =>
-    svg(`<path d="M50 34 v-18" stroke="#4E7A32" stroke-width="3.4" stroke-linecap="round"/>
+    svg(`<g><ellipse cx="50" cy="86" rx="24" ry="5" fill="#B9B0A0" opacity="0.28"/>
+    <path d="M50 34 v-18" stroke="#4E7A32" stroke-width="3.4" stroke-linecap="round"/>
     <path d="M50 22 q8 -12 20 -12 q-3 13 -18 16z" fill="#4CAF50"/>
     <g fill="#7B4B94"><circle cx="50" cy="42" r="10"/><circle cx="38" cy="54" r="10"/>
     <circle cx="62" cy="54" r="10"/><circle cx="44" cy="68" r="10"/><circle cx="57" cy="68" r="10"/>
     <circle cx="50" cy="55" r="10"/></g>
     <g fill="#9B6BB5"><circle cx="47" cy="39" r="3"/><circle cx="35" cy="51" r="3"/>
-    <circle cx="59" cy="51" r="3"/><circle cx="41" cy="65" r="3"/></g>`),
+    <circle cx="59" cy="51" r="3"/><circle cx="41" cy="65" r="3"/></g>
+    <circle cx="62" cy="54" r="9.6" fill="#C1352B"/>
+    <ellipse cx="44" cy="50" rx="3.4" ry="4.6" fill="#fff" opacity="0.28"/>
+    <ellipse cx="57" cy="64" rx="3" ry="4" fill="#fff" opacity="0.28"/></g>`),
 
   اتو: () =>
     svg(`<path d="M14 74 h72 q2 -18 -16 -24 h-32 q-20 4 -24 24z" fill="#B9C3CC" stroke="#7B8794" stroke-width="3" stroke-linejoin="round"/>
